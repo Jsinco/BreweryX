@@ -129,25 +129,40 @@ public class BConfig {
 			return false;
 		}
 
-		copyDefaultConfigs(false);
+		copyDefaultConfigAndLangs(false);
 		return true;
 	}
 
-	private static void copyDefaultConfigs(boolean overwrite) {
-		File configs = new File(breweryPlugin.getDataFolder(), "configs");
-		File languages = new File(breweryPlugin.getDataFolder(), "languages");
-		for (String l : new String[] {"de", "en", "fr", "it", "zh", "tw"}) {
-			File lfold = new File(configs, l);
+	private static void copyDefaultConfigAndLangs(boolean overwrite) {
+		final File configs = new File(breweryPlugin.getDataFolder(), "configs");
+		final File languages = new File(breweryPlugin.getDataFolder(), "languages");
+
+		final List<String> configTypes =  new ArrayList<>(List.of("de", "en", "es", "fr", "it", "zh"));
+		final List<String> langTypes = new ArrayList<>(List.of("de", "en", "es", "fr", "it", "ru", "tw", "zh"));
+		if (!BreweryPlugin.use1_13) { // not available for some versions according to original author, haven't looked. - Jsinco : 4/1
+			configTypes.removeAll(List.of("es", "it", "zh"));
+		}
+
+		for (String l : configTypes) {
 			try {
-				BUtil.saveFile(breweryPlugin.getResource("config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
-				BUtil.saveFile(breweryPlugin.getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages, they get updated with their updater
+				BUtil.saveFile(breweryPlugin.getResource(
+						"config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), new File(configs, l), "config.yml", overwrite
+				);
 			} catch (IOException e) {
-				if (!(l.equals("zh") || l.equals("tw"))) {
-					// zh and tw not available for some versions
-					e.printStackTrace();
-				}
+				e.printStackTrace();
 			}
 		}
+
+		for (String type : langTypes) {
+			try {
+				// Never overwrite languages, they get updated with their updater. - Original Author
+				BUtil.saveFile(breweryPlugin.getResource("languages/" + type + ".yml"), languages, type + ".yml", false);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+
 	}
 
 	public static FileConfiguration loadConfigFile() {
@@ -189,7 +204,7 @@ public class BConfig {
 		if (version != null) {
 			if (!version.equals(configVersion) || (oldMat && BreweryPlugin.use1_13)) {
 				File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
-				copyDefaultConfigs(true);
+				copyDefaultConfigAndLangs(true);
 				new ConfigUpdater(file).update(version, oldMat, breweryPlugin.language, config);
 				BreweryPlugin.getInstance().log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);

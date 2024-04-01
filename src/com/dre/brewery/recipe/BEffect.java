@@ -140,4 +140,8 @@ public class BEffect {
 	public boolean isHidden() {
 		return hidden;
 	}
+
+	public PotionEffectType getType() {
+		return type;
+	}
 }
