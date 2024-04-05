@@ -437,6 +437,7 @@ cauldron:
 #   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
+# glint: Boolean if the item should have a glint (enchant glint)
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 #   Can specify one for all, or one for each quality, separated by /
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
@@ -478,6 +479,7 @@ recipes:
       - homes
     drinkmessage: Tastes good
     drinktitle: Warms you from inside
+    glint: true
     customModelData: 556/557/557
     effects:
       - FIRE_RESISTANCE/20

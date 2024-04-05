@@ -56,6 +56,7 @@ public class BRecipe {
 	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
+	private boolean glint; // If the potion should have a glint effect
 
 	private BRecipe() {
 	}
@@ -101,7 +102,7 @@ public class BRecipe {
 			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name missing or invalid!");
 			return null;
 		}
-		if (recipe.getRecipeName() == null || recipe.getRecipeName().length() < 1) {
+		if (recipe.getRecipeName() == null || recipe.getRecipeName().isEmpty()) {
 			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name invalid");
 			return null;
 		}
@@ -138,6 +139,8 @@ public class BRecipe {
 
 		recipe.drinkMsg = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
+		recipe.glint = configSectionRecipes.getBoolean(recipeId + ".glint", false);
+
 		if (configSectionRecipes.isString(recipeId + ".customModelData")) {
 			String[] cmdParts = configSectionRecipes.getString(recipeId + ".customModelData", "").split("/");
 			if (cmdParts.length == 3) {
@@ -157,17 +160,15 @@ public class BRecipe {
 		}
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
-		if (effectStringList != null) {
-			for (String effectString : effectStringList) {
-				BEffect effect = new BEffect(effectString);
-				if (effect.isValid()) {
-					recipe.effects.add(effect);
-				} else {
-					BreweryPlugin.getInstance().errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
-				}
-			}
-		}
-		return recipe;
+        for (String effectString : effectStringList) {
+            BEffect effect = new BEffect(effectString);
+            if (effect.isValid()) {
+                recipe.effects.add(effect);
+            } else {
+                BreweryPlugin.getInstance().errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
+            }
+        }
+        return recipe;
 	}
 
 	public static List<RecipeItem> loadIngredients(ConfigurationSection cfg, String recipeId) {
@@ -660,6 +661,10 @@ public class BRecipe {
 		return drinkTitle;
 	}
 
+	public boolean hasGlint() {
+		return glint;
+	}
+
 	public List<BEffect> getEffects() {
 		return effects;
 	}
@@ -942,6 +947,14 @@ public class BRecipe {
 		 */
 		public Builder drinkTitle(String title) {
 			recipe.drinkTitle = title;
+			return this;
+		}
+
+		/**
+		 * Add a Glint to the Potion
+		 */
+		public Builder glint(boolean glint) {
+			recipe.glint = glint;
 			return this;
 		}
 

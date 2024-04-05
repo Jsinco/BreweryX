@@ -11,6 +11,8 @@ import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.recipe.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.Nullable;
@@ -133,6 +135,10 @@ public class BIngredients {
 			cookRecipe.getColor().colorBrew(potionMeta, potion, false);
 			brew.updateCustomModelData(potionMeta);
 
+			if (cookRecipe.hasGlint()) {
+				potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+				potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			}
 		} else {
 			// new base potion
 			brew = new Brew(this);
