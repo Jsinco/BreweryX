@@ -271,7 +271,7 @@ public class BRecipe {
 							}
 						}
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
 					e.printStackTrace();
 				}

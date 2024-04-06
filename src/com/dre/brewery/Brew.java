@@ -591,11 +591,7 @@ public class Brew implements Cloneable {
 			throw new IllegalStateException("Cannot make stripped Brews non-static");
 		}
 		if (!BreweryPlugin.use1_9 && currentRecipe != null && canDistill()) {
-			if (immutable) {
-				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
-			} else {
-				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
-			}
+            currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, !immutable);
 		}
 		this.immutable = immutable;
 	}
