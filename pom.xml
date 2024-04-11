@@ -147,14 +147,13 @@
 			<id>Lichtspiele</id>
 			<url>https://nexus.lichtspiele.org/repository/releases/</url>
 		</repository>
-
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.20.2-R0.1-SNAPSHOT</version>
+			<version>1.20.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
