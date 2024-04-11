@@ -432,6 +432,7 @@ cauldron:
 #   Befehle nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # drinkmessage: Nachricht im Chat beim trinken des Trankes
 # drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
+# glint: Boolean if the item should have a glint (enchant glint)
 # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
 #   Es kann eine für alle, oder drei für die qualitäten schlecht/normal/gut agegeben werden, mit / getrennt
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.

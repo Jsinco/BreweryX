@@ -436,6 +436,7 @@ cauldron:
 #   Texte spécifique de qualité possible, en utilisant + mauvais, ++ normal, +++ bon, ajouté à l'avant de la ligne.
 # drinkmessage: Chat-message au joueur lorsqu'il boit la potion
 # drinktitle: Titre à l'écran du joueur lorsqu'il boit la potion
+# glint: Boolean if the item should have a glint (enchant glint)
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 #   Can specify one for all, or one for each quality, separated by /
 # effects: Liste des effets/durée en secondes lors de la consommation.
