@@ -10,7 +10,7 @@ libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
 commands:
   brewery:
-    description: Mostly admin commands to create/modify Brews and drunkeness
+    description: Mostly admin commands to create/modify Brews and drunkenness
     aliases: [brew]
 permissions:
 # -- Groups --
