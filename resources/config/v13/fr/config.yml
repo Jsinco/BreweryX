@@ -45,7 +45,7 @@ pukeDespawntime: 60
 # How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
 stumblePercent: 100
 
-# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+# Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
 # Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)

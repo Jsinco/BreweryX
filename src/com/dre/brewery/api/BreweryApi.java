@@ -62,22 +62,22 @@ public class BreweryApi {
 	// # # # # # #        # # # # # #
 
 	/**
-	 * Get the BPlayer for the given Player, containing drunkeness and hangover data.
+	 * Get the BPlayer for the given Player, containing drunkenness and hangover data.
 	 */
 	public static BPlayer getBPlayer(Player player) {
 		return BPlayer.get(player);
 	}
 
 	/**
-	 * Set the Players drunkeness state.
+	 * Set the Players drunkenness state.
 	 *
-	 * @param player The Player to set the drunkeness on
-	 * @param drunkeness The amount of drunkeness 0-100 to apply to the player
-	 * @param quality The Quality 1-10 the drunkeness of the player should have.
+	 * @param player The Player to set the drunkenness on
+	 * @param drunkenness The amount of drunkenness 0-100 to apply to the player
+	 * @param quality The Quality 1-10 the drunkenness of the player should have.
 	 *                <br>zero Quality keeps the players current quality
 	 */
-	public static void setPlayerDrunk(Player player, int drunkeness, int quality) {
-		if (drunkeness < 0) {
+	public static void setPlayerDrunk(Player player, int drunkenness, int quality) {
+		if (drunkenness < 0) {
 			throw new IllegalArgumentException("Drunkeness can not be <0");
 		}
 		if (quality > 10) {
@@ -85,7 +85,7 @@ public class BreweryApi {
 		}
 		BPlayer bPlayer = BPlayer.get(player);
 		if (bPlayer == null && player != null) {
-			if (drunkeness == 0) {
+			if (drunkenness == 0) {
 				return;
 			}
 			bPlayer = BPlayer.addPlayer(player);
@@ -94,13 +94,13 @@ public class BreweryApi {
 			return;
 		}
 
-		if (drunkeness == 0) {
+		if (drunkenness == 0) {
 			bPlayer.remove();
 		} else {
-			bPlayer.setData(drunkeness, quality);
+			bPlayer.setData(drunkenness, quality);
 		}
 
-		if (drunkeness > 100) {
+		if (drunkenness > 100) {
 			if (player != null) {
 				bPlayer.drinkCap(player);
 			} else {

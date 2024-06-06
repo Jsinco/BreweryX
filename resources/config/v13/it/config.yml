@@ -44,7 +44,7 @@ pukeDespawntime: 60
 # How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
 stumblePercent: 100
 
-# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+# Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
 # Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della "forza" che avevi impsotato) (list)
@@ -874,12 +874,12 @@ useLogBlock: true
 
 # -- MultiServer/BungeeCord --
 # If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkeness and to be able to use encoded brews between them.
+# a shared Database can be used here to synchronise drunkenness and to be able to use encoded brews between them.
 
 multiServerDB:
   # If using the Database is enabled
   enabled: false
-  # If the drunkeness of players should be synchronised between Servers
+  # If the drunkenness of players should be synchronised between Servers
   syncDrunkeness: true
   host: localhost
   port: '3306'

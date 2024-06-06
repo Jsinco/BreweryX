@@ -70,9 +70,9 @@ permissions:
   brewery.cmd.unlabel:
     description: Remove Parts of the Potionlabel
   brewery.cmd.info:
-    description: Information about your own drunkeness
+    description: Information about your own drunkenness
   brewery.cmd.infoOther:
-    description: Information about the drunkeness of another Player
+    description: Information about the drunkenness of another Player
   brewery.cmd.seal:
     description: Open the Brew Sealer by command
   brewery.cmd.puke:
@@ -138,7 +138,7 @@ permissions:
 
 # -- Bypasses --
   brewery.bypass.logindeny:
-    description: Can always login, even with extreme drunkeness
+    description: Can always login, even with extreme drunkenness
   brewery.bypass.overdrink:
     description: Will despite config-setting not be kicked on overdrink
   brewery.bypass.teleport:
@@ -150,7 +150,7 @@ permissions:
     description: How sensitive to alcohol the player is in percent
 
   brewery.recovery.2:
-    description: How quickly the player will naturally reduce his drunkeness per minute
+    description: How quickly the player will naturally reduce his drunkenness per minute
 
 # -- Misc --
   brewery.update:

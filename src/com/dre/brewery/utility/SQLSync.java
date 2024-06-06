@@ -22,7 +22,7 @@ public class SQLSync {
 	public void updatePlayer(UUID uuid, BPlayer bPlayer, boolean offlineDrain) {
 		SQLData_BP bP = new SQLData_BP();
 		bP.uuid = uuid;
-		bP.drunkeness = bPlayer.getDrunkeness();
+		bP.drunkenness = bPlayer.getDrunkeness();
 		bP.offlineDrunk = bPlayer.getOfflineDrunkeness();
 		bP.quality = bPlayer.getQualityData();
 		bP.data = null;
@@ -82,7 +82,7 @@ public class SQLSync {
 				if (result.next()) {
 					BreweryPlugin.getScheduler().runTask(() -> {
 						try {
-							new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
+							new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkenness"), result.getInt("offlineDrunk"));
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
@@ -121,7 +121,7 @@ public class SQLSync {
 			statement.execute("CREATE TABLE IF NOT EXISTS Brewery_Z_BPlayers (" +
 				"uuid CHAR(36) NOT NULL, " +
 				"quality INT, " +
-				"drunkeness INT, " +
+				"drunkenness INT, " +
 				"offlineDrunk INT, " +
 				"data VARCHAR(127), " +
 				"PRIMARY KEY (uuid));");
@@ -179,7 +179,7 @@ public class SQLSync {
 	private static class SQLData_BP {
 		public UUID uuid;
 		public int quality;
-		public int drunkeness;
+		public int drunkenness;
 		public int offlineDrunk;
 		public String data;
 		public boolean offlineDrain;
@@ -236,10 +236,10 @@ public class SQLSync {
 								}
 							}
 
-							ps = connection.prepareStatement("REPLACE INTO Brewery_Z_BPlayers (uuid, quality, drunkeness, offlineDrunk, data) VALUES (?, ?, ?, ?, ?);");
+							ps = connection.prepareStatement("REPLACE INTO Brewery_Z_BPlayers (uuid, quality, drunkenness, offlineDrunk, data) VALUES (?, ?, ?, ?, ?);");
 							ps.setString(1, d.uuid.toString());
 							ps.setInt(2, d.quality);
-							ps.setInt(3, d.drunkeness);
+							ps.setInt(3, d.drunkenness);
 							ps.setInt(4, d.offlineDrunk);
 							ps.setString(5, d.data);
 
