@@ -150,7 +150,7 @@ public class DistortChat {
 	}
 
 	// distorts a message, ignoring text enclosed in ignoreText letters
-	public static String distortMessage(String message, int drunkeness) {
+	public static String distortMessage(String message, int drunkenness) {
 		if (!ignoreText.isEmpty()) {
 			for (String[] bypass : ignoreText) {
 				int indexStart = 0;
@@ -168,10 +168,10 @@ public class DistortChat {
 						String msg1 = message.substring(indexEnd);
 
 						if (msg0.length() > 1) {
-							msg0 = distortMessage(msg0, drunkeness);
+							msg0 = distortMessage(msg0, drunkenness);
 						}
 						if (msg1.length() > 1) {
-							msg1 = distortMessage(msg1, drunkeness);
+							msg1 = distortMessage(msg1, drunkenness);
 						}
 
 						return msg0 + ignoredMessage + msg1;
@@ -179,16 +179,16 @@ public class DistortChat {
 				}
 			}
 		}
-		return distortString(message, drunkeness);
+		return distortString(message, drunkenness);
 	}
 
 	// distorts a message without checking ignoreText letters
-	private static String distortString(String message, int drunkeness) {
+	private static String distortString(String message, int drunkenness) {
 		if (message.length() > 1) {
 			// Create our own reference to the words list, in case of config reload
 			List<DistortChat> words = DistortChat.words;
 			for (DistortChat word : words) {
-				if (word.alcohol <= drunkeness) {
+				if (word.alcohol <= drunkenness) {
 					message = word.distort(message);
 				}
 			}

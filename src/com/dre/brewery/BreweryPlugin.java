@@ -381,7 +381,7 @@ public class BreweryPlugin extends JavaPlugin {
 		@Override
 		public void run() {
 			if (!BPlayer.isEmpty()) {
-				BPlayer.drunkeness();
+				BPlayer.drunkenness();
 			}
 		}
 	}
@@ -408,7 +408,7 @@ public class BreweryPlugin extends JavaPlugin {
 			if (use1_14) MCBarrel.onUpdate();
 			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();
 			long t4 = System.nanoTime();
-			BPlayer.onUpdate();// updates players drunkeness
+			BPlayer.onUpdate();// updates players drunkenness
 
 			long t5 = System.nanoTime();
 			DataSave.autoSave();

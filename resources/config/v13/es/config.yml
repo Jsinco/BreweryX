@@ -30,7 +30,7 @@ enableLoginDisallow: true
 # If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]
 enableKickOnOverdrink: false
 
-# If the Player vomits on high drunkeness (drops item defined below) [true]
+# If the Player vomits on high drunkenness (drops item defined below) [true]
 # The item can not be collected and stays on the ground until it despawns.
 enablePuke: true
 
@@ -44,7 +44,7 @@ pukeDespawntime: 60
 # How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
 stumblePercent: 100
 
-# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+# Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
 # Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
@@ -874,12 +874,12 @@ useLogBlock: true
 
 # -- MultiServer/BungeeCord --
 # If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkeness and to be able to use encoded brews between them.
+# a shared Database can be used here to synchronise drunkenness and to be able to use encoded brews between them.
 
 multiServerDB:
   # If using the Database is enabled
   enabled: false
-  # If the drunkeness of players should be synchronised between Servers
+  # If the drunkenness of players should be synchronised between Servers
   syncDrunkeness: true
   host: localhost
   port: '3306'
@@ -896,7 +896,7 @@ useOffhandForCauldron: false
 # If Barrel and Cauldron data can be loaded Async/in the Background [true]
 loadDataAsync: true
 
-# Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
+# Time (in days) that drunkenness-data stays in memory after a player goes offline, to apply hangover etc. [7]
 hangoverDays: 7
 
 # Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]
@@ -957,7 +957,7 @@ distortBypass:
 # to: What to replace it with.
 # pre: Words and Letters before the wanted word (split with ",")
 # match: true = one of the "pre"-Words has to be before the wanted Word,  false = none of the "pre" Words is allowed before the wanted Word
-# alcohol: 1-100 minimum drunkeness after which this word ist replaced
+# alcohol: 1-100 minimum drunkenness after which this word ist replaced
 # percentage: Probability of replacing a Word in percent
 
 words:

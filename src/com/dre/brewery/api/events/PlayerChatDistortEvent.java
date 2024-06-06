@@ -59,7 +59,7 @@ public class PlayerChatDistortEvent extends Event implements Cancellable {
 	}
 
 	/**
-	 * @return The drunkeness of the player that is writing the message
+	 * @return The drunkenness of the player that is writing the message
 	 */
 	public int getDrunkeness() {
 		return bPlayer.getDrunkeness();

@@ -39,9 +39,9 @@ public class BPlayer {
 	private static Random pukeRand;
 
 	private final String uuid;
-	private int quality = 0;// = quality of drunkeness * drunkeness
-	private int drunkeness = 0;// = amount of drunkeness
-	private int offlineDrunk = 0;// drunkeness when gone offline
+	private int quality = 0;// = quality of drunkenness * drunkenness
+	private int drunkenness = 0;// = amount of drunkenness
+	private int offlineDrunk = 0;// drunkenness when gone offline
 	private int alcRecovery = -1; // Drunkeness reduce per minute
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
@@ -51,9 +51,9 @@ public class BPlayer {
 	}
 
 	// reading from file
-	public BPlayer(String uuid, int quality, int drunkeness, int offlineDrunk) {
+	public BPlayer(String uuid, int quality, int drunkenness, int offlineDrunk) {
 		this.quality = quality;
-		this.drunkeness = drunkeness;
+		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
 		players.put(uuid, this);
@@ -165,7 +165,7 @@ public class BPlayer {
 			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(drinkEvent);
 			if (brew != drinkEvent.getBrew()) brew = drinkEvent.getBrew();
 			if (drinkEvent.isCancelled()) {
-				if (bPlayer.drunkeness <= 0) {
+				if (bPlayer.drunkenness <= 0) {
 					bPlayer.remove();
 				}
 				return false;
@@ -186,7 +186,7 @@ public class BPlayer {
 			// If the Drink has negative alcohol, drain some alcohol
 			bPlayer.drain(player, -brewAlc);
 		} else if (brewAlc > 0) {
-			bPlayer.drunkeness += brewAlc;
+			bPlayer.drunkenness += brewAlc;
 			if (quality > 0) {
 				bPlayer.quality += quality * brewAlc;
 			} else {
@@ -196,18 +196,18 @@ public class BPlayer {
 			applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
 		}
 
-		if (bPlayer.drunkeness > 100) {
+		if (bPlayer.drunkenness > 100) {
 			bPlayer.drinkCap(player);
 		}
 
 		if (BConfig.showStatusOnDrink) {
-			// Only show the Player his drunkeness if he is already drunk, or this drink changed his drunkeness
-			if (brewAlc != 0 || bPlayer.drunkeness > 0) {
+			// Only show the Player his drunkenness if he is already drunk, or this drink changed his drunkenness
+			if (brewAlc != 0 || bPlayer.drunkenness > 0) {
 				bPlayer.showDrunkeness(player);
 			}
 		}
 
-		if (bPlayer.drunkeness <= 0) {
+		if (bPlayer.drunkenness <= 0) {
 			bPlayer.remove();
 		} else {
 			bPlayer.syncToSQL(false);
@@ -216,7 +216,7 @@ public class BPlayer {
 	}
 
 	/**
-	 * Show the Player his current drunkeness and quality as an Actionbar graphic or when unsupported, in chat
+	 * Show the Player his current drunkenness and quality as an Actionbar graphic or when unsupported, in chat
 	 */
 	public void showDrunkeness(Player player) {
 		try {
@@ -231,7 +231,7 @@ public class BPlayer {
 	}
 
 	/**
-	 * Send one Message to the player, showing his drunkeness or hangover
+	 * Send one Message to the player, showing his drunkenness or hangover
 	 *
 	 * @param player The Player to send the message to
 	 * @return false if the message should not be repeated.
@@ -239,7 +239,7 @@ public class BPlayer {
 	public boolean sendDrunkenessMessage(Player player) {
 		StringBuilder b = new StringBuilder(100);
 
-		int strength = drunkeness;
+		int strength = drunkenness;
 		boolean hangover = false;
 		if (offlineDrunk > 0) {
 			strength = offlineDrunk;
@@ -250,7 +250,7 @@ public class BPlayer {
 
 		// Drunkeness or Hangover Strength Bars
 		b.append(": §7[");
-		// Show 25 Bars, color one per 4 drunkeness
+		// Show 25 Bars, color one per 4 drunkenness
 		int bars;
 		if (strength <= 0) {
 			bars = 0;
@@ -322,7 +322,7 @@ public class BPlayer {
 	// Player has drunken too much
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
-		drunkeness = 100;
+		drunkenness = 100;
 		syncToSQL(false);
 		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
@@ -340,7 +340,7 @@ public class BPlayer {
 		}
 	}
 
-	// Eat something to drain the drunkeness
+	// Eat something to drain the drunkenness
 	public void drainByItem(Player player, Material mat) {
 		int strength = BConfig.drainItems.get(mat);
 		if (drain(player, strength)) {
@@ -348,29 +348,29 @@ public class BPlayer {
 		}
 	}
 
-	// drain the drunkeness by amount, returns true when player has to be removed
+	// drain the drunkenness by amount, returns true when player has to be removed
 	public boolean drain(@Nullable Player player, int amount) {
-		if (drunkeness > 0) {
+		if (drunkenness > 0) {
 			quality -= getQuality() * amount;
 		}
-		drunkeness -= amount;
-		if (drunkeness > 0) {
+		drunkenness -= amount;
+		if (drunkenness > 0) {
 			if (offlineDrunk == 0) {
 				if (player == null) {
-					offlineDrunk = drunkeness;
+					offlineDrunk = drunkenness;
 				}
 			}
 		} else {
 			if (offlineDrunk == 0) {
 				return true;
 			}
-			if (drunkeness == 0) {
-				drunkeness--;
+			if (drunkenness == 0) {
+				drunkenness--;
 			}
 			quality = getQuality();
-			if (drunkeness <= -offlineDrunk) {
+			if (drunkenness <= -offlineDrunk) {
 				syncToSQL(true);
-				return drunkeness <= -BConfig.hangoverTime;
+				return drunkenness <= -BConfig.hangoverTime;
 			}
 		}
 		syncToSQL(offlineDrunk > 0);
@@ -380,8 +380,8 @@ public class BPlayer {
 	// player is drunk
 	public void move(PlayerMoveEvent event) {
 		// has player more alc than 10
-		if (drunkeness >= 10 && BConfig.stumbleModifier > 0.001f) {
-			if (drunkeness <= 100) {
+		if (drunkenness >= 10 && BConfig.stumbleModifier > 0.001f) {
+			if (drunkenness <= 100) {
 				if (time > 1) {
 					time--;
 				} else {
@@ -418,7 +418,7 @@ public class BPlayer {
 								player.setVelocity(push);
 							} else {
 								// when more alc, push him more often
-								time = (int) (Math.random() * (201.0 - (drunkeness * 2)));
+								time = (int) (Math.random() * (201.0 - (drunkenness * 2)));
 							}
 						}
 					}
@@ -429,7 +429,7 @@ public class BPlayer {
 
 	public void passOut(Player player) {
 		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
-		offlineDrunk = drunkeness;
+		offlineDrunk = drunkenness;
 		syncToSQL(false);
 	}
 
@@ -442,24 +442,24 @@ public class BPlayer {
 
 	// can the player login or is he too drunk
 	public int canJoin() {
-		if (drunkeness <= 70) {
+		if (drunkenness <= 70) {
 			return 0;
 		}
 		if (!BConfig.enableLoginDisallow) {
-			if (drunkeness <= 100) {
+			if (drunkenness <= 100) {
 				return 0;
 			} else {
 				return 3;
 			}
 		}
-		if (drunkeness <= 90) {
+		if (drunkenness <= 90) {
 			if (Math.random() > 0.4) {
 				return 0;
 			} else {
 				return 2;
 			}
 		}
-		if (drunkeness <= 100) {
+		if (drunkenness <= 100) {
 			if (Math.random() > 0.6) {
 				return 0;
 			} else {
@@ -480,7 +480,7 @@ public class BPlayer {
 
 	// he may be having a hangover
 	public void login(final Player player) {
-		if (drunkeness < 10) {
+		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
 				if (BConfig.enableHome && !player.hasPermission("brewery.bypass.teleport")) {
 					goHome(player);
@@ -490,11 +490,11 @@ public class BPlayer {
 				hangoverEffects(player);
 				showDrunkeness(player);
 			}
-			if (drunkeness <= 0) {
+			if (drunkenness <= 0) {
 				remove(player);
 			}
 
-		} else if (offlineDrunk - drunkeness >= 30) {
+		} else if (offlineDrunk - drunkenness >= 30) {
 			if (BConfig.enableWake && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
@@ -509,7 +509,7 @@ public class BPlayer {
 	}
 
 	public void disconnecting() {
-		offlineDrunk = drunkeness;
+		offlineDrunk = drunkenness;
 		syncToSQL(false);
 	}
 
@@ -545,21 +545,21 @@ public class BPlayer {
 
 	// #### Puking ####
 
-	// Chance that players puke on big drunkeness
+	// Chance that players puke on big drunkenness
 	// runs every 6 sec, average chance is 15%, so should puke about every 40 sec
 	// good quality can decrease the chance by up to 15%
 	public void drunkPuke(Player player) {
-		if (drunkeness >= 90) {
+		if (drunkenness >= 90) {
 			// chance between 20% and 10%
 			if (Math.random() < 0.20f - (getQuality() / 100f)) {
 				addPuke(player, 20 + (int) (Math.random() * 40));
 			}
-		} else if (drunkeness >= 80) {
+		} else if (drunkenness >= 80) {
 			// chance between 15% and 0%
 			if (Math.random() < 0.15f - (getQuality() / 66f)) {
 				addPuke(player, 10 + (int) (Math.random() * 30));
 			}
-		} else if (drunkeness >= 70) {
+		} else if (drunkenness >= 70) {
 			// chance between 10% at 1 quality and 0% at 6 quality
 			if (Math.random() < 0.10f - (getQuality() / 60f)) {
 				addPuke(player, 10 + (int) (Math.random() * 20));
@@ -662,7 +662,7 @@ public class BPlayer {
 
 	public void drunkEffects(Player player) {
 		int duration = 10 - getQuality();
-		duration += drunkeness / 2;
+		duration += drunkenness / 2;
 		duration *= 5;
 		if (duration > 240) {
 			duration *= 5;
@@ -782,12 +782,12 @@ public class BPlayer {
 
 	// #### Scheduled ####
 
-	public static void drunkeness() {
+	public static void drunkenness() {
 		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
 			String name = entry.getKey();
 			BPlayer bplayer = entry.getValue();
 
-			if (bplayer.drunkeness > 30) {
+			if (bplayer.drunkenness > 30) {
 				if (bplayer.offlineDrunk == 0) {
 					Player player = BUtil.getPlayerfromString(name);
 					if (player != null) {
@@ -804,7 +804,7 @@ public class BPlayer {
 		}
 	}
 
-	// decreasing drunkeness over time
+	// decreasing drunkenness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
 			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
@@ -841,7 +841,7 @@ public class BPlayer {
 			ConfigurationSection section = config.createSection(entry.getKey());
 			BPlayer bPlayer = entry.getValue();
 			section.set("quality", bPlayer.quality);
-			section.set("drunk", bPlayer.drunkeness);
+			section.set("drunk", bPlayer.drunkenness);
 			if (bPlayer.offlineDrunk != 0) {
 				section.set("offDrunk", bPlayer.offlineDrunk);
 			}
@@ -857,32 +857,32 @@ public class BPlayer {
 	}
 
 	public int getDrunkeness() {
-		return drunkeness;
+		return drunkenness;
 	}
 
-	public void setData(int drunkeness, int quality) {
+	public void setData(int drunkenness, int quality) {
 		if (quality > 0) {
-			this.quality = quality * drunkeness;
+			this.quality = quality * drunkenness;
 		} else {
 			if (this.quality == 0) {
-				this.quality = 5 * drunkeness;
+				this.quality = 5 * drunkenness;
 			} else {
-				this.quality = getQuality() * drunkeness;
+				this.quality = getQuality() * drunkenness;
 			}
 		}
-		this.drunkeness = drunkeness;
+		this.drunkenness = drunkenness;
 		syncToSQL(false);
 	}
 
 	public int getQuality() {
-		if (drunkeness == 0) {
-			BreweryPlugin.getInstance().errorLog("drunkeness should not be 0!");
+		if (drunkenness == 0) {
+			BreweryPlugin.getInstance().errorLog("drunkenness should not be 0!");
 			return quality;
 		}
-		if (drunkeness < 0) {
+		if (drunkenness < 0) {
 			return quality;
 		}
-		return Math.round((float) quality / (float) drunkeness);
+		return Math.round((float) quality / (float) drunkenness);
 	}
 
 	public int getQualityData() {
@@ -891,7 +891,7 @@ public class BPlayer {
 
 	// opposite of quality
 	public int getHangoverQuality() {
-		if (drunkeness < 0) {
+		if (drunkenness < 0) {
 			return quality + 11;
 		}
 		return -getQuality() + 11;

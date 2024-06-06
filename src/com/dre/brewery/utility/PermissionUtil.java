@@ -81,7 +81,7 @@ public class PermissionUtil {
 
 	/**
 	 * Returns the Sensitivity of the Player towards Alcohol in percent.
-	 * <p>Sensitivity describes how much of the alcohol gets transferred to the players drunkeness
+	 * <p>Sensitivity describes how much of the alcohol gets transferred to the players drunkenness
 	 *
 	 * <p>100 means normal alcohol sensitivity
 	 * <p>less than 100 means less alcohol gets added.
@@ -96,8 +96,8 @@ public class PermissionUtil {
 	}
 
 	/**
-	 * Returns the Alcohol recovery rate of the player in drunkeness per minute.
-	 * <p>The default is 2 drunkeness per minute
+	 * Returns the Alcohol recovery rate of the player in drunkenness per minute.
+	 * <p>The default is 2 drunkenness per minute
 	 *
 	 *
 	 * @param player The player of whom to get the recovery rate of

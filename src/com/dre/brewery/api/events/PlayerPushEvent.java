@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The Players movement is hindered because of drunkeness.
+ * The Players movement is hindered because of drunkenness.
  * <p>Called each time before pushing the Player with the Vector push 10 times
  * <p>The Push Vector can be changed or multiplied
  */
