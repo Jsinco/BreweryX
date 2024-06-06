@@ -498,6 +498,7 @@ public class Brew implements Cloneable {
 
 		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, meta, BrewModifyEvent.Type.SEAL);
 		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(modifyEvent);
+
 		if (modifyEvent.isCancelled()) {
 			// As the brew and everything connected to it is only saved on the meta from now on,
 			// restoring the origMeta is enough in this case

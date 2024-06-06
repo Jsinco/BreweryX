@@ -163,6 +163,7 @@ public class BPlayer {
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		if (meta != null) {
 			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(drinkEvent);
+			if (brew != drinkEvent.getBrew()) brew = drinkEvent.getBrew();
 			if (drinkEvent.isCancelled()) {
 				if (bPlayer.drunkeness <= 0) {
 					bPlayer.remove();

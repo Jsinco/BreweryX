@@ -134,6 +134,14 @@ public class BUtil {
 		}
 	}
 
+
+	public static Material getMaterialSafely(String name) {
+		if (name.equals("GRASS")) {
+			return Material.GRASS;
+		}
+		return Material.matchMaterial(name);
+	}
+
 	/**
 	 * returns the Player if online
 	 */

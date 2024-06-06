@@ -37,6 +37,7 @@ public class StaticCommand implements SubCommand {
                 assert meta != null;
                 BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
                 BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(modifyEvent);
+				if (brew != modifyEvent.getBrew()) brew = modifyEvent.getBrew();
                 if (modifyEvent.isCancelled()) {
                     return;
                 }

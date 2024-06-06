@@ -217,7 +217,7 @@ cauldron:
 
   grass:
     name: Hierbas hervidas
-    ingredients: Grass
+    ingredients: Short_Grass
     color: '99ff66' # bright green
     cookParticles:
       - 'GREEN/2'
@@ -367,7 +367,7 @@ cauldron:
   poi_grass:
     name: Hierbas ácidas hervidas
     ingredients:
-      - Grass
+      - Short_Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
     cookParticles:
@@ -701,7 +701,7 @@ recipes:
   absinthe:
     name: Absenta pobre/Absenta/Absenta fuerte
     ingredients:
-      - Grass/15
+      - Short_Grass/15
     cookingtime: 3
     distillruns: 6
     distilltime: 80
@@ -715,7 +715,7 @@ recipes:
   gr_absinthe:
     name: Absenta pobre/Absenta verde/Absenta verde brillante
     ingredients:
-      - Grass/17
+      - Short_Grass/17
       - Poisonous_Potato/2
     cookingtime: 5
     distillruns: 6
@@ -733,7 +733,7 @@ recipes:
     name: Sopa de papas
     ingredients:
       - Potato/5
-      - Grass/3
+      - Short_Grass/3
     cookingtime: 3
     color: ORANGE
     difficulty: 1

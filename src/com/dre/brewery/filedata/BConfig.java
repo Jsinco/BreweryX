@@ -236,8 +236,8 @@ public class BConfig {
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
 		BreweryPlugin.debug = config.getBoolean("debug", false);
-		pukeItem = !config.getStringList("pukeItem").isEmpty() ? config.getStringList("pukeItem").stream().map(Material::matchMaterial).collect(Collectors.toList())
-				: List.of(Material.matchMaterial(config.getString("pukeItem"))); //Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
+		pukeItem = !config.getStringList("pukeItem").isEmpty() ? config.getStringList("pukeItem").stream().map(BUtil::getMaterialSafely).collect(Collectors.toList())
+				: List.of(BUtil.getMaterialSafely(config.getString("pukeItem"))); //Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
 		hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
 		enableHome = config.getBoolean("enableHome", false);
@@ -339,7 +339,7 @@ public class BConfig {
 			for (String drainString : drainList) {
 				String[] drainSplit = drainString.split("/");
 				if (drainSplit.length > 1) {
-					Material mat = Material.matchMaterial(drainSplit[0]);
+					Material mat = BUtil.getMaterialSafely(drainSplit[0]);
 					int strength = breweryPlugin.parseInt(drainSplit[1]);
 					if (mat == null && hasVault && strength > 0) {
 						try {
