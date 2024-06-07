@@ -106,7 +106,7 @@ version: '3.1'
 #  material: Which type the item has to be
 #  name: Which name the item has to be (Formatting codes possible: such as &6)
 #  lore: What has to be in the lore of the item
-
+#  customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format
 customItems:
   # Three Example Items
   ex-item:
@@ -131,6 +131,12 @@ customItems:
 
   rasp:
     name: '&cRaspberry'
+
+  modelitem:
+    material: paper
+    customModelData:
+      - 10234
+      - 30334
 
   blue-flowers:
     matchAny: true

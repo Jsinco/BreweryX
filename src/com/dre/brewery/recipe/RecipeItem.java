@@ -145,7 +145,7 @@ public abstract class RecipeItem implements Cloneable {
 			// If we already have a multi match, only check if there is a PluginItem that matches more strictly
 			if (!multiMatch || (ri instanceof PluginItem)) {
 				if (ri.matches(item)) {
-					// If we match a plugin item, thats a very strict match, so immediately return it
+					// If we match a plugin item, that's a very strict match, so immediately return it
 					if (ri instanceof PluginItem) {
 						return ri;
 					}
@@ -218,12 +218,10 @@ public abstract class RecipeItem implements Cloneable {
 			lore = new ArrayList<>(0);
 		}
 
-		load = BUtil.loadCfgStringList(cfg, id + ".modeldata");
+
+		load = BUtil.loadCfgStringList(cfg, id + ".customModelData");
 		if (load != null && !load.isEmpty()) {
-			customModelDatas = new ArrayList<>(load.size());
-			for (String s : load) {
-				customModelDatas.add(BreweryPlugin.getInstance().parseInt(s));
-			}
+			customModelDatas = load.stream().map(it -> BreweryPlugin.getInstance().parseInt(it)).toList();
 		} else {
 			customModelDatas = new ArrayList<>(0);
 		}
@@ -296,8 +294,7 @@ public abstract class RecipeItem implements Cloneable {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof RecipeItem)) return false;
-		RecipeItem that = (RecipeItem) o;
+		if (!(o instanceof RecipeItem that)) return false;
 		return amount == that.amount &&
 			immutable == that.immutable &&
 			Objects.equals(cfgId, that.cfgId);

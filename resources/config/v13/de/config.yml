@@ -105,6 +105,7 @@ version: '3.1'
 #  material: Welche Art das Item haben muss
 #  name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
 #  lore: Was in der Lore des Items stehen muss
+#  customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format
 
 customItems:
 #  Drei Beispiel Items
@@ -130,6 +131,12 @@ customItems:
 
   himbeere:
     name: '&cHimbeere'
+
+  modelitem:
+    material: paper
+    customModelData:
+      - 10234
+      - 30334
 
   blaue-blumen:
     matchAny: true

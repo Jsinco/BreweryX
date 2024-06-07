@@ -96,6 +96,10 @@ public class CustomMatchAnyItem extends RecipeItem {
 			lore.add(l);
 			return new CustomItem(null, null, lore);
 		}
+		Integer cmData = getCustomModelDataMatch(forItem);
+		if (cmData != null) {
+			return new CustomItem(null, null, null, cmData);
+		}
 
 		// Shouldnt happen
 		return new SimpleItem(Material.GOLDEN_HOE);
@@ -111,9 +115,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 			return new CustomItem(null, names.get(0), null);
 		}
 		if (hasLore()) {
-			List<String> l = new ArrayList<>(1);
-			l.add(lore.get(0));
-			return new CustomItem(null, null, l);
+			return new CustomItem(null, null, new ArrayList<>(List.of(lore.get(0))));
 		}
 		if (hasCustomModelDatas()) {
 			return new CustomItem(null, null, null, customModelDatas.get(0));
@@ -183,27 +185,29 @@ public class CustomMatchAnyItem extends RecipeItem {
 		return null;
 	}
 
-	public int getCustomModelDataMatch(ItemStack item) {
+	@Nullable
+	public Integer getCustomModelDataMatch(ItemStack item) {
 		if (!item.hasItemMeta() || !hasCustomModelDatas()) {
-			return 0;
+			return null;
 		}
 		ItemMeta meta = item.getItemMeta();
 		assert meta != null;
 		if (meta.hasCustomModelData()) {
 			return getCustomModelDataMatch(meta.getCustomModelData());
 		}
-		return 0;
+		return null;
 	}
 
-	public int getCustomModelDataMatch(int usedCustomModelData) {
-		if (!hasCustomModelDatas()) return 0;
+	@Nullable
+	public Integer getCustomModelDataMatch(int usedCustomModelData) {
+		if (!hasCustomModelDatas()) return null;
 
 		for (int customModelData : this.customModelDatas) {
 			if (customModelData == usedCustomModelData) {
 				return customModelData;
 			}
 		}
-		return 0;
+		return null;
 	}
 
 	@Override
@@ -217,7 +221,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 		if (getLoreMatch(item) != null) {
 			return true;
 		}
-		return getCustomModelDataMatch(item) != 0;
+		return getCustomModelDataMatch(item) != null;
 	}
 
 	@Override
@@ -240,7 +244,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 				return getLoreMatch(ci.getLore()) != null;
 			}
 			if (hasCustomModelDatas() && ci.hasCustomModelData()) {
-				return getCustomModelDataMatch(ci.getCustomModelData()) != 0;
+				return getCustomModelDataMatch(ci.getCustomModelData()) != null;
 			}
 		} else if (ingredient instanceof SimpleItem si) {
 			// If we contain the Material of the Simple Item, we match
@@ -273,7 +277,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 			", materials: " + (materials != null ? materials.size() : 0) +
 			", names:" + (names != null ? names.size() : 0) +
 			", loresize: " + (lore != null ? lore.size() : 0) +
-			", customDatas: " + (customModelDatas != null ? customModelDatas.size() : 0) +
+			", customModelDatas: " + (customModelDatas != null ? customModelDatas.size() : 0) +
 			'}';
 	}
 }
