@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -126,7 +127,7 @@ public class BUtil {
 	/**
 	 * Returns either uuid or Name of player, depending on bukkit version
 	 */
-	public static String playerString(Player player) {
+	public static String playerString(OfflinePlayer player) {
 		if (BreweryPlugin.useUUID) {
 			return player.getUniqueId().toString();
 		} else {

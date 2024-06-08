@@ -33,8 +33,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BPlayer {
-	private static ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
-	private static ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
+	private static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
+	private static final ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
 
@@ -60,7 +60,7 @@ public class BPlayer {
 	}
 
 	@Nullable
-	public static BPlayer get(Player player) {
+	public static BPlayer get(OfflinePlayer player) {
 		if (!players.isEmpty()) {
 			return players.get(BUtil.playerString(player));
 		}
@@ -73,15 +73,13 @@ public class BPlayer {
 		if (BreweryPlugin.useUUID) {
 			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
 				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-				if (p != null) {
-					String name = p.getName();
-					if (name != null) {
-						if (name.equalsIgnoreCase(playerName)) {
-							return entry.getValue();
-						}
-					}
-				}
-			}
+                String name = p.getName();
+                if (name != null) {
+                    if (name.equalsIgnoreCase(playerName)) {
+                        return entry.getValue();
+                    }
+                }
+            }
 			return null;
 		}
 		return players.get(playerName);
@@ -110,18 +108,18 @@ public class BPlayer {
 		return players.isEmpty();
 	}
 
-	public static boolean hasPlayer(Player player) {
+	public static boolean hasPlayer(OfflinePlayer player) {
 		return players.containsKey(BUtil.playerString(player));
 	}
 
 	// Create a new BPlayer and add it to the list
-	public static BPlayer addPlayer(Player player) {
+	public static BPlayer addPlayer(OfflinePlayer player) {
 		BPlayer bPlayer = new BPlayer(BUtil.playerString(player));
 		players.put(BUtil.playerString(player), bPlayer);
 		return bPlayer;
 	}
 
-	public static void remove(Player player) {
+	public static void remove(OfflinePlayer player) {
 		players.remove(BUtil.playerString(player));
 		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
 			BConfig.sqlSync.removePlayer(player.getUniqueId());
