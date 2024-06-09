@@ -102,8 +102,8 @@ public class BCauldron {
 		}
 		if (BConfig.enableCauldronParticles && !BConfig.minimalParticles) {
 			// Few little sparks and lots of water splashes. Offset by 0.2 in x and z
-			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,2, 0.2, 0, 0.2);
-			block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 10, 0.2, 0, 0.2);
+			block.getWorld().spawnParticle(Particle.INSTANT_EFFECT, particleLocation,2, 0.2, 0, 0.2);
+			block.getWorld().spawnParticle(Particle.SPLASH, particleLocation, 10, 0.2, 0, 0.2);
 		}
 	}
 
@@ -255,11 +255,12 @@ public class BCauldron {
 			// Colorable spirally spell, 0 count enables color instead of the offset variables
 			// Configurable RGB color. The last parameter seems to control the hue and motion, but i couldn't find
 			// how exactly in the client code. 1025 seems to be the best for color brightness and upwards motion
-			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+			/*block.getWorld().spawnParticle(Particle.ENTITY_EFFECT, getRandParticleLoc(), 0,
 				((double) color.getRed()) / 255.0,
 				((double) color.getGreen()) / 255.0,
 				((double) color.getBlue()) / 255.0,
-				1025.0);
+				1025.0);*/
+			block.getWorld().spawnParticle(Particle.ENTITY_EFFECT, getRandParticleLoc(), 0, color);
 
 			if (BConfig.minimalParticles) {
 				return;
@@ -268,16 +269,16 @@ public class BCauldron {
 			if (particleRandom.nextFloat() > 0.85) {
 				// Dark pixely smoke cloud at 0.4 random in x and z
 				// 0 count enables direction, send to y = 1 with speed 0.09
-				block.getWorld().spawnParticle(Particle.SMOKE_LARGE, getRandParticleLoc(), 0, 0, 1, 0, 0.09);
+				block.getWorld().spawnParticle(Particle.LARGE_SMOKE, getRandParticleLoc(), 0, 0, 1, 0, 0.09);
 			}
 			if (particleRandom.nextFloat() > 0.2) {
 				// A Water Splash with 0.2 offset in x and z
-				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
+				block.getWorld().spawnParticle(Particle.SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
 
 			if (BreweryPlugin.use1_13 && particleRandom.nextFloat() > 0.4) {
 				// Two hovering pixely dust clouds, a bit offset and with DustOptions to give some color and size
-				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
+				block.getWorld().spawnParticle(Particle.DUST, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
 			}
 		}
 	}

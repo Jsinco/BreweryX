@@ -136,7 +136,7 @@ public class BIngredients {
 			brew.updateCustomModelData(potionMeta);
 
 			if (cookRecipe.hasGlint()) {
-				potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+				potionMeta.addEnchant(Enchantment.FLAME, 1, true);
 				potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			}
 		} else {

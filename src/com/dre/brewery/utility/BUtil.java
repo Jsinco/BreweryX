@@ -138,7 +138,7 @@ public class BUtil {
 
 	public static Material getMaterialSafely(String name) {
 		if (name.equalsIgnoreCase("GRASS")) {
-			return Material.GRASS;
+			return Material.SHORT_GRASS;
 		}
 		return Material.matchMaterial(name);
 	}

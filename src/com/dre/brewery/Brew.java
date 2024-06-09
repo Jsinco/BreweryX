@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -714,7 +713,7 @@ public class Brew implements Cloneable {
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 
 				if (recipe.hasGlint()) {
-					potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+					potionMeta.addEnchant(Enchantment.FLAME, 1, true);
 					potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				}
 			} else {
@@ -818,7 +817,7 @@ public class Brew implements Cloneable {
 
 
 		if (recipe.hasGlint()) {
-			potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+			potionMeta.addEnchant(Enchantment.FLAME, 1, true);
 			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
 
@@ -1135,7 +1134,7 @@ public class Brew implements Cloneable {
 		PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
 		assert potionMeta != null;
 
-		potionMeta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE));
+		potionMeta.setBasePotionType(PotionType.THICK); // UNCRAFTABLE
 		BrewLore lore = new BrewLore(this, potionMeta);
 		lore.removeEffects();
 

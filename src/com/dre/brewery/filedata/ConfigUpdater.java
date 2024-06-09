@@ -1,6 +1,7 @@
 package com.dre.brewery.filedata;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
@@ -2167,7 +2168,7 @@ public class ConfigUpdater {
 		String mat = line.replaceFirst(regexPrefix, "").replaceFirst(regexPostfix, "");
 		Material material;
 		if (mat.equalsIgnoreCase("LONG_GRASS")) {
-			material = Material.GRASS;
+			material = Material.SHORT_GRASS;
 		} else {
 			material = Material.matchMaterial(mat, true);
 		}
