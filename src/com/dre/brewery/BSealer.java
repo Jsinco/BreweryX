@@ -23,6 +23,7 @@ import java.util.Iterator;
  */
 public class BSealer implements InventoryHolder {
 	public static final NamespacedKey TAG_KEY = new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable");
+	public static final NamespacedKey LEGACY_TAG_KEY = new NamespacedKey("brewery", "sealingtable");
 	public static boolean recipeRegistered = false;
 	public static boolean inventoryHolderWorking = true;
 
@@ -110,7 +111,7 @@ public class BSealer implements InventoryHolder {
 				if (smoker.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {
 					return true;
 				} else {
-					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE);
+					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE) || smoker.getPersistentDataContainer().has(LEGACY_TAG_KEY, PersistentDataType.BYTE);
 				}
 			}
 		}
@@ -159,7 +160,7 @@ public class BSealer implements InventoryHolder {
 		Iterator<Recipe> recipeIterator = BreweryPlugin.getInstance().getServer().recipeIterator();
 		while (recipeIterator.hasNext()) {
 			Recipe next = recipeIterator.next();
-			if (next instanceof ShapedRecipe && ((ShapedRecipe) next).getKey().equals(TAG_KEY)) {
+			if (next instanceof ShapedRecipe && (((ShapedRecipe) next).getKey().equals(TAG_KEY) || ((ShapedRecipe) next).getKey().equals(LEGACY_TAG_KEY))) {
 				recipeIterator.remove();
 				return;
 			}

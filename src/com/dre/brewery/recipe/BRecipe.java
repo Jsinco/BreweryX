@@ -252,7 +252,7 @@ public class BRecipe {
 				}
 			}
 
-			Material mat = Material.matchMaterial(matParts[0]);
+			Material mat = BUtil.getMaterialSafely(matParts[0]);
 			short durability = -1;
 			if (matParts.length == 2) {
 				durability = (short) BreweryPlugin.getInstance().parseInt(matParts[1]);

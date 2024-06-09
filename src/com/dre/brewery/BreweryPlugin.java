@@ -48,6 +48,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,6 +80,18 @@ public class BreweryPlugin extends JavaPlugin {
 
 	// Metrics
 	public Stats stats = new Stats();
+
+	@Override
+	public void onLoad() {
+		final String path = BreweryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		final String jarDir = new File(path).getParentFile().getAbsolutePath();
+
+		final File breweryFolder = new File(jarDir + File.separator + "Brewery");
+		final File breweryXFolder = new File(jarDir + File.separator + "BreweryX");
+		if (breweryFolder.exists() && !breweryXFolder.exists()) {
+			breweryFolder.renameTo(breweryXFolder);
+		}
+	}
 
 	@Override
 	public void onEnable() {

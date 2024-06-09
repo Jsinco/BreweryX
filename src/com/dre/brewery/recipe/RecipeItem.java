@@ -262,7 +262,7 @@ public abstract class RecipeItem implements Cloneable {
 				BreweryPlugin.getInstance().errorLog("Item Amount can not be specified for Custom Items: " + item);
 				return null;
 			}
-			Material mat = Material.matchMaterial(ingredParts[0]);
+			Material mat = BUtil.getMaterialSafely(ingredParts[0]);
 
 			if (mat == null && !BreweryPlugin.use1_14 && ingredParts[0].equalsIgnoreCase("cornflower")) {
 				// Using this in default custom-items, but will error on < 1.14

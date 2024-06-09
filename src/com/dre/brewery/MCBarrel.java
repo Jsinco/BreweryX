@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class MCBarrel {
 		if (inv.getViewers().size() == 1 && inv.getHolder() instanceof org.bukkit.block.Barrel) {
 			Barrel barrel = (Barrel) inv.getHolder();
 			PersistentDataContainer data = barrel.getPersistentDataContainer();
-			NamespacedKey key = new NamespacedKey(BreweryPlugin.getInstance(), TAG);
+			NamespacedKey key = new NamespacedKey(BreweryPlugin.getInstance(), TAG); // TODO: Legacy key this too?
 			if (!data.has(key, PersistentDataType.LONG)) return;
 
 			// Get the difference between the time that is stored on the Barrel and the current stored global mcBarrelTime
