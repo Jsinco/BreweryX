@@ -1,6 +1,7 @@
 # Brewery插件的配置文件
 
-#翻译由Neubulae贡献, mcbbsID: 891215991
+# 翻译由Neubulae贡献, mcbbsID: 891215991
+# 二次补全翻译由Mr-Wang635进行
 
 # -- 设置 --
 # 方框[]内的设定为默认设定
@@ -9,8 +10,8 @@
 # 语言文件(可在plugins/Brewery/languages下找到)
 language: zh
 
-# Prefix used on messages
-pluginPrefix: '&2[Brewery]&f '
+# 用于此插件的消息前缀[Brewery]
+pluginPrefix: "&2[Brewery]&f "
 
 # 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
 enableHome: true
@@ -20,7 +21,7 @@ enableHome: true
 # 'cmd: home' = 强制让玩家执行/home. 需要设置好玩家权限, 以避免传送出现延迟.
 # 'cmd: spawn' = 强制让玩家执行/spawn.
 # 'cmd: 指定命令' = 强制让玩家执行该命令, 例如'cmd: warp xxx'等.
-homeType: 'cmd: home'
+homeType: "cmd: home"
 
 # 玩家醉酒以后下线一段时间醒来是否会在某些苏醒处醒来(苏醒处需要管理员通过'/brew Wakeup add'进行设定).
 # 玩家将会在最近的两个苏醒处之一醒来.[true]
@@ -39,100 +40,109 @@ enablePuke: true
 # 呕吐物[Soul_Sand]
 pukeItem: [Soul_Sand]
 
-# 呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟)[60]
-# 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
+# 呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟) [60]
+# 如果spigot.yml中的物品消失时间被变更, 此处也会变更
 pukeDespawntime: 60
 
-# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+# 玩家跌倒程度取决于饮酒量，设置范围可以是0或超过100 [100]
 stumblePercent: 100
 
-# Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]
+# 玩家饮用饮品或吃掉解酒物时，显示其醉酒程度 [true]
 showStatusOnDrink: true
 
-# 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
+# 解酒物/解酒强度
+# 降低玩家一定程度的醉酒程度, 解酒强度为百分数
 drainItems:
   - Bread/4
   - Milk_Bucket/2
 
-# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
-# The changing color of the particles can help with timing some recipes
+# 当炼药锅中有配料和热源时，显示炼药埚上方的颗粒效果[true]
+# 颗粒颜色的变化有助于掌握某些配方的时机
 enableCauldronParticles: true
-# If Cauldron Particles should be reduced to the bare minimum [false]
+
+# 是否将炼药埚颗粒效果减少到最低挡位 [false]
 minimalParticles: false
 
-# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
+# 是否允许制造密封台         ------>  玻璃瓶 玻璃瓶
+# (2个玻璃瓶在4块木板上方)   ------>   木板   木板
+# [true, true]             ------>   木板   木板
 craftSealingTable: true
 enableSealingTable: true
 
-# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+# 是否始终根据物品质量显示1-5颗星，如果设置为否，则仅在酿造过程中显示星星 [true]
 alwaysShowQuality: true
 
-# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+# 是否始终在物品上显示酒精含量，如果设置为否，则只在酿造台上显示 [false]
 alwaysShowAlc: false
 
-# If we should show who brewed the drink [false]
+# 如果我们应该显示谁制作了这杯饮料 [false]
 showBrewer: false
 
 # MC自带的桶内可以存放多少饮品 [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
-# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
-# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
-# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
-# Only drawback: brew items can only be used on another server with the same encodeKey.
-# When using Brews on multiple (BungeeCord) Servers, define a shared Database below at 'multiServerDB'
-# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+# 使用的原料和其他酿造数据会被保存在所有酿酒物品中
+# 为了防止被修改后的客户端读取饮品的确切原料，数据可以被编码/搅乱
+# 这是一个快速过程，可以阻止玩家在获得酿造品后破解配方
+# 唯一的缺点是：饮品只能在具有相同encodeKey的另一服务器上使用
+# 当在多个（BungeeCord）服务器上使用酿造品时，请在’multiServerDB’下方定义一个共享数据库
+# 如果你想要让配方作弊更困难，但不想通过世界下载、蓝图或其他方式共享任何酿造品，请启用此选项 [false]
 enableEncode: false
 encodeKey: 0
 
-# 是否检查更新.[true]
-# 若有更新, 服务端后台与上线时的管理员会收到通知.
+# 是否检查更新 [true]
+# 若有更新, 服务端后台与上线时的管理员会收到通知
 updateCheck: true
 
-# 自动保存时间间隔, 单位:分钟.[3]
+# 自动保存时间间隔, 单位:分钟 [3]
 autosave: 3
 
-# Show debug messages in log [false]
+# 是否在日志中显示调试信息 [false]
 debug: false
 
 # 配置文件版本
-version: '3.1'
+version: "3.1"
 
+# -- 定义自定义物品 --
+# 定义后的ID可以在配方中使用
 
+# matchAny[匹配任何]: 如果其中一个信息匹配就足够了，则为true
+# material[材料]: 物品必须是什么材质
 
-# -- Define custom items --
-# The defined id can then be used in recipes
+# name[姓名]:
+# 物品必须是什么名称（可使用格式化代码，例如&e）
 
-#  matchAny: true if it is already enough if one of the info matches
-#  material: Which type the item has to be
-#  name: Which name the item has to be (Formatting codes possible: such as &6)
-#  lore: What has to be in the lore of the item
-#  customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format
+# lore[描述文本]:
+# 物品描述中必须包含的内容
+
+# customModelData[自定义物品模型]:
+# 物品在列表中应具有的模型数据编号
+
 customItems:
-  # Three Example Items
+  # 四个实例项目
   ex-item:
-    # A Barrier item called Wall and has the given line in its lore
+    # 一个名为“城墙”的屏障物品，其描述中包含指定的文字行
     material: Barrier
-    name: 'Wall'
+    name: "墙"
     lore:
-      - '&7Very well protected'
+      - "&7收到非常好的保护"
 
   ex-item2:
-    # Using matchAny only one of the following has to match.
-    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    # 使用matchAny时，只需满足以下任一条件
+    # 在此例中，可以是任意一种类型的门，或名为“山毛榉木门”的物品，或描述中包含“一扇门”的物品
     matchAny: true
     material:
       - Acacia_Door
       - Oak_Door
       - Spruce_Door
     name:
-      - 'Beechwood Door'
+      - "山毛榉木门"
     lore:
-      - 'A door'
+      - "一扇门"
 
   rasp:
-    name: '&cRaspberry'
+    name: "&c覆盆子"
 
   modelitem:
     material: paper
@@ -146,260 +156,272 @@ customItems:
       - cornflower
       - blue_orchid
 
+# -- 炼药锅中的饮品基底 --
+# 哪些原料可以被炼药锅接受，以及这些原料所能生成的饮品基底
+# 只有当你需要为饮品基底设定一个特定的名称或颜色时，才需要在此处进行设置
 
-# -- Ingredients in the Cauldron --
-# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
-# You only need to add something here if you want to specify a custom name or color for the base potion
+# name[名称]：
+# 炼药锅产出基底的名称（支持格式化代码，例如：&6）
 
- # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
- # ingredients: List of 'material/amount'
- #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
- #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
- #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Color of the potion from a cauldron. Defaults to CYAN
- #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
- #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
- # cookParticles:
- #   Color of the Particles above the cauldron at different cooking-times
- #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
- #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
- #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
- # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
- # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+# ingredients[成分]：‘材料/数量’的列表
+# 当你手持物品时，使用命令 /brew 物品名称 来获取该物品的材料数据，以便在配方中使用
+# （请注意，Bukkit不再支持使用物品ID，必须使用材料名称）
+# 材料列表请参考：https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html [打不开需要挂梯子进行浏览]
+
+# color[颜色]: 炼药锅产出基底的颜色，默认设置为青色
+# 可用的颜色:
+# DARK_RED[深红色]      RED[红色]       BRIGHT_RED[鲜红色]    ORANGE[橙色]
+# YELLOW[黄色]          PINK[粉色]      PURPLE[紫色]          BLUE[蓝色]
+# CYAN[青色]            WATER[浅蓝色]   TEAL[蓝绿色]          OLIVE[橄榄绿色]
+# GREEN[绿色]           LIME[鲜绿色]    BLACK[黑色]           GREY[灰色]
+# BRIGHT_GREY[亮灰色]   WHITE[白色]
+# 或者使用RGB颜色    [十六进制格式：例如 ‘99FF33’，需用引号括起来]
+# 又或者使用HTML颜色 [在互联网上搜索“HTML颜色”来获取更多颜色代码]
+
+# cookParticles[烹饪粒子]:
+# 炼药锅在不同阶段时上方粒子的颜色
+# 指定每种颜色及其出现的具体分钟数，例如在第8分钟显示一种颜色，然后在第18分钟逐渐变为另一种颜色
+# 以列表形式，每种颜色以名称或RGB格式表示，具体见上文，格式为‘Color/Minute’[颜色/分钟]
+# 如果列表中有多个颜色，最终将渐变到列表中的最后一个颜色
+# 如果列表中只有一个颜色，则最终将渐变到灰色
+
+# lore[描述文本]: 基底上额外文本的列表（支持格式化代码，例如：&6）
+
+# customModelData[自定义物品模型]:
+# 自定义物品模型标签，这些数字可用于为物品添加特定的自定义纹理
 
 cauldron:
-  # Example with all possible entries
+  # 一个叫“例子”的物品
   ex:
-    name: Example
+    name: 例子
     ingredients:
       - Bedrock/2
       - Diamond
     color: BLACK
     cookParticles:
-      - 'RED/5'
-      - 'WHITE/10'
-      - '800000/25' # maroon
+      - "RED/5"
+      - "WHITE/10"
+      - "800000/25" # 栗色
     lore:
-      - An example for a Base Potion
-      - This is how it comes out of a Cauldron
+      - 一个饮品基底的示例
+      - 这就是基底从炼药锅中制作完成后的样子
     customModelData: 545
 
-  # -- One Ingredient: --
+  # -- 单配料: --
   wheat:
     name: 发酵麦汁
     ingredients: Wheat
     cookParticles:
-      - '2d8686/8' # Dark Aqua
+      - "2d8686/8" # 深青色
 
   sugarcane:
-    name: 糖浆
+    name: 浓糖浆
     ingredients: Sugar_Cane
-    color: 'f1ffad' # yellowish green
+    color: "f1ffad" # 黄绿色
     cookParticles:
-      - 'f1ffad/4'
-      - '858547/10' # dark olive
+      - "f1ffad/4"
+      - "858547/10" # 深橄榄色
 
   sugar:
-    name: Sugarwater
+    name: 甜糖水
     ingredients: Sugar
     cookParticles:
-      - 'WHITE/4'
-      - 'BRIGHT_GREY/25'
+      - "WHITE/4"
+      - "BRIGHT_GREY/25"
 
   apple:
     name: 苹果汁
     ingredients: Apple
 
   berries:
-    name: Grape must
+    name: 浆果汁
     ingredients: Sweet_Berries
     color: RED
     cookParticles:
-      - 'ff6666/2' # bright red
-      - 'RED/7'
-      - 'ac6553/13' # brown-red
+      - "ff6666/2" # 鲜红色
+      - "RED/7"
+      - "ac6553/13" # 棕红色
 
   potato:
     name: 土豆泥
     ingredients: Potato
 
   grass:
-    name: 蒸煮过的药草
+    name: 草药萃取物
     ingredients: Short_Grass
-    color: '99ff66' # bright green
+    color: "99ff66" # 鲜绿色
     cookParticles:
-      - 'GREEN/2'
-      - '99ff99/20' # faded green
+      - "GREEN/2"
+      - "99ff99/20" # 湖滨绿
 
   rmushroom:
-    name: 蘑菇酿
+    name: 红蘑菇酿
     ingredients: Red_Mushroom
-    color: 'ff5c33' # amber red
+    color: "ff5c33" # 琥珀红
     cookParticles:
-      - 'fab09e/15' # faded red
+      - "fab09e/15" # 暗红色
 
   bmushroom:
-    name: Mushroom brew
+    name: 棕蘑菇酿
     ingredients: Brown_Mushroom
-    color: 'c68c53' # brighter brown
+    color: "c68c53" # 亮棕色
     cookParticles:
-      - 'c68c53/15'
+      - "c68c53/15"
 
   cocoa:
-    name: 上了色的水
+    name: 巧克力水
     ingredients: Cocoa_Beans
-    color: '804600' # mocca
+    color: "804600" # mocca
     cookParticles:
-      - 'a26011/1'
-      - '5c370a/3'
-      - '4d4133/8' # Gray-brown
+      - "a26011/1"
+      - "5c370a/3"
+      - "4d4133/8" # 灰褐色
 
   milk:
-    name: 乳浊液体
+    name: 牛奶水
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
     cookParticles:
-      - 'fbfbd0/1' # yellow-white
-      - 'WHITE/6'
+      - "fbfbd0/1" # 黄白色
+      - "WHITE/6"
 
   bl_flow:
-    name: Blueish brew
+    name: 蓝花液
     ingredients: blue-flowers
-    color: '0099ff' # sky blue
+    color: "0099ff" # 天蓝色
     cookParticles:
-      - '0099ff'
+      - "0099ff"
 
   cactus:
-    name: Agave brew
+    name: 龙舌兰原液
     ingredients: cactus
-    color: '00b300' # cactus green
+    color: "00b300" # 仙人掌绿
     cookParticles:
-      - '00b300/16'
+      - "00b300/16"
 
   poi_potato:
-    name: Poisonous Broth
+    name: 毒土豆泥
     ingredients: Poisonous_Potato
 
   egg:
-    name: Sticky brew
+    name: 粘稠蛋液
     ingredients: Egg
 
-
   oak_sapling:
-    name: Stringy hebry broth
+    name: 橡苗萃取物
     ingredients: Oak_Sapling
 
   vine:
-    name: Boiled herbs
+    name: 藤蔓萃取物
     ingredients: vine
-    color: '99ff66' # bright green
+    color: "99ff66" # 亮绿色
     cookParticles:
-      - 'GREEN/2'
-      - '99ff99/20' # faded green
+      - "GREEN/2"
+      - "99ff99/20" # 淡绿色
 
   rot_flesh:
-    name: Foul pest
+    name: 糜烂物
     ingredients: Rotten_Flesh
-    color: '263300' # brown green
+    color: "263300" # 棕绿色
     cookParticles:
-      - '263300/8'
-      - 'BLACK/20'
+      - "263300/8"
+      - "BLACK/20"
 
   melon:
-    name: Melon juice
+    name: 西瓜汁
     ingredients: melon_slice
 
   wheat_seeds:
-    name: Bitter brew
+    name: 苦种子酒(小麦味)
     ingredients: Wheat_Seeds
 
   melon_seeds:
-    name: Bitter brew
+    name: 苦种子酒(西瓜味)
     ingredients: Melon_Seeds
 
   pumpkin_seeds:
-    name: Bitter brew
+    name: 苦种子酒(南瓜味)
     ingredients: Pumpkin_Seeds
 
   bone_meal:
-    name: Bony Brew
+    name: 骨头汤
     ingredients: bone_meal
     color: BRIGHT_GREY
 
   cookie:
-    name: Chocolately sap
+    name: 巧克力
     ingredients: Cookie
-    color: '804600' # mocca
+    color: "804600" # mocca
     cookParticles:
-      - 'a26011/1'
-      - '5c370a/3'
-      - '4d4133/8' # Gray-brown
+      - "a26011/1"
+      - "5c370a/3"
+      - "4d4133/8" # 灰棕色
 
   fer_spid_eye:
-    name: Fermented Eye
+    name: 发酵眼液
     ingredients: Fermented_Spider_Eye
 
   ghast_tear:
-    name: Sad brew
+    name: 悲伤泪水
     ingredients: ghast_tear
 
   snowball:
-    name: Icewater
+    name: 冰水
     ingredients: Snowball
 
   Gold_Nugget:
-    name: Glistering brew
+    name: 液金
     ingredients: Gold_Nugget
-    color: 'ffd11a' # gold
+    color: "ffd11a" # 金色
     cookParticles:
-      - 'ffd11a'
+      - "ffd11a"
 
   glowstone_dust:
     name: Glowing brew
     ingredients: Glowstone_Dust
-    color: 'ffff33' # bright yellow
+    color: "ffff33" # 亮黄色
     cookParticles:
-      - 'ffff99/3'
-      - 'd9d926/15' # faded yellow
+      - "ffff99/3"
+      - "d9d926/15" # 暗黄色
 
-  # -- Multiple Ingredients: --
+  # -- 多配料: --
   applemead_base:
-    name: Apple-Sugar brew
+    name: 甜苹果汁
     ingredients:
       - Sugar_Cane/3
       - Apple
-    color: 'e1ff4d' # greenish yellow
+    color: "e1ff4d" # 绿黄色
     cookParticles:
-      - 'e1ff4d/4'
+      - "e1ff4d/4"
 
   poi_grass:
-    name: Boiled acidy herbs
+    name: 酸泥汤
     ingredients:
       - Short_Grass
       - Poisonous_Potato
-    color: '99ff66' # bright green
+    color: "99ff66" # 亮绿色
     cookParticles:
-      - 'GREEN/2'
-      - '99ff99/20' # faded green
+      - "GREEN/2"
+      - "99ff99/20" # 暗绿色
 
   juniper:
-    name: Juniper brew
+    name: 杜松子酒(原味)
     ingredients:
       - blue-flowers
       - wheat
-    color: '00ccff' # aqua
+    color: "00ccff" # 水绿色
     cookParticles:
-      - '00ccff/8'
+      - "00ccff/8"
 
   gin_base:
-    name: Fruity juniper brew
+    name: 杜松子酒(苹果味)
     ingredients:
       - blue-flowers
       - wheat
       - apple
-    color: '66e0ff' # lighter aqua
+    color: "66e0ff" # 浅水绿色
     cookParticles:
-      - '00ccff/5'
+      - "00ccff/5"
 
   eggnog_base:
     name: Smooth egg mixture
@@ -407,133 +429,173 @@ cauldron:
       - egg
       - sugar
       - milk_bucket
-    color: 'ffecb3' # yellow-orange
+    color: "ffecb3" # 黄橙色
     cookParticles:
-      - 'ffecb3/2'
-
-
+      - "ffecb3/2"
 
 # -- 饮品配方列表 --
 
-# name: 饮品名称, 可以为 劣质/普通/优质 三种质量的饮品命名(可插入样式代码, 如:&6).
-# ingredients: 配方列表, 格式为"材料名称/数量".
-#   手中持有物品的时候, 可以使用/brew ItemName来获取其物品id, 便于增改配方
-#   (请勿使用物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法.)
-#   材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (可能需要挂梯子进行浏览)
-#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
-#   Or a custom item defined above
-# cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.
-# distillruns: 饮品需要在酿造台上蒸馏的次数(0=无需蒸馏).
-# distilltime: 每次蒸馏所需要耗费的时间(0=默认值, 即40秒), MC默认则为20秒/
-# wood: 木桶所需要的木质 0=任意 1=桦木 2=橡木 3=丛林木 4=云杉木 5=金合欢木 6=深色橡木 7=Crimson 8=Warped 9=Mangrove 10=Cherry 11=Bamboo
-#   MC的木桶默认为橡木桶.
-# age: 饮品需要在木桶中熟成所需要的时间(MC天). 0=无需熟成.
-# color: 饮品制成后的颜色.
-#   可用颜色列表:
-#   DARK_RED(深红), RED(红), BRIGHT_RED(亮红), ORANGE(橙黄), PINK(粉色), BLUE(蓝色), CYAN(靛青), WATER(水色), GREEN(绿色), BLACK(黑色), GREY(灰色), BRIGHT_GREY(亮灰色), YELLOW, PURPLE, TEAL, OLIVE, LIME, WHITE
-#   也可以使用RGB颜色(十六进制, 如'99FF33', 必须包含两个单引号)(在线搜索"HTML 颜色"或者其他颜色库即刻获得你需要的颜色的十六进制表示)
-# difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
-# alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
-# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
-#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
-# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
-#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# drinkmessage: Chat-message to the Player when drinking the Brew
-# drinktitle: Title on Screen to the Player when drinking the Brew
-# glint: Boolean if the item should have a glint (enchant glint)
-# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
-#   Can specify one for all, or one for each quality, separated by /
-# effects: 饮用后能够获得的药效的列表. 格式为"药效/强度/时长(秒)".
-#   药效列表: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
-#   药效强度与时长可以用"-"划分区间, 如: "SPEED/1-2/30-40" = 最劣质情况下的饮品会给予速度1三十秒, 最优质则会给予速度2四十秒.
-#   区间可以从大到小, 如: "POISON/3-1/20-5"即可让优质饮品的毒性降低.
-#   时长极限为1638秒. 药效强度极限为255级. 瞬间型药效无需附加时长.
+# name[名称]：
+# 可以为 劣质/普通/优质 这三种质量的饮品命名
+# (可插入样式代码, 如:&6)
+
+# ingredients[配方列表]:
+# 格式为"材料名称/数量"
+# 手中持有物品的时候, 可以使用/brew ItemName来获取其物品id, 便于在配方中使用
+# (由于Bukkit不再支持物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法)
+# 材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html [打不开需要挂梯子进行浏览]
+# 带有 'plugin:id' 标识的插件项目（目前支持 ExoticGarden, Slimefun, MMOItems 和 Brewery 插件）
+# 或者一个在上面定义的自定义物品
+
+# cookingtime[料理时间]:
+# 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟
+
+# distillruns[料理次数]:
+# 饮品需要在酿造台上需要蒸馏的次数 [0=无需蒸馏]
+
+# distilltime[蒸馏时间]:
+# 每次蒸馏所需要耗费的时间 [0=默认值为40秒] [MC默认则为20秒]
+
+# wood[木头]: 木桶所需要的木质
+# 0=任意     1=白桦木   2=橡木   3=丛林木   4=云杉木   5=金合欢木
+# 6=深色橡木  7=诡异菌  8=扭曲菌  9=红树木  10=樱花木   11=竹子
+# MC的木桶默认为橡木桶
+
+# age[年龄]:
+# 饮品需要在木桶中熟成所需要的时间(单位为MC天数) [0=无需陈酿]
+
+# color[颜色]: 炼药锅产出基底的颜色，默认设置为青色
+# 可用的颜色:
+# DARK_RED[深红色]      RED[红色]       BRIGHT_RED[鲜红色]    ORANGE[橙色]
+# YELLOW[黄色]          PINK[粉色]      PURPLE[紫色]          BLUE[蓝色]
+# CYAN[青色]            WATER[浅蓝色]   TEAL[蓝绿色]          OLIVE[橄榄绿色]
+# GREEN[绿色]           LIME[鲜绿色]    BLACK[黑色]           GREY[灰色]
+# BRIGHT_GREY[亮灰色]   WHITE[白色]
+# 或者使用RGB颜色    [十六进制格式：例如 ‘99FF33’，需用引号括起来]
+# 又或者使用HTML颜色 [在互联网上搜索“HTML颜色”来获取更多颜色代码]
+
+# difficulty[酿造难度]:
+# 由1到10 难度依次递增：
+# 1 = 不需要非常精确的操作就可以制出优质饮品
+# 10 = 需要非常精确的操作才可以制出优质饮品
+
+# alcohol[酒精含量]:
+# 完美饮品中的绝对酒精含量，范围是 0-100（将直接作用于玩家，100意味着玩家会昏迷）
+
+# lore[描述文本]: 酿造完成后的物品描述文本列表(可用的格式化代码：例如 &6)
+# 根据物品品质，可以在行首添加特定的lore标记，如 + 表示差, ++ 表示普通, +++ 表示好
+
+# servercommands[服务器命令]:
+# 饮用饮品时，服务器将执行的命令列表
+# 可以使用变量 %player_name% 和 %quality%
+# playercommands[玩家命令]:
+# 饮用饮品时，玩家将执行的命令列表
+# 可以使用变量 %player_name% 和 %quality%
+# 这两个都可以根据品质添加特定命令，使用 + 表示差, ++ 表示普通, +++ 表示好，添加到每行命令的前面
+
+# drinkmessage[饮用消息]:
+# 玩家饮用饮品时接收的聊天信息
+
+# drinktitle[饮用标题]:
+# 玩家饮用饮品时屏幕上显示的标题
+
+# glint[附魔闪烁]:
+# 表示物品是否应该显示魔法光泽 [true/false]
+
+# customModelData[自定义物品模型]:
+# 用于向物品添加自定义纹理的数字标签
+# 可以为一个饮品设置，或者为每个饮品的不同品质分别设置，用 / 分隔
+
+# effects[药效列表]: 饮用时产生的药水效果、等级和持续时间的列表
+# 持续时间单位为秒
+# 等级或持续时间可用"-"表示，例如 'SPEED/1-2/30-40' 表示最差情况为等级 1 持续 30 秒，最佳情况为等级 2 持续 40 秒
+# 等级或持续时间也可逆向设置，例如 'POISON/3-1/20-5' 表示最差情况为等级 3 持续 20 秒，最佳情况为等级 1 持续 5 秒
+# 最长药水效果持续时间为 1638 秒 瞬间类药水效果无需指定持续时间
+# 可用药水效果列表: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html [打不开需要挂梯子进行浏览]
 
 recipes:
-  #  例:
-
-  0:
-    name: 劣质的 范例饮品/范例饮品/优质的 范例饮品
-    ingredients:
-      - Diamond/1
+  # 例子:
+  ex:
+    name: 劣质范例饮品/普通范例饮品/优质范例饮品 # 名称 ‘/’分隔代表不同品质不同名称
+    ingredients: # 制作所需的材料清单
+      - Diamond/1 # 支持ExoticGarden, Slimefun, MMOItems, Brewery的插件物品
       - Spruce_Planks/8
       - Bedrock/1
-      - Brewery:Wheatbeer/2
-#      - ExoticGarden:Grape/3
+      - Brewery:Wheatbeer/2 # 插件物品需要在物品前加上所属插件ID
+      #    - ExoticGarden:Grape/3
       - ex-item/4
-    cookingtime: 3
-    distillruns: 2
-    distilltime: 60
-    wood: 4
-    age: 11
-    color: DARK_RED
-    difficulty: 3
-    alcohol: 14
-    lore:
-      - This is an examble brew
-      - ++Just a normal Example
-      - This text would be on the brew
-      - + Smells disgusting
-      - ++ Smells alright
-      - +++ Smells really good
-    servercommands:
+    cookingtime: 3 # 料理时间
+    distillruns: 2 # 蒸馏次数
+    distilltime: 60 # 蒸馏时间
+    wood: 4 # 其陈酿的木桶材质 在这对应的是 云杉木
+    age: 11 # 陈酿时间
+    color: DARK_RED # 呈现颜色
+    difficulty: 3 # 制作难度
+    alcohol: 14 # 酒精度
+    lore: # 描述文本 前面的加号表示在不同品质下 描述的不同
+      - 这是一个饮品示例
+      - ++只是一个普通示例
+      - 这段文本将显示在这个饮品上
+      - + 闻起来很恶心
+      - ++ 闻起来还可以
+      - +++ 闻起来真的很香
+    servercommands: # 服务器指令 前面的加号表示在不同品质下 执行指令的不同
       - +++ weather clear
       - + weather rain
-    playercommands:
+    playercommands: # 玩家指令 效果和触发方式同上
       - homes
-    drinkmessage: Tastes good
-    drinktitle: Warms you from inside
-    customModelData: 556/557/557
-    effects:
-      - FIRE_RESISTANCE/20
-      - HEAL/1
-      - WEAKNESS/2-3/50-60
-      - POISON/1-0/20-0
+    drinkmessage: 味道不错 # 在聊天栏时出现的消息
+    drinktitle: 让你从内而外感到温暖 # 出现的标题
+    customModelData: 556/557/557 # 物品模型编号 ‘/’分隔代表不同品质不同模型
+    effects: # 药水效果
+      - FIRE_RESISTANCE/20 # 固定值 不受品质好坏影响
+      - HEAL/1 # 固定值 不受品质好坏影响
+      - WEAKNESS/2-3/50-60 # 品质越高 效果越好
+      - POISON/1-0/20-0 #品质越高 效果越差
 
-  1:
-    name: 劣质麦啤/麦啤/优质麦啤
+  wheatbeer:
+    name: 劣质麦啤/普通麦啤/优质麦啤
     ingredients:
       - Wheat/3
     cookingtime: 8
     distillruns: 0
     wood: 1
     age: 2
-    color: 'ffb84d' # Orange
+    color: "ffb84d" # 橙色
     difficulty: 1
     alcohol: 5
-    lore: +++ &8Refreshing
+    lore: +++ &8令人耳目一新
 
-  2:
-    name: 劣质啤酒/啤酒/鲜啤
+  beer:
+    name: 劣质啤酒/普通啤酒/优质啤酒
     ingredients:
       - Wheat/6
     cookingtime: 8
     distillruns: 0
     wood: 0
     age: 3
-    color: 'ffd333' # Bright Orange
+    color: "ffd333" # 亮橙色
     difficulty: 1
     lore:
-      - +++ &8Crisp taste
+      - +++ &8清爽的味道
     alcohol: 6
 
-  3:
-    name: 劣质黑啤/黑啤/精制黑啤
+  darkbeer:
+    name: 劣质黑啤/普通黑啤/优质黑啤
     ingredients:
       - Wheat/6
     cookingtime: 8
     distillruns: 0
     wood: 6
     age: 8
-    color: '650013' # Dark Red-Brown
+    color: "650013" # 深红偏棕色
     difficulty: 2
     lore:
-      - +++ &8Roasted taste
+      - +++ &8烤的味道
     alcohol: 7
 
   wine:
-    name: Red Wine
+    name: 红酒
     ingredients:
       - Sweet_Berries/5
     cookingtime: 5
@@ -544,13 +606,13 @@ recipes:
     difficulty: 4
     alcohol: 8
     lore:
-      - '+ &8Harsh'
-      - '+ &8Corked'
-      - '++ &8Mellow'
-      - '+++ &8Full-Bodied'
+      - "+ &8略带苦涩"
+      - "+ &8木塞味"
+      - "++ &8醇和"
+      - "+++ &8酒体饱满"
 
-  4:
-    name: 粗制蜜酒/蜜酒/黄金蜜酒
+  mead:
+    name: 粗制蜜酒/普通蜜酒/黄金蜜酒
     ingredients:
       - Sugar_Cane/6
     cookingtime: 3
@@ -560,11 +622,11 @@ recipes:
     color: ORANGE
     difficulty: 2
     lore:
-      - +++ Has a golden shine
+      - +++ 仿佛闪烁着金色的光泽
     alcohol: 9
 
-  5:
-    name: 苹果蜜酒/甜苹果蜜酒/甘醇黄金苹果蜜酒
+  ap_mead:
+    name: 普通苹果蜜酒/甜苹果蜜酒/甘醇苹果蜜酒
     ingredients:
       - Sugar_Cane/6
       - Apple/2
@@ -576,26 +638,26 @@ recipes:
     difficulty: 4
     alcohol: 11
     lore:
-      - +Is there any Apple in this?
-      - ++Refreshing taste of Apple
-      - +++Sweetest hint of Apple
+      - + 这里面有苹果吗？
+      - ++ 清新的苹果味道
+      - +++ 最细微的苹果甜味
     effects:
       - WATER_BREATHING/1-2/150
 
-  6:
-    name: 苦涩的朗姆/辛辣的朗姆/金品朗姆
+  cidre:
+    name: 劣质苹果酒/苹果酒/伟大的苹果酒
     ingredients:
       - Apple/14
     cookingtime: 7
     distillruns: 0
     wood: 0
     age: 3
-    color: 'f86820' # Red-Orange
+    color: "f86820" # 红橙色
     difficulty: 4
     alcohol: 7
 
   apple_liquor:
-    name: Sour Apple Liquor/Apple Liquor/Calvados
+    name: 酸苹果酒/普通苹果酒/Calvados苹果酒
     ingredients:
       - Apple/12
     cookingtime: 16
@@ -606,11 +668,11 @@ recipes:
     difficulty: 5
     alcohol: 14
     lore:
-      - +Sour like Acid
-      - +++ Good Apple Liquor
+      - + 酸的不能再酸
+      - +++ 好苹果酒
 
   whiskey:
-    name: Unsightly Whiskey/Whiskey/Scotch Whiskey
+    name: 劣质威士忌/普通威士忌/苏格兰风味威士忌
     ingredients:
       - Wheat/10
     cookingtime: 10
@@ -621,10 +683,10 @@ recipes:
     color: ORANGE
     difficulty: 7
     alcohol: 26
-    lore: '&7Single Malt'
+    lore: "&7纯正麦芽"
 
   rum:
-    name: Bitter Rum/Spicy Rum/&6Golden Rum
+    name: 苦涩朗姆酒/辛辣朗姆酒/&6金品朗姆酒
     ingredients:
       - Sugar_Cane/18
     cookingtime: 6
@@ -639,11 +701,11 @@ recipes:
       - FIRE_RESISTANCE/1/20-100
       - POISON/1-0/30-0
     lore:
-      - +&8Too bitter to drink
-      - ++&8Spiced by the barrel
-      - +++&eSpiced Gold
+      - +&8太苦了是喝的吗？
+      - ++&8桶香味的精华
+      - +++&香料黄金
 
-  7:
+  vodka:
     name: 劣质伏特加/伏特加/纯正俄式风味伏特加
     ingredients:
       - Potato/10
@@ -653,13 +715,14 @@ recipes:
     color: WHITE
     difficulty: 4
     alcohol: 20
-    lore: + &8Almost undrinkable
+    lore:
+      - + &8几乎不能喝
     effects:
       - WEAKNESS/15
       - POISON/10
 
   shroom_vodka:
-    name: Mushroom Vodka/Mushroom Vodka/Glowing Mushroom Vodka
+    name: 普通蘑菇伏特加/荧光蘑菇伏特加/发光蘑菇伏特加
     ingredients:
       - Potato/10
       - Red_Mushroom/3
@@ -667,10 +730,11 @@ recipes:
     cookingtime: 18
     distillruns: 5
     age: 0
-    color: 'ff9999' # Pink-Red
+    color: "ff9999" # 粉红偏红
     difficulty: 7
     alcohol: 18
-    lore: +++&aGlows in the dark
+    lore:
+      - +++ &a在黑暗中发光
     effects:
       - WEAKNESS/80
       - CONFUSION/27
@@ -679,39 +743,40 @@ recipes:
       - SLOW/10-3
 
     gin:
-      name: Pale Gin/Gin/Old Tom Gin
+      name: 淡杜松子酒/杜松子酒/老汤姆杜松子酒
       ingredients:
         - Wheat/9
-        - blue-flowers/6  # Custom-Item: Blue Orchids or Cornflowers
+        - blue-flowers/6
         - Apple/1
       cookingtime: 6
       distillruns: 2
-      color: '99ddff' # Very light blue
+      color: "99ddff" # 非常亮的蓝色
       difficulty: 6
       alcohol: 20
       lore:
-        - ++ With the
-        - ++ taste of juniper
-        - +++ Perfectly finished off
-        - +++ with juniper
+        - ++ 混有杜松子的味道
+        - ++ 以杜松子的风味点缀
+        - +++ 完美地以杜松子收尾
+        - +++ 以杜松子的味道完美点缀
 
-    tequila:
-      name: Mezcal/Tequila/Tequila anejo
-      ingredients:
-        - cactus/8
-      cookingtime: 15
-      distillruns: 2
-      color: 'f5f07e' # Green-Orange
-      difficulty: 5
-      wood: 1
-      age: 12
-      alcohol: 20
-      lore: Desert spirit
-
-  8:
-    name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
+  tequila:
+    name: 梅斯卡尔酒/龙舌兰酒/陈年龙舌兰酒
     ingredients:
-      - Short_Grass/15
+      - cactus/8
+    cookingtime: 15
+    distillruns: 2
+    color: "f5f07e" # 绿橙色
+    difficulty: 5
+    wood: 1
+    age: 12
+    alcohol: 20
+    lore:
+      - 沙漠精髓
+
+  absinthe:
+    name: 劣质苦艾酒/普通苦艾酒/劲猛苦艾酒
+    ingredients:
+      - types-grass/15 # 查看自定义物品组以获取更多
     cookingtime: 3
     distillruns: 6
     distilltime: 80
@@ -720,12 +785,13 @@ recipes:
     alcohol: 42
     effects:
       - POISON/15-25
-    lore: '+++&8High proof liquor'
+    lore:
+      - "+++ &8高浓度酒精"
 
   gr_absinthe:
-    name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
+    name: 暗绿色苦艾酒/普绿色苦艾酒/亮绿色苦艾酒
     ingredients:
-      - Short_Grass/17
+      - Grass/17
       - Poisonous_Potato/2
     cookingtime: 5
     distillruns: 6
@@ -737,21 +803,22 @@ recipes:
       - POISON/25-40
       - HARM/2
       - NIGHT_VISION/40-60
-    lore: '&aLooks poisonous'
+    lore:
+      - "&a看起来很怪"
 
-  9:
+  potato_soup:
     name: 土豆汤
     ingredients:
       - Potato/5
-      - Short_Grass/3
+      - Grass/3
     cookingtime: 3
     color: ORANGE
     difficulty: 1
     effects:
       - HEAL/0-1
 
-  10:
-    name: 平淡的咖啡/咖啡/浓苦黑咖
+  coffee:
+    name: 平淡咖啡/普通咖啡/浓苦咖啡
     ingredients:
       - Cocoa_Beans/12
       - Milk_Bucket/2
@@ -759,113 +826,108 @@ recipes:
     color: BLACK
     difficulty: 3
     alcohol: -6
-    lore: + &8Probably a week old
+    lore: + &8一周前的剩货
     effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140
 
   eggnog:
-    name: Egg Liquor/Eggnog/Advocaat
+    name: 鸡蛋利口酒/普通蛋酒/Advocaat蛋酒
     ingredients:
       - Egg/5
       - Sugar/2
       - Milk_Bucket/1
     cookingtime: 2
-    color: 'ffe680'
+    color: "ffe680"
     difficulty: 4
     alcohol: 10
     wood: 0
     age: 3
-    lore: Made with raw egg
+    lore: 用生鸡蛋制作的
 
+# 我不希望向默认配置中添加更多配方，因为这样它们将公开可见，用户可能会利用这些信息作弊
+# 服务器管理员负责更改和添加配方，以防止玩家利用默认配置作弊
+# 以下是一些建议的配方供您参考：
 
+# g_vodka:
+#   name: 美味伏特加/&6金色伏特加/&6闪亮金色伏特加
+#   ingredients:
+#     - Potato/10
+#     - Gold_Nugget/2
+#   cookingtime: 18
+#   distillruns: 3
+#   age: 0
+#   color: ORANGE
+#   difficulty: 6
+#   alcohol: 20
+#   effects:
+#     - WEAKNESS/28
+#     - POISON/4
 
+# fire_whiskey:
+#   name: 粉末威士忌/燃烧威士忌/炽热威士忌
+#   ingredients:
+#     - Wheat/10
+#     - Blaze_Powder/2
+#   cookingtime: 12
+#   distillruns: 3
+#   distilltime: 55
+#   wood: 4
+#   age: 18
+#   color: ORANGE
+#   difficulty: 7
+#   alcohol: 28
+#   drinkmessage: '你嘴里有一种灼热的感觉'
 
-# 并不会直接加入到默认配置中, 这会导致游戏玩家偷看配方表进行作弊.
-# 插件的本意是让玩家自行实验饮品制造配方, 所以未来的新配方由服管决定是否加入.
-  # Some suggestions for recipes you could use:
+# 没有酒精:
 
-  # g_vodka:
-  #   name: 'Rancid Vodka/&6Golden Vodka/&6Shimmering Golden Vodka'
-  #   ingredients:
-  #     - Potato/10
-  #     - Gold_Nugget/2
-  #   cookingtime: 18
-  #   distillruns: 3
-  #   age: 0
-  #   color: ORANGE
-  #   difficulty: 6
-  #   alcohol: 20
-  #   effects:
-  #     - WEAKNESS/28
-  #     - POISON/4
+# hot_choc:
+#   name: 热巧克力
+#   ingredients:
+#     - cookie/3
+#   cookingtime: 2
+#   color: DARK_RED
+#   difficulty: 2
+#   effects:
+#     - FAST_DIGGING/40
 
-  # fire_whiskey:
-  #   name: Powdery Whiskey/Burning Whiskey/Blazing Whiskey
-  #   ingredients:
-  #     - Wheat/10
-  #     - Blaze_Powder/2
-  #   cookingtime: 12
-  #   distillruns: 3
-  #   distilltime: 55
-  #   wood: 4
-  #   age: 18
-  #   color: ORANGE
-  #   difficulty: 7
-  #   alcohol: 28
-  #   drinkmessage: 'You get a burning feeling in your mouth'
+# iced_coffee:
+#   name: 淡咖啡/冰咖啡/浓冰咖啡
+#   ingredients:
+#     - cookie/8
+#     - snowball/4
+#     - milk_bucket/1
+#   cookingtime: 1
+#   color: BLACK
+#   difficulty: 4
+#   alcohol: -8
+#   effects:
+#     - REGENERATION/30
+#     - SPEED/10
 
-  # Without Alcohol:
-
-  # hot_choc:
-  #   name: Hot Chocolate
-  #   ingredients:
-  #     - cookie/3
-  #   cookingtime: 2
-  #   color: DARK_RED
-  #   difficulty: 2
-  #   effects:
-  #     - FAST_DIGGING/40
-
-  # iced_coffee:
-  #   name: Watery Coffee/Iced Coffee/Strong Iced Coffee
-  #   ingredients:
-  #     - cookie/8
-  #     - snowball/4
-  #     - milk_bucket/1
-  #   cookingtime: 1
-  #   color: BLACK
-  #   difficulty: 4
-  #   alcohol: -8
-  #   effects:
-  #     - REGENERATION/30
-  #     - SPEED/10
-
-
-# More Recipe ideas:
-# Dandelion Liquor
-# Beetroot Spirit,
-# Poppy Liquor: Macum/Grand Poppy,
-# Bamboo Liquor: Chu Yeh Ching,
-# Cachaca,
-# Cognac,
-# Sake,
-# Buorbon,
-# Moonshine,
-# Different Wines,
-# Brandy,
-# Amaretto,
-# etc. as well as variations like,
-# Pumpkin Spice Beer,
-# Melon Vodka
-
-# There are a lot of items in Minecraft like Vines, Milk and items added by plugins that would make great ingredients.
-
+# 在《我的世界》中，有许多物品，如藤蔓、牛奶，以及插件添加的物品，它们都能成为极好的原料
+# 更多配方创意[可以作为参考]：
+# 蒲公英酒
+# 甜菜根酒
+# 罂粟酒：Macum/大罂粟
+# 竹酒：竹叶青
+# 卡莎萨酒
+# 干邑
+# 清酒
+# 威士忌
+# 月光酒
+# 各式葡萄酒
+# 白兰地
+# 杏仁酒
+# 等等，以及如下变种：
+# 南瓜香料啤酒
+# 蜜瓜伏特加
 
 # -- 插件兼容性 --
 
-# 检查插件以进行权限配置[true]
-# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
+# 启用检查其他插件（如果已安装）的木桶权限 [true]
+# 插件 'Landlord' 和 'Protection Stones' 使用 WorldGuard 标志
+# 'ClaimChunk' 是原生支持的
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
@@ -873,231 +935,242 @@ useTowny: true
 useBlockLocker: true
 useGMInventories: true
 
-# Use a virtual chest when opening a Barrel to check with all other protection plugins
-# This could confuse Anti-Cheat plugins, but is otherwise good to use
-# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
+# 在打开木桶时，使用虚拟箱子来与所有其他保护插件进行交互检查
+# 这可能会使反作弊插件产生混淆，但在其他方面是一个很好的使用方法
+# 请将此方法用于 'Residence' 插件，以及任何其他未在 PlayerInteractEvent 中涵盖所有情况的插件
 useVirtualChestPerms: false
 
-# 对LogBlock启用方块数据录入[true]
+# 启用将木桶库存信息记录到 LogBlock [true]
 useLogBlock: true
 
-
-# -- MultiServer/BungeeCord --
-# If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkenness and to be able to use encoded brews between them.
+# -- 多服务器/BungeeCord --
+# 如果 Brewery 插件在多个通过 BungeeCord 连接的服务器上运行
+# 可以在这里使用共享数据库来同步玩家的醉酒状态，并且能够在不同服务器之间使用编码的饮品
 
 multiServerDB:
-  # If using the Database is enabled
+  # 如果启用了使用数据库
   enabled: false
-  # If the drunkenness of players should be synchronised between Servers
+  # 如果玩家的醉酒状态应该在服务器之间同步
   syncDrunkeness: true
   host: localhost
-  port: '3306'
+  port: "3306"
   user: minec
   password: xyz
   database: base
 
+# -- 各种其他设置 --
 
-# -- Various Other Settings --
-
-# If items in Offhand should be added to the cauldron as well [false]
+# 是否也应该将副手中的物品添加到炼药锅中 [false]
 useOffhandForCauldron: false
 
-# If Barrel and Cauldron data can be loaded Async/in the Background [true]
+# 如果木桶和锅炉数据可以异步/在后台加载 [true]
 loadDataAsync: true
 
-# 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
+# 玩家下线后，醉酒数据在内存中保留的天数，以施加宿醉等后续效果 [7]
 hangoverDays: 7
 
-# 饮品上是否显示带颜色的提示, 颜色由执行步骤的正误决定. 第一项为在熟成酒桶内显示颜色, 第二项为在酿造台内显示颜色.[true, true]
+# 饮品上是否显示带颜色的提示, 颜色由执行步骤的正误决定
+# 是否在陈酿酒桶内显示颜色 [true]
 colorInBarrels: true
+# 是否在酿造台内显示颜色 [true]
 colorInBrewer: true
 
-# 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
+# 大型木桶是否可通过点击其任一方块来开启，不仅仅限于龙头或标志
+# 对于小型木桶，这一功能始终有效 [true]
 openLargeBarrelEverywhere: false
 
-# Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
+# 允许通过将饮品倒入漏斗来丢弃，同时保留玻璃瓶 [true]
 brewHopperDump: true
 
+# -- 聊天口胡设置 --
 
-# -- 口糊设置 --
+# 当玩家醉酒时，是否使聊天内容出现口胡，使其呈现出醉酒书写的样子
+# 聊天内容的口胡程度与玩家的醉酒程度成正比
+# 以下是关于聊天内容变化的具体设置
 
-# 醉酒的玩家会口糊,
-# 所以聊天框内打出来的东西也会跟着糊.
-# 说话说不清的程度取决于玩家有多醉.
-# 以下是设置以及具体的口糊方式的配置.
-
-# 打开聊天口糊功能[true]
+# 打开聊天口胡功能[true]
 enableChatDistortion: true
 
-# 在服务器后台登记玩家实际输入的内容, 而非口糊后的内容.[false]
+# 在聊天内容被口胡前，记录玩家实际输入的聊天内容到服务器日志 [false]
 logRealChat: false
 
-# 以下命令后跟随的语句会糊.[- /gl]
+# 醉酒时，特定命令后的文本将出现口胡（命令列表） [- /gl]
 distortCommands:
-- /gl
-- /global
-- /fl
-- /s
-- /letter
-- /g
-- /l
-- /lokal
-- /local
-- /mail send
-- /m
-- /msg
-- /w
-- /whisper
-- /reply
-- /r
-- /t
-- /tell
+  - /gl
+  - /global
+  - /fl
+  - /s
+  - /letter
+  - /g
+  - /l
+  - /lokal
+  - /local
+  - /mail send
+  - /m
+  - /msg
+  - /w
+  - /whisper
+  - /reply
+  - /r
+  - /t
+  - /tell
 
-# 醉酒的时候写下的告示牌内容也会变化.[false]
+# 醉酒时，是否扭曲告示牌上的文本 [false]
 distortSignText: false
 
-# 被以下设定字符框住的字眼不会被更改(请使用","(半角逗号)进行分隔) (列表) [- '[,]']
-# 例句: 我~喝~醉了 *但是这里面的话不会变哦!*
+# 使用特定字母包围聊天内容，以避免聊天口胡效果（以逗号作为分隔符）（字母列表） [- '[,]']
+# 聊天示例：我~喝~醉了 *但是这里面的话不会变哦!*
 distortBypass:
-- '*,*'
-- '[,]'
+  - "*,*"
+  - "[,]"
 
-# words: 针对具体词句进行糊化.
-# 糊化的执行优先级是表内从上到下.
+# words[单词]: 当玩家醉酒时聊天中将被改变的单词和字母
+# 将按照从前往后的顺序进行处理，并且按照这个顺序改变书写的句子
 
-# replace: 被替换的字句. (特例: "-space": 替换空格, "-random": 在句子内随机插入, "-all": 整句话, "-start": 句首, "-end": 句末.)
-# to: 替换成的内容.
-# pre: 前置字眼, 即在被替换的词句前面需要出现的字眼(用","(半角逗号)分隔)
-# match: true = 前置字眼必须出现其一,  false = 前置字眼不能出现任意一个.
-# alcohol: 词句被开始替换所需要的酒精度.
-# percentage: 词句被替换的概率.
+# replace: 要替换的单词或字母
+# 特殊类型：
+# "-space": 替换空格     "-random": 插入到随机位置     "-all": 所有内容
+# "-start": 在开始处     "-end": 在结束处
+
+# to: 用什么替换它
+
+# pre: 在目标单词之前的单词和字母
+# 用 "," 分隔
+
+# match:
+# true = 目标单词前必须有一个'pre'单词
+# false = 目标单词前不允许有'pre'单词
+
+# alcohol[酒精度]: 1-100
+# 在醉酒程度达到这个值后，这个单词将被替换
+
+# percentage[概率]: 单词替换的概率（百分比）
 
 words:
--  replace: '!!!'
-   to: '!!!111!!!1111!1!'
-   pre: '!'
-   match: false
-   percentage: 20
-   alcohol: 70
+  - replace: "!!!"
+    to: "!!!111!!!1111!1!"
+    pre: "!"
+    match: false
+    percentage: 20
+    alcohol: 70
 
--  replace: '！！！'
-   to: '!!!111!!!1111!1!'
-   pre: '!'
-   match: false
-   percentage: 20
-   alcohol: 70
--  replace: '!'
-   to: '!!'
-   pre: '!'
-   match: false
-   percentage: 90
+  - replace: "！！！"
+    to: "!!!111!!!1111!1!"
+    pre: "!"
+    match: false
+    percentage: 20
+    alcohol: 70
+  - replace: "!"
+    to: "!!"
+    pre: "!"
+    match: false
+    percentage: 90
 
--  replace: '?'
-   to: '????'
-   pre: '?'
-   match: false
-   percentage: 80
-   alcohol: 40
+  - replace: "?"
+    to: "????"
+    pre: "?"
+    match: false
+    percentage: 80
+    alcohol: 40
 
--  replace: '？'
-   to: '????'
-   pre: '?'
-   match: false
-   percentage: 80
-   alcohol: 40
+  - replace: "？"
+    to: "????"
+    pre: "?"
+    match: false
+    percentage: 80
+    alcohol: 40
 
--  replace: ','
-   to: ''
-   pre: h,g,w
-   match: true
-   alcohol: 10
+  - replace: ","
+    to: ""
+    pre: h,g,w
+    match: true
+    alcohol: 10
 
--  replace: '，'
-   to: ''
-   pre: h,g,w
-   match: true
-   alcohol: 10
+  - replace: "，"
+    to: ""
+    pre: h,g,w
+    match: true
+    alcohol: 10
 
--  replace: "."
-   to: ''
-   percentage: 30
-   alcohol: 35
+  - replace: "."
+    to: ""
+    percentage: 30
+    alcohol: 35
 
--  replace: "。"
-   to: ''
-   percentage: 10
+  - replace: "。"
+    to: ""
+    percentage: 10
 
--  replace: -start
-   to: 呃
-   percentage: 15
-   alcohol: 50
+  - replace: -start
+    to: 呃
+    percentage: 15
+    alcohol: 50
 
--  replace: -start
-   to: 哼嗯
-   percentage: 10
-   alcohol: 50
+  - replace: -start
+    to: 哼嗯
+    percentage: 10
+    alcohol: 50
 
--  replace: -random
-   to: 噜
-   percentage: 10
+  - replace: -random
+    to: 噜
+    percentage: 10
 
--  replace: -random
-   to: 啦
-   percentage: 10
-   alcohol: 50
+  - replace: -random
+    to: 啦
+    percentage: 10
+    alcohol: 50
 
--  replace: -random
-   to: 咕
-   percentage: 20
-   alcohol: 80
+  - replace: -random
+    to: 咕
+    percentage: 20
+    alcohol: 80
 
--  replace: -random
-   to: 咯
-   percentage: 40
-   alcohol: 85
+  - replace: -random
+    to: 咯
+    percentage: 40
+    alcohol: 85
 
--  replace: -random
-   to: 嘎
-   percentage: 40
-   alcohol: 80
+  - replace: -random
+    to: 嘎
+    percentage: 40
+    alcohol: 80
 
--  replace: -random
-   to: ' '
-   percentage: 100
-   alcohol: 70
+  - replace: -random
+    to: " "
+    percentage: 100
+    alcohol: 70
 
--  replace: -end
-   to: '!'
-   percentage: 40
-   alcohol: 30
+  - replace: -end
+    to: "!"
+    percentage: 40
+    alcohol: 30
 
--  replace: -random
-   to: '*嗝*'
-   percentage: 80
-   alcohol: 70
+  - replace: -random
+    to: "*嗝*"
+    percentage: 80
+    alcohol: 70
 
--  replace: -random
-   to: '*嗝*'
-   percentage: 15
-   alcohol: 40
+  - replace: -random
+    to: "*嗝*"
+    percentage: 15
+    alcohol: 40
 
--  replace: -space
-   to: '*嗝*'
-   percentage: 5
-   alcohol: 20
+  - replace: -space
+    to: "*嗝*"
+    percentage: 5
+    alcohol: 20
 
--  replace: -end
-   to: '*嗝*'
-   percentage: 70
-   alcohol: 50
+  - replace: -end
+    to: "*嗝*"
+    percentage: 70
+    alcohol: 50
 
--  replace: -all
-   to: '*嗝儿————*'
-   percentage: 3
-   alcohol: 60
+  - replace: -all
+    to: "*嗝儿————*"
+    percentage: 3
+    alcohol: 60
 
--  replace: -all
-   to: '*嗝儿————*'
-   percentage: 6
-   alcohol: 80
+  - replace: -all
+    to: "*嗝儿————*"
+    percentage: 6
+    alcohol: 80
