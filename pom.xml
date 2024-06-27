@@ -102,7 +102,7 @@
 	</build>
 	<repositories>
 		<repository>
-			<!-- GriefPrevention, SlimeFun, Towny, Brewery -->
+			<!-- GriefPrevention, SlimeFun, Towny, Brewery, PlaceholderAPI -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -146,6 +146,11 @@
 			<!-- Shopkeepers -->
 			<id>Lichtspiele</id>
 			<url>https://nexus.lichtspiele.org/repository/releases/</url>
+		</repository>
+		<repository>
+			<!-- PlaceholderAPI -->
+			<id>placeholderapi</id>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 	</repositories>
 
@@ -315,6 +320,13 @@
 			<groupId>nl.rutgerkok</groupId>
 			<artifactId>blocklocker</artifactId>
 			<version>1.10.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<!-- https://www.spigotmc.org/resources/placeholderapi.6245/history -->
+			<groupId>me.clip</groupId>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.11.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

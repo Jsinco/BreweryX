@@ -246,9 +246,40 @@ public class BPlayer {
 
 		b.append(BreweryPlugin.getInstance().languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
 
-		// Drunkeness or Hangover Strength Bars
+		// Drunkenness or Hangover Strength Bars
 		b.append(": §7[");
-		// Show 25 Bars, color one per 4 drunkenness
+		b.append(generateBars(strength, hangover));
+		b.append("§7] ");
+
+		int quality;
+		if (hangover) {
+			quality = 11 - getHangoverQuality();
+		} else {
+			quality = strength > 0 ? getQuality() : 0;
+		}
+
+		// Quality Stars
+		b.append("§7[");
+		b.append(generateStars(quality));
+		b.append("§7]");
+
+		final String text = b.toString();
+		if (hangover && BreweryPlugin.use1_11) {
+			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
+			return false;
+		}
+		try {
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
+			return true;
+		} catch (UnsupportedOperationException | NoSuchMethodError e) {
+			player.sendMessage(text);
+			return false;
+		}
+	}
+
+	private String generateBars(int strength, boolean hangover) {
+		// Generate 25 Bars, color one per 4 drunkenness
+		StringBuilder b = new StringBuilder();
 		int bars;
 		if (strength <= 0) {
 			bars = 0;
@@ -274,22 +305,21 @@ public class BPlayer {
 				b.append("|");
 			}
 		}
-		b.append("§7] ");
+		return b.toString();
+	}
 
+	public String generateBars() {
+		return generateBars(offlineDrunk > 0 ? offlineDrunk : drunkenness, offlineDrunk > 0);
+	}
 
-		int quality;
-		if (hangover) {
-			quality = 11 - getHangoverQuality();
-		} else {
-			quality = strength > 0 ? getQuality() : 0;
-		}
-
-		// Quality Stars
+	private String generateStars(int quality) {
+		// Generate stars representing the quality
+		StringBuilder b = new StringBuilder();
 		int stars = quality / 2;
 		boolean half = quality % 2 > 0;
 		int noStars = 5 - stars - (half ? 1 : 0);
 
-		b.append("§7[").append(BrewLore.getQualityColor(quality));
+		b.append(BrewLore.getQualityColor(quality));
 		for (; stars > 0; stars--) {
 			b.append("⭑");
 		}
@@ -302,19 +332,11 @@ public class BPlayer {
 				b.append("⭑");
 			}
 		}
-		b.append("§7]");
-		final String text = b.toString();
-		if (hangover && BreweryPlugin.use1_11) {
-			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
-			return false;
-		}
-		try {
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
-			return true;
-		} catch (UnsupportedOperationException | NoSuchMethodError e) {
-			player.sendMessage(text);
-			return false;
-		}
+		return b.toString();
+	}
+
+	public String generateStars() {
+		return generateStars(offlineDrunk > 0 ? 11 - getHangoverQuality() : drunkenness > 0 ? getQuality() : 0);
 	}
 
 	// Player has drunken too much
