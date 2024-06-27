@@ -75,6 +75,9 @@ showBrewer: false
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
+# Duration (in minutes) of a "year" when aging drinks [20]
+agingYearDuration: 20
+
 # The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
 # hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
 # This is a fast process to stop players from hacking out recipes, once they get hold of a brew.

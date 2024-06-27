@@ -75,6 +75,9 @@ showBrewer: false
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
+# Dauer (in Minuten) eines "Jahres" beim Reifen von Getränken [20]
+agingYearDuration: 20
+
 # Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
 # dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
 # Einziger Nachteil: Tränke können nur auf Servern mit dem gleichen encodeKey benutzt werden.

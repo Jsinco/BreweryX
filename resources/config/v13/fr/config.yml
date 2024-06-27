@@ -76,6 +76,9 @@ showBrewer: false
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
+# Durée (en minutes) d'une « année » pour la maturation des boissons [20]
+agingYearDuration: 20
+
 # Les ingrédients et autres données de brassage utilisés sont sauvegardés dans tous les articles de brasserie. [false]
 # Pour empêcher les clients piratés de lire exactement ce qui a été utilisé pour infuser un élément, les données peuvent être encodées/brouillées.
 # Il s'agit d'un processus rapide pour empêcher les joueurs de pirater des recettes, une fois qu'ils mettent la main sur une bière.

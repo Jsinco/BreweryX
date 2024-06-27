@@ -82,6 +82,9 @@ showBrewer: false
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
+# 陈酿饮品时“年份”的持续时间（分钟）[20]
+agingYearDuration: 20
+
 # 使用的原料和其他酿造数据会被保存在所有酿酒物品中
 # 为了防止被修改后的客户端读取饮品的确切原料，数据可以被编码/搅乱
 # 这是一个快速过程，可以阻止玩家在获得酿造品后破解配方
