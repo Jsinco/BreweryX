@@ -71,6 +71,9 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# Se i barili vengono creati solo quando il cartello posto contiene la parola "barrel" (o una traduzione) [true]
+requireKeywordOnSigns: true
+
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

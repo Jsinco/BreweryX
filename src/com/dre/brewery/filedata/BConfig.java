@@ -63,6 +63,7 @@ public class BConfig {
 	public static boolean loadDataAsync;
 	public static boolean virtualChestPerms;
 	public static int agingYearDuration;
+	public static boolean requireKeywordOnSigns;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
@@ -265,6 +266,7 @@ public class BConfig {
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 		brewHopperDump = config.getBoolean("brewHopperDump", false);
 		agingYearDuration = config.getInt("agingYearDuration", 20);
+		requireKeywordOnSigns = config.getBoolean("requireKeywordOnSigns", true);
 
 		if (BreweryPlugin.use1_14) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);

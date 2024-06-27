@@ -72,6 +72,9 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# Si les barils ne sont créés que lorsque le panneau placé contient le mot "barrel" (ou une traduction) [true]
+requireKeywordOnSigns: true
+
 # Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

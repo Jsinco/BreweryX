@@ -78,6 +78,9 @@ alwaysShowAlc: false
 # 如果我们应该显示谁制作了这杯饮料 [false]
 showBrewer: false
 
+# 只有在放置的标志包含“酒桶”一词（或其它语言的翻译）时才创建酒桶 [true]
+requireKeywordOnSigns: true
+
 # MC自带的桶内可以存放多少饮品 [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

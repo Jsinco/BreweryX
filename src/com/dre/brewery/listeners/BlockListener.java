@@ -21,7 +21,7 @@ public class BlockListener implements Listener {
 	public void onSignChange(SignChangeEvent event) {
 		String[] lines = event.getLines();
 
-		if (hasBarrelLine(lines)) {
+		if (hasBarrelLine(lines) || !BConfig.requireKeywordOnSigns) {
 			Player player = event.getPlayer();
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
 				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBarrelCreate"));
@@ -55,7 +55,7 @@ public class BlockListener implements Listener {
 		}
 		if (BConfig.useBlocklocker) {
 			String[] lines = event.getLines();
-			if (hasBarrelLine(lines)) {
+			if (hasBarrelLine(lines) || !BConfig.requireKeywordOnSigns) {
 				BlocklockerBarrel.createdBarrelSign(event.getBlock());
 			}
 		}
