@@ -66,9 +66,11 @@ public class LegacyUtil {
 					!name.startsWith("MANGROVE") &&
 					!name.startsWith("CHERRY") &&
 					!name.startsWith("BAMBOO")) {
-
 					unknownWoodTypes.add(woodName);
 				}
+			} else if (isCutCopperMaterial(name) && !name.contains("STAIRS")) {
+				allWoodTypes.add(name);
+				planks.add(m);
 			}
 		}
 		unknownWoodTypes.sort(null);
@@ -78,12 +80,11 @@ public class LegacyUtil {
 
 		if (!unknownWoodTypes.isEmpty()) {
 			BreweryPlugin.getInstance().log("New wood types detected. Assigning recipe numbers:");
-			int lastKnownNumber = 12;
+			int lastKnownNumber = 13;
 			for (int i = 0; i < unknownWoodTypes.size(); i++) {
 				BreweryPlugin.getInstance().log("  " + unknownWoodTypes.get(i) + ": " + (i + lastKnownNumber));
 			}
 		}
-
 
 		Set<Material> woodStairs = new HashSet<>();
 		for (String wood : allWoodTypes) {
@@ -123,6 +124,11 @@ public class LegacyUtil {
 			}
 		}
 		FENCES = fences;
+	}
+
+	private static boolean isCutCopperMaterial(String materialName) {
+		if (!materialName.contains("CUT_COPPER")) return false;
+		return !materialName.contains("SLAB");
 	}
 
 	public static final Material WATER_CAULDRON = get("WATER_CAULDRON");
@@ -241,10 +247,12 @@ public class LegacyUtil {
 				return 10;
 			} else if (material.startsWith("BAMBOO")) {
 				return 11;
+			} else if (isCutCopperMaterial(material)) {
+				return 12;
 			} else if (!UNKNOWN_WOOD.isEmpty()) {
 				for (int i = 0; i < UNKNOWN_WOOD.size(); i++) {
 					if (material.startsWith(UNKNOWN_WOOD.get(i))) {
-						return (byte) (i + 12);
+						return (byte) (i + 13);
 					}
 				}
 				return 0;
