@@ -65,6 +65,7 @@ public class BreweryPlugin extends JavaPlugin {
 	public static boolean use1_11;
 	public static boolean use1_13;
 	public static boolean use1_14;
+	public static boolean use1_21;
 
 	// Public Listeners
 	public PlayerListener playerListener;
@@ -103,6 +104,7 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+		use1_21 = !v.matches("(^|.*[^.\\d])1\\.[0-1]?[0-9]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.20([^\\d].*|$)");
 
 		// Load Addons
 		addonManager = new AddonManager(this);
