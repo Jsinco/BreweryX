@@ -333,6 +333,9 @@ public class Barrel implements InventoryHolder {
 	public static boolean create(Block sign, Player player) {
 		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
+		// Check for already existing barrel at this location
+		if (Barrel.get(spigot) != null) return false;
+
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
 			signoffset = (byte) (sign.getY() - spigot.getY());
