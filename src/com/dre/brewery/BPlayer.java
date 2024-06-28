@@ -879,6 +879,7 @@ public class BPlayer {
 	public int getDrunkeness() {
 		return drunkenness;
 	}
+	public void setDrunkeness(int value) { drunkenness = value; }
 
 	public void setData(int drunkenness, int quality) {
 		if (quality > 0) {
@@ -908,6 +909,8 @@ public class BPlayer {
 	public int getQualityData() {
 		return quality;
 	}
+
+	public void setQuality(int value) { quality = value; }
 
 	// opposite of quality
 	public int getHangoverQuality() {

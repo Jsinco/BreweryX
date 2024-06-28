@@ -53,6 +53,7 @@ permissions:
       brewery.cmd.copy: true
       brewery.cmd.delete: true
       brewery.cmd.static: true
+      brewery.cmd.set: true
       brewery.cmd.reload: true
       brewery.cmd.itemname: true
       brewery.cmd.reloadaddons: true
@@ -95,6 +96,8 @@ permissions:
     description: Delete Brews
   brewery.cmd.static:
     description: Make Brews Static
+  brewery.cmd.set:
+    description: Set drunkenness and quality
   brewery.cmd.reload:
     description: Reload config
   brewery.cmd.itemname:

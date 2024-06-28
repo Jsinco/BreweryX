@@ -116,9 +116,11 @@ public class CommandUtil {
         cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Help"));
         PermissionUtil.evaluateExtendedPermissions(sender);
 
+		/*
         if (PLAYER.checkCached(sender)) {
             cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Player"));
         }
+        */
 
         if (INFO.checkCached(sender)) {
             cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Info"));
@@ -170,6 +172,10 @@ public class CommandUtil {
         if (STATIC.checkCached(sender)) {
             cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Static"));
         }
+
+		if (SET.checkCached(sender)) {
+			cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Set"));
+		}
 
         if (COPY.checkCached(sender)) {
             cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Copy"));
