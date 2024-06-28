@@ -8,11 +8,13 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -418,13 +420,13 @@ public class BRecipe {
 		List<String> playerCmdsForQuality = getPlayercmdsForQuality(quality);
 		if (playerCmdsForQuality != null) {
 			for (String cmd : playerCmdsForQuality) {
-				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
+				scheduleCommand(player, cmd, player.getName(), quality, false);
 			}
 		}
 		List<String> serverCmdsForQuality = getServercmdsForQuality(quality);
 		if (serverCmdsForQuality != null) {
 			for (String cmd : serverCmdsForQuality) {
-				BreweryPlugin.getInstance().getServer().dispatchCommand(BreweryPlugin.getInstance().getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
+				scheduleCommand(player, cmd, player.getName(), quality, true);
 			}
 		}
 		if (drinkMsg != null) {
@@ -432,6 +434,51 @@ public class BRecipe {
 		}
 		if (drinkTitle != null) {
 			player.sendTitle("", BUtil.applyPlaceholders(drinkTitle, player.getName(), quality), 10, 90, 30);
+		}
+	}
+
+	private void scheduleCommand(Player player, String cmd, String playerName, int quality, boolean isServerCommand) {
+		if (cmd.startsWith("/")) cmd = cmd.substring(1);
+		if (cmd.contains("/")) {
+			String[] parts = cmd.split("/");
+			String command = parts[0].trim(); // Needs to be effectively final for scheduling
+			cmd = parts[0].trim();
+			String delay = parts[1].trim();
+			long delayTicks = parseDelayToTicks(delay);
+			if (delayTicks > 0) {
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						executeCommand(player, command, playerName, quality, isServerCommand);
+					}
+				}.runTaskLater(BreweryPlugin.getInstance(), delayTicks);
+				return;
+			}
+		}
+		// Execute command immediately if no delay is specified
+		executeCommand(player, cmd, playerName, quality, isServerCommand);
+	}
+
+	private long parseDelayToTicks(String delay) {
+		try {
+			if (delay.endsWith("s")) {
+				int seconds = Integer.parseInt(delay.substring(0, delay.length() - 1));
+				return seconds * 20L; // 20 ticks per second
+			} else if (delay.endsWith("m")) {
+				int minutes = Integer.parseInt(delay.substring(0, delay.length() - 1));
+				return minutes * 1200L; // 1200 ticks per minute
+			}
+		} catch (NumberFormatException e) {
+			// Invalid format: Default to 0
+		}
+		return 0; // Immediately execute command
+	}
+
+	private void executeCommand(Player player, String cmd, String playerName, int quality, boolean isServerCommand) {
+		if (isServerCommand) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), BUtil.applyPlaceholders(cmd, playerName, quality));
+		} else {
+			player.performCommand(BUtil.applyPlaceholders(cmd, playerName, quality));
 		}
 	}
 
