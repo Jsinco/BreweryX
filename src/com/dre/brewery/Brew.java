@@ -8,6 +8,7 @@ import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PotionColor;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -16,7 +17,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -36,6 +36,8 @@ import java.util.Objects;
  * Represents the liquid in the brewed Potions
  */
 public class Brew implements Cloneable {
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+
 	public static final byte SAVE_VER = 1;
 	private static long saveSeed;
 	private static List<Long> prevSaveSeeds = new ArrayList<>(); // Save Seeds that have been used in the past, stored to decode brews made at that time
@@ -411,7 +413,7 @@ public class Brew implements Cloneable {
 	}
 
 	public void updateCustomModelData(ItemMeta meta) {
-		if (!BreweryPlugin.use1_14) return;
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
 		if (currentRecipe != null && currentRecipe.getCmData() != null) {
 			int cm;
 			if (quality > 7) {
@@ -591,7 +593,7 @@ public class Brew implements Cloneable {
 		if (!immutable && isStripped()) {
 			throw new IllegalStateException("Cannot make stripped Brews non-static");
 		}
-		if (!BreweryPlugin.use1_9 && currentRecipe != null && canDistill()) {
+		if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_9) && currentRecipe != null && canDistill()) {
             currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, !immutable);
 		}
 		this.immutable = immutable;
@@ -714,7 +716,7 @@ public class Brew implements Cloneable {
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 
 				if (recipe.hasGlint()) {
-					potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+					potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 					potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				}
 			} else {
@@ -818,7 +820,7 @@ public class Brew implements Cloneable {
 
 
 		if (recipe.hasGlint()) {
-			potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+			potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
 
@@ -1135,7 +1137,7 @@ public class Brew implements Cloneable {
 		PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
 		assert potionMeta != null;
 
-		potionMeta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE));
+		potionMeta.setBasePotionType(PotionType.THICK); // UNCRAFTABLE
 		BrewLore lore = new BrewLore(this, potionMeta);
 		lore.removeEffects();
 

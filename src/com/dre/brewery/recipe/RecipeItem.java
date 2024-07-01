@@ -3,6 +3,7 @@ package com.dre.brewery.recipe;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
  * BIngredients. Otherwise it needs to be converted to an Ingredient
  */
 public abstract class RecipeItem implements Cloneable {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private String cfgId;
 	private int amount;
@@ -163,7 +166,7 @@ public abstract class RecipeItem implements Cloneable {
 		}
 		if (rItem == null && (acceptAll || BCauldronRecipe.acceptedSimple.contains(item.getType()))) {
 			// No Custom item found
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				return new SimpleItem(item.getType());
 			} else {
 				@SuppressWarnings("deprecation")
@@ -203,7 +206,7 @@ public abstract class RecipeItem implements Cloneable {
 		load = BUtil.loadCfgStringList(cfg, id + ".name");
 		if (load != null && !load.isEmpty()) {
 			names = load.stream().map(l -> BreweryPlugin.getInstance().color(l)).collect(Collectors.toList());
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				// In 1.13 trailing Color white is removed from display names
 				names = names.stream().map(l -> l.startsWith("§f") ? l.substring(2) : l).collect(Collectors.toList());
 			}
@@ -264,7 +267,7 @@ public abstract class RecipeItem implements Cloneable {
 			}
 			Material mat = BUtil.getMaterialSafely(ingredParts[0]);
 
-			if (mat == null && !BreweryPlugin.use1_14 && ingredParts[0].equalsIgnoreCase("cornflower")) {
+			if (mat == null && VERSION.isOrEarlier(MinecraftVersion.V1_14) && ingredParts[0].equalsIgnoreCase("cornflower")) {
 				// Using this in default custom-items, but will error on < 1.14
 				materials.add(Material.BEDROCK);
 				continue;

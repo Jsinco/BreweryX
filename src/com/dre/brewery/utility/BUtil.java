@@ -40,6 +40,7 @@ public class BUtil {
 	/* **************************************** */
 
 	private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	/**
 	 * Check if the Chunk of a Block is loaded !without loading it in the process!
@@ -113,7 +114,7 @@ public class BUtil {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
-		if (BreweryPlugin.use1_9) {
+		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
 				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
 			} else {
@@ -138,7 +139,7 @@ public class BUtil {
 
 	public static Material getMaterialSafely(String name) {
 		if (name.equalsIgnoreCase("GRASS")) {
-			return Material.GRASS;
+			return Material.SHORT_GRASS;
 		}
 		return Material.matchMaterial(name);
 	}
@@ -166,7 +167,7 @@ public class BUtil {
 		final PotionEffectType type = effect.getType();
 		if (player.hasPotionEffect(type)) {
 			PotionEffect plEffect;
-			if (BreweryPlugin.use1_11) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_11)) {
 				plEffect = player.getPotionEffect(type);
 			} else {
 				plEffect = player.getActivePotionEffects().stream().filter(e -> e.getType().equals(type)).findAny().get();

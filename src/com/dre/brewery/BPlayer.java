@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import net.md_5.bungee.api.ChatMessageType;
@@ -29,10 +30,18 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BPlayer {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+
 	private static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
 	private static final ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
@@ -304,7 +313,7 @@ public class BPlayer {
 		}
 		b.append("§7]");
 		final String text = b.toString();
-		if (hangover && BreweryPlugin.use1_11) {
+		if (hangover && VERSION.isOrLater(MinecraftVersion.V1_11)) {
 			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
 			return false;
 		}
@@ -387,15 +396,14 @@ public class BPlayer {
 					if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
 						Player player = event.getPlayer();
 						// We have to cast here because it had issues otherwise on previous versions of Minecraft
-						// Dont know if thats still the case, but we better leave it
-						Entity entity = (Entity) player;
-						// not in midair
-						if (entity.isOnGround()) {
+						// Don't know if that's still the case, but we better leave it
+                        // not in midair
+						if (((Entity) player).isOnGround()) {
 							time--;
 							if (time == 0) {
 								// push him only to the side? or any direction
 								// like now
-								if (BreweryPlugin.use1_9) { // Pushing is way stronger in 1.9
+								if (VERSION.isOrLater(MinecraftVersion.V1_9)) { // Pushing is way stronger in 1.9
 									push.setX((Math.random() - 0.5) / 2.0);
 									push.setZ((Math.random() - 0.5) / 2.0);
 								} else {
@@ -623,7 +631,7 @@ public class BPlayer {
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
 		item.setMetadata("brewery_puke", new FixedMetadataValue(BreweryPlugin.getInstance(), true));
-		if (BreweryPlugin.use1_14) item.setPersistent(false); // No need to save Puke items
+		if (VERSION.isOrLater(MinecraftVersion.V1_14)) item.setPersistent(false); // No need to save Puke items
 
 		int pukeDespawntime = BConfig.pukeDespawntime;
 		if (pukeDespawntime >= 5800) {
@@ -667,7 +675,7 @@ public class BPlayer {
 		} else if (duration < 115) {
 			duration = 115;
 		}
-		if (!BreweryPlugin.use1_14) {
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) {
 			duration *= 4;
 		}
 		List<PotionEffect> l = new ArrayList<>(1);
@@ -697,7 +705,7 @@ public class BPlayer {
 				duration = 0;
 			}
 		}
-		if (!BreweryPlugin.use1_14) {
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) {
 			duration *= 4;
 		}
 		if (duration > 0) {
@@ -712,7 +720,7 @@ public class BPlayer {
 			} else {
 				duration = 30;
 			}
-			if (!BreweryPlugin.use1_14) {
+			if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) {
 				duration *= 4;
 			}
 			out.add(PotionEffectType.BLINDNESS.createEffect(duration, 0));
@@ -757,7 +765,7 @@ public class BPlayer {
 
 	public void hangoverEffects(final Player player) {
 		int duration = offlineDrunk * 25 * getHangoverQuality();
-		if (!BreweryPlugin.use1_14) {
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) {
 			duration *= 2;
 		}
 		int amplifier = getHangoverQuality() / 3;

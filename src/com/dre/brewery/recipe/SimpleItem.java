@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,8 @@ import java.util.Objects;
  * Simple Minecraft Item with just Material
  */
 public class SimpleItem extends RecipeItem implements Ingredient {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private Material mat;
 	private short dur; // Old Mc
@@ -64,7 +67,7 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 			return false;
 		}
 		//noinspection deprecation
-		return BreweryPlugin.use1_13 || dur == item.getDurability();
+		return VERSION.isOrLater(MinecraftVersion.V1_13) || dur == item.getDurability();
 	}
 
 	@Override

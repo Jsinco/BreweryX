@@ -6,6 +6,7 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -23,7 +24,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.dre.brewery.utility.MinecraftVersion.V1_9;
+
 public class BCauldron {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
@@ -171,7 +176,7 @@ public class BCauldron {
 		ItemStack potion = ingredients.cook(state, player.getName());
 		if (potion == null) return false;
 
-		if (BreweryPlugin.use1_13) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 			BlockData data = block.getBlockData();
 			if (!(data instanceof Levelled)) {
 				bcauldrons.remove(block);
@@ -221,7 +226,7 @@ public class BCauldron {
 				changed = true;
 			}
 		}
-		if (BreweryPlugin.use1_9) {
+		if (VERSION.isOrLater(V1_9)) {
 			block.getWorld().playSound(block.getLocation(), Sound.ITEM_BOTTLE_FILL, 1f, 1f);
 		}
 		// Bukkit Bug, inventory not updating while in event so this
@@ -255,11 +260,26 @@ public class BCauldron {
 			// Colorable spirally spell, 0 count enables color instead of the offset variables
 			// Configurable RGB color. The last parameter seems to control the hue and motion, but i couldn't find
 			// how exactly in the client code. 1025 seems to be the best for color brightness and upwards motion
-			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+			/*block.getWorld().spawnParticle(Particle.ENTITY_EFFECT, getRandParticleLoc(), 0,
 				((double) color.getRed()) / 255.0,
 				((double) color.getGreen()) / 255.0,
 				((double) color.getBlue()) / 255.0,
-				1025.0);
+				1025.0);*/
+			//block.getWorld().spawnParticle(Particle.ENTITY_EFFECT, getRandParticleLoc(), 0, color);
+
+			if (VERSION.isOrLater(MinecraftVersion.V1_21)) {
+				block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+						((double) color.getRed()) / 255.0,
+						((double) color.getGreen()) / 255.0,
+						((double) color.getBlue()) / 255.0,
+						1025.0, color);
+			} else {
+				block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+						((double) color.getRed()) / 255.0,
+						((double) color.getGreen()) / 255.0,
+						((double) color.getBlue()) / 255.0,
+						1025.0);
+			}
 
 			if (BConfig.minimalParticles) {
 				return;
@@ -275,8 +295,8 @@ public class BCauldron {
 				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
 
-			if (BreweryPlugin.use1_13 && particleRandom.nextFloat() > 0.4) {
-				// Two hovering pixely dust clouds, a bit offset and with DustOptions to give some color and size
+			if (VERSION.isOrLater(MinecraftVersion.V1_13) && particleRandom.nextFloat() > 0.4) {
+				// Two hovering pixely dust clouds, a bit of offset and with DustOptions to give some color and size
 				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
 			}
 		}
@@ -416,7 +436,7 @@ public class BCauldron {
 
 			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
-			if (!BreweryPlugin.use1_9) {
+			if (VERSION.isOrEarlier(V1_9)) {
 				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
@@ -437,8 +457,8 @@ public class BCauldron {
 			// Interact event is called twice!!!?? in 1.9, once for each hand.
 			// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
 			// We mark if a player had the event for the main hand
-			// If not, we handle the main hand in the event for the off hand
-			if (BreweryPlugin.use1_9) {
+			// If not, we handle the main hand in the event for the offhand
+			if (VERSION.isOrLater(V1_9)) {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
@@ -446,7 +466,7 @@ public class BCauldron {
 				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
-						if (item != null && item.getType() != Material.AIR) {
+						if (item.getType() != Material.AIR) {
 							materialInHand = item.getType();
 							handSwap = true;
 						} else {

@@ -2,6 +2,7 @@ package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +15,7 @@ public class ItemName implements SubCommand {
     public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         @SuppressWarnings("deprecation")
-        ItemStack hand = BreweryPlugin.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
+        ItemStack hand = BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_9) ? player.getInventory().getItemInMainHand() : player.getItemInHand();
         if (hand != null) {
             breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
         } else {

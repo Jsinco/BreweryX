@@ -2,6 +2,7 @@ package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -9,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class BEffect {
 
-	private PotionEffectType type;
+	private final PotionEffectType type;
 	private short minlvl;
 	private short maxlvl;
 	private short minduration;
@@ -102,7 +103,7 @@ public class BEffect {
 		}
 
 		duration *= 20;
-		if (!BreweryPlugin.use1_14) {
+		if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_14)) {
 			@SuppressWarnings("deprecation")
 			double modifier = type.getDurationModifier();
 			duration /= modifier;
