@@ -43,7 +43,7 @@ public class MCBarrel {
 			PersistentDataContainer data = barrel.getPersistentDataContainer();
 			NamespacedKey key = new NamespacedKey(BreweryPlugin.getInstance(), TAG);
 			if (!data.has(key, PersistentDataType.LONG)) {
-				key = new NamespacedKey("brewery", TAG); // Legacy key
+				key = new NamespacedKey("brewery", TAG.toLowerCase()); // Legacy key
 			}
 
 			// Check for legacy key
