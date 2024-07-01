@@ -258,22 +258,17 @@ public class BCauldron {
 		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
 			Color color = getParticleColor();
 			// Colorable spirally spell, 0 count enables color instead of the offset variables
-			// Configurable RGB color. The last parameter seems to control the hue and motion, but i couldn't find
+			// Configurable RGB color. The last parameter seems to control the hue and motion, but I couldn't find
 			// how exactly in the client code. 1025 seems to be the best for color brightness and upwards motion
 
 			if (VERSION.isOrLater(MinecraftVersion.V1_21)) {
-				block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
-						((double) color.getRed()) / 255.0,
-						((double) color.getGreen()) / 255.0,
-						((double) color.getBlue()) / 255.0,
-						1025.0, color);
+				block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0, color);
 			} else {
 				block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
 						((double) color.getRed()) / 255.0,
 						((double) color.getGreen()) / 255.0,
 						((double) color.getBlue()) / 255.0,
 						1025.0);
-
 			}
 
 			if (BConfig.minimalParticles) {
