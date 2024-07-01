@@ -31,7 +31,7 @@ import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.*;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
-import com.dre.brewery.integration.placeholders.PlaceholderAPI;
+import com.dre.brewery.integration.papi.PlaceholderAPI;
 import com.dre.brewery.listeners.*;
 import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
