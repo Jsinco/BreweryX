@@ -139,7 +139,7 @@ public class PermissionUtil {
 	 * Brewery Permissions of _only_ the Commands
 	 */
 	public enum BPermission {
-		PLAYER("brewery.cmd.player"),
+		// PLAYER("brewery.cmd.player"),
 		SEAL("brewery.cmd.seal"),
 		UNLABEL("brewery.cmd.unlabel"),
 
@@ -156,6 +156,7 @@ public class PermissionUtil {
 		WAKEUP("brewery.cmd.wakeup"),
 
 		STATIC("brewery.cmd.static"),
+		SET("brewery.cmd.set"),
 		COPY("brewery.cmd.copy"),
 		DELETE("brewery.cmd.delete");
 

@@ -31,6 +31,7 @@ public class CommandManager implements TabExecutor {
         subCommands.put("copy", new CopyCommand(plugin));
         subCommands.put("delete", new DeleteCommand(plugin));
         subCommands.put("static", new StaticCommand());
+		subCommands.put("set", new SetCommand());
         subCommands.put("unLabel", new UnLabelCommand());
         subCommands.put("debuginfo", new DebugInfoCommand(plugin));
         subCommands.put("showstats", new ShowStatsCommand());

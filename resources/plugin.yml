@@ -2,7 +2,7 @@ name: BreweryX
 version: '${project.version}'
 website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
-softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun]
+softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun, PlaceholderAPI]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
 folia-supported: true
 api-version: 1.13
@@ -53,6 +53,7 @@ permissions:
       brewery.cmd.copy: true
       brewery.cmd.delete: true
       brewery.cmd.static: true
+      brewery.cmd.set: true
       brewery.cmd.reload: true
       brewery.cmd.itemname: true
       brewery.cmd.reloadaddons: true
@@ -95,6 +96,8 @@ permissions:
     description: Delete Brews
   brewery.cmd.static:
     description: Make Brews Static
+  brewery.cmd.set:
+    description: Set drunkenness and quality
   brewery.cmd.reload:
     description: Reload config
   brewery.cmd.itemname:

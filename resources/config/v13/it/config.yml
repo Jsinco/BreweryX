@@ -71,9 +71,15 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# Se i barili vengono creati solo quando il cartello posto contiene la parola "barrel" (o una traduzione) [true]
+requireKeywordOnSigns: true
+
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
+
+# Durata (in minuti) di un "anno" durante l'invecchiamento delle bevande [20]
+agingYearDuration: 20
 
 # The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
 # hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
@@ -423,7 +429,7 @@ cauldron:
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
 # distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
-# wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera 7=Crimson 8=Warped 9=Mangrove 10=Ciliegio 11=Bambù
+# wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera 7=Crimson 8=Warped 9=Mangrove 10=Ciliegio 11=Bambù (12=Tagliare il rame)
 #   The Minecraft barrel is made of oak
 # age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
 # color: Colore della pozione dopo essere stata distillata/invecchiata

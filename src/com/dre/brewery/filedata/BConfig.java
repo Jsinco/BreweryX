@@ -65,6 +65,8 @@ public class BConfig {
 	public static boolean openEverywhere;
 	public static boolean loadDataAsync;
 	public static boolean virtualChestPerms;
+	public static int agingYearDuration;
+	public static boolean requireKeywordOnSigns;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
@@ -266,6 +268,8 @@ public class BConfig {
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 		brewHopperDump = config.getBoolean("brewHopperDump", false);
+		agingYearDuration = config.getInt("agingYearDuration", 20);
+		requireKeywordOnSigns = config.getBoolean("requireKeywordOnSigns", true);
 
 		if (VERSION.isOrLater(MinecraftVersion.V1_14)) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);

@@ -33,6 +33,7 @@ CMD_Static: '&aTrank ist nun unveränderlich und kann nicht weiter gereift oder 
 CMD_NonStatic: '&eTrank ist wieder veränderlich und kann normal gereift oder destilliert werden'
 CMD_Drink: '&aDu trinkst &v1'
 CMD_DrinkOther: '&a&v1 trinkt &v2'
+CMD_Set: '&a&v1''s Trunkenheit wurde erfolgreich auf &v2 gesetzt. Mit einer Qualität von &v3.'
 
 # Error
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
@@ -63,7 +64,6 @@ Help_Delete: '&6/brew Delete &9Entfernt den Trank in deiner Hand'
 Help_Help: '&6/brew help [Seite] &9Zeigt eine bestimmte Hilfeseite an'
 Help_Info: '&6/brew Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an'
 Help_InfoOther: '&6/brew Info [Spieler]&9 Zeigt die aktuelle Trunkenheit und Qualität von [Spieler] an'
-Help_Player: '&6/brew <Spieler> <%Trunkenheit> [Qualität]&9 Setzt Trunkenheit (und Qualität) eines Spielers'
 Help_Reload: '&6/brew reload &9Config neuladen'
 Help_Configname: '&6/brew ItemName &9Zeigt Name für die Config vom Item in der Hand'
 Help_UnLabel: '&6/brew UnLabel &9Entfernt die genaue Beschriftung des Trankes'
@@ -75,6 +75,7 @@ Help_WakeupCheckSpecific: '&6/brew Wakeup Check <id> &9Teleportiert zu einem Auf
 Help_WakeupList: '&6/brew Wakeup List <Seite> [Welt]&9 Listet die Aufwachpunkte einer Welt auf'
 Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Entfernt einen Aufwachpunkt'
 Help_Static: '&6/brew Static &9Trank unveränderlich machen -> Kein weiteres reifen oder destillieren möglich'
+Help_Set: '&6/brew set <Spieler> <%Trunkenheit> [Qualität] &9Setzt Trunkenheit (und Qualität) eines Spielers'
 Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Trank mit optionaler Qualität (1-10)'
 Help_Give: '&6/brew give <Rezept> [Qualität] [Spieler] &9Alias für /brew create'
 Help_Puke: '&6/brew puke [Spieler] [Menge] &9Bringt [Spieler] zum erbrechen'

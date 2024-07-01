@@ -28,12 +28,10 @@ import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.*;
-import com.dre.brewery.integration.ChestShopListener;
-import com.dre.brewery.integration.IntegrationListener;
-import com.dre.brewery.integration.ShopKeepersListener;
-import com.dre.brewery.integration.SlimefunListener;
+import com.dre.brewery.integration.*;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
+import com.dre.brewery.integration.papi.PlaceholderAPI;
 import com.dre.brewery.listeners.*;
 import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
@@ -193,6 +191,11 @@ public class BreweryPlugin extends JavaPlugin {
 					msg(Bukkit.getConsoleSender(), languageReader.get("Etc_UpdateAvailable", "v" + getDescription().getVersion(), "v" + latestVersion));
 				}
 			});
+		}
+
+		// Register PlaceholderAPI Placeholders
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new PlaceholderAPI().register();
 		}
 
 		this.debugLog("Using scheduler: " + scheduler.getClass().getSimpleName());

@@ -72,9 +72,15 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# Si les barils ne sont créés que lorsque le panneau placé contient le mot "barrel" (ou une traduction) [true]
+requireKeywordOnSigns: true
+
 # Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
+
+# Durée (en minutes) d'une « année » pour la maturation des boissons [20]
+agingYearDuration: 20
 
 # Les ingrédients et autres données de brassage utilisés sont sauvegardés dans tous les articles de brasserie. [false]
 # Pour empêcher les clients piratés de lire exactement ce qui a été utilisé pour infuser un élément, les données peuvent être encodées/brouillées.
@@ -426,7 +432,7 @@ cauldron:
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
 # distilltime: Combien de temps (en secondes) dure une distillation (0=Temps par défaut de 40 secondes) MC Par défaut serait de 20 secondes
-# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir 7=Crimson 8=Warped 9=Mangrove 10=Cerisier 11=Bambou
+# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir 7=Crimson 8=Warped 9=Mangrove 10=Cerisier 11=Bambou (12=Cuivre coupé)
 #   Le tonneau Minecraft est en chêne.
 # age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
 # color: Couleur de la potion après distillation/avoir laissé vieillir.

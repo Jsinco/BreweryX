@@ -71,9 +71,15 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# Ob Fässer nur erstellt werden, wenn das platzierte Schild das Wort "barrel" (oder eine Übersetzung) enthält [true]
+requireKeywordOnSigns: true
+
 # Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
+
+# Dauer (in Minuten) eines "Jahres" beim Reifen von Getränken [20]
+agingYearDuration: 20
 
 # Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
 # dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
@@ -424,7 +430,7 @@ cauldron:
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
 # distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
-# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche 7=Karmesin 8=Wirr 9=Mangrove 10=Kirschholz 11=Bambus
+# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche 7=Karmesin 8=Wirr 9=Mangrove 10=Kirschholz 11=Bambus  (12=Kupfer)
 #   Das Minecraft Fass besteht aus Eiche
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen.

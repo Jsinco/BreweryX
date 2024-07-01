@@ -86,7 +86,7 @@ public class Barrel implements InventoryHolder {
 		for (Barrel barrel : barrels) {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			if (barrel != null) {
-				barrel.time += (1.0 / 20.0);
+				barrel.time += (1.0 / BConfig.agingYearDuration);
 			}
 		}
 		int numBarrels = barrels.size();
@@ -332,6 +332,9 @@ public class Barrel implements InventoryHolder {
 	 */
 	public static boolean create(Block sign, Player player) {
 		Block spigot = BarrelBody.getSpigotOfSign(sign);
+
+		// Check for already existing barrel at this location
+		if (Barrel.get(spigot) != null) return false;
 
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
