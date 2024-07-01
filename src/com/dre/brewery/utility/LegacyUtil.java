@@ -189,7 +189,7 @@ public class LegacyUtil {
 
 	public static boolean isCauldronHeatsource(Block block) {
 		Material type = block.getType();
-		return type != null && (type == Material.FIRE || type == SOUL_FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
+		return type == Material.FIRE || type == SOUL_FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type);
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
