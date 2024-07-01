@@ -273,7 +273,7 @@ public class BPlayer {
 		b.append("§7]");
 
 		final String text = b.toString();
-		if (hangover && BreweryPlugin.use1_11) {
+		if (hangover && VERSION.isOrLater(MinecraftVersion.V1_11)) {
 			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
 			return false;
 		}
@@ -343,25 +343,6 @@ public class BPlayer {
 		}
 
 		return b.toString();
-	}
-
-	public String generateStars() {
-		return generateStars(offlineDrunk > 0 ? 11 - getHangoverQuality() : drunkenness > 0 ? getQuality() : 0);
-
-		b.append("§7]");
-		final String text = b.toString();
-		if (hangover && VERSION.isOrLater(MinecraftVersion.V1_11)) {
-			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
-			return false;
-		}
-		try {
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
-			return true;
-		} catch (UnsupportedOperationException | NoSuchMethodError e) {
-			player.sendMessage(text);
-			return false;
-		}
-
 	}
 
 	// Player has drunken too much
