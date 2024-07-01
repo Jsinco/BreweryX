@@ -19,21 +19,36 @@
  *     along with Brewery.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
-
 package com.dre.brewery;
 
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.CommandUtil;
-import com.dre.brewery.filedata.*;
-import com.dre.brewery.integration.*;
+import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.filedata.BData;
+import com.dre.brewery.filedata.DataSave;
+import com.dre.brewery.filedata.LanguageReader;
+import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.integration.ChestShopListener;
+import com.dre.brewery.integration.IntegrationListener;
+import com.dre.brewery.integration.ShopKeepersListener;
+import com.dre.brewery.integration.SlimefunListener;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.integration.papi.PlaceholderAPI;
-import com.dre.brewery.listeners.*;
-import com.dre.brewery.recipe.*;
+import com.dre.brewery.listeners.BlockListener;
+import com.dre.brewery.listeners.CauldronListener;
+import com.dre.brewery.listeners.EntityListener;
+import com.dre.brewery.listeners.InventoryListener;
+import com.dre.brewery.listeners.PlayerListener;
+import com.dre.brewery.listeners.WorldListener;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.CustomItem;
+import com.dre.brewery.recipe.Ingredient;
+import com.dre.brewery.recipe.ItemLoader;
+import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -79,11 +94,11 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		final String path = BreweryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		final String jarDir = new File(path).getParentFile().getAbsolutePath();
+		String path = BreweryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String jarDir = new File(path).getParentFile().getAbsolutePath();
 
-		final File breweryFolder = new File(jarDir + File.separator + "Brewery");
-		final File breweryXFolder = new File(jarDir + File.separator + "BreweryX");
+		File breweryFolder = new File(jarDir + File.separator + "Brewery");
+		File breweryXFolder = new File(jarDir + File.separator + "BreweryX");
 		if (breweryFolder.exists() && !breweryXFolder.exists()) {
 			breweryFolder.renameTo(breweryXFolder);
 		}
@@ -98,7 +113,7 @@ public class BreweryPlugin extends JavaPlugin {
 		minecraftVersion = MinecraftVersion.getIt();
 		log("Minecraft Version: " + minecraftVersion.getVersion());
 		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
-			getLogger().warning("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
+			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
 
 		// Todo: find which version MC started using UUIDs
@@ -126,13 +141,13 @@ public class BreweryPlugin extends JavaPlugin {
 		try {
 			FileConfiguration cfg = BConfig.loadConfigFile();
 			if (cfg == null) {
-				log("Something went wrong when trying to load the config file! Please check your config.yml");
+				errorLog("Something went wrong when trying to load the config file! Please check your config.yml");
 				return;
 			}
 			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log("Something went wrong when trying to load the config file! Please check your config.yml");
+			errorLog("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -148,7 +163,7 @@ public class BreweryPlugin extends JavaPlugin {
 		stats.setupBStats();
 
 
-		getCommand("brewery").setExecutor(new CommandManager());
+		getCommand("breweryx").setExecutor(new CommandManager());
 		// Listeners
 		playerListener = new PlayerListener();
 
@@ -198,8 +213,8 @@ public class BreweryPlugin extends JavaPlugin {
 			new PlaceholderAPI().register();
 		}
 
-		this.debugLog("Using scheduler: " + scheduler.getClass().getSimpleName());
-		this.log(this.getDescription().getName() + " enabled!");
+		log("Using scheduler: " + scheduler.getClass().getSimpleName());
+		log(this.getDescription().getName() + " enabled!");
 	}
 
 	@Override
@@ -341,13 +356,17 @@ public class BreweryPlugin extends JavaPlugin {
 	}
 
 	public void log(String msg) {
-		this.msg(Bukkit.getConsoleSender(), msg);
+		Bukkit.getConsoleSender().sendMessage(color(BConfig.pluginPrefix + msg));
 	}
 
 	public void debugLog(String msg) {
 		if (debug) {
 			this.msg(Bukkit.getConsoleSender(), "&2[Debug] &f" + msg);
 		}
+	}
+
+	public void warningLog(String msg) {
+		Bukkit.getConsoleSender().sendMessage(color(BConfig.pluginPrefix + "&eWARNING: " + msg));
 	}
 
 	public void errorLog(String msg) {

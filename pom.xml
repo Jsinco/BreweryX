@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>BreweryX</artifactId>
-	<version>3.2.1-PRERELEASE</version>
+	<version>3.2.1</version>
 	<name>BreweryX</name>
 
 	<properties>

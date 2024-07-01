@@ -345,6 +345,10 @@ public class BPlayer {
 		return b.toString();
 	}
 
+	public String generateStars() {
+		return generateStars(offlineDrunk > 0 ? 11 - getHangoverQuality() : drunkenness > 0 ? getQuality() : 0);
+	}
+
 	// Player has drunken too much
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;

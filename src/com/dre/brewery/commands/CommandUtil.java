@@ -21,7 +21,7 @@ public class CommandUtil {
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
     private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-
+    // Todo: Replace with a map
     private static Set<Tuple<String, String>> mainSet;
     private static Set<Tuple<String, String>> altSet;
     private static final String[] QUALITY = {"1", "10"};
@@ -176,7 +176,7 @@ public class CommandUtil {
         }
 
 		if (SET.checkCached(sender)) {
-			cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Set"));
+			cmds.add(plugin.languageReader.get("Help_Set"));
 		}
 
         if (COPY.checkCached(sender)) {

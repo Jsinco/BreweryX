@@ -3,15 +3,15 @@ version: '${project.version}'
 website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun, PlaceholderAPI]
-authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
+authors: [Jonah (Jsinco), Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
 folia-supported: true
 api-version: 1.13
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
 commands:
-  brewery:
+  breweryx:
     description: Mostly admin commands to create/modify Brews and drunkenness
-    aliases: [brew]
+    aliases: [brewery, brew]
 permissions:
 # -- Groups --
 # User
