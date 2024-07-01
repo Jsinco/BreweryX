@@ -5,7 +5,7 @@ main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun, PlaceholderAPI]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
 folia-supported: true
-api-version: 1.20
+api-version: 1.13
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
 commands:

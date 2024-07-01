@@ -7,6 +7,7 @@ import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +44,7 @@ public class DebugInfoCommand implements SubCommand {
 
 
     public void debugInfo(CommandSender sender, String recipeName) {
-        if (!BreweryPlugin.use1_9 || !sender.isOp()) return;
+        if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_9) || !sender.isOp()) return;
         Player player = (Player) sender;
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand != null) {

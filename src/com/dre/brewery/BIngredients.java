@@ -9,6 +9,7 @@ import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.recipe.PotionColor;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -28,6 +29,8 @@ import java.util.List;
  * Represents ingredients in Cauldron, Brew
  */
 public class BIngredients {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 	private static int lastId = 0; // Legacy
 
 	private int id; // Legacy
@@ -136,7 +139,7 @@ public class BIngredients {
 			brew.updateCustomModelData(potionMeta);
 
 			if (cookRecipe.hasGlint()) {
-				potionMeta.addEnchant(Enchantment.LUCK, 1, true);
+				potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 				potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			}
 		} else {
@@ -157,7 +160,7 @@ public class BIngredients {
 						lore.write();
 					}
 					cauldronRecipe.getColor().colorBrew(potionMeta, potion, true);
-					if (BreweryPlugin.use1_14 && cauldronRecipe.getCmData() != 0) {
+					if (VERSION.isOrLater(MinecraftVersion.V1_14) && cauldronRecipe.getCmData() != 0) {
 						potionMeta.setCustomModelData(cauldronRecipe.getCmData());
 					}
 				}

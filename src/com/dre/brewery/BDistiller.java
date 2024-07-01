@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Material;
@@ -25,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ProgrammerDan (1.9 distillation update only)
  */
 public class BDistiller {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private static final int DISTILLTIME = 400;
 	private static Map<Block, BDistiller> trackedDistillers = new ConcurrentHashMap<>();
@@ -220,8 +223,8 @@ public class BDistiller {
 				case 1:
 					// Custom potion but not for distilling. Stop any brewing and cancel this task
 					if (stand.getBrewingTime() > 0) {
-						if (BreweryPlugin.use1_11) {
-							// The trick below doesnt work in 1.11, but we dont need it anymore
+						if (VERSION.isOrLater(MinecraftVersion.V1_11)) {
+							// The trick below doesn't work in 1.11, but we don't need it anymore
 							// This should only happen with older Brews that have been made with the old Potion Color System
 							// This causes standard potions to not brew in the brewing stand if put together with Brews, but the bubble animation will play
 							stand.setBrewingTime(Short.MAX_VALUE);

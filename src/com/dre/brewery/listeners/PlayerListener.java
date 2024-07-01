@@ -5,6 +5,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -24,6 +25,8 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class PlayerListener implements Listener {
 
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
@@ -37,12 +40,12 @@ public class PlayerListener implements Listener {
 		// -- Clicking an Hopper --
 		if (type == Material.HOPPER) {
 			if (BConfig.brewHopperDump && event.getPlayer().isSneaking()) {
-				if (!BreweryPlugin.use1_9 || event.getHand() == EquipmentSlot.HAND) {
+				if (VERSION.isOrEarlier(MinecraftVersion.V1_9) || event.getHand() == EquipmentSlot.HAND) {
 					ItemStack item = event.getItem();
 					if (Brew.isBrew(item)) {
 						event.setCancelled(true);
 						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, false);
-						if (BreweryPlugin.use1_11) {
+						if (VERSION.isOrLater(MinecraftVersion.V1_11)) {
 							clickedBlock.getWorld().playSound(clickedBlock.getLocation(), Sound.ITEM_BOTTLE_EMPTY, 1f, 1f);
 						}
 					}
@@ -52,7 +55,7 @@ public class PlayerListener implements Listener {
 		}
 
 		// -- Opening a Sealing Table --
-		if (BreweryPlugin.use1_14 && BSealer.isBSealer(clickedBlock)) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_14) && BSealer.isBSealer(clickedBlock)) {
 			if (player.isSneaking()) {
 				event.setUseInteractedBlock(Event.Result.DENY);
 				return;
@@ -78,7 +81,7 @@ public class PlayerListener implements Listener {
 		}
 
 		// -- Opening a Minecraft Barrel --
-		if (BreweryPlugin.use1_14 && type == Material.BARREL) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_14) && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
 				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
@@ -87,7 +90,7 @@ public class PlayerListener implements Listener {
 		}
 
 		// Do not process Off Hand for Barrel interaction
-		if (BreweryPlugin.use1_9 && event.getHand() != EquipmentSlot.HAND) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_9) && event.getHand() != EquipmentSlot.HAND) {
 			return;
 		}
 
@@ -117,7 +120,7 @@ public class PlayerListener implements Listener {
 
 			barrel.open(player);
 
-			if (BreweryPlugin.use1_14) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_14)) {
 
 				// When right clicking a normal Block in 1.14 with a potion or any edible item in hand,
 				// even when cancelled, the consume animation will continue playing while opening the Barrel inventory.
@@ -180,7 +183,7 @@ public class PlayerListener implements Listener {
 					/*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
 						brew.remove(item);
 					}*/
-					if (BreweryPlugin.use1_9) {
+					if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
 						if (player.getGameMode() != GameMode.CREATIVE) {
 							// replace the potion with an empty potion to avoid effects
 							event.setItem(new ItemStack(Material.POTION));
