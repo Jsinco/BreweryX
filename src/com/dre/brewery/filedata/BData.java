@@ -6,6 +6,7 @@ import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -22,6 +23,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BData {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static AtomicInteger dataMutex = new AtomicInteger(0); // WorldData: -1 = Saving, 0 = Free, >= 1 = Loading
 	public static FileConfiguration worldData = null; // World Data Cache for consecutive loading of Worlds. Nulled after a data save
@@ -204,7 +207,7 @@ public class BData {
 		for (String mat : matSection.getKeys(false)) {
 			String[] matSplit = mat.split(",");
 			Material m = Material.getMaterial(matSplit[0]);
-			if (m == null && BreweryPlugin.use1_13) {
+			if (m == null && VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				if (matSplit[0].equals("LONG_GRASS")) {
 					m = Material.SHORT_GRASS;
 				} else {

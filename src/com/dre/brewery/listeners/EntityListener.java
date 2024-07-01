@@ -38,7 +38,7 @@ public class EntityListener implements Listener {
 	public void onEntityCombust(EntityCombustEvent event) {
 		if (Brew.noLegacy()) return;
 		Entity entity = event.getEntity();
-		if (entity.getType() == EntityType.ITEM) {
+		if (entity.getType() == EntityType.DROPPED_ITEM) {
 			if (entity instanceof Item) {
 				ItemStack item = ((Item) entity).getItemStack();
 				if (item.getType() == Material.POTION) {

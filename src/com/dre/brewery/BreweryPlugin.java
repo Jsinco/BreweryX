@@ -38,6 +38,7 @@ import com.dre.brewery.listeners.*;
 import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Stats;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
@@ -60,13 +61,10 @@ public class BreweryPlugin extends JavaPlugin {
 	private static AddonManager addonManager;
 	private static TaskScheduler scheduler;
 	private static BreweryPlugin breweryPlugin;
+	private static MinecraftVersion minecraftVersion;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
-	public static boolean use1_9;
-	public static boolean use1_11;
-	public static boolean use1_13;
-	public static boolean use1_14;
 
 	// Public Listeners
 	public PlayerListener playerListener;
@@ -99,25 +97,28 @@ public class BreweryPlugin extends JavaPlugin {
 		scheduler = UniversalScheduler.getScheduler(this);
 
 		// Version check
+		minecraftVersion = MinecraftVersion.getIt();
+		log("Minecraft Version: " + minecraftVersion.getVersion());
+		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
+			getLogger().warning("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
+		}
+
+		// Todo: find which version MC started using UUIDs
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches("(^|.*[^.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
-		use1_9 = !v.matches("(^|.*[^.\\d])1\\.[0-8]([^\\d].*|$)");
-		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
-		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
-		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// Load Addons
 		addonManager = new AddonManager(this);
 		addonManager.loadAddons();
 
 
-		//MC 1.13 uses a different NBT API than the newer versions.
+		// MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
 		if (LegacyUtil.initNbt()) {
 			useNBT = true;
 		}
 
-		if (use1_14) {
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) {
 			// Campfires are weird
 			// Initialize once now so it doesn't lag later when we check for campfires under Cauldrons
 			getServer().createBlockData(Material.CAMPFIRE);
@@ -159,16 +160,16 @@ public class BreweryPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new WorldListener(), this);
 		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
-		if (use1_9) {
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
 		}
-		if (BConfig.hasChestShop && use1_13) {
+		if (BConfig.hasChestShop && getMCVersion().isOrLater(MinecraftVersion.V1_13)) {
 			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
 		}
 		if (BConfig.hasShopKeepers) {
 			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
 		}
-		if (BConfig.hasSlimefun && use1_14) {
+		if (BConfig.hasSlimefun && getMCVersion().isOrLater(MinecraftVersion.V1_14)) {
 			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
 		}
 
@@ -176,12 +177,12 @@ public class BreweryPlugin extends JavaPlugin {
 		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
 		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
-		if (use1_9) {
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
-		if (use1_14 && BConfig.updateCheck) {
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_14) && BConfig.updateCheck) {
 			new UpdateChecker(114777).query(latestVersion -> {
 				int pluginVersion = parseInt(getDescription().getVersion().replace(".","").strip());
 				int latest = parseInt(latestVersion.replace(".", "").strip());
@@ -322,6 +323,14 @@ public class BreweryPlugin extends JavaPlugin {
 		return breweryPlugin;
 	}
 
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
+
+	public static MinecraftVersion getMCVersion() {
+		return minecraftVersion;
+	}
+
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {
@@ -383,11 +392,6 @@ public class BreweryPlugin extends JavaPlugin {
 		return BUtil.color(msg);
 	}
 
-	public static TaskScheduler getScheduler() {
-		return scheduler;
-	}
-
-
 	// Runnables
 
 	public static class DrunkRunnable implements Runnable {
@@ -418,7 +422,7 @@ public class BreweryPlugin extends JavaPlugin {
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();
-			if (use1_14) MCBarrel.onUpdate();
+			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
 			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();
 			long t4 = System.nanoTime();
 			BPlayer.onUpdate();// updates players drunkenness

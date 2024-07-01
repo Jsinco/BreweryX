@@ -6,6 +6,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Color;
@@ -203,7 +204,7 @@ public class BRecipe {
 				matParts = ingredParts[0].split("\\.");
 			}
 
-			if (!BreweryPlugin.use1_14 && matParts[0].equalsIgnoreCase("sweet_berries")) {
+			if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_14) && matParts[0].equalsIgnoreCase("sweet_berries")) {
 				// Using this in default recipes, but will error on < 1.14
 				ingredients.add(new SimpleItem(Material.BEDROCK));
 				continue;

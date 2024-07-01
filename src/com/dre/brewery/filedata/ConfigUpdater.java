@@ -1,20 +1,29 @@
 package com.dre.brewery.filedata;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+// Todo: Wow this is such an awful way to do this. I need to fix this - Jsinco 6/30/24
 public class ConfigUpdater {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private ArrayList<String> config = new ArrayList<>();
 	private File file;
@@ -197,7 +206,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.5") || fromVersion.equals("1.6")) {
-			update15(BreweryPlugin.use1_13, de);
+			update15(VERSION.isOrLater(MinecraftVersion.V1_13), de);
 			fromVersion = "1.7";
 			oldMat = false;
 		}
@@ -262,7 +271,7 @@ public class ConfigUpdater {
 			fromVersion = "3.1";
 		}
 
-		if (BreweryPlugin.use1_13 && oldMat) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_13) && oldMat) {
 			updateMaterials(true);
 			updateMaterialDescriptions(de);
 		}
@@ -1267,7 +1276,7 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   Das Minecraft Fass besteht aus Eiche");
 		}
-		if (BreweryPlugin.use1_13) updateMaterialDescriptions(true);
+		if (VERSION.isOrLater(MinecraftVersion.V1_13)) updateMaterialDescriptions(true);
 	}
 
 	// Update en from 1.7 to 1.8
@@ -1318,7 +1327,7 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   The Minecraft barrel is made of oak");
 		}
-		if (BreweryPlugin.use1_13) updateMaterialDescriptions(false);
+		if (VERSION.isOrLater(MinecraftVersion.V1_13)) updateMaterialDescriptions(false);
 	}
 
 	private void update18de(FileConfiguration yml) {
@@ -1360,7 +1369,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1369,7 +1378,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",
@@ -1461,7 +1470,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1470,7 +1479,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",
@@ -1562,7 +1571,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1571,7 +1580,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (BreweryPlugin.use1_13) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",

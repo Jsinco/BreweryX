@@ -2,36 +2,39 @@ package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import de.diddiz.LogBlock.Actor;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import de.diddiz.LogBlock.Consumer;
+import de.diddiz.LogBlock.LogBlock;
+import de.diddiz.LogBlock.Logging;
+import de.diddiz.util.BukkitUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.diddiz.LogBlock.Consumer;
-import de.diddiz.LogBlock.LogBlock;
-import de.diddiz.LogBlock.Logging;
-import static de.diddiz.LogBlock.config.Config.isLogging;
-import de.diddiz.util.BukkitUtils;
-import static de.diddiz.util.BukkitUtils.compareInventories;
-import static de.diddiz.util.BukkitUtils.compressInventory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.diddiz.LogBlock.config.Config.isLogging;
+import static de.diddiz.util.BukkitUtils.compareInventories;
+import static de.diddiz.util.BukkitUtils.compressInventory;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class LogBlockBarrel {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 	private static final List<LogBlockBarrel> opened = new ArrayList<>();
+
 	public static Consumer consumer = LogBlock.getInstance().getConsumer();
 	private static Method rawData;
 	private static Method queueChestAccess;
 
 	static {
-		if (!BreweryPlugin.use1_13) {
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 			try {
 				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
 				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class, short.class);
@@ -61,7 +64,7 @@ public class LogBlockBarrel {
 		}
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
-			if (!BreweryPlugin.use1_13) {
+			if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 				try {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
@@ -109,7 +112,7 @@ public class LogBlockBarrel {
 		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {
-			if (!BreweryPlugin.use1_13) {
+			if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 				try {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
