@@ -48,6 +48,11 @@ public enum MinecraftVersion {
         String rawVersion = Bukkit.getVersion();
         String rawVersionParsed = rawVersion.substring(rawVersion.indexOf("(MC: ") + 5, rawVersion.indexOf(")"));
 
+        // 1.20.5/6
+        if (rawVersionParsed.equals("1.20.5") || rawVersionParsed.equals("1.20.6")) {
+            return V1_21;
+        }
+
         String[] versionSplit = rawVersionParsed.split("\\.");
         return get(versionSplit[0] + "." + versionSplit[1]);
     }
