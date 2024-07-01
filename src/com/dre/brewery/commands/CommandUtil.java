@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,8 @@ import static com.dre.brewery.utility.PermissionUtil.BPermission.*;
 
 public class CommandUtil {
 
-    private static final BreweryPlugin BREWERY_PLUGIN = BreweryPlugin.getInstance();
+    private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+    private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 
     private static Set<Tuple<String, String>> mainSet;
@@ -29,13 +31,13 @@ public class CommandUtil {
 
         int page = 1;
         if (args.length > 1) {
-            page = BREWERY_PLUGIN.parseInt(args[1]);
+            page = plugin.parseInt(args[1]);
         }
 
         ArrayList<String> commands = getCommands(sender);
 
         if (page == 1) {
-            BREWERY_PLUGIN.msg(sender, "&6" + BREWERY_PLUGIN.getDescription().getName() + " v" + BREWERY_PLUGIN.getDescription().getVersion());
+            plugin.msg(sender, "&6" + plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion());
         }
 
         BUtil.list(sender, commands, page);
@@ -52,12 +54,12 @@ public class CommandUtil {
         boolean hasQuality = false;
         String pName = null;
         if (args.length > 2) {
-            quality = BREWERY_PLUGIN.parseInt(args[args.length - 1]);
+            quality = plugin.parseInt(args[args.length - 1]);
 
             if (quality <= 0 || quality > 10) {
                 pName = args[args.length - 1];
                 if (args.length > 3) {
-                    quality = BREWERY_PLUGIN.parseInt(args[args.length - 2]);
+                    quality = plugin.parseInt(args[args.length - 2]);
                 }
             }
             if (quality > 0 && quality <= 10) {
@@ -68,11 +70,11 @@ public class CommandUtil {
         }
         Player player = null;
         if (pName != null) {
-            player = BREWERY_PLUGIN.getServer().getPlayer(pName);
+            player = plugin.getServer().getPlayer(pName);
         }
 
         if (!(sender instanceof Player) && player == null) {
-            BREWERY_PLUGIN.msg(sender, BREWERY_PLUGIN.languageReader.get("Error_PlayerCommand"));
+            plugin.msg(sender, plugin.languageReader.get("Error_PlayerCommand"));
             return null;
         }
 
@@ -105,7 +107,7 @@ public class CommandUtil {
         if (recipe != null) {
             return new Tuple<>(recipe.createBrew(quality), player);
         } else {
-            BREWERY_PLUGIN.msg(sender, BREWERY_PLUGIN.languageReader.get("Error_NoBrewName", name));
+            plugin.msg(sender, plugin.languageReader.get("Error_NoBrewName", name));
         }
         return null;
     }
@@ -113,25 +115,25 @@ public class CommandUtil {
     public static ArrayList<String> getCommands(CommandSender sender) {
 
         ArrayList<String> cmds = new ArrayList<>();
-        cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Help"));
+        cmds.add(plugin.languageReader.get("Help_Help"));
         PermissionUtil.evaluateExtendedPermissions(sender);
 
 		/*
         if (PLAYER.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Player"));
+            cmds.add (plugin.languageReader.get("Help_Player"));
         }
         */
 
         if (INFO.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Info"));
+            cmds.add (plugin.languageReader.get("Help_Info"));
         }
 
-        if (BreweryPlugin.use1_13 && SEAL.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Seal"));
+        if (VERSION.isOrLater(MinecraftVersion.V1_13) && SEAL.checkCached(sender)) {
+            cmds.add (plugin.languageReader.get("Help_Seal"));
         }
 
         if (UNLABEL.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_UnLabel"));
+            cmds.add (plugin.languageReader.get("Help_UnLabel"));
         }
 
         if (PermissionUtil.noExtendedPermissions(sender)) {
@@ -139,38 +141,38 @@ public class CommandUtil {
         }
 
         if (INFO_OTHER.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_InfoOther"));
+            cmds.add (plugin.languageReader.get("Help_InfoOther"));
         }
 
         if (CREATE.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Create"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Give"));
+            cmds.add(plugin.languageReader.get("Help_Create"));
+            cmds.add(plugin.languageReader.get("Help_Give"));
         }
 
         if (DRINK.checkCached(sender) || DRINK_OTHER.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Drink"));
+            cmds.add(plugin.languageReader.get("Help_Drink"));
         }
 
         if (RELOAD.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Configname"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Reload"));
+            cmds.add(plugin.languageReader.get("Help_Configname"));
+            cmds.add(plugin.languageReader.get("Help_Reload"));
         }
 
         if (PUKE.checkCached(sender) || PUKE_OTHER.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Puke"));
+            cmds.add(plugin.languageReader.get("Help_Puke"));
         }
 
         if (WAKEUP.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Wakeup"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_WakeupList"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_WakeupCheck"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_WakeupCheckSpecific"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_WakeupAdd"));
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_WakeupRemove"));
+            cmds.add(plugin.languageReader.get("Help_Wakeup"));
+            cmds.add(plugin.languageReader.get("Help_WakeupList"));
+            cmds.add(plugin.languageReader.get("Help_WakeupCheck"));
+            cmds.add(plugin.languageReader.get("Help_WakeupCheckSpecific"));
+            cmds.add(plugin.languageReader.get("Help_WakeupAdd"));
+            cmds.add(plugin.languageReader.get("Help_WakeupRemove"));
         }
 
         if (STATIC.checkCached(sender)) {
-            cmds.add(BREWERY_PLUGIN.languageReader.get("Help_Static"));
+            cmds.add(plugin.languageReader.get("Help_Static"));
         }
 
 		if (SET.checkCached(sender)) {
@@ -178,11 +180,11 @@ public class CommandUtil {
 		}
 
         if (COPY.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Copy"));
+            cmds.add (plugin.languageReader.get("Help_Copy"));
         }
 
         if (DELETE.checkCached(sender)) {
-            cmds.add (BREWERY_PLUGIN.languageReader.get("Help_Delete"));
+            cmds.add (plugin.languageReader.get("Help_Delete"));
         }
 
         return cmds;

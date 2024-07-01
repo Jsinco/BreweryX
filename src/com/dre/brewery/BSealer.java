@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -94,7 +95,7 @@ public class BSealer implements InventoryHolder {
 				Brew brew = Brew.get(contents[i]);
 				if (brew != null && !brew.isStripped()) {
 					brew.seal(contents[i]);
-					if (playerValid && BreweryPlugin.use1_9) {
+					if (playerValid && BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 						player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, 1.5f + (float) (Math.random() * 0.2));
 					}
 				}
@@ -105,7 +106,7 @@ public class BSealer implements InventoryHolder {
 	}
 
 	public static boolean isBSealer(Block block) {
-		if (BreweryPlugin.use1_14 && block.getType() == Material.SMOKER) {
+		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == Material.SMOKER) {
 			Container smoker = (Container) block.getState();
 			if (smoker.getCustomName() != null) {
 				if (smoker.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {

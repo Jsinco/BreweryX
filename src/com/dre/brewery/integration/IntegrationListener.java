@@ -15,6 +15,7 @@ import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -316,7 +317,7 @@ public class IntegrationListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event) {
 		// Catch the Interact Event early, so MMOItems does not act before us and cancel the event while we try to add it to the Cauldron
-		if (!BreweryPlugin.use1_9) return;
+		if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_9)) return;
 		if (BConfig.hasMMOItems == null) {
 			BConfig.hasMMOItems = BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MMOItems")
 				&& BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MythicLib");

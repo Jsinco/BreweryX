@@ -7,6 +7,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -16,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 
 public class BlockListener implements Listener {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event) {
@@ -63,7 +66,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!BreweryPlugin.use1_14 || event.getBlock().getType() != Material.SMOKER) return;
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14) || event.getBlock().getType() != Material.SMOKER) return;
 		BSealer.blockPlace(event.getItemInHand(), event.getBlock());
 	}
 

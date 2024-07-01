@@ -16,6 +16,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -37,6 +38,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BConfig {
+
+	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static final String configVersion = "3.1";
 	public static boolean updateCheck;
@@ -114,7 +117,7 @@ public class BConfig {
 			breweryPlugin.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
 			breweryPlugin.log("§1§lYou can find them in plugins/Brewery/configs/");
 			breweryPlugin.log("§1§lJust copy the config for your language into the Brewery folder and /brew reload");
-			InputStream defconf = breweryPlugin.getResource("config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + "en/config.yml");
+			InputStream defconf = breweryPlugin.getResource("config/" + (VERSION.isOrLater(MinecraftVersion.V1_13) ? "v13/" : "v12/") + "en/config.yml");
 			if (defconf == null) {
 				breweryPlugin.errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
@@ -141,14 +144,14 @@ public class BConfig {
 
 		final List<String> configTypes =  new ArrayList<>(List.of("de", "en", "es", "fr", "it", "zh"));
 		final List<String> langTypes = new ArrayList<>(List.of("de", "en", "es", "fr", "it", "ru", "tw", "zh"));
-		if (!BreweryPlugin.use1_13) { // not available for some versions according to original author, haven't looked. - Jsinco : 4/1
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) { // not available for some versions according to original author, haven't looked. - Jsinco : 4/1
 			configTypes.removeAll(List.of("es", "it", "zh"));
 		}
 
 		for (String l : configTypes) {
 			try {
 				BUtil.saveFile(breweryPlugin.getResource(
-						"config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), new File(configs, l), "config.yml", overwrite
+						"config/" + (VERSION.isOrLater(MinecraftVersion.V1_13) ? "v13/" : "v12/") + l + "/config.yml"), new File(configs, l), "config.yml", overwrite
 				);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -204,7 +207,7 @@ public class BConfig {
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
-			if (!version.equals(configVersion) || (oldMat && BreweryPlugin.use1_13)) {
+			if (!version.equals(configVersion) || (oldMat && VERSION.isOrLater(MinecraftVersion.V1_13))) {
 				File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
 				copyDefaultConfigAndLangs(true);
 				new ConfigUpdater(file).update(version, oldMat, breweryPlugin.language, config);
@@ -260,7 +263,7 @@ public class BConfig {
 		showBrewer = config.getBoolean("showBrewer", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		enableCauldronParticles = BreweryPlugin.use1_9 && config.getBoolean("enableCauldronParticles", false);
+		enableCauldronParticles = VERSION.isOrLater(MinecraftVersion.V1_9) && config.getBoolean("enableCauldronParticles", false);
 		minimalParticles = config.getBoolean("minimalParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
@@ -268,14 +271,14 @@ public class BConfig {
 		agingYearDuration = config.getInt("agingYearDuration", 20);
 		requireKeywordOnSigns = config.getBoolean("requireKeywordOnSigns", true);
 
-		if (BreweryPlugin.use1_14) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_14)) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 			MCBarrel.enableAging = config.getBoolean("ageInMCBarrels", true);
 		}
 
 		Brew.loadSeed(config, new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml"));
 
-		if (!BreweryPlugin.use1_13) {
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 			// world.getBlockAt loads Chunks in 1.12 and lower. Can't load async
 			loadDataAsync = false;
 		}
@@ -379,7 +382,7 @@ public class BConfig {
 		DistortChat.doSigns = config.getBoolean("distortSignText", false);
 
 		// Register Sealing Table Recipe
-		if (BreweryPlugin.use1_14) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_14)) {
 			if (craftSealingTable && !BSealer.recipeRegistered) {
 				BSealer.registerRecipe();
 			} else if (!craftSealingTable && BSealer.recipeRegistered) {
