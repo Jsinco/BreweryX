@@ -24,7 +24,7 @@ import java.util.Iterator;
  */
 public class BSealer implements InventoryHolder {
 	public static final NamespacedKey TAG_KEY = new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable");
-	public static final NamespacedKey LEGACY_TAG_KEY = new NamespacedKey("brewery", "sealingtable");
+	public static final NamespacedKey LEGACY_TAG_KEY = new NamespacedKey("brewery", "sealingtable"); // Do not capitalize
 	public static boolean recipeRegistered = false;
 	public static boolean inventoryHolderWorking = true;
 
