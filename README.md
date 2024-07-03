@@ -78,7 +78,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Jsinco:BreweryX:3.2.1'
+    implementation 'com.github.Jsinco:BreweryX:3.2.3-SNAPSHOT'
 }
 ```
 ### License
