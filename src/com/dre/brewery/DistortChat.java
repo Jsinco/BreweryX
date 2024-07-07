@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.PlayerChatDistortEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -67,31 +68,32 @@ public class DistortChat {
 	// Distort players words when he uses a command
 	public static void playerCommand(PlayerCommandPreprocessEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer());
-		if (bPlayer != null) {
-			if (commands != null && !commands.isEmpty() && !words.isEmpty()) {
-				String name = event.getPlayer().getName();
-				if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
-					String chat = event.getMessage();
-					for (String command : commands) {
-						if (command.length() + 1 < chat.length()) {
-							if (Character.isSpaceChar(chat.charAt(command.length()))) {
-								if (chat.toLowerCase().startsWith(command.toLowerCase())) {
-									if (log) {
-										BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", name, chat));
-									}
-									String message = chat.substring(command.length() + 1);
-									String distorted = distortMessage(message, bPlayer.getDrunkeness());
-									PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
-									BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
-									if (call.isCancelled()) {
-										return;
-									}
-									distorted = call.getDistortedMessage();
-
-									event.setMessage(chat.substring(0, command.length() + 1) + distorted);
-									waitPlayers.put(name, System.currentTimeMillis());
+		if (bPlayer == null) {
+			return;
+		}
+		if (commands != null && !commands.isEmpty() && !words.isEmpty()) {
+			String name = event.getPlayer().getName();
+			if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
+				String chat = event.getMessage();
+				for (String command : commands) {
+					if (command.length() + 1 < chat.length()) {
+						if (Character.isSpaceChar(chat.charAt(command.length()))) {
+							if (chat.toLowerCase().startsWith(command.toLowerCase())) {
+								if (log) {
+									BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", name, chat));
+								}
+								String message = chat.substring(command.length() + 1);
+								String distorted = distortMessage(message, bPlayer.getDrunkeness());
+								PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
+								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
+								if (call.isCancelled()) {
 									return;
 								}
+								distorted = call.getDistortedMessage();
+
+								event.setMessage(chat.substring(0, command.length() + 1) + distorted);
+								waitPlayers.put(name, System.currentTimeMillis());
+								return;
 							}
 						}
 					}
@@ -184,10 +186,12 @@ public class DistortChat {
 
 	// distorts a message without checking ignoreText letters
 	private static String distortString(String message, int drunkenness) {
+
 		if (message.length() > 1) {
 			// Create our own reference to the words list, in case of config reload
 			List<DistortChat> words = DistortChat.words;
 			for (DistortChat word : words) {
+
 				if (word.alcohol <= drunkenness) {
 					message = word.distort(message);
 				}

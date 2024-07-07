@@ -209,7 +209,7 @@ public class BData {
 			Material m = Material.getMaterial(matSplit[0]);
 			if (m == null && VERSION.isOrLater(MinecraftVersion.V1_13)) {
 				if (matSplit[0].equals("LONG_GRASS")) {
-					m = Material.SHORT_GRASS;
+					m = Material.GRASS;
 				} else {
 					m = Material.matchMaterial(matSplit[0], true);
 				}

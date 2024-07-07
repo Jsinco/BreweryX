@@ -209,7 +209,7 @@ public class AddonManager extends ClassLoader {
 				commandMap.getCommand(addonCommand.getName()).unregister(commandMap);
 			}
 
-			commandMap.register(addonCommand.getName(), "brewery", addonCommand);
+			commandMap.register(addonCommand.getName(), "breweryx", addonCommand);
 			addonCommands.add(addonCommand);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -226,9 +226,9 @@ public class AddonManager extends ClassLoader {
 
 			for (AddonCommand bukkitCommand : addonCommands) {
 				for (String alias : bukkitCommand.getAliases()) {
-					commandMap.getCommand("brewery:" + alias).unregister(commandMap);
+					commandMap.getCommand("breweryx:" + alias).unregister(commandMap);
 				}
-				commandMap.getCommand("brewery:" + bukkitCommand.getName()).unregister(commandMap);
+				commandMap.getCommand("breweryx:" + bukkitCommand.getName()).unregister(commandMap);
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();

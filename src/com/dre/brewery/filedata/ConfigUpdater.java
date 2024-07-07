@@ -2177,7 +2177,7 @@ public class ConfigUpdater {
 		String mat = line.replaceFirst(regexPrefix, "").replaceFirst(regexPostfix, "");
 		Material material;
 		if (mat.equalsIgnoreCase("LONG_GRASS")) {
-			material = Material.SHORT_GRASS;
+			material = Material.GRASS;
 		} else {
 			material = Material.matchMaterial(mat, true);
 		}
