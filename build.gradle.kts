@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.4"
+version = "3.2.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -32,7 +32,7 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.yaml", "snakeyaml")
     }
-    //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
+
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.1.0-SNAPSHOT")
@@ -50,9 +50,10 @@ dependencies {
     compileOnly("com.nisovin.shopkeepers:ShopkeepersAPI:2.18.0") // https://www.spigotmc.org/resources/shopkeepers.80756/history
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
-    implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
-    implementation("com.github.Anon8281:UniversalScheduler:0.1.3")
 
+    implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
+    implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
+    //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
