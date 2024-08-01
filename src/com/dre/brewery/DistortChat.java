@@ -1,7 +1,6 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.PlayerChatDistortEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
