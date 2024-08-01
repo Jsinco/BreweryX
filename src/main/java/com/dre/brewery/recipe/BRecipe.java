@@ -182,10 +182,7 @@ public class BRecipe {
 		} else {
 			ingredientsList = cfg.getStringList(recipeId + ".ingredients");
 		}
-		if (ingredientsList == null) {
-			return null;
-		}
-		List<RecipeItem> ingredients = new ArrayList<>(ingredientsList.size());
+        List<RecipeItem> ingredients = new ArrayList<>(ingredientsList.size());
 		listLoop:
 		for (String item : ingredientsList) {
 			String[] ingredParts = item.split("/");
