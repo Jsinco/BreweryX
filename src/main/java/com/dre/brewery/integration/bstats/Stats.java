@@ -1,13 +1,17 @@
-package com.dre.brewery.utility;
+package com.dre.brewery.integration.bstats;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BCauldron;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.bstats.Metrics.AdvancedPie;
+import com.dre.brewery.integration.bstats.Metrics.DrilldownPie;
+import com.dre.brewery.integration.bstats.Metrics.SimplePie;
+import com.dre.brewery.integration.bstats.Metrics.SingleLineChart;
 import com.dre.brewery.recipe.BRecipe;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.AdvancedPie;
-import org.bstats.charts.DrilldownPie;
-import org.bstats.charts.SimplePie;
-import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -45,8 +49,8 @@ public class Stats {
 	public void setupBStats() {
 		try {
 			Metrics metrics = new Metrics(BreweryPlugin.getInstance(), 3494);
-			metrics.addCustomChart(new SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
-			metrics.addCustomChart(new SingleLineChart("brews_in_existence", () -> brewsCreated));
+			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
 			metrics.addCustomChart(new SingleLineChart("barrels_built", Barrel.barrels::size));
 			metrics.addCustomChart(new SingleLineChart("cauldrons_boiling", BCauldron.bcauldrons::size));
 			metrics.addCustomChart(new AdvancedPie("brew_quality", () -> {

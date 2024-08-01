@@ -52,7 +52,7 @@ import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.utility.Stats;
+import com.dre.brewery.integration.bstats.Stats;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
