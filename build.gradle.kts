@@ -26,6 +26,7 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
 }
 
+// TODO: Figure out exclusions because this is a mess.
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
         exclude("com.google.guava", "guava")
@@ -60,18 +61,19 @@ dependencies {
 
 
 tasks {
+    build {
+        dependsOn(shadowJar)
+        finalizedBy("kotlinReducedJar")
+    }
+
     jar {
-        enabled = false
+        enabled = false // Shadow produces our jar files
     }
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
     }
     test {
         useJUnitPlatform()
-    }
-    build {
-        dependsOn(shadowJar)
-        finalizedBy("kotlinReducedJar")
     }
 
     processResources {
@@ -108,7 +110,11 @@ tasks {
         from("$buildDir/kt-reduced")
         archiveClassifier.set("KtReduced")
     }
+
+
 }
+
+
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(langVersion)

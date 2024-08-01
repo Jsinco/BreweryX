@@ -71,6 +71,8 @@ import java.util.function.Function;
 
 public class BreweryPlugin extends JavaPlugin {
 
+	private static final int RESOURCE_ID = 114777;
+
 	private static AddonManager addonManager;
 	private static TaskScheduler scheduler;
 	private static BreweryPlugin breweryPlugin;
@@ -92,7 +94,7 @@ public class BreweryPlugin extends JavaPlugin {
 	// Metrics
 	public Stats stats = new Stats();
 
-	@Override
+	@Override // FIXME
 	public void onLoad() {
 		String path = BreweryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		String jarDir = new File(path).getParentFile().getAbsolutePath();
@@ -194,16 +196,15 @@ public class BreweryPlugin extends JavaPlugin {
 			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
-		// Disable Update Check for older mc versions
-		if (getMCVersion().isOrLater(MinecraftVersion.V1_14) && BConfig.updateCheck) {
-			new UpdateChecker(114777).query(latestVersion -> {
-				int pluginVersion = parseInt(getDescription().getVersion().replace(".","").strip());
-				int latest = parseInt(latestVersion.replace(".", "").strip());
 
-				if (latest > pluginVersion) {
+		if (BConfig.updateCheck) {
+			new UpdateChecker(RESOURCE_ID).query(latestVersion -> {
+				String currentVersion = getDescription().getVersion();
+
+				if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
 					UpdateChecker.setUpdateAvailable(true);
 					UpdateChecker.setLatestVersion(latestVersion);
-					msg(Bukkit.getConsoleSender(), languageReader.get("Etc_UpdateAvailable", "v" + getDescription().getVersion(), "v" + latestVersion));
+					log(languageReader.get("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
 				}
 			});
 		}

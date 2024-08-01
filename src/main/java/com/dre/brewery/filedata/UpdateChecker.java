@@ -1,7 +1,6 @@
 package com.dre.brewery.filedata;
 
 import com.dre.brewery.BreweryPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -58,5 +57,15 @@ public class UpdateChecker {
 
 	public static void setUpdateAvailable(boolean available) {
 		updateAvailable = available;
+	}
+
+	public static int parseVersion(String version) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : version.toCharArray()) {
+			if (Character.isDigit(c)) {
+				sb.append(c);
+			}
+		}
+		return Integer.parseInt(sb.toString());
 	}
 }
