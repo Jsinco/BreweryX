@@ -121,6 +121,10 @@ public class BPlayer {
 		return players.containsKey(playerName);
 	}
 
+	public static ConcurrentHashMap<String, BPlayer> getPlayers() {
+		return players;
+	}
+
 	public static boolean isEmpty() {
 		return players.isEmpty();
 	}

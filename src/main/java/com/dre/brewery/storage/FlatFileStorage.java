@@ -10,20 +10,20 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 public class FlatFileStorage implements DataManager {
 
-    File rawFile = new File(plugin.getDataFolder(), "worlddata.yml");
+    File rawFile = new File(plugin.getDataFolder(), "brewery-data.yml");
     YamlConfiguration dataFile = YamlConfiguration.loadConfiguration(rawFile);
 
 
     private void save() {
         try {
             dataFile.save(rawFile);
-        } catch (Exception e) {
-            plugin.errorLog("Failed to save worlddata.yml!");
-            e.printStackTrace();
+        } catch (IOException e) {
+            plugin.errorLog("Failed to save brewery-data.yml!", e);
         }
     }
 

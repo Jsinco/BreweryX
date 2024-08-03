@@ -29,10 +29,7 @@ repositories {
 
 // TODO: Figure out exclusions because this is a mess.
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
-        exclude("com.google.guava", "guava")
-        exclude("org.yaml", "snakeyaml")
-    }
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files

@@ -260,6 +260,10 @@ public class Barrel implements InventoryHolder {
 		return time;
 	}
 
+	public static List<Barrel> getBarrels() {
+		return barrels;
+	}
+
 	public UUID getId() {
 		return id;
 	}

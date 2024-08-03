@@ -377,6 +377,11 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 	}
 
+	public void errorLog(String msg, Throwable throwable) {
+		errorLog(msg);
+		errorLog(throwable.toString());
+	}
+
 	public int parseInt(String string) {
 		if (string == null) {
 			return 0;
