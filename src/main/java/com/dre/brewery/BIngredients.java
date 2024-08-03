@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BCauldronRecipe;
@@ -9,6 +10,7 @@ import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.recipe.PotionColor;
+import com.dre.brewery.storage.BukkitSerialization;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -506,15 +509,6 @@ public class BIngredients {
 		return id;
 	}
 
-	//convert the ingredient Material to String
-	/*public Map<String, Integer> serializeIngredients() {
-		Map<String, Integer> mats = new HashMap<>();
-		for (ItemStack item : ingredients) {
-			String mat = item.getType().name() + "," + item.getDurability();
-			mats.put(mat, item.getAmount());
-		}
-		return mats;
-	}*/
 
 	// Serialize Ingredients to String for storing in yml, ie for Cauldrons
 	public String serializeIngredients() {
@@ -527,6 +521,17 @@ public class BIngredients {
 			return "";
 		}
 		return byteStream.toString();
+	}
+
+
+	public static BIngredients deserializeIngredients(String mat) {
+		try (DataInputStream in = new DataInputStream(new Base91DecoderStream(new ByteArrayInputStream(mat.getBytes())))) {
+			byte ver = in.readByte();
+			return BIngredients.load(in, ver);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BIngredients();
+		}
 	}
 
 }

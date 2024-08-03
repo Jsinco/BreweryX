@@ -11,7 +11,11 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -27,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A Multi Block Barrel with Inventory
@@ -41,7 +46,11 @@ public class Barrel implements InventoryHolder {
 	private boolean checked; // Checked by the random BarrelCheck routine
 	private Inventory inventory;
 	private float time;
+	private final UUID id;
 
+	/**
+	 * Create a new Barrel
+	 */
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
 		if (isLarge()) {
@@ -50,20 +59,21 @@ public class Barrel implements InventoryHolder {
 			inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 		}
 		body = new BarrelBody(this, signoffset);
+		id = UUID.randomUUID();
 	}
 
 	/**
 	 * load from file
 	 */
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time) {
-		this(spigot, sign, bounds, items, time, false);
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, UUID id) {
+		this(spigot, sign, bounds, items, time, false, id);
 	}
 
 	/**
 	 * Load from File
 	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
 	 */
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async) {
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async, UUID id) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
@@ -78,7 +88,26 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 		this.time = time;
+		this.id = id;
+		body = new BarrelBody(this, sign, bounds, async);
+	}
 
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, boolean async, UUID id) {
+		this.spigot = spigot;
+		if (isLarge()) {
+			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
+		} else {
+			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
+		}
+		if (items != null) {
+			for (int slot = 0; slot < items.length; slot++) {
+				if (items[slot] != null) {
+					this.inventory.setItem(slot, items[slot]);
+				}
+			}
+		}
+		this.time = time;
+		this.id = id;
 		body = new BarrelBody(this, sign, bounds, async);
 	}
 
@@ -86,7 +115,7 @@ public class Barrel implements InventoryHolder {
 		for (Barrel barrel : barrels) {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			if (barrel != null) {
-				barrel.time += (1.0 / BConfig.agingYearDuration);
+				barrel.time += (float) (1.0 / BConfig.agingYearDuration);
 			}
 		}
 		int numBarrels = barrels.size();
@@ -229,6 +258,10 @@ public class Barrel implements InventoryHolder {
 
 	public float getTime() {
 		return time;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	/**
@@ -507,7 +540,7 @@ public class Barrel implements InventoryHolder {
 				if (worldName.startsWith("DXL_")) {
 					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
-					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+					prefix = barrel.spigot.getWorld().getUID() + "." + id;
 				}
 
 				// block: x/y/z

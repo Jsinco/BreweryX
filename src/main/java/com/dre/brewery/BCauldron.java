@@ -32,7 +32,7 @@ public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
-	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
+	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
@@ -42,18 +42,21 @@ public class BCauldron {
 	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
 	private Color particleColor;
 	private final Location particleLocation;
+	private final UUID id;
 
 	public BCauldron(Block block) {
 		this.block = block;
-		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.id = UUID.randomUUID();
 	}
 
 	// loading from file
-	public BCauldron(Block block, BIngredients ingredients, int state) {
+	public BCauldron(Block block, BIngredients ingredients, int state, UUID id) {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
 		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.id = id;
 	}
 
 	/**
@@ -124,6 +127,15 @@ public class BCauldron {
 	 */
 	public int getState() {
 		return state;
+	}
+
+
+	public BIngredients getIngredients() {
+		return ingredients;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	// get cauldron by Block
