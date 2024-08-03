@@ -49,6 +49,7 @@ import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -77,6 +78,7 @@ public class BreweryPlugin extends JavaPlugin {
 	private static TaskScheduler scheduler;
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
+	private static DataManager dataManager;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
@@ -152,6 +154,9 @@ public class BreweryPlugin extends JavaPlugin {
 			errorLog("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
+
+		// Load DataManager
+		dataManager = DataManager.loadDataManager(BConfig.configuredDataManager);
 
 		// Register Item Loaders
 		CustomItem.registerItemLoader(this);
@@ -233,6 +238,8 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// save Data to Disk
+		dataManager.exit(true, false);
+		// remove this V
 		DataSave.save(true);
 
 		if (BConfig.sqlSync != null) {
@@ -434,7 +441,7 @@ public class BreweryPlugin extends JavaPlugin {
 	public class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
-			long t1 = System.nanoTime();
+			long start = System.currentTimeMillis();
 			BConfig.reloader = null;
             // runs every min to update cooking time
 			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
@@ -447,24 +454,19 @@ public class BreweryPlugin extends JavaPlugin {
 					}
 				});
 			}
-			long t2 = System.nanoTime();
+
 			Barrel.onUpdate();// runs every min to check and update ageing time
-			long t3 = System.nanoTime();
+
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
 			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();
-			long t4 = System.nanoTime();
+
 			BPlayer.onUpdate();// updates players drunkenness
 
-			long t5 = System.nanoTime();
-			DataSave.autoSave();
-			long t6 = System.nanoTime();
 
-			debugLog("BreweryRunnable: " +
-				"t1: " + (t2 - t1) / 1000000.0 + "ms" +
-				" | t2: " + (t3 - t2) / 1000000.0 + "ms" +
-				" | t3: " + (t4 - t3) / 1000000.0 + "ms" +
-				" | t4: " + (t5 - t4) / 1000000.0 + "ms" +
-				" | t5: " + (t6 - t5) / 1000000.0 + "ms" );
+			//DataSave.autoSave();
+			dataManager.tryAutoSave();
+
+			debugLog("BreweryRunnable: " + (System.currentTimeMillis() - start) + "ms");
 		}
 
 	}

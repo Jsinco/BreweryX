@@ -15,6 +15,8 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.storage.records.ConfiguredDataManager;
+import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.SQLSync;
@@ -42,8 +44,12 @@ public class BConfig {
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static final String configVersion = "3.1";
-	public static boolean updateCheck;
 	public static CommandSender reloader;
+
+	public static boolean updateCheck;
+	public static ConfiguredDataManager configuredDataManager;
+	public static int autoSaveInterval;
+
 
 	// Third Party Enabled
 	public static boolean useWG; //WorldGuard
@@ -195,6 +201,15 @@ public class BConfig {
 	}
 
 	public static void readConfig(FileConfiguration config) {
+		configuredDataManager = new ConfiguredDataManager(
+				DataManagerType.valueOf(config.getString("storage.type", "FLATFILE").toUpperCase()),
+						config.getString("storage.database"),
+						config.getString("storage.address"),
+						config.getString("storage.username"),
+						config.getString("storage.password")
+				);
+		autoSaveInterval = config.getInt("autosave", 3);
+
 		// Set the Language
 		breweryPlugin.language = config.getString("language", "en");
 
@@ -239,7 +254,6 @@ public class BConfig {
 		hasSlimefun = plMan.isPluginEnabled("Slimefun");
 
 		// various Settings
-		DataSave.autosave = config.getInt("autosave", 3);
 		BreweryPlugin.debug = config.getBoolean("debug", false);
 		pukeItem = !config.getStringList("pukeItem").isEmpty() ? config.getStringList("pukeItem").stream().map(BUtil::getMaterialSafely).collect(Collectors.toList())
 				: List.of(BUtil.getMaterialSafely(config.getString("pukeItem"))); //Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));

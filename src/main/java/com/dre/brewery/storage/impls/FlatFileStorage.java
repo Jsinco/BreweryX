@@ -1,9 +1,13 @@
-package com.dre.brewery.storage;
+package com.dre.brewery.storage.impls;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.storage.BukkitSerialization;
+import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.records.ConfiguredDataManager;
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BoundingBox;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,10 +17,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-public class FlatFileStorage implements DataManager {
+public class FlatFileStorage extends DataManager {
 
-    File rawFile = new File(plugin.getDataFolder(), "brewery-data.yml");
-    YamlConfiguration dataFile = YamlConfiguration.loadConfiguration(rawFile);
+    private final File rawFile;
+    private final YamlConfiguration dataFile;
+
+    public FlatFileStorage(ConfiguredDataManager record) {
+        this.rawFile = new File(plugin.getDataFolder(), record.database() + ".yml");
+        this.dataFile = YamlConfiguration.loadConfiguration(rawFile);
+    }
 
 
     private void save() {
@@ -112,6 +121,27 @@ public class FlatFileStorage implements DataManager {
     @Override
     public void deletePlayer(UUID playerUUID) {
         dataFile.set("players." + playerUUID, null);
+        save();
+    }
+
+    @Override
+    public BreweryMiscData getBreweryMiscData() {
+        return new BreweryMiscData(
+                dataFile.getLong("misc.installTime", System.currentTimeMillis()),
+                dataFile.getLong("misc.mcBarrelTime", 0),
+                dataFile.getLongList("misc.previousSaveSeeds"),
+                dataFile.getIntegerList("misc.brewsCreated"),
+                dataFile.getInt("misc.brewsCreatedHash", 0)
+        );
+    }
+
+    @Override
+    public void saveBreweryMiscData(BreweryMiscData data) {
+        dataFile.set("misc.installTime", data.installTime());
+        dataFile.set("misc.mcBarrelTime", data.mcBarrelTime());
+        dataFile.set("misc.previousSaveSeeds", data.prevSaveSeeds());
+        dataFile.set("misc.brewsCreated", data.brewsCreated());
+        dataFile.set("misc.brewsCreatedHash", data.brewsCreatedHash());
         save();
     }
 }
