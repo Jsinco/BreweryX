@@ -2,6 +2,7 @@ package com.dre.brewery.storage;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
+import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.utility.BoundingBox;
 import org.bukkit.block.Block;
@@ -21,7 +22,7 @@ public class FlatFileStorage implements DataManager {
         try {
             dataFile.save(rawFile);
         } catch (Exception e) {
-            plugin.errorLog("Failed to save worlddata.yml");
+            plugin.errorLog("Failed to save worlddata.yml!");
             e.printStackTrace();
         }
     }
@@ -53,8 +54,8 @@ public class FlatFileStorage implements DataManager {
     }
 
     @Override
-    public void deleteBarrel(Barrel barrel) {
-        dataFile.set("barrels." + barrel.getId(), null);
+    public void deleteBarrel(UUID id) {
+        dataFile.set("barrels." + id, null);
         save();
     }
 
@@ -79,9 +80,38 @@ public class FlatFileStorage implements DataManager {
         save();
     }
 
+
     @Override
-    public void deleteCauldron(BCauldron cauldron) {
-        dataFile.set("cauldrons." + cauldron.getId(), null);
+    public void deleteCauldron(UUID id) {
+        dataFile.set("cauldrons." + id, null);
+        save();
+    }
+
+
+
+    @Override
+    public BPlayer getPlayer(UUID playerUUID) {
+        String path = "players." + playerUUID;
+
+        int quality = dataFile.getInt(path + ".quality", 0);
+        int drunkenness = dataFile.getInt(path + ".drunkenness", 0);
+        int offlineDrunkenness = dataFile.getInt(path + ".offlineDrunkenness", 0);
+        return new BPlayer(playerUUID, quality, drunkenness, offlineDrunkenness);
+    }
+
+    @Override
+    public void savePlayer(BPlayer player) {
+        String path = "players." + player.getUuid();
+
+        dataFile.set(path + ".quality", player.getQuality());
+        dataFile.set(path + ".drunkenness", player.getDrunkeness());
+        dataFile.set(path + ".offlineDrunkenness", player.getOfflineDrunkeness());
+        save();
+    }
+
+    @Override
+    public void deletePlayer(UUID playerUUID) {
+        dataFile.set("players." + playerUUID, null);
         save();
     }
 }

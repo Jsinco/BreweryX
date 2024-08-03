@@ -68,6 +68,14 @@ public class BPlayer {
 		players.put(uuid, this);
 	}
 
+	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
+		this(uuid.toString(), quality, drunkenness, offlineDrunk);
+	}
+
+	public BPlayer(UUID uuid) {
+		this(uuid.toString());
+	}
+
 	@Nullable
 	public static BPlayer get(OfflinePlayer player) {
 		if (!players.isEmpty()) {
