@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class MySQLStorage extends DataManager {
 
     private static final String URL = "jdbc:mysql://";
     private static final String[] TABLES = {
-            "misc (id TINYTEXT PRIMARY KEY DEFAULT misc, data LONGTEXT);",
+            "misc (id VARCHAR(4) PRIMARY KEY, data LONGTEXT);",
             "barrels (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
             "cauldrons (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
             "players (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
@@ -51,6 +52,10 @@ public class MySQLStorage extends DataManager {
         }
 
         try {
+            try (PreparedStatement statement = connection.prepareStatement("USE " + record.database())) {
+                statement.execute();
+            }
+
             for (String table : TABLES) {
                 try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + tablePrefix + table)) {
                     statement.execute();
@@ -124,11 +129,11 @@ public class MySQLStorage extends DataManager {
         String replaceTableSql = "REPLACE INTO " + tablePrefix + table + " SELECT * FROM temp_" + table;
         String dropTempTableSql = "DROP TEMPORARY TABLE temp_" + table;
 
-        try (Connection conn = connection) {
-            conn.setAutoCommit(false);
+        try  {
+            connection.setAutoCommit(false);
 
-            try (PreparedStatement createTempTableStmt = conn.prepareStatement(createTempTableSql);
-                 PreparedStatement insertTempTableStmt = conn.prepareStatement(insertTempTableSql)) {
+            try (PreparedStatement createTempTableStmt = connection.prepareStatement(createTempTableSql);
+                 PreparedStatement insertTempTableStmt = connection.prepareStatement(insertTempTableSql)) {
 
                 createTempTableStmt.execute();
 
@@ -139,19 +144,19 @@ public class MySQLStorage extends DataManager {
                 }
                 insertTempTableStmt.executeBatch();
 
-                try (PreparedStatement replaceTableStmt = conn.prepareStatement(replaceTableSql);
-                     PreparedStatement dropTempTableStmt = conn.prepareStatement(dropTempTableSql)) {
+                try (PreparedStatement replaceTableStmt = connection.prepareStatement(replaceTableSql);
+                     PreparedStatement dropTempTableStmt = connection.prepareStatement(dropTempTableSql)) {
 
                     replaceTableStmt.execute();
                     dropTempTableStmt.execute();
                 }
 
-                conn.commit();
+                connection.commit();
             } catch (SQLException e) {
-                conn.rollback();
+                connection.rollback();
                 plugin.errorLog("Failed to save objects to: " + table + ", to: MySQL!", e);
             } finally {
-                conn.setAutoCommit(true);
+                connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
             plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: MySQL!", e);
@@ -317,16 +322,16 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public BreweryMiscData getBreweryMiscData() {
-        String sql = "SELECT data FROM " + tablePrefix + "misc WHERE id = misc";
+        String sql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM " + tablePrefix + "misc WHERE id = 'misc') THEN (SELECT data FROM " + tablePrefix + "misc WHERE id = 'misc') ELSE NULL END AS data";
         try (PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
+            if (resultSet.next() && resultSet.getString("data") != null) {
                 return serializer.deserialize(resultSet.getString("data"), BreweryMiscData.class);
             }
         } catch (SQLException e) {
             plugin.errorLog("Failed to retrieve misc data from MySQL!", e);
         }
-        return null;
+        return new BreweryMiscData(System.currentTimeMillis(), 0, new ArrayList<>(), new ArrayList<>(), 0);
     }
 
     @Override

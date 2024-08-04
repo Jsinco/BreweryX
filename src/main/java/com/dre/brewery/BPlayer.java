@@ -227,7 +227,7 @@ public class BPlayer {
 				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			BreweryPlugin.getInstance().errorLog("Failed to show drunkenness to " + player.getName(), e);
 		}
 	}
 

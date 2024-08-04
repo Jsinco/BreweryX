@@ -62,6 +62,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -93,25 +95,18 @@ public class BreweryPlugin extends JavaPlugin {
 	// Metrics
 	public Stats stats = new Stats();
 
-	@Override // FIXME
+	@Override
 	public void onLoad() {
-		String path = BreweryPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		String jarDir = new File(path).getParentFile().getAbsolutePath();
-
-		File breweryFolder = new File(jarDir + File.separator + "Brewery");
-		File breweryXFolder = new File(jarDir + File.separator + "BreweryX");
-		if (breweryFolder.exists() && !breweryXFolder.exists()) {
-			breweryFolder.renameTo(breweryXFolder);
-		}
+		breweryPlugin = this;
+		minecraftVersion = MinecraftVersion.getIt();
+		scheduler = UniversalScheduler.getScheduler(this);
 	}
 
 	@Override
 	public void onEnable() {
-		breweryPlugin = this;
-		scheduler = UniversalScheduler.getScheduler(this);
+		migrateBreweryDataFolder();
 
 		// Version check
-		minecraftVersion = MinecraftVersion.getIt();
 		log("Minecraft Version: " + minecraftVersion.getVersion());
 		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
 			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
@@ -131,21 +126,16 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// load the Config
-		try {
-			FileConfiguration cfg = BConfig.loadConfigFile();
-			if (cfg == null) {
-				errorLog("Something went wrong when trying to load the config file! Please check your config.yml");
-				return;
-			}
+        FileConfiguration cfg = BConfig.loadConfigFile();
+        if (cfg != null) {
 			BConfig.readConfig(cfg);
-		} catch (Exception e) {
-			e.printStackTrace();
+        } else {
 			errorLog("Something went wrong when trying to load the config file! Please check your config.yml");
-			return;
 		}
 
 
-		// Load Addons
+
+        // Load Addons
 		addonManager = new AddonManager(this);
 		addonManager.loadAddons();
 
@@ -160,9 +150,11 @@ public class BreweryPlugin extends JavaPlugin {
         try {
             dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
         } catch (StorageInitException e) {
-            throw new RuntimeException(e);
+            errorLog("Failed to initialize DataManager!", e);
+			Bukkit.getPluginManager().disablePlugin(this);
         }
 
+		DataManager.loadMiscData(dataManager.getBreweryMiscData());
         Barrel.getBarrels().addAll(dataManager.getAllBarrels());
 		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
 		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
@@ -227,7 +219,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		addonManager.unloadAddons();
+		if (addonManager != null) addonManager.unloadAddons();
 
 		// Disable listeners
 		HandlerList.unregisterAll(this);
@@ -240,12 +232,39 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// save Data to Disk
-		dataManager.exit(true, false);
+		if (dataManager != null) dataManager.exit(true, false);
 
 		// delete config data, in case this is a reload and to clear up some ram
 		clearConfigData();
 
 		this.log(this.getDescription().getName() + " disabled!");
+	}
+
+	private void migrateBreweryDataFolder() {
+		String pluginsFolder = getDataFolder().getParentFile().getPath();
+
+		File breweryFolder = new File(pluginsFolder + File.separator + "Brewery");
+		File breweryXFolder = new File(pluginsFolder + File.separator + "BreweryX");
+
+		if (!breweryFolder.exists() || breweryXFolder.exists()) {
+			return;
+		}
+
+		if (!breweryXFolder.exists()) {
+			breweryXFolder.mkdirs();
+		}
+
+		File[] files = breweryFolder.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				try {
+					Files.copy(file.toPath(), new File(breweryXFolder, file.getName()).toPath());
+				} catch (IOException e) {
+					errorLog("Failed to move file: " + file.getName(), e);
+				}
+			}
+			log("&5Moved files from Brewery to BreweryX's data folder");
+		}
 	}
 
 	public void reload(CommandSender sender) {
@@ -349,6 +368,14 @@ public class BreweryPlugin extends JavaPlugin {
 		return minecraftVersion;
 	}
 
+	public static AddonManager getAddonManager() {
+		return addonManager;
+	}
+
+	public static void setDataManager(DataManager dataManager) {
+		BreweryPlugin.dataManager = dataManager;
+	}
+
 	public static DataManager getDataManager() {
 		return dataManager;
 	}
@@ -382,7 +409,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public void errorLog(String msg, Throwable throwable) {
 		errorLog(msg);
-		errorLog(throwable.toString());
+		errorLog("&6" + throwable.toString());
+		for (StackTraceElement ste : throwable.getStackTrace()) {
+			errorLog(ste.toString());
+		}
 	}
 
 	public int parseInt(String string) {
@@ -467,7 +497,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	}
 
-	public class CauldronParticles implements Runnable {
+	public static class CauldronParticles implements Runnable {
 		@Override
 		public void run() {
 			if (!BConfig.enableCauldronParticles) return;

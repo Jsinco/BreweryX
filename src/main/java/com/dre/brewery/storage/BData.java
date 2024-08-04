@@ -39,8 +39,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
 /**
  * Legacy storage class for loading data from worlddata.yml and data.yml
+ * <p>
+ *
+ * The new DataManager stores data differently than the old one which used world UUIDs and nested data within
+ * those world UUIDs. The new DataManager now uses a UUID for Barrels, Cauldrons, Players, and Wakeups.
+ * This class was written by the original authors and is only used for bringing the old data into cache.
  */
 public class BData {
 

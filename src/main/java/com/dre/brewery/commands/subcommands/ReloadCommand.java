@@ -7,6 +7,8 @@ import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.StorageInitException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -65,8 +67,15 @@ public class ReloadCommand implements SubCommand {
 				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Reload"));
 			}
 		}
-		new AddonManager(breweryPlugin).reloadAddons();
 
+		BreweryPlugin.getDataManager().exit(true, true);
+		try {
+			BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
+		} catch (StorageInitException e) {
+			breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
+		}
+
+		BreweryPlugin.getAddonManager().reloadAddons();
 		BConfig.reloader = null;
     }
 

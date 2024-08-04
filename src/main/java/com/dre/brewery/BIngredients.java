@@ -516,7 +516,7 @@ public class BIngredients {
 			out.writeByte(Brew.SAVE_VER);
 			save(out);
 		} catch (IOException e) {
-			e.printStackTrace();
+			BreweryPlugin.getInstance().errorLog("Failed to serialize Ingredients", e);
 			return "";
 		}
 		return byteStream.toString();
@@ -528,7 +528,7 @@ public class BIngredients {
 			byte ver = in.readByte();
 			return BIngredients.load(in, ver);
 		} catch (IOException e) {
-			e.printStackTrace();
+			BreweryPlugin.getInstance().errorLog("Failed to deserialize Ingredients", e);
 			return new BIngredients();
 		}
 	}

@@ -72,19 +72,32 @@ public abstract class DataManager {
     }
 
     public void saveAll(boolean async) {
+        saveAll(async, null);
+    }
+
+    public void saveAll(boolean async, Runnable callback) {
         Collection<Barrel> barrels = Barrel.getBarrels();
         Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
         Collection<BPlayer> bPlayers = BPlayer.getPlayers().values();
         Collection<Wakeup> wakeups = Wakeup.getWakeups();
 
         if (async) {
-            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> doSave(barrels, cauldrons, bPlayers, wakeups));
+            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
+                doSave(barrels, cauldrons, bPlayers, wakeups);
+                if (callback != null) {
+                    callback.run();
+                }
+            });
         } else {
             doSave(barrels, cauldrons, bPlayers, wakeups);
+            if (callback != null) {
+                callback.run();
+            }
         }
     }
 
     private void doSave(Collection<Barrel> barrels, Collection<BCauldron> cauldrons, Collection<BPlayer> players, Collection<Wakeup> wakeups) {
+        saveBreweryMiscData(getLoadedMiscData());
         saveAllBarrels(barrels, true);
         saveAllCauldrons(cauldrons, true);
         saveAllPlayers(players, true);
@@ -98,12 +111,14 @@ public abstract class DataManager {
 
     public void exit(boolean save, boolean async) {
         if (save) {
-            saveAll(async);
+            saveAll(async, () -> {
+                this.closeConnection();
+                plugin.log("DataManager exited.");
+            });
+        } else {
+            this.closeConnection(); // let databases close their connections
+            plugin.log("DataManager exited.");
         }
-        // todo: save brewery misc data throughout plugin lifecycle or just at shutdown?
-        this.saveBreweryMiscData(unloadMiscData());
-        this.closeConnection(); // let databases close their connections
-        plugin.debugLog("DataManager exited.");
     }
 
     public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {
@@ -120,16 +135,13 @@ public abstract class DataManager {
             BData.readData();
             BData.finalizeLegacyDataMigration();
 
-            loadMiscData(dataManager.getBreweryMiscData());
             dataManager.saveAll(false);
 
             plugin.log("&5Finished migrating legacy data! Took&7: &5" + (System.currentTimeMillis() - start) + "ms");
-        } else {
-            loadMiscData(dataManager.getBreweryMiscData());
         }
 
 
-        plugin.debugLog("DataManager created: " + record.type());
+        plugin.log("DataManager created: " + record.type());
         return dataManager;
     }
 
@@ -137,7 +149,7 @@ public abstract class DataManager {
 
     // Utility
 
-    private static void loadMiscData(BreweryMiscData miscData) {
+    public static void loadMiscData(BreweryMiscData miscData) {
         Brew.installTime = miscData.installTime();
         MCBarrel.mcBarrelTime = miscData.mcBarrelTime();
         Brew.loadPrevSeeds(miscData.prevSaveSeeds());
@@ -156,7 +168,7 @@ public abstract class DataManager {
         }
     }
 
-    private static BreweryMiscData unloadMiscData() {
+    public static BreweryMiscData getLoadedMiscData() {
         List<Integer> brewsCreated = new ArrayList<>(7);
         Stats stats = plugin.stats;
         brewsCreated.addAll(List.of(stats.brewsCreated, stats.brewsCreatedCmd, stats.exc, stats.good, stats.norm, stats.bad, stats.terr));

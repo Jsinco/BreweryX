@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 public class BConfig {
 
+	public static final BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static final String configVersion = "3.1";
@@ -111,9 +112,7 @@ public class BConfig {
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
 
-	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
-
-	private static boolean checkConfigs() {
+	private static boolean createConfigs() {
 		File cfg = new File(breweryPlugin.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
 			breweryPlugin.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
@@ -173,27 +172,13 @@ public class BConfig {
 	}
 
 	public static FileConfiguration loadConfigFile() {
-		File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
-		if (!checkConfigs()) {
+		File file = new File(breweryPlugin.getDataFolder(), "config.yml");
+		if (!createConfigs()) {
 			return null;
 		}
 
-		try {
-			YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			if (cfg.contains("version") && cfg.contains("language")) {
-				return cfg;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		// Failed to load
-		if (breweryPlugin.languageReader != null) {
-			BreweryPlugin.getInstance().errorLog(breweryPlugin.languageReader.get("Error_YmlRead"));
-		} else {
-			BreweryPlugin.getInstance().errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
-		}
-		return null;
+		return YamlConfiguration.loadConfiguration(file);
 	}
 
 	public static void readConfig(FileConfiguration config) {
@@ -353,31 +338,29 @@ public class BConfig {
 
 		// loading drainItems
 		List<String> drainList = config.getStringList("drainItems");
-		if (drainList != null) {
-			for (String drainString : drainList) {
-				String[] drainSplit = drainString.split("/");
-				if (drainSplit.length > 1) {
-					Material mat = BUtil.getMaterialSafely(drainSplit[0]);
-					int strength = breweryPlugin.parseInt(drainSplit[1]);
-					if (mat == null && hasVault && strength > 0) {
-						try {
-							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
-							if (vaultItem != null) {
-								mat = vaultItem.getType();
-							}
-						} catch (Exception e) {
-							BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
-							e.printStackTrace();
-						}
-					}
-					if (mat != null && strength > 0) {
-						drainItems.put(mat, strength);
-					}
-				}
-			}
-		}
+        for (String drainString : drainList) {
+            String[] drainSplit = drainString.split("/");
+            if (drainSplit.length > 1) {
+                Material mat = BUtil.getMaterialSafely(drainSplit[0]);
+                int strength = breweryPlugin.parseInt(drainSplit[1]);
+                if (mat == null && hasVault && strength > 0) {
+                    try {
+                        net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
+                        if (vaultItem != null) {
+                            mat = vaultItem.getType();
+                        }
+                    } catch (Exception e) {
+                        BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+                        e.printStackTrace();
+                    }
+                }
+                if (mat != null && strength > 0) {
+                    drainItems.put(mat, strength);
+                }
+            }
+        }
 
-		// Loading Words
+        // Loading Words
 		DistortChat.words = new ArrayList<>();
 		DistortChat.ignoreText = new ArrayList<>();
 		if (config.getBoolean("enableChatDistortion", false)) {

@@ -201,9 +201,7 @@ public class Barrel implements InventoryHolder {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
-				BreweryPlugin.getInstance().errorLog("Failed to Log Barrel to LogBlock!");
-				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.94 of LogBlock!");
-				e.printStackTrace();
+				BreweryPlugin.getInstance().errorLog("Failed to Log Barrel to LogBlock!", e);
 			}
 		}
 		player.openInventory(inventory);
