@@ -37,14 +37,15 @@ public class MySQLStorage extends DataManager {
             "wakeups (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);"
     };
 
-    private final SQLDataSerializer serializer = new SQLDataSerializer();
     private final Connection connection;
     private final String tablePrefix;
+    private final SQLDataSerializer serializer;
 
     public MySQLStorage(ConfiguredDataManager record) throws StorageInitException {
         try {
             this.connection = DriverManager.getConnection(URL + record.address(), record.username(), record.password());
             this.tablePrefix = record.tablePrefix();
+            this.serializer = new SQLDataSerializer();
         } catch (SQLException e) {
             throw new StorageInitException("Failed to connect to MySQL database! (Did you configure it correctly?)", e);
         }

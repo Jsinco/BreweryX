@@ -39,6 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Legacy storage class for loading data from worlddata.yml and data.yml
+ */
 public class BData {
 
     private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
