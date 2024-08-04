@@ -4,19 +4,28 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.BukkitSerialization;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
+// TODO: Handle asyncs
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
@@ -37,7 +46,7 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
-    public Barrel getBarrel(UUID id, boolean async) {
+    public Barrel getBarrel(UUID id) {
         String path = "barrels." + id;
 
         Block spigot = deserializeLocation(dataFile.getString(path + ".spigot")).getBlock();
@@ -47,7 +56,25 @@ public class FlatFileStorage extends DataManager {
         ItemStack[] items = BukkitSerialization.itemStackArrayFromBase64(dataFile.getString(path + ".items", null));
 
 
-        return new Barrel(spigot, sign, bounds, items, time, async, id);
+        return new Barrel(spigot, sign, bounds, items, time, id);
+    }
+
+    @Override // TODO: Add method to get barrels by world?
+    public Collection<Barrel> getAllBarrels(boolean async) {
+        ConfigurationSection section = dataFile.getConfigurationSection("barrels");
+        if (section == null) {
+            return Collections.emptyList();
+        }
+
+        List<Barrel> barrels = new ArrayList<>();
+
+        for (String key : section.getKeys(false)) {
+            Barrel barrel = getBarrel(BUtil.uuidFromString(key));
+            if (barrel != null) {
+                barrels.add(barrel);
+            }
+        }
+        return barrels;
     }
 
     @Override
@@ -80,6 +107,25 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
+    public Collection<BCauldron> getAllCauldrons(boolean async) {
+        ConfigurationSection section = dataFile.getConfigurationSection("cauldrons");
+
+        if (section == null) {
+            return Collections.emptyList();
+        }
+
+        List<BCauldron> cauldrons = new ArrayList<>();
+
+        for (String key : section.getKeys(false)) {
+            BCauldron cauldron = getCauldron(BUtil.uuidFromString(key));
+            if (cauldron != null) {
+                cauldrons.add(cauldron);
+            }
+        }
+        return cauldrons;
+    }
+
+    @Override
     public void saveCauldron(BCauldron cauldron) {
         String path = "cauldrons." + cauldron.getId();
 
@@ -109,6 +155,25 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
+    public Collection<BPlayer> getAllPlayers(boolean async) {
+        ConfigurationSection section = dataFile.getConfigurationSection("players");
+
+        if (section == null) {
+            return Collections.emptyList();
+        }
+
+        List<BPlayer> players = new ArrayList<>();
+
+        for (String key : section.getKeys(false)) {
+            BPlayer player = getPlayer(BUtil.uuidFromString(key));
+            if (player != null) {
+                players.add(player);
+            }
+        }
+        return players;
+    }
+
+    @Override
     public void savePlayer(BPlayer player) {
         String path = "players." + player.getUuid();
 
@@ -121,6 +186,45 @@ public class FlatFileStorage extends DataManager {
     @Override
     public void deletePlayer(UUID playerUUID) {
         dataFile.set("players." + playerUUID, null);
+        save();
+    }
+
+    @Override
+    public Wakeup getWakeup(UUID id) {
+        String path = "wakeups." + id;
+        Location wakeupLocation = deserializeLocation(dataFile.getString(path + ".location"), true);
+        return new Wakeup(wakeupLocation, id);
+    }
+
+    @Override
+    public Collection<Wakeup> getAllWakeups(boolean async) {
+        ConfigurationSection section = dataFile.getConfigurationSection("wakeups");
+
+        if (section == null) {
+            return Collections.emptyList();
+        }
+
+        List<Wakeup> wakeups = new ArrayList<>();
+
+        for (String key : section.getKeys(false)) {
+            Wakeup wakeup = getWakeup(BUtil.uuidFromString(key));
+            if (wakeup != null) {
+                wakeups.add(wakeup);
+            }
+        }
+        return wakeups;
+    }
+
+    @Override
+    public void saveWakeup(Wakeup wakeup) {
+        String path = "wakeups." + wakeup.getId();
+        dataFile.set(path + ".location", serializeLocation(wakeup.getLoc(), true));
+        save();
+    }
+
+    @Override
+    public void deleteWakeup(UUID id) {
+        dataFile.set("wakeups." + id, null);
         save();
     }
 

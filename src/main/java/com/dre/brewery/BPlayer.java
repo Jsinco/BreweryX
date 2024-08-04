@@ -65,7 +65,6 @@ public class BPlayer {
 		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
-		players.put(uuid, this);
 	}
 
 	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
@@ -87,38 +86,32 @@ public class BPlayer {
 	// This method may be slow and should not be used if not needed
 	@Nullable
 	public static BPlayer getByName(String playerName) {
-		if (BreweryPlugin.useUUID) {
-			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-                String name = p.getName();
-                if (name != null) {
-                    if (name.equalsIgnoreCase(playerName)) {
-                        return entry.getValue();
-                    }
-                }
-            }
-			return null;
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+			String name = p.getName();
+			if (name != null) {
+				if (name.equalsIgnoreCase(playerName)) {
+					return entry.getValue();
+				}
+			}
 		}
-		return players.get(playerName);
+		return null;
 	}
 
 	// This method may be slow and should not be used if not needed
 	public static boolean hasPlayerbyName(String playerName) {
-		if (BreweryPlugin.useUUID) {
-			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-				if (p != null) {
-					String name = p.getName();
-					if (name != null) {
-						if (name.equalsIgnoreCase(playerName)) {
-							return true;
-						}
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+			if (p != null) {
+				String name = p.getName();
+				if (name != null) {
+					if (name.equalsIgnoreCase(playerName)) {
+						return true;
 					}
 				}
 			}
-			return false;
 		}
-		return players.containsKey(playerName);
+		return false;
 	}
 
 	public static ConcurrentHashMap<String, BPlayer> getPlayers() {

@@ -6,6 +6,7 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
+import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
@@ -30,21 +31,29 @@ public abstract class DataManager {
 
     // todo: Legacy potions?
 
-    public abstract Barrel getBarrel(UUID id, boolean async);
+    public abstract Barrel getBarrel(UUID id);
+    public abstract Collection<Barrel> getAllBarrels(boolean async);
     public abstract void saveBarrel(Barrel barrel);
     public abstract void deleteBarrel(UUID id);
 
+
     public abstract BCauldron getCauldron(UUID id);
+    public abstract Collection<BCauldron> getAllCauldrons(boolean async);
     public abstract void saveCauldron(BCauldron cauldron);
     public abstract void deleteCauldron(UUID id);
 
 
     public abstract BPlayer getPlayer(UUID playerUUID);
+    public abstract Collection<BPlayer> getAllPlayers(boolean async);
     public abstract void savePlayer(BPlayer player);
     public abstract void deletePlayer(UUID playerUUID);
 
 
     // TODO: Wakeups
+    public abstract Wakeup getWakeup(UUID id);
+    public abstract Collection<Wakeup> getAllWakeups(boolean async);
+    public abstract void saveWakeup(Wakeup wakeup);
+    public abstract void deleteWakeup(UUID id);
 
 
     public abstract BreweryMiscData getBreweryMiscData();
@@ -65,15 +74,16 @@ public abstract class DataManager {
         Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
         Collection<Barrel> barrels = Barrel.getBarrels();
         Collection<BPlayer> bPlayers = BPlayer.getPlayers().values();
+        Collection<Wakeup> wakeups = Wakeup.getWakeups();
 
         if (async) {
-            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> doSave(cauldrons, barrels, bPlayers));
+            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> doSave(cauldrons, barrels, bPlayers, wakeups));
         } else {
-            doSave(cauldrons, barrels, bPlayers);
+            doSave(cauldrons, barrels, bPlayers, wakeups);
         }
     }
 
-    public void doSave(Collection<BCauldron> cauldrons, Collection<Barrel> barrels, Collection<BPlayer> players) {
+    public void doSave(Collection<BCauldron> cauldrons, Collection<Barrel> barrels, Collection<BPlayer> players, Collection<Wakeup> wakeups) {
         for (BCauldron cauldron : cauldrons) {
             saveCauldron(cauldron);
         }
@@ -83,16 +93,20 @@ public abstract class DataManager {
         for (BPlayer player : players) {
             savePlayer(player);
         }
+        for (Wakeup wakeup : wakeups) {
+            saveWakeup(wakeup);
+        }
     }
 
-    protected void closeConnection() {}
+    protected void closeConnection() {
+    }
 
     public void exit(boolean save, boolean async) {
         if (save) {
             saveAll(async);
         }
         // todo: save brewery misc data throughout plugin lifecycle or just at shutdown?
-        this.saveBreweryMiscData(this.getBreweryMiscData());
+        this.saveBreweryMiscData(unloadMiscData());
         this.closeConnection(); // let databases close their connections
     }
 
@@ -102,7 +116,7 @@ public abstract class DataManager {
             case MYSQL -> throw new UnsupportedOperationException("Not implemented yet.");
         };
 
-        setMiscData(dataManager.getBreweryMiscData());
+        loadMiscData(dataManager.getBreweryMiscData());
         return dataManager;
     }
 
@@ -110,7 +124,7 @@ public abstract class DataManager {
 
     // Utility
 
-    private static void setMiscData(BreweryMiscData miscData) {
+    private static void loadMiscData(BreweryMiscData miscData) {
         Brew.installTime = miscData.installTime();
         MCBarrel.mcBarrelTime = miscData.mcBarrelTime();
         Brew.loadPrevSeeds(miscData.prevSaveSeeds());
@@ -129,7 +143,7 @@ public abstract class DataManager {
         }
     }
 
-    private static BreweryMiscData getMiscData() {
+    private static BreweryMiscData unloadMiscData() {
         List<Integer> brewsCreated = new ArrayList<>(7);
         Stats stats = plugin.stats;
         brewsCreated.addAll(List.of(stats.brewsCreated, stats.brewsCreatedCmd, stats.exc, stats.good, stats.norm, stats.bad, stats.terr));
@@ -146,21 +160,48 @@ public abstract class DataManager {
 
 
     protected Location deserializeLocation(String locationString) {
+        return deserializeLocation(locationString, false);
+    }
+
+    protected String serializeLocation(Location location) {
+        return serializeLocation(location, false);
+    }
+
+    protected Location deserializeLocation(String locationString, boolean yawPitch) {
         if (locationString == null) {
             return null;
         }
         String[] loc = locationString.split(",");
-        World world = Bukkit.getWorld(UUID.fromString(loc[0]));
+        UUID worldUUID;
+        try {
+            worldUUID = UUID.fromString(loc[0]);
+        } catch (IllegalArgumentException e) {
+            plugin.errorLog("Invalid world UUID! " + loc[0], e);
+            return null;
+        }
+        World world = Bukkit.getWorld(worldUUID);
 
         if (world == null) {
             plugin.errorLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
             return null;
         }
 
-        return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]));
+        if (yawPitch && loc.length == 6) {
+            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]), plugin.parseFloat(loc[4]), plugin.parseFloat(loc[5]));
+        } else {
+            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]));
+        }
     }
 
-    protected String serializeLocation(Location location) {
-        return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+    protected String serializeLocation(Location location, boolean yawPitch) {
+        if (location.getWorld() == null) {
+            plugin.errorLog("Location must have a world! " + location);
+            return null;
+        }
+        if (yawPitch) {
+            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
+        } else {
+            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+        }
     }
 }

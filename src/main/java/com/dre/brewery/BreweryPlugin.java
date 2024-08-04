@@ -25,8 +25,6 @@ import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
-import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.ChestShopListener;
@@ -41,7 +39,6 @@ import com.dre.brewery.listeners.CauldronListener;
 import com.dre.brewery.listeners.EntityListener;
 import com.dre.brewery.listeners.InventoryListener;
 import com.dre.brewery.listeners.PlayerListener;
-import com.dre.brewery.listeners.WorldListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.CustomItem;
@@ -69,6 +66,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BreweryPlugin extends JavaPlugin {
 
@@ -80,7 +78,6 @@ public class BreweryPlugin extends JavaPlugin {
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
 	public static boolean debug;
-	public static boolean useUUID;
 	public static boolean useNBT;
 
 	// Public Listeners
@@ -120,14 +117,6 @@ public class BreweryPlugin extends JavaPlugin {
 			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
 
-		// Todo: find which version MC started using UUIDs
-		String v = Bukkit.getBukkitVersion();
-		useUUID = !v.matches("(^|.*[^.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
-
-		// Load Addons
-		addonManager = new AddonManager(this);
-		addonManager.loadAddons();
-
 
 		// MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
@@ -155,16 +144,26 @@ public class BreweryPlugin extends JavaPlugin {
 			return;
 		}
 
-		// Load DataManager
-		dataManager = DataManager.loadDataManager(BConfig.configuredDataManager);
+
+		// Load Addons
+		addonManager = new AddonManager(this);
+		addonManager.loadAddons();
+
 
 		// Register Item Loaders
 		CustomItem.registerItemLoader(this);
 		SimpleItem.registerItemLoader(this);
 		PluginItem.registerItemLoader(this);
 
-		// Read data files
-		BData.readData();
+
+		// Load DataManager
+		dataManager = DataManager.loadDataManager(BConfig.configuredDataManager);
+
+		Barrel.getBarrels().addAll(dataManager.getAllBarrels(false));
+		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons(false).stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+		BPlayer.getPlayers().putAll(dataManager.getAllPlayers(false).stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+		Wakeup.getWakeups().addAll(dataManager.getAllWakeups(false));
+
 
 		// Setup Metrics
 		stats.setupBStats();
@@ -178,7 +177,6 @@ public class BreweryPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
-		getServer().getPluginManager().registerEvents(new WorldListener(), this);
 		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
 		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
@@ -239,8 +237,6 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// save Data to Disk
 		dataManager.exit(true, false);
-		// remove this V
-		DataSave.save(true);
 
 		if (BConfig.sqlSync != null) {
 			try {

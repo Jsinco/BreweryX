@@ -63,17 +63,11 @@ public class Barrel implements InventoryHolder {
 	}
 
 	/**
-	 * load from file
-	 */
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, UUID id) {
-		this(spigot, sign, bounds, items, time, false, id);
-	}
-
-	/**
 	 * Load from File
 	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
+	 * Note from Jsinco, async is now checked using Bukkit.isPrimaryThread().^
 	 */
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async, UUID id) {
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, UUID id) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
@@ -89,10 +83,10 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 		this.id = id;
-		body = new BarrelBody(this, sign, bounds, async);
+		body = new BarrelBody(this, sign, bounds);
 	}
 
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, boolean async, UUID id) {
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, UUID id) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
@@ -108,7 +102,7 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 		this.id = id;
-		body = new BarrelBody(this, sign, bounds, async);
+		body = new BarrelBody(this, sign, bounds);
 	}
 
 	public static void onUpdate() {

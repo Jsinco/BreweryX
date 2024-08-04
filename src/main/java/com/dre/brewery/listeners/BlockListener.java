@@ -4,7 +4,6 @@ import com.dre.brewery.*;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -30,10 +29,10 @@ public class BlockListener implements Listener {
 				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBarrelCreate"));
 				return;
 			}
-			if (BData.dataMutex.get() > 0) {
-				BreweryPlugin.getInstance().msg(player, "§cCurrently loading Data");
-				return;
-			}
+			//if (BData.dataMutex.get() > 0) { // REMOVE
+			//	BreweryPlugin.getInstance().msg(player, "§cCurrently loading Data");
+			//	return;
+			//}
 			if (Barrel.create(event.getBlock(), player)) {
 				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_BarrelCreated"));
 			}
