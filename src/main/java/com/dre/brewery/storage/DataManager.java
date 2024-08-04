@@ -172,15 +172,15 @@ public abstract class DataManager {
     }
 
 
-    protected Location deserializeLocation(String locationString) {
+    public static Location deserializeLocation(String locationString) {
         return deserializeLocation(locationString, false);
     }
 
-    protected String serializeLocation(Location location) {
+    public static String serializeLocation(Location location) {
         return serializeLocation(location, false);
     }
 
-    protected Location deserializeLocation(String locationString, boolean yawPitch) {
+    public static Location deserializeLocation(String locationString, boolean yawPitch) {
         if (locationString == null) {
             return null;
         }
@@ -206,7 +206,7 @@ public abstract class DataManager {
         }
     }
 
-    protected String serializeLocation(Location location, boolean yawPitch) {
+    public static String serializeLocation(Location location, boolean yawPitch) {
         if (location.getWorld() == null) {
             plugin.errorLog("Location must have a world! " + location);
             return null;

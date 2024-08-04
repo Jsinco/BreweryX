@@ -5,6 +5,11 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.records.SerializableBPlayer;
+import com.dre.brewery.storage.records.SerializableBarrel;
+import com.dre.brewery.storage.records.SerializableCauldron;
+import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
@@ -13,20 +18,23 @@ import com.dre.brewery.storage.records.ConfiguredDataManager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+// I don't write the best SQL, but I did my best ¯\_(ツ)_/¯ - Jsinco
 public class MySQLStorage extends DataManager {
 
     private static final String URL = "jdbc:mysql://";
     private static final String[] TABLES = {
-            "misc (data TEXT, PRIMARY KEY (data))",
-            "barrels (id VARCHAR(36), data TEXT, PRIMARY KEY (id))",
-            "cauldrons (id VARCHAR(36), data TEXT, PRIMARY KEY (id))",
-            "players (id VARCHAR(36), data TEXT, PRIMARY KEY (id))",
-            "wakeups (id VARCHAR(36), data TEXT, PRIMARY KEY (id))"
+            "misc (id TINYTEXT PRIMARY KEY DEFAULT misc, data LONGTEXT);",
+            "barrels (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
+            "cauldrons (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
+            "players (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
+            "wakeups (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);"
     };
 
     private final SQLDataSerializer serializer = new SQLDataSerializer();
@@ -43,7 +51,9 @@ public class MySQLStorage extends DataManager {
 
         try {
             for (String table : TABLES) {
-                executeSQL("CREATE TABLE IF NOT EXISTS " + tablePrefix + table);
+                try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + tablePrefix + table)) {
+                    statement.execute();
+                }
             }
         } catch (SQLException e) {
             throw new StorageInitException("Failed to create tables!", e);
@@ -59,120 +69,273 @@ public class MySQLStorage extends DataManager {
         }
     }
 
-    private void executeSQL(String sql) throws SQLException {
+    private <T> T getGeneric(UUID id, String table, Class<T> type) {
+        String sql = "SELECT data FROM " + tablePrefix + table + " WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.execute();
+            statement.setString(1, id.toString());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return serializer.deserialize(resultSet.getString("data"), type);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to retrieve object from table: " + table + ", from: MySQL!", e);
         }
+        return null;
+    }
+
+    private <T> List<T> getAllGeneric(String table, Class<T> type) {
+        String sql = "SELECT id, data FROM " + tablePrefix + table;
+        List<T> objects = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String data = resultSet.getString("data");
+                objects.add(serializer.deserialize(data, type));
+            }
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to retrieve objects from table: " + table + ", from: MySQL!", e);
+        }
+        return objects;
     }
 
 
+    private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
+        if (!overwrite) {
+            String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
+                for (SerializableThing serializableThing : serializableThings) {
+                    insertStatement.setString(1, serializableThing.getId());
+                    insertStatement.setString(2, serializer.serialize(serializableThing));
+                    insertStatement.addBatch();
+                }
+                insertStatement.executeBatch();
+            } catch (SQLException e) {
+                plugin.errorLog("Failed to save barrels to MySQL!", e);
+            }
+            return;
+        }
+
+        String createTempTableSql = "CREATE TEMPORARY TABLE temp_" + table + " (id VARCHAR(36), data LONGTEXT, PRIMARY KEY (id))";
+        String insertTempTableSql = "INSERT INTO temp_" + table + " (id, data) VALUES (?, ?)";
+        String replaceTableSql = "REPLACE INTO " + tablePrefix + table + " SELECT * FROM temp_" + table;
+        String dropTempTableSql = "DROP TEMPORARY TABLE temp_" + table;
+
+        try (Connection conn = connection) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement createTempTableStmt = conn.prepareStatement(createTempTableSql);
+                 PreparedStatement insertTempTableStmt = conn.prepareStatement(insertTempTableSql)) {
+
+                createTempTableStmt.execute();
+
+                for (SerializableThing serializableThing : serializableThings) {
+                    insertTempTableStmt.setString(1, serializableThing.getId());
+                    insertTempTableStmt.setString(2, serializer.serialize(serializableThing));
+                    insertTempTableStmt.addBatch();
+                }
+                insertTempTableStmt.executeBatch();
+
+                try (PreparedStatement replaceTableStmt = conn.prepareStatement(replaceTableSql);
+                     PreparedStatement dropTempTableStmt = conn.prepareStatement(dropTempTableSql)) {
+
+                    replaceTableStmt.execute();
+                    dropTempTableStmt.execute();
+                }
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                plugin.errorLog("Failed to save objects to: " + table + ", to: MySQL!", e);
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: MySQL!", e);
+        }
+    }
+
+    private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
+        String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, serializableThing.getId());
+            statement.setString(2, serializer.serialize(serializableThing));
+            statement.execute();
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to save object to:" + table + ", to: MySQL!", e);
+        }
+    }
+
+    private void deleteGeneric(UUID id, String table) {
+        String sql = "DELETE FROM " + tablePrefix + table + " WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, id.toString());
+            statement.execute();
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to delete object from: " + table + ", from: MySQL!", e);
+        }
+    }
+
     @Override
     public Barrel getBarrel(UUID id) {
+        SerializableBarrel serializableBarrel = getGeneric(id, "barrels", SerializableBarrel.class);
+        if (serializableBarrel != null) {
+            return serializableBarrel.toBarrel();
+        }
         return null;
     }
 
     @Override
     public Collection<Barrel> getAllBarrels() {
-        return List.of();
+        return getAllGeneric("barrels", SerializableBarrel.class).stream()
+                .map(SerializableBarrel::toBarrel)
+                .toList();
     }
 
     @Override
     public void saveAllBarrels(Collection<Barrel> barrels, boolean overwrite) {
-
+        List<SerializableBarrel> serializableBarrels = barrels.stream()
+                .map(SerializableBarrel::new)
+                .toList();
+        saveAllGeneric(serializableBarrels, "barrels", overwrite);
     }
 
     @Override
     public void saveBarrel(Barrel barrel) {
-
+        saveGeneric(new SerializableBarrel(barrel), "barrels");
     }
 
     @Override
     public void deleteBarrel(UUID id) {
-
+        deleteGeneric(id, "barrels");
     }
 
     @Override
     public BCauldron getCauldron(UUID id) {
+        SerializableCauldron serializableCauldron = getGeneric(id, "cauldrons", SerializableCauldron.class);
+        if (serializableCauldron != null) {
+            return serializableCauldron.toCauldron();
+        }
         return null;
     }
 
     @Override
     public Collection<BCauldron> getAllCauldrons() {
-        return List.of();
+        return getAllGeneric("cauldrons", SerializableCauldron.class).stream()
+                .map(SerializableCauldron::toCauldron)
+                .toList();
     }
 
     @Override
     public void saveAllCauldrons(Collection<BCauldron> cauldrons, boolean overwrite) {
-
+        List<SerializableCauldron> serializableCauldrons = cauldrons.stream()
+                .map(SerializableCauldron::new)
+                .toList();
+        saveAllGeneric(serializableCauldrons, "cauldrons", overwrite);
     }
 
     @Override
     public void saveCauldron(BCauldron cauldron) {
-
+        saveGeneric(new SerializableCauldron(cauldron), "cauldrons");
     }
 
     @Override
     public void deleteCauldron(UUID id) {
-
+        deleteGeneric(id, "cauldrons");
     }
 
     @Override
     public BPlayer getPlayer(UUID playerUUID) {
+        SerializableBPlayer serializableBPlayer = getGeneric(playerUUID, "players", SerializableBPlayer.class);
+        if (serializableBPlayer != null) {
+            return serializableBPlayer.toBPlayer();
+        }
         return null;
     }
 
     @Override
     public Collection<BPlayer> getAllPlayers() {
-        return List.of();
+        return getAllGeneric("players", SerializableBPlayer.class).stream()
+                .map(SerializableBPlayer::toBPlayer)
+                .toList();
     }
 
     @Override
     public void saveAllPlayers(Collection<BPlayer> players, boolean overwrite) {
-
+        List<SerializableBPlayer> serializableBPlayers = players.stream()
+                .map(SerializableBPlayer::new)
+                .toList();
+        saveAllGeneric(serializableBPlayers, "players", overwrite);
     }
 
     @Override
     public void savePlayer(BPlayer player) {
-
+        saveGeneric(new SerializableBPlayer(player), "players");
     }
 
     @Override
     public void deletePlayer(UUID playerUUID) {
-
+        deleteGeneric(playerUUID, "players");
     }
 
     @Override
     public Wakeup getWakeup(UUID id) {
+        SerializableWakeup serializableWakeup = getGeneric(id, "wakeups", SerializableWakeup.class);
+        if (serializableWakeup != null) {
+            return serializableWakeup.toWakeup();
+        }
         return null;
     }
 
     @Override
     public Collection<Wakeup> getAllWakeups() {
-        return List.of();
+        return getAllGeneric("wakeups", SerializableWakeup.class).stream()
+                .map(SerializableWakeup::toWakeup)
+                .toList();
     }
 
     @Override
     public void saveAllWakeups(Collection<Wakeup> wakeups, boolean overwrite) {
-
+        List<SerializableWakeup> serializableWakeups = wakeups.stream()
+                .map(SerializableWakeup::new)
+                .toList();
+        saveAllGeneric(serializableWakeups, "wakeups", overwrite);
     }
 
     @Override
     public void saveWakeup(Wakeup wakeup) {
-
+        saveGeneric(new SerializableWakeup(wakeup), "wakeups");
     }
 
     @Override
     public void deleteWakeup(UUID id) {
-
+        deleteGeneric(id, "wakeups");
     }
 
     @Override
     public BreweryMiscData getBreweryMiscData() {
+        String sql = "SELECT data FROM " + tablePrefix + "misc WHERE id = misc";
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return serializer.deserialize(resultSet.getString("data"), BreweryMiscData.class);
+            }
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to retrieve misc data from MySQL!", e);
+        }
         return null;
     }
 
     @Override
     public void saveBreweryMiscData(BreweryMiscData data) {
-
+        String sql = "INSERT INTO " + tablePrefix + "misc (id, data) VALUES ('misc', ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, serializer.serialize(data));
+            statement.execute();
+        } catch (SQLException e) {
+            plugin.errorLog("Failed to save misc data to MySQL!", e);
+        }
     }
 }

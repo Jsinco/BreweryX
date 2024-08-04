@@ -38,6 +38,10 @@ public class BoundingBox {
 		return x1 + "," + y1 + "," + z1 + "," + x2 + "," + y2 + "," + z2;
 	}
 
+	public List<Integer> serializeToIntList() {
+		return List.of(x1, y1, z1, x2, y2, z2);
+	}
+
 	public static BoundingBox fromPoints(int[] locations) {
 		if (locations.length % 3 != 0) throw new IllegalArgumentException("Locations has to be pairs of three");
 

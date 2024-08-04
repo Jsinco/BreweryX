@@ -14,5 +14,9 @@ import java.util.List;
  * @param brewsCreated Brews created. Implementers need to store the hashcode of this list.
  * @param brewsCreatedHash Hashcode of brews created
  */
-public record BreweryMiscData(long installTime, long mcBarrelTime, List<Long> prevSaveSeeds, List<Integer> brewsCreated, int brewsCreatedHash) {
+public record BreweryMiscData(long installTime, long mcBarrelTime, List<Long> prevSaveSeeds, List<Integer> brewsCreated, int brewsCreatedHash) implements SerializableThing {
+    @Override
+    public String getId() {
+        return "misc";
+    }
 }
