@@ -33,18 +33,21 @@ public abstract class DataManager {
 
     public abstract Barrel getBarrel(UUID id);
     public abstract Collection<Barrel> getAllBarrels(boolean async);
+    public abstract void saveAllBarrels(Collection<Barrel> barrels, boolean overwrite);
     public abstract void saveBarrel(Barrel barrel);
     public abstract void deleteBarrel(UUID id);
 
 
     public abstract BCauldron getCauldron(UUID id);
     public abstract Collection<BCauldron> getAllCauldrons(boolean async);
+    public abstract void saveAllCauldrons(Collection<BCauldron> cauldrons, boolean overwrite);
     public abstract void saveCauldron(BCauldron cauldron);
     public abstract void deleteCauldron(UUID id);
 
 
     public abstract BPlayer getPlayer(UUID playerUUID);
     public abstract Collection<BPlayer> getAllPlayers(boolean async);
+    public abstract void saveAllPlayers(Collection<BPlayer> players, boolean overwrite);
     public abstract void savePlayer(BPlayer player);
     public abstract void deletePlayer(UUID playerUUID);
 
@@ -52,6 +55,7 @@ public abstract class DataManager {
     // TODO: Wakeups
     public abstract Wakeup getWakeup(UUID id);
     public abstract Collection<Wakeup> getAllWakeups(boolean async);
+    public abstract void saveAllWakeups(Collection<Wakeup> wakeups, boolean overwrite);
     public abstract void saveWakeup(Wakeup wakeup);
     public abstract void deleteWakeup(UUID id);
 
@@ -71,31 +75,23 @@ public abstract class DataManager {
     }
 
     public void saveAll(boolean async) {
-        Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
         Collection<Barrel> barrels = Barrel.getBarrels();
+        Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
         Collection<BPlayer> bPlayers = BPlayer.getPlayers().values();
         Collection<Wakeup> wakeups = Wakeup.getWakeups();
 
         if (async) {
-            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> doSave(cauldrons, barrels, bPlayers, wakeups));
+            BreweryPlugin.getScheduler().runTaskAsynchronously(() -> doSave(barrels, cauldrons, bPlayers, wakeups));
         } else {
-            doSave(cauldrons, barrels, bPlayers, wakeups);
+            doSave(barrels, cauldrons, bPlayers, wakeups);
         }
     }
 
-    public void doSave(Collection<BCauldron> cauldrons, Collection<Barrel> barrels, Collection<BPlayer> players, Collection<Wakeup> wakeups) {
-        for (BCauldron cauldron : cauldrons) {
-            saveCauldron(cauldron);
-        }
-        for (Barrel barrel : barrels) {
-            saveBarrel(barrel);
-        }
-        for (BPlayer player : players) {
-            savePlayer(player);
-        }
-        for (Wakeup wakeup : wakeups) {
-            saveWakeup(wakeup);
-        }
+    private void doSave(Collection<Barrel> barrels, Collection<BCauldron> cauldrons, Collection<BPlayer> players, Collection<Wakeup> wakeups) {
+        saveAllBarrels(barrels, true);
+        saveAllCauldrons(cauldrons, true);
+        saveAllPlayers(players, true);
+        saveAllWakeups(wakeups, true);
     }
 
     protected void closeConnection() {
@@ -108,15 +104,17 @@ public abstract class DataManager {
         // todo: save brewery misc data throughout plugin lifecycle or just at shutdown?
         this.saveBreweryMiscData(unloadMiscData());
         this.closeConnection(); // let databases close their connections
+        plugin.debugLog("DataManager exited.");
     }
 
-    public static DataManager loadDataManager(ConfiguredDataManager record) {
+    public static DataManager createDataManager(ConfiguredDataManager record) {
         DataManager dataManager = switch (record.type()) {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> throw new UnsupportedOperationException("Not implemented yet.");
         };
 
         loadMiscData(dataManager.getBreweryMiscData());
+        plugin.debugLog("DataManager created: " + record.type());
         return dataManager;
     }
 

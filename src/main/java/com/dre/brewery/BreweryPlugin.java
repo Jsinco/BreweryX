@@ -157,7 +157,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		// Load DataManager
-		dataManager = DataManager.loadDataManager(BConfig.configuredDataManager);
+		dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
 
 		Barrel.getBarrels().addAll(dataManager.getAllBarrels(false));
 		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons(false).stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));

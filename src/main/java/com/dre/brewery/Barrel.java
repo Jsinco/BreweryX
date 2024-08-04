@@ -590,7 +590,7 @@ public class Barrel implements InventoryHolder {
 				if (check < barrels.size()) {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
-						BreweryPlugin.getScheduler().runTaskTimer(barrel.getSpigot().getLocation(), () -> {
+						BreweryPlugin.getScheduler().runTask(barrel.getSpigot().getLocation(), () -> {
 							Block broken = barrel.body.getBrokenBlock(false);
 							if (broken != null) {
 								BreweryPlugin.getInstance().debugLog("Barrel at "
@@ -604,7 +604,7 @@ public class Barrel implements InventoryHolder {
 								// for example when removing it with some world editor
 								barrel.checked = true;
 							}
-						}, 1, 1);
+						});
 						repeat = false;
 					}
 					check++;

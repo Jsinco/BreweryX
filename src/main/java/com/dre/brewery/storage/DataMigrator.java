@@ -7,4 +7,7 @@ public class DataMigrator {
      * those world UUIDs. The new DataManager now uses a UUID for Barrels, Cauldrons, Players (and soon Wakeups).
      * This DataMigrator class needs to be called once to migrate the old data to the new format.
      */
+    /*
+     * Additionally, this class (or another) should also be used for swapping between storage methods. (ex: FlatFile to MySQL)
+     */
 }

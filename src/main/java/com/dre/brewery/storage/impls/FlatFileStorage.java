@@ -32,7 +32,17 @@ public class FlatFileStorage extends DataManager {
     private final YamlConfiguration dataFile;
 
     public FlatFileStorage(ConfiguredDataManager record) {
-        this.rawFile = new File(plugin.getDataFolder(), record.database() + ".yml");
+        String fileName = record.database() + ".yml";
+        this.rawFile = new File(plugin.getDataFolder(), fileName);
+
+        if (!rawFile.exists()) {
+            try {
+                rawFile.createNewFile();
+            } catch (IOException e) {
+                plugin.errorLog("Failed to create file! " + fileName, e);
+            }
+        }
+
         this.dataFile = YamlConfiguration.loadConfiguration(rawFile);
     }
 
@@ -75,6 +85,16 @@ public class FlatFileStorage extends DataManager {
             }
         }
         return barrels;
+    }
+
+    @Override
+    public void saveAllBarrels(Collection<Barrel> barrels, boolean overwrite) {
+        if (overwrite) {
+            dataFile.set("barrels", null);
+        }
+        for (Barrel barrel : barrels) {
+            saveBarrel(barrel);
+        }
     }
 
     @Override
@@ -126,6 +146,16 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
+    public void saveAllCauldrons(Collection<BCauldron> cauldrons, boolean overwrite) {
+        if (overwrite) {
+            dataFile.set("cauldrons", null);
+        }
+        for (BCauldron cauldron : cauldrons) {
+            saveCauldron(cauldron);
+        }
+    }
+
+    @Override
     public void saveCauldron(BCauldron cauldron) {
         String path = "cauldrons." + cauldron.getId();
 
@@ -174,6 +204,16 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
+    public void saveAllPlayers(Collection<BPlayer> players, boolean overwrite) {
+        if (overwrite) {
+            dataFile.set("players", null);
+        }
+        for (BPlayer player : players) {
+            savePlayer(player);
+        }
+    }
+
+    @Override
     public void savePlayer(BPlayer player) {
         String path = "players." + player.getUuid();
 
@@ -213,6 +253,16 @@ public class FlatFileStorage extends DataManager {
             }
         }
         return wakeups;
+    }
+
+    @Override
+    public void saveAllWakeups(Collection<Wakeup> wakeups, boolean overwrite) {
+        if (overwrite) {
+            dataFile.set("wakeups", null);
+        }
+        for (Wakeup wakeup : wakeups) {
+            saveWakeup(wakeup);
+        }
     }
 
     @Override
