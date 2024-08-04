@@ -6,7 +6,7 @@ import java.util.List;
  * Miscellaneous save data about brewery.
  * These were added by the original author(s) and their source/usage hasn't been completely
  * read through.
- *
+ * <p>
  * These params may not be correct:
  * @param installTime The time brewery was installed
  * @param mcBarrelTime The time it takes for a barrel to brew

@@ -1,7 +1,10 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BSealer;
+import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.DistortChat;
+import com.dre.brewery.MCBarrel;
 import com.dre.brewery.api.events.ConfigLoadEvent;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel;
@@ -19,7 +22,6 @@ import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -32,7 +34,6 @@ import org.bukkit.plugin.PluginManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,11 +110,6 @@ public class BConfig {
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
-
-	//MySQL
-	public static String sqlHost, sqlPort, sqlDB;
-	public static SQLSync sqlSync;
-	public static boolean sqlDrunkSync;
 
 	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 
@@ -203,7 +199,7 @@ public class BConfig {
 	public static void readConfig(FileConfiguration config) {
 		configuredDataManager = new ConfiguredDataManager(
 				DataManagerType.valueOf(config.getString("storage.type", "FLATFILE").toUpperCase()),
-						config.getString("storage.database"),
+						config.getString("storage.database", "brewery-data"),
 						config.getString("storage.address"),
 						config.getString("storage.username"),
 						config.getString("storage.password")
@@ -430,31 +426,6 @@ public class BConfig {
 			} catch (ClassNotFoundException e) {
 				useBlocklocker = false;
 				BreweryPlugin.getInstance().log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
-			}
-		}
-
-		// init SQL
-		if (sqlSync != null) {
-			try {
-				sqlSync.closeConnection();
-			} catch (SQLException ignored) {
-			}
-			sqlSync = null;
-		}
-		sqlDrunkSync = false;
-
-		ConfigurationSection sqlCfg = config.getConfigurationSection("multiServerDB");
-		if (sqlCfg != null && sqlCfg.getBoolean("enabled")) {
-			sqlDrunkSync = sqlCfg.getBoolean("syncDrunkeness");
-			sqlHost = sqlCfg.getString("host", null);
-			sqlPort = sqlCfg.getString("port", null);
-			sqlDB = sqlCfg.getString("database", null);
-			String sqlUser = sqlCfg.getString("user", null);
-			String sqlPW = sqlCfg.getString("password", null);
-
-			sqlSync = new SQLSync();
-			if (!sqlSync.init(sqlUser, sqlPW)) {
-				sqlSync = null;
 			}
 		}
 

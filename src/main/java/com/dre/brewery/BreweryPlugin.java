@@ -238,14 +238,6 @@ public class BreweryPlugin extends JavaPlugin {
 		// save Data to Disk
 		dataManager.exit(true, false);
 
-		if (BConfig.sqlSync != null) {
-			try {
-				BConfig.sqlSync.closeConnection();
-			} catch (SQLException ignored) {
-			}
-			BConfig.sqlSync = null;
-		}
-
 		// delete config data, in case this is a reload and to clear up some ram
 		clearConfigData();
 
@@ -351,6 +343,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public static MinecraftVersion getMCVersion() {
 		return minecraftVersion;
+	}
+
+	public static DataManager getDataManager() {
+		return dataManager;
 	}
 
 	// Utility

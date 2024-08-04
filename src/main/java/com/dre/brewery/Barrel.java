@@ -67,7 +67,7 @@ public class Barrel implements InventoryHolder {
 	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
 	 * Note from Jsinco, async is now checked using Bukkit.isPrimaryThread().^
 	 */
-	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, UUID id) {
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, @Nullable Map<String, Object> items, float time, UUID id) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));

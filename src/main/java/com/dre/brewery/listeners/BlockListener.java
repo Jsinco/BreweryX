@@ -29,7 +29,7 @@ public class BlockListener implements Listener {
 				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBarrelCreate"));
 				return;
 			}
-			//if (BData.dataMutex.get() > 0) { // REMOVE
+			//if (LegacyBDataLoader.dataMutex.get() > 0) { // REMOVE
 			//	BreweryPlugin.getInstance().msg(player, "§cCurrently loading Data");
 			//	return;
 			//}

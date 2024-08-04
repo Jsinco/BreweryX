@@ -24,12 +24,7 @@ import java.util.UUID;
 public abstract class DataManager {
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
-    protected static long lastSave = System.currentTimeMillis();
-
-    // todo: implement across brewery
-
-
-    // todo: Legacy potions?
+    protected static long lastAutoSave = System.currentTimeMillis();
 
     public abstract Barrel getBarrel(UUID id);
     public abstract Collection<Barrel> getAllBarrels(boolean async);
@@ -52,7 +47,6 @@ public abstract class DataManager {
     public abstract void deletePlayer(UUID playerUUID);
 
 
-    // TODO: Wakeups
     public abstract Wakeup getWakeup(UUID id);
     public abstract Collection<Wakeup> getAllWakeups(boolean async);
     public abstract void saveAllWakeups(Collection<Wakeup> wakeups, boolean overwrite);
@@ -67,9 +61,9 @@ public abstract class DataManager {
     public void tryAutoSave() {
         long interval = BConfig.autoSaveInterval * 60000L;
 
-        if (System.currentTimeMillis() - lastSave > interval) {
+        if (System.currentTimeMillis() - lastAutoSave > interval) {
             saveAll(true);
-            lastSave = System.currentTimeMillis();
+            lastAutoSave = System.currentTimeMillis();
             plugin.debugLog("Auto saved all data!");
         }
     }
@@ -92,9 +86,11 @@ public abstract class DataManager {
         saveAllCauldrons(cauldrons, true);
         saveAllPlayers(players, true);
         saveAllWakeups(wakeups, true);
+        plugin.debugLog("Saved all data!");
     }
 
     protected void closeConnection() {
+        // Implemented in subclasses that use database connections
     }
 
     public void exit(boolean save, boolean async) {
@@ -113,7 +109,23 @@ public abstract class DataManager {
             case MYSQL -> throw new UnsupportedOperationException("Not implemented yet.");
         };
 
-        loadMiscData(dataManager.getBreweryMiscData());
+        // Legacy data migration
+        if (BData.checkForLegacyData()) {
+            long start = System.currentTimeMillis();
+            plugin.log("&5Brewery is loading data from a legacy format!");
+
+            BData.readData();
+            BData.finalizeLegacyDataMigration();
+
+            loadMiscData(dataManager.getBreweryMiscData());
+            dataManager.saveAll(false);
+
+            plugin.log("&5Finished migrating legacy data! Took&7: &5" + (System.currentTimeMillis() - start) + "ms");
+        } else {
+            loadMiscData(dataManager.getBreweryMiscData());
+        }
+
+
         plugin.debugLog("DataManager created: " + record.type());
         return dataManager;
     }
