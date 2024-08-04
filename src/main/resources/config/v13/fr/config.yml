@@ -1,12 +1,36 @@
-# config for Brewery.jar
+# Version de configuration
+version: '3.1'
 
 
 # Quelques traductions en français ont été faites avec DeepL
 # -- Paramètres --
 # Les paramètres par défaut sont entre []
 
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
+
+
 # Fichier de langage utilisé (trouvable dans plugins/Brewery/languages)
 language: fr
+
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+updateCheck: true
+
+# Intervale de la sauvegarde automatique en minutes [3]
+autosave: 3
+
+# Show debug messages in log [false]
+debug: false
 
 # Prefix used on messages
 pluginPrefix: '&2[Brewery]&f '
@@ -90,20 +114,6 @@ agingYearDuration: 20
 # Activez cette option si vous voulez rendre la tricherie des recettes plus difficile, mais ne partagez pas les infusions par téléchargement mondial, schémas ou autres moyens.
 enableEncode: false
 encodeKey: 0
-
-# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
-updateCheck: true
-
-# Intervale de la sauvegarde automatique en minutes [3]
-autosave: 3
-
-# Show debug messages in log [false]
-debug: false
-
-# Version de configuration
-version: '3.1'
-
 
 
 # -- Définir des objets personnalisés --

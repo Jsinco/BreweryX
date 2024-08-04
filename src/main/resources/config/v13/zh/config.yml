@@ -1,7 +1,20 @@
-# Brewery插件的配置文件
+# 配置文件版本
+version: "3.1"
 
 # 翻译由Neubulae贡献, mcbbsID: 891215991
 # 二次补全翻译由Mr-Wang635进行
+
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
 
 # -- 设置 --
 # 方框[]内的设定为默认设定
@@ -10,8 +23,18 @@
 # 语言文件(可在plugins/Brewery/languages下找到)
 language: zh
 
+# 是否检查更新 [true]
+# 若有更新, 服务端后台与上线时的管理员会收到通知
+updateCheck: true
+
+# 自动保存时间间隔, 单位:分钟 [3]
+autosave: 3
+
+# 是否在日志中显示调试信息 [false]
+debug: false
+
 # 用于此插件的消息前缀[Brewery]
-pluginPrefix: "&2[Brewery]&f "
+pluginPrefix: '&2[Brewery]&f '
 
 # 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
 enableHome: true
@@ -97,18 +120,6 @@ agingYearDuration: 20
 enableEncode: false
 encodeKey: 0
 
-# 是否检查更新 [true]
-# 若有更新, 服务端后台与上线时的管理员会收到通知
-updateCheck: true
-
-# 自动保存时间间隔, 单位:分钟 [3]
-autosave: 3
-
-# 是否在日志中显示调试信息 [false]
-debug: false
-
-# 配置文件版本
-version: "3.1"
 
 # -- 定义自定义物品 --
 # 定义后的ID可以在配方中使用

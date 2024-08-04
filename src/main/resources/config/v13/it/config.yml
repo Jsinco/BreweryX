@@ -1,11 +1,34 @@
-# config di Brewery.jar
+# Versione del config
+version: '3.1'
 
 
 # -- Opzioni --
 # I valori di default sono scritti fra []
 
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
+
 # Lingua da usare (fra quelle in plugins/Brewery/languages)
 language: it
+
+# Abilita il controllo degli aggiornamenti, controlla l'API di CurseForge per eventuali aggiornamenti di Brewery [true]
+# Se quando un aggiornamento viene trovato un messaggio è loggato e mostrato agli OPs quando entrano in gioco.
+updateCheck: true
+
+# Intervallo di autosalvataggio in minuti [3]
+autosave: 3
+
+# Show debug messages in log [false]
+debug: false
 
 # Prefix used on messages
 pluginPrefix: '&2[Brewery]&f '
@@ -89,20 +112,6 @@ agingYearDuration: 20
 # So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
 enableEncode: false
 encodeKey: 0
-
-# Abilita il controllo degli aggiornamenti, controlla l'API di CurseForge per eventuali aggiornamenti di Brewery [true]
-# Se quando un aggiornamento viene trovato un messaggio è loggato e mostrato agli OPs quando entrano in gioco.
-updateCheck: true
-
-# Intervallo di autosalvataggio in minuti [3]
-autosave: 3
-
-# Show debug messages in log [false]
-debug: false
-
-# Versione del config
-version: '3.1'
-
 
 
 # -- Define custom items --

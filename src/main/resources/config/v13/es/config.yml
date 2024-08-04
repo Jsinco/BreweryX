@@ -1,8 +1,22 @@
 # Traducido por MrNizzy
-# config for Brewery.jar
+# Config Version
+version: '3.1'
+
 
 # -- Settings --
 # Defaults are written in []
+
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
 
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: es
@@ -12,6 +26,16 @@ pluginPrefix: '&2[Brewery]&f '
 
 # If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
 enableHome: true
+
+# Autosave interval in minutes [3]
+autosave: 3
+
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+updateCheck: true
+
+# Show debug messages in log [false]
+debug: false
 
 # Type of the home-teleport: ['cmd: home']
 # bed = Player will be teleported to his spawn bed
@@ -89,20 +113,6 @@ agingYearDuration: 20
 # So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
 enableEncode: false
 encodeKey: 0
-
-# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
-updateCheck: true
-
-# Autosave interval in minutes [3]
-autosave: 3
-
-# Show debug messages in log [false]
-debug: false
-
-# Config Version
-version: '3.1'
-
 
 
 # -- Define custom items --
