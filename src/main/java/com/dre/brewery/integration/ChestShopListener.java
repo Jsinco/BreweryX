@@ -31,8 +31,7 @@ public class ChestShopListener implements Listener {
 		} catch (Throwable e) {
 			HandlerList.unregisterAll(this);
 			BConfig.hasChestShop = false;
-			e.printStackTrace();
-			BreweryPlugin.getInstance().errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support");
+			BreweryPlugin.getInstance().errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support", e);
 		}
 	}
 }

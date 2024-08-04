@@ -129,11 +129,7 @@ public class BUtil {
 	 * Returns either uuid or Name of player, depending on bukkit version
 	 */
 	public static String playerString(OfflinePlayer player) {
-		if (BreweryPlugin.useUUID) {
-			return player.getUniqueId().toString();
-		} else {
-			return player.getName();
-		}
+		return player.getUniqueId().toString();
 	}
 
 
@@ -147,15 +143,12 @@ public class BUtil {
 	/**
 	 * returns the Player if online
 	 */
-	public static Player getPlayerfromString(String name) {
-		if (BreweryPlugin.useUUID) {
-			try {
-				return Bukkit.getPlayer(UUID.fromString(name));
-			} catch (Exception e) {
-				return Bukkit.getPlayerExact(name);
-			}
+	public static Player getPlayerfromString(String nameOrUUID) {
+		try {
+			return Bukkit.getPlayer(UUID.fromString(nameOrUUID));
+		} catch (IllegalArgumentException e) {
+			return Bukkit.getPlayerExact(nameOrUUID);
 		}
-		return Bukkit.getPlayerExact(name);
 	}
 
 	/**
@@ -370,6 +363,17 @@ public class BUtil {
 			}
 		}
 	}
+
+
+	public static UUID uuidFromString(String uuid) {
+		try {
+			return UUID.fromString(uuid);
+		} catch (IllegalArgumentException e) {
+			BreweryPlugin.getInstance().errorLog("UUID is invalid! " + uuid, e);
+			return null;
+		}
+	}
+
 
 	/**
 	 * gets the Name of a DXL World

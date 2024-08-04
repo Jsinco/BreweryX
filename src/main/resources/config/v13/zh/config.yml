@@ -254,7 +254,7 @@ cauldron:
 
   grass:
     name: 草药萃取物
-    ingredients: Short_Grass
+    ingredients: Grass
     color: "99ff66" # 鲜绿色
     cookParticles:
       - "GREEN/2"
@@ -403,7 +403,7 @@ cauldron:
   poi_grass:
     name: 酸泥汤
     ingredients:
-      - Short_Grass
+      - Grass
       - Poisonous_Potato
     color: "99ff66" # 亮绿色
     cookParticles:

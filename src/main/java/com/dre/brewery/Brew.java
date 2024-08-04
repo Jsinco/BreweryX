@@ -1071,6 +1071,18 @@ public class Brew implements Cloneable {
 		}
 	}
 
+	public static void loadPrevSeeds(List<Long> list) {
+		prevSaveSeeds = list;
+		if (!prevSaveSeeds.contains(saveSeed)) {
+			prevSaveSeeds.add(saveSeed);
+		}
+	}
+
+	public static List<Long> getPrevSeeds() {
+		return prevSaveSeeds;
+	}
+
+
 	public static void loadSeed(ConfigurationSection config, File file) {
 		saveSeed = config.getLong("encodeKey", 0);
 		if (saveSeed == 0) {

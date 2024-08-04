@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BCauldronRecipe;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -506,15 +508,6 @@ public class BIngredients {
 		return id;
 	}
 
-	//convert the ingredient Material to String
-	/*public Map<String, Integer> serializeIngredients() {
-		Map<String, Integer> mats = new HashMap<>();
-		for (ItemStack item : ingredients) {
-			String mat = item.getType().name() + "," + item.getDurability();
-			mats.put(mat, item.getAmount());
-		}
-		return mats;
-	}*/
 
 	// Serialize Ingredients to String for storing in yml, ie for Cauldrons
 	public String serializeIngredients() {
@@ -523,10 +516,21 @@ public class BIngredients {
 			out.writeByte(Brew.SAVE_VER);
 			save(out);
 		} catch (IOException e) {
-			e.printStackTrace();
+			BreweryPlugin.getInstance().errorLog("Failed to serialize Ingredients", e);
 			return "";
 		}
 		return byteStream.toString();
+	}
+
+
+	public static BIngredients deserializeIngredients(String mat) {
+		try (DataInputStream in = new DataInputStream(new Base91DecoderStream(new ByteArrayInputStream(mat.getBytes())))) {
+			byte ver = in.readByte();
+			return BIngredients.load(in, ver);
+		} catch (IOException e) {
+			BreweryPlugin.getInstance().errorLog("Failed to deserialize Ingredients", e);
+			return new BIngredients();
+		}
 	}
 
 }

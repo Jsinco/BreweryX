@@ -1,6 +1,13 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BCauldron;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BSealer;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.DistortChat;
+import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.BUtil;
@@ -17,7 +24,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -236,15 +252,6 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
 		DistortChat.playerCommand(event);
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerLoginAsync(AsyncPlayerPreLoginEvent event) {
-		if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-			if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-				BConfig.sqlSync.fetchPlayerLoginData(event.getUniqueId());
-			}
-		}
 	}
 
 	// player joins while passed out

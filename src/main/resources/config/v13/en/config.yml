@@ -1,11 +1,34 @@
-# config for Brewery.jar
+# Config Version
+version: '3.1'
 
 
 # -- Settings --
 # Defaults are written in []
 
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
+
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
+
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+updateCheck: true
+
+# Autosave interval in minutes [3]
+autosave: 3
+
+# Show debug messages in log [false]
+debug: false
 
 # Prefix used on messages
 pluginPrefix: '&2[Brewery]&f '
@@ -89,20 +112,6 @@ agingYearDuration: 20
 # So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
 enableEncode: false
 encodeKey: 0
-
-# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
-updateCheck: true
-
-# Autosave interval in minutes [3]
-autosave: 3
-
-# Show debug messages in log [false]
-debug: false
-
-# Config Version
-version: '3.1'
-
 
 
 # -- Define custom items --
@@ -229,7 +238,7 @@ cauldron:
 
   grass:
     name: Boiled herbs
-    ingredients: Short_Grass
+    ingredients: Grass
     color: '99ff66' # bright green
     cookParticles:
       - 'GREEN/2'
@@ -379,7 +388,7 @@ cauldron:
   poi_grass:
     name: Boiled acidy herbs
     ingredients:
-      - Short_Grass
+      - Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
     cookParticles:
@@ -714,7 +723,7 @@ recipes:
   absinthe:
     name: Poor Absinthe/Absinthe/Strong Absinthe
     ingredients:
-      - Short_Grass/15
+      - Grass/15
     cookingtime: 3
     distillruns: 6
     distilltime: 80
@@ -728,7 +737,7 @@ recipes:
   gr_absinthe:
     name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
     ingredients:
-      - Short_Grass/17
+      - Grass/17
       - Poisonous_Potato/2
     cookingtime: 5
     distillruns: 6
@@ -746,7 +755,7 @@ recipes:
     name: Potato soup
     ingredients:
       - Potato/5
-      - Short_Grass/3
+      - Grass/3
     cookingtime: 3
     color: ORANGE
     difficulty: 1
@@ -884,22 +893,6 @@ useVirtualChestPerms: false
 
 # Enable the Logging of Barrel Inventories to LogBlock [true]
 useLogBlock: true
-
-
-# -- MultiServer/BungeeCord --
-# If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkenness and to be able to use encoded brews between them.
-
-multiServerDB:
-  # If using the Database is enabled
-  enabled: false
-  # If the drunkenness of players should be synchronised between Servers
-  syncDrunkeness: true
-  host: localhost
-  port: '3306'
-  user: minec
-  password: xyz
-  database: base
 
 
 # -- Various Other Settings --

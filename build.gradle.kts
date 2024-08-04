@@ -9,11 +9,11 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.4-SNAPSHOT"
+version = "3.2.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io") // GriefPrevention, SlimeFun, Towny, Brewery, PlaceholderAPI
+    maven("https://jitpack.io") // GriefPrevention, SlimeFun, PlaceholderAPI
     maven("https://repo.md-5.net/content/groups/public/") // Bungee
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
     maven("https://nexus.hc.to/content/repositories/pub_releases") // Vault
@@ -24,14 +24,12 @@ repositories {
     maven("https://nexus.phoenixdevt.fr/repository/maven-public/") // MythicLib (MMOItems)
     maven("https://repo.projectshard.dev/repository/releases/") // Shopkeepers
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
+    maven("https://repo.glaremasters.me/repository/towny/") // Towny
 }
 
 // TODO: Figure out exclusions because this is a mess.
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
-        exclude("com.google.guava", "guava")
-        exclude("org.yaml", "snakeyaml")
-    }
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files
@@ -46,7 +44,7 @@ dependencies {
     compileOnly("com.github.Slimefun:Slimefun4:RC-35") // https://github.com/Slimefun/Slimefun4/releases
     compileOnly("io.lumine:MythicLib-dist:1.6-SNAPSHOT") // https://www.spigotmc.org/resources/mythiclib.90306/history
     compileOnly("com.acrobot.chestshop:chestshop:3.12.2") // https://github.com/ChestShop-authors/ChestShop-3/releases
-    compileOnly("com.github.TownyAdvanced:Towny:0.100.1.0") // https://www.spigotmc.org/resources/towny-advanced.72694/history
+    compileOnly("com.palmergames.bukkit.towny:towny:0.100.3.0") // https://www.spigotmc.org/resources/towny-advanced.72694/history
     compileOnly("com.nisovin.shopkeepers:ShopkeepersAPI:2.18.0") // https://www.spigotmc.org/resources/shopkeepers.80756/history
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history

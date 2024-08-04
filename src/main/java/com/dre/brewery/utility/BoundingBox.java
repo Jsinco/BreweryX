@@ -3,6 +3,8 @@ package com.dre.brewery.utility;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import java.util.List;
+
 public class BoundingBox {
 
 	private final int x1, y1, z1, x2, y2, z2;
@@ -36,6 +38,10 @@ public class BoundingBox {
 		return x1 + "," + y1 + "," + z1 + "," + x2 + "," + y2 + "," + z2;
 	}
 
+	public List<Integer> serializeToIntList() {
+		return List.of(x1, y1, z1, x2, y2, z2);
+	}
+
 	public static BoundingBox fromPoints(int[] locations) {
 		if (locations.length % 3 != 0) throw new IllegalArgumentException("Locations has to be pairs of three");
 
@@ -54,6 +60,28 @@ public class BoundingBox {
 			maxx = Math.max(locations[i], maxx);
 			maxy = Math.max(locations[i + 1], maxy);
 			maxz = Math.max(locations[i + 2], maxz);
+		}
+		return new BoundingBox(minx, miny, minz, maxx, maxy, maxz);
+	}
+
+	public static BoundingBox fromPoints(List<Integer> locations) {
+		if (locations.size() % 3 != 0) throw new IllegalArgumentException("Locations has to be pairs of three");
+
+		int length = locations.size() - 2;
+
+		int minx = Integer.MAX_VALUE,
+			miny = Integer.MAX_VALUE,
+			minz = Integer.MAX_VALUE,
+			maxx = Integer.MIN_VALUE,
+			maxy = Integer.MIN_VALUE,
+			maxz = Integer.MIN_VALUE;
+		for (int i = 0; i < length; i += 3) {
+			minx = Math.min(locations.get(i), minx);
+			miny = Math.min(locations.get(i + 1), miny);
+			minz = Math.min(locations.get(i + 2), minz);
+			maxx = Math.max(locations.get(i), maxx);
+			maxy = Math.max(locations.get(i + 1), maxy);
+			maxz = Math.max(locations.get(i + 2), maxz);
 		}
 		return new BoundingBox(minx, miny, minz, maxx, maxy, maxz);
 	}

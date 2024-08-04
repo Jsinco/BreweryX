@@ -10,8 +10,10 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+// Holy shit this code is so bad. - Jsinco
 public class Wakeup {
 
 	public static List<Wakeup> wakeups = new ArrayList<>();
@@ -19,11 +21,31 @@ public class Wakeup {
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
-	private Location loc;
+	private final Location loc;
+	private final UUID id;
 	private boolean active = true;
 
 	public Wakeup(Location loc) {
 		this.loc = loc;
+		this.id = UUID.randomUUID();
+	}
+
+	// load from save data
+	public Wakeup(Location loc, UUID id) {
+		this.loc = loc;
+		this.id = id;
+	}
+
+	public Location getLoc() {
+		return loc;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public static List<Wakeup> getWakeups() {
+		return wakeups;
 	}
 
 	// get the nearest of two random Wakeup-Locations

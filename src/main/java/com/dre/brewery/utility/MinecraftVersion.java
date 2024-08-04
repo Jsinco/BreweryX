@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
  */
 public enum MinecraftVersion {
 
-    V1_7("1.7"),
+    //V1_7("1.7"), Remove 1.7 support. We only support versions that use UUIDs.
     V1_8("1.8"),
     V1_9("1.9"),
     V1_10("1.10"),

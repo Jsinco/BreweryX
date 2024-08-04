@@ -65,7 +65,14 @@ public class BPlayer {
 		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
-		players.put(uuid, this);
+	}
+
+	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
+		this(uuid.toString(), quality, drunkenness, offlineDrunk);
+	}
+
+	public BPlayer(UUID uuid) {
+		this(uuid.toString());
 	}
 
 	@Nullable
@@ -79,38 +86,36 @@ public class BPlayer {
 	// This method may be slow and should not be used if not needed
 	@Nullable
 	public static BPlayer getByName(String playerName) {
-		if (BreweryPlugin.useUUID) {
-			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-                String name = p.getName();
-                if (name != null) {
-                    if (name.equalsIgnoreCase(playerName)) {
-                        return entry.getValue();
-                    }
-                }
-            }
-			return null;
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+			String name = p.getName();
+			if (name != null) {
+				if (name.equalsIgnoreCase(playerName)) {
+					return entry.getValue();
+				}
+			}
 		}
-		return players.get(playerName);
+		return null;
 	}
 
 	// This method may be slow and should not be used if not needed
 	public static boolean hasPlayerbyName(String playerName) {
-		if (BreweryPlugin.useUUID) {
-			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-				if (p != null) {
-					String name = p.getName();
-					if (name != null) {
-						if (name.equalsIgnoreCase(playerName)) {
-							return true;
-						}
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+			if (p != null) {
+				String name = p.getName();
+				if (name != null) {
+					if (name.equalsIgnoreCase(playerName)) {
+						return true;
 					}
 				}
 			}
-			return false;
 		}
-		return players.containsKey(playerName);
+		return false;
+	}
+
+	public static ConcurrentHashMap<String, BPlayer> getPlayers() {
+		return players;
 	}
 
 	public static boolean isEmpty() {
@@ -130,14 +135,8 @@ public class BPlayer {
 
 	public static void remove(OfflinePlayer player) {
 		players.remove(BUtil.playerString(player));
-		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-			BConfig.sqlSync.removePlayer(player.getUniqueId());
-		}
 	}
 
-	public static void sqlRemoved(UUID uuid) {
-		players.remove(uuid.toString());
-	}
 
 	public static int numDrunkPlayers() {
 		return players.size();
@@ -147,9 +146,6 @@ public class BPlayer {
 		for (Iterator<Map.Entry<String, BPlayer>> iterator = players.entrySet().iterator(); iterator.hasNext(); ) {
 			Map.Entry<String, BPlayer> entry = iterator.next();
 			if (entry.getValue() == this) {
-				if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-					BConfig.sqlSync.removePlayer(UUID.fromString(entry.getKey()));
-				}
 				iterator.remove();
 				return;
 			}
@@ -216,8 +212,6 @@ public class BPlayer {
 
 		if (bPlayer.drunkenness <= 0) {
 			bPlayer.remove();
-		} else {
-			bPlayer.syncToSQL(false);
 		}
 		return true;
 	}
@@ -233,7 +227,7 @@ public class BPlayer {
 				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			BreweryPlugin.getInstance().errorLog("Failed to show drunkenness to " + player.getName(), e);
 		}
 	}
 
@@ -353,7 +347,6 @@ public class BPlayer {
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
 		drunkenness = 100;
-		syncToSQL(false);
 		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
 		} else {
@@ -399,11 +392,9 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkenness <= -offlineDrunk) {
-				syncToSQL(true);
 				return drunkenness <= -BConfig.hangoverTime;
 			}
 		}
-		syncToSQL(offlineDrunk > 0);
 		return false;
 	}
 
@@ -459,7 +450,6 @@ public class BPlayer {
 	public void passOut(Player player) {
 		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkenness;
-		syncToSQL(false);
 	}
 
 
@@ -532,14 +522,12 @@ public class BPlayer {
 				}
 			}
 			offlineDrunk = 0;
-			syncToSQL(false);
 		}
 		offlineDrunk = 0;
 	}
 
 	public void disconnecting() {
 		offlineDrunk = drunkenness;
-		syncToSQL(false);
 	}
 
 	public void goHome(final Player player) {
@@ -849,18 +837,8 @@ public class BPlayer {
 
 				if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
 					iter.remove();
-					if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-						BConfig.sqlSync.removePlayer(UUID.fromString(uuid));
-					}
 				}
 			}
-		}
-	}
-
-	// Sync Drunkeness Data to SQL if enabled
-	public void syncToSQL(boolean playerOffline) {
-		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-			BConfig.sqlSync.updatePlayer(UUID.fromString(uuid), this, playerOffline);
 		}
 	}
 
@@ -901,7 +879,6 @@ public class BPlayer {
 			}
 		}
 		this.drunkenness = drunkenness;
-		syncToSQL(false);
 	}
 
 	public int getQuality() {

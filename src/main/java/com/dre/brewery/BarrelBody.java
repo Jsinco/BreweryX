@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,11 +31,11 @@ public class BarrelBody {
 	/**
 	 * Loading from file
 	 */
-	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds, boolean async) {
+	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
 		this(barrel, signoffset);
 
 		if (boundsSeemBad(bounds)) {
-			if (async) {
+			if (!Bukkit.isPrimaryThread()) {
 				this.bounds = null;
 				return;
 			}

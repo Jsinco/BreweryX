@@ -8,7 +8,13 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -21,7 +27,13 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.dre.brewery.utility.MinecraftVersion.V1_9;
@@ -32,28 +44,31 @@ public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
-	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
+	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 0;
 	private boolean changed = false; // Not really needed anymore
-	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
+	private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
 	private Color particleColor;
 	private final Location particleLocation;
+	private final UUID id;
 
 	public BCauldron(Block block) {
 		this.block = block;
-		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.id = UUID.randomUUID();
 	}
 
 	// loading from file
-	public BCauldron(Block block, BIngredients ingredients, int state) {
+	public BCauldron(Block block, BIngredients ingredients, int state, UUID id) {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
 		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.id = id;
 	}
 
 	/**
@@ -124,6 +139,19 @@ public class BCauldron {
 	 */
 	public int getState() {
 		return state;
+	}
+
+
+	public BIngredients getIngredients() {
+		return ingredients;
+	}
+
+	public static Map<Block, BCauldron> getBcauldrons() {
+		return bcauldrons;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 
 	// get cauldron by Block
@@ -315,12 +343,12 @@ public class BCauldron {
 		}
 		if (particleRecipe == null) {
 			// Check for Cauldron Recipe
-			particleRecipe = Optional.ofNullable(ingredients.getCauldronRecipe());
+			particleRecipe = ingredients.getCauldronRecipe();
 		}
 
 		List<Tuple<Integer, Color>> colorList = null;
-		if (particleRecipe.isPresent()) {
-			colorList = particleRecipe.get().getParticleColor();
+		if (particleRecipe != null) {
+			colorList = particleRecipe.getParticleColor();
 		}
 
 		if (colorList == null || colorList.isEmpty()) {

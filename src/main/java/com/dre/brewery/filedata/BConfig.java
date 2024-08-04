@@ -1,7 +1,10 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BSealer;
+import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.DistortChat;
+import com.dre.brewery.MCBarrel;
 import com.dre.brewery.api.events.ConfigLoadEvent;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel;
@@ -15,9 +18,10 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.storage.records.ConfiguredDataManager;
+import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -30,7 +34,6 @@ import org.bukkit.plugin.PluginManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,11 +42,16 @@ import java.util.stream.Collectors;
 
 public class BConfig {
 
+	public static final BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static final String configVersion = "3.1";
-	public static boolean updateCheck;
 	public static CommandSender reloader;
+
+	public static boolean updateCheck;
+	public static ConfiguredDataManager configuredDataManager;
+	public static int autoSaveInterval;
+
 
 	// Third Party Enabled
 	public static boolean useWG; //WorldGuard
@@ -104,14 +112,7 @@ public class BConfig {
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
 
-	//MySQL
-	public static String sqlHost, sqlPort, sqlDB;
-	public static SQLSync sqlSync;
-	public static boolean sqlDrunkSync;
-
-	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
-
-	private static boolean checkConfigs() {
+	private static boolean createConfigs() {
 		File cfg = new File(breweryPlugin.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
 			breweryPlugin.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
@@ -171,30 +172,26 @@ public class BConfig {
 	}
 
 	public static FileConfiguration loadConfigFile() {
-		File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
-		if (!checkConfigs()) {
+		File file = new File(breweryPlugin.getDataFolder(), "config.yml");
+		if (!createConfigs()) {
 			return null;
 		}
 
-		try {
-			YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			if (cfg.contains("version") && cfg.contains("language")) {
-				return cfg;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		// Failed to load
-		if (breweryPlugin.languageReader != null) {
-			BreweryPlugin.getInstance().errorLog(breweryPlugin.languageReader.get("Error_YmlRead"));
-		} else {
-			BreweryPlugin.getInstance().errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
-		}
-		return null;
+		return YamlConfiguration.loadConfiguration(file);
 	}
 
 	public static void readConfig(FileConfiguration config) {
+		configuredDataManager = new ConfiguredDataManager(
+				DataManagerType.valueOf(config.getString("storage.type", "FLATFILE").toUpperCase()),
+						config.getString("storage.database", "brewery-data"),
+						config.getString("storage.tablePrefix", "brewery_"),
+						config.getString("storage.address"),
+						config.getString("storage.username"),
+						config.getString("storage.password")
+				);
+		autoSaveInterval = config.getInt("autosave", 3);
+
 		// Set the Language
 		breweryPlugin.language = config.getString("language", "en");
 
@@ -239,7 +236,6 @@ public class BConfig {
 		hasSlimefun = plMan.isPluginEnabled("Slimefun");
 
 		// various Settings
-		DataSave.autosave = config.getInt("autosave", 3);
 		BreweryPlugin.debug = config.getBoolean("debug", false);
 		pukeItem = !config.getStringList("pukeItem").isEmpty() ? config.getStringList("pukeItem").stream().map(BUtil::getMaterialSafely).collect(Collectors.toList())
 				: List.of(BUtil.getMaterialSafely(config.getString("pukeItem"))); //Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
@@ -342,31 +338,29 @@ public class BConfig {
 
 		// loading drainItems
 		List<String> drainList = config.getStringList("drainItems");
-		if (drainList != null) {
-			for (String drainString : drainList) {
-				String[] drainSplit = drainString.split("/");
-				if (drainSplit.length > 1) {
-					Material mat = BUtil.getMaterialSafely(drainSplit[0]);
-					int strength = breweryPlugin.parseInt(drainSplit[1]);
-					if (mat == null && hasVault && strength > 0) {
-						try {
-							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
-							if (vaultItem != null) {
-								mat = vaultItem.getType();
-							}
-						} catch (Exception e) {
-							BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
-							e.printStackTrace();
-						}
-					}
-					if (mat != null && strength > 0) {
-						drainItems.put(mat, strength);
-					}
-				}
-			}
-		}
+        for (String drainString : drainList) {
+            String[] drainSplit = drainString.split("/");
+            if (drainSplit.length > 1) {
+                Material mat = BUtil.getMaterialSafely(drainSplit[0]);
+                int strength = breweryPlugin.parseInt(drainSplit[1]);
+                if (mat == null && hasVault && strength > 0) {
+                    try {
+                        net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
+                        if (vaultItem != null) {
+                            mat = vaultItem.getType();
+                        }
+                    } catch (Exception e) {
+                        BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+                        e.printStackTrace();
+                    }
+                }
+                if (mat != null && strength > 0) {
+                    drainItems.put(mat, strength);
+                }
+            }
+        }
 
-		// Loading Words
+        // Loading Words
 		DistortChat.words = new ArrayList<>();
 		DistortChat.ignoreText = new ArrayList<>();
 		if (config.getBoolean("enableChatDistortion", false)) {
@@ -416,31 +410,6 @@ public class BConfig {
 			} catch (ClassNotFoundException e) {
 				useBlocklocker = false;
 				BreweryPlugin.getInstance().log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
-			}
-		}
-
-		// init SQL
-		if (sqlSync != null) {
-			try {
-				sqlSync.closeConnection();
-			} catch (SQLException ignored) {
-			}
-			sqlSync = null;
-		}
-		sqlDrunkSync = false;
-
-		ConfigurationSection sqlCfg = config.getConfigurationSection("multiServerDB");
-		if (sqlCfg != null && sqlCfg.getBoolean("enabled")) {
-			sqlDrunkSync = sqlCfg.getBoolean("syncDrunkeness");
-			sqlHost = sqlCfg.getString("host", null);
-			sqlPort = sqlCfg.getString("port", null);
-			sqlDB = sqlCfg.getString("database", null);
-			String sqlUser = sqlCfg.getString("user", null);
-			String sqlPW = sqlCfg.getString("password", null);
-
-			sqlSync = new SQLSync();
-			if (!sqlSync.init(sqlUser, sqlPW)) {
-				sqlSync = null;
 			}
 		}
 
