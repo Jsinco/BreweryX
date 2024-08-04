@@ -200,6 +200,7 @@ public class BConfig {
 		configuredDataManager = new ConfiguredDataManager(
 				DataManagerType.valueOf(config.getString("storage.type", "FLATFILE").toUpperCase()),
 						config.getString("storage.database", "brewery-data"),
+						config.getString("storage.tablePrefix", "brewery_"),
 						config.getString("storage.address"),
 						config.getString("storage.username"),
 						config.getString("storage.password")

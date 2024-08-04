@@ -1,4 +1,4 @@
-package com.dre.brewery.storage;
+package com.dre.brewery.storage.serialization;
 
 import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Bukkit;

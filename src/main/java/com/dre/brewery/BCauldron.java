@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -52,7 +51,7 @@ public class BCauldron {
 	private final Block block;
 	private int state = 0;
 	private boolean changed = false; // Not really needed anymore
-	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
+	private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
 	private Color particleColor;
 	private final Location particleLocation;
 	private final UUID id;
@@ -344,12 +343,12 @@ public class BCauldron {
 		}
 		if (particleRecipe == null) {
 			// Check for Cauldron Recipe
-			particleRecipe = Optional.ofNullable(ingredients.getCauldronRecipe());
+			particleRecipe = ingredients.getCauldronRecipe();
 		}
 
 		List<Tuple<Integer, Color>> colorList = null;
-		if (particleRecipe.isPresent()) {
-			colorList = particleRecipe.get().getParticleColor();
+		if (particleRecipe != null) {
+			colorList = particleRecipe.getParticleColor();
 		}
 
 		if (colorList == null || colorList.isEmpty()) {

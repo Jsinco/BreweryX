@@ -12,6 +12,7 @@ storage:
   type: FlatFile
   # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
   database: brewery-data
+  tablePrefix: brewery_
   address: localhost
   username: root
   password: ''

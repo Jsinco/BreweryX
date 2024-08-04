@@ -10,6 +10,7 @@ import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
+import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import org.bukkit.Bukkit;
@@ -23,32 +24,34 @@ import java.util.UUID;
 
 public abstract class DataManager {
 
+    // TODO: Instead of using UUIDs for Barrels, Cauldrons, and Wakeups. We should figure out some hashing algorithm to generate a unique ID for each of them.
+
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
 
     public abstract Barrel getBarrel(UUID id);
-    public abstract Collection<Barrel> getAllBarrels(boolean async);
+    public abstract Collection<Barrel> getAllBarrels();
     public abstract void saveAllBarrels(Collection<Barrel> barrels, boolean overwrite);
     public abstract void saveBarrel(Barrel barrel);
     public abstract void deleteBarrel(UUID id);
 
 
     public abstract BCauldron getCauldron(UUID id);
-    public abstract Collection<BCauldron> getAllCauldrons(boolean async);
+    public abstract Collection<BCauldron> getAllCauldrons();
     public abstract void saveAllCauldrons(Collection<BCauldron> cauldrons, boolean overwrite);
     public abstract void saveCauldron(BCauldron cauldron);
     public abstract void deleteCauldron(UUID id);
 
 
     public abstract BPlayer getPlayer(UUID playerUUID);
-    public abstract Collection<BPlayer> getAllPlayers(boolean async);
+    public abstract Collection<BPlayer> getAllPlayers();
     public abstract void saveAllPlayers(Collection<BPlayer> players, boolean overwrite);
     public abstract void savePlayer(BPlayer player);
     public abstract void deletePlayer(UUID playerUUID);
 
 
     public abstract Wakeup getWakeup(UUID id);
-    public abstract Collection<Wakeup> getAllWakeups(boolean async);
+    public abstract Collection<Wakeup> getAllWakeups();
     public abstract void saveAllWakeups(Collection<Wakeup> wakeups, boolean overwrite);
     public abstract void saveWakeup(Wakeup wakeup);
     public abstract void deleteWakeup(UUID id);
@@ -103,10 +106,10 @@ public abstract class DataManager {
         plugin.debugLog("DataManager exited.");
     }
 
-    public static DataManager createDataManager(ConfiguredDataManager record) {
+    public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {
         DataManager dataManager = switch (record.type()) {
             case FLATFILE -> new FlatFileStorage(record);
-            case MYSQL -> throw new UnsupportedOperationException("Not implemented yet.");
+            case MYSQL -> new MySQLStorage(record);
         };
 
         // Legacy data migration

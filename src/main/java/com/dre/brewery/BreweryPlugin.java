@@ -47,6 +47,7 @@ import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -61,7 +62,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -157,12 +157,16 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		// Load DataManager
-		dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
+        try {
+            dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
+        } catch (StorageInitException e) {
+            throw new RuntimeException(e);
+        }
 
-		Barrel.getBarrels().addAll(dataManager.getAllBarrels(false));
-		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons(false).stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-		BPlayer.getPlayers().putAll(dataManager.getAllPlayers(false).stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-		Wakeup.getWakeups().addAll(dataManager.getAllWakeups(false));
+        Barrel.getBarrels().addAll(dataManager.getAllBarrels());
+		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+		Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
 
 
 		// Setup Metrics

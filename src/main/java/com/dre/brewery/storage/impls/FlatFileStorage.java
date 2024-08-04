@@ -5,7 +5,8 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.storage.BukkitSerialization;
+import com.dre.brewery.storage.serialization.BukkitSerialization;
+import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManager;
@@ -25,13 +26,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-// TODO: Handle asyncs
+
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
     private final YamlConfiguration dataFile;
 
-    public FlatFileStorage(ConfiguredDataManager record) {
+    public FlatFileStorage(ConfiguredDataManager record) throws StorageInitException {
         String fileName = record.database() + ".yml";
         this.rawFile = new File(plugin.getDataFolder(), fileName);
 
@@ -39,7 +40,7 @@ public class FlatFileStorage extends DataManager {
             try {
                 rawFile.createNewFile();
             } catch (IOException e) {
-                plugin.errorLog("Failed to create file! " + fileName, e);
+                throw new StorageInitException("Failed to create file! " + fileName, e);
             }
         }
 
@@ -69,8 +70,8 @@ public class FlatFileStorage extends DataManager {
         return new Barrel(spigot, sign, bounds, items, time, id);
     }
 
-    @Override // TODO: Add method to get barrels by world?
-    public Collection<Barrel> getAllBarrels(boolean async) {
+    @Override
+    public Collection<Barrel> getAllBarrels() {
         ConfigurationSection section = dataFile.getConfigurationSection("barrels");
         if (section == null) {
             return Collections.emptyList();
@@ -127,7 +128,7 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
-    public Collection<BCauldron> getAllCauldrons(boolean async) {
+    public Collection<BCauldron> getAllCauldrons() {
         ConfigurationSection section = dataFile.getConfigurationSection("cauldrons");
 
         if (section == null) {
@@ -185,7 +186,7 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
-    public Collection<BPlayer> getAllPlayers(boolean async) {
+    public Collection<BPlayer> getAllPlayers() {
         ConfigurationSection section = dataFile.getConfigurationSection("players");
 
         if (section == null) {
@@ -237,7 +238,7 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
-    public Collection<Wakeup> getAllWakeups(boolean async) {
+    public Collection<Wakeup> getAllWakeups() {
         ConfigurationSection section = dataFile.getConfigurationSection("wakeups");
 
         if (section == null) {

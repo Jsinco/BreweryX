@@ -12,6 +12,7 @@ import java.util.List;
  * @param mcBarrelTime The time it takes for a barrel to brew
  * @param prevSaveSeeds Previous save seeds
  * @param brewsCreated Brews created. Implementers need to store the hashcode of this list.
+ * @param brewsCreatedHash Hashcode of brews created
  */
 public record BreweryMiscData(long installTime, long mcBarrelTime, List<Long> prevSaveSeeds, List<Integer> brewsCreated, int brewsCreatedHash) {
 }
