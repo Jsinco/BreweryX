@@ -5,6 +5,7 @@ import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import org.bukkit.Location;
 
 import java.util.List;
 
@@ -23,7 +24,11 @@ public record SerializableBarrel(String id, String serializedLocation, List<Inte
     }
 
     public Barrel toBarrel() {
-        return new Barrel(DataManager.deserializeLocation(serializedLocation).getBlock(), sign, BoundingBox.fromPoints(bounds), BukkitSerialization.itemStackArrayFromBase64(serializedItems), time, BUtil.uuidFromString(id));
+        Location loc = DataManager.deserializeLocation(serializedLocation);
+        if (loc == null) {
+            return null;
+        }
+        return new Barrel(loc.getBlock(), sign, BoundingBox.fromPoints(bounds), BukkitSerialization.itemStackArrayFromBase64(serializedItems), time, BUtil.uuidFromString(id));
     }
 
     @Override

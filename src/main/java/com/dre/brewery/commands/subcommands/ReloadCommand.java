@@ -3,7 +3,6 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.filedata.BConfig;
@@ -68,12 +67,16 @@ public class ReloadCommand implements SubCommand {
 			}
 		}
 
-		BreweryPlugin.getDataManager().exit(true, true);
-		try {
-			BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
-		} catch (StorageInitException e) {
-			breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
+		DataManager dataManager = BreweryPlugin.getDataManager();
+		if (dataManager != null){
+			dataManager.exit(true, true);
+			try {
+				BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
+			} catch (StorageInitException e) {
+				breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
+			}
 		}
+
 
 		BreweryPlugin.getAddonManager().reloadAddons();
 		BConfig.reloader = null;

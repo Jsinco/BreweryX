@@ -71,6 +71,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -174,10 +175,10 @@ public class BreweryPlugin extends JavaPlugin {
 			try {
 				dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
 				DataManager.loadMiscData(dataManager.getBreweryMiscData());
-				Barrel.getBarrels().addAll(dataManager.getAllBarrels());
-				BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-				BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-				Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
+				Barrel.getBarrels().addAll(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList());
+				BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+				BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+				Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
 			} catch (StorageInitException e) {
 				errorLog("Failed to initialize DataManager!", e);
 				Bukkit.getPluginManager().disablePlugin(this);
@@ -415,6 +416,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public static DataManager getDataManager() {
 		return dataManager;
+	}
+
+	public static RedisManager getRedisManager() {
+		return redisManager;
 	}
 
 	// Utility
