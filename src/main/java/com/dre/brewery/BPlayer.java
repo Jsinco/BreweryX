@@ -921,4 +921,15 @@ public class BPlayer {
 		}
 		return offlinePlayer.getName();
 	}
+
+	@Override
+	public String toString() {
+		return "BPlayer{" +
+				"uuid='" + uuid + '\'' +
+				", quality=" + quality +
+				", drunkenness=" + drunkenness +
+				", offlineDrunk=" + offlineDrunk +
+				", alcRecovery=" + alcRecovery +
+				'}';
+	}
 }

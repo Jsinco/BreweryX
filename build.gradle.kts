@@ -108,6 +108,7 @@ tasks {
     register<Jar>("kotlinReducedJar") {
         dependsOn("kotlinReducedResources")
         from(sourceSets.main.get().output)
+        from(shadowJar.get().includedDependencies)
         from("$buildDir/kt-reduced")
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
         archiveClassifier.set("KtReduced")

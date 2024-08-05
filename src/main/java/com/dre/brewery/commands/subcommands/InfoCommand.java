@@ -52,8 +52,7 @@ public class InfoCommand implements SubCommand {
 
         boolean selfInfo = playerName == null;
         if (selfInfo) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
+            if (sender instanceof Player player) {
                 playerName = player.getName();
             } else {
                 breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));

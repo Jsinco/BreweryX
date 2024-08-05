@@ -24,6 +24,10 @@ import java.util.List;
 // TODO: Use jedis pool, fix serialization of lists
 public class RedisManager extends JedisPubSub {
 
+    /*
+    REWRITE ME/
+     */
+
     private static final String BARRELS = "barrels", PLAYERS = "players", CAULDRONS = "cauldrons", WAKEUPS = "wakeups";
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
     private static final JedisPoolConfig poolConfig = new JedisPoolConfig();
@@ -52,18 +56,22 @@ public class RedisManager extends JedisPubSub {
 
 
     public RedisManager(ConfiguredRedisManager record) throws RedisInitException {
-        this.serializer =  new RedisSerializer();
-        this.type = record.type();
-        this.id = RedisFamilyType.generateUniqueId();
+        try {
+            this.serializer =  new RedisSerializer();
+            this.type = record.type();
+            this.id = RedisFamilyType.generateUniqueId();
 
-        redisPool = new JedisPool(poolConfig, record.host(), record.port(), 20000, record.password());
-        plugin.log("Connected to Redis! &6" + record.host() + ":" + record.port());
-        redisLog("Shard type: &6" + type.name() + " &7ID: &6" + id + "&7.");
+            redisPool = new JedisPool(poolConfig, record.host(), record.port(), 20000, record.password());
+            plugin.log("Connected to Redis! &6" + record.host() + ":" + record.port());
+            redisLog("Shard type: &6" + type.name() + " &7ID: &6" + id + "&7.");
 
 
-        // Use a thread to subscribe to the Redis channel
-        getSubscriber(this).runTaskAsynchronously(plugin);
-        publish(RedisMessage.SHARD_ENABLED);
+            // Use a thread to subscribe to the Redis channel
+            getSubscriber(this).runTaskAsynchronously(plugin);
+            publish(RedisMessage.SHARD_ENABLED);
+        } catch (Throwable e) {
+            throw new RedisInitException("Failed to connect to Redis", e);
+        }
     }
 
     public UniversalRunnable getSubscriber(JedisPubSub pubSubClass) {
@@ -101,29 +109,25 @@ public class RedisManager extends JedisPubSub {
             return; // Stuff below is for masters only
         }
 
-        // clear cache before starting
-        try (Jedis redis = redisPool.getResource()) {
-            redis.del(BARRELS);
-            redis.del(PLAYERS);
-            redis.del(CAULDRONS);
-            redis.del(WAKEUPS);
-        } catch (Exception e) {
-            plugin.errorLog("Failed to clear cache from Redis", e);
-        }
 
         this.masterCachingTask = BreweryPlugin.getScheduler().runTaskTimerAsynchronously(() -> {
-            publish(RedisMessage.CACHE_UPDATE);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                plugin.errorLog("Failed to sleep thread", e);
+            try (Jedis redis = redisPool.getResource()) {
+                redis.del(BARRELS);
+                redis.del(PLAYERS);
+                redis.del(CAULDRONS);
+                redis.del(WAKEUPS);
+            } catch (Exception e) {
+                plugin.errorLog("Failed to clear cache from Redis", e);
             }
-            publish(RedisMessage.CACHE_RETRIEVE);
+            this.pushCache(RedisFamilyType.MASTER_SHARD, RedisMessage.CACHE_UPDATE, this.id); // Push our cache to redis
+            publish(RedisMessage.CACHE_UPDATE); // Tell all shards to push their cache to Redis
+            this.retrieveCached(RedisFamilyType.MASTER_SHARD, RedisMessage.CACHE_RETRIEVE, this.id); // Retrieve all caches from Redis
+            publish(RedisMessage.CACHE_RETRIEVE); // Tell all shards to retrieve their cache from Redis
             redisDebugLog("Sent cache update message to Redis");
-        }, 0, 100);
+        }, 0, 200);
     }
 
-    public void shutdown() {
+    public void exit() {
         if (masterCachingTask != null) {
             masterCachingTask.cancel();
         }
@@ -139,6 +143,10 @@ public class RedisManager extends JedisPubSub {
     public void onMessage(String channel, String message) {
         String[] parts = message.split(";");
         String id = parts[2];
+
+        if (id.equals(this.id)) {
+            return;
+        }
 
         RedisFamilyType familyType = RedisFamilyType.valueOf(parts[0]);
         RedisMessage redisMessage = RedisMessage.valueOf(parts[1]);
@@ -165,16 +173,20 @@ public class RedisManager extends JedisPubSub {
             for (Barrel barrel : newBarrelsList) {
                 Barrel.barrels.removeIf(b -> b.getId().equals(barrel.getId()));
                 Barrel.barrels.add(barrel);
+                System.out.println(barrel);
             }
             for (BPlayer player : newPlayers) {
                 BPlayer.players.put(player.getUuid(), player);
+                System.out.println(player);
             }
             for (BCauldron cauldron : newCauldrons) {
                 BCauldron.bcauldrons.put(cauldron.getBlock(), cauldron);
+                System.out.println(cauldron);
             }
             for (Wakeup wakeup : newWakeups) {
                 Wakeup.wakeups.removeIf(w -> w.getId().equals(wakeup.getId()));
                 Wakeup.wakeups.add(wakeup);
+                System.out.println(wakeup);
             }
             redisDebugLog("Updated cache from Redis");
             redisDebugLog("&6Barrels: " + Barrel.barrels.size() + " Players: " + BPlayer.players.size() + " Cauldrons: " + BCauldron.bcauldrons.size() + " Wakeups: " + Wakeup.wakeups.size());

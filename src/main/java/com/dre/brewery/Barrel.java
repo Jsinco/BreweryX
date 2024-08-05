@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -542,4 +543,16 @@ public class Barrel implements InventoryHolder, Serializable {
 
 	}
 
+
+	@Override
+	public String toString() {
+		return "Barrel{" +
+				"spigot=" + spigot +
+				", body=" + body +
+				", checked=" + checked +
+				", inventory=" + Arrays.toString(inventory.getContents()) +
+				", time=" + time +
+				", id=" + id +
+				'}';
+	}
 }

@@ -3,7 +3,6 @@ package com.dre.brewery.storage.redis;
 public enum RedisMessage {
     /**
      * Sending a message to all shards to push their cache to Redis. This operation will not overwrite any data in Redis.
-     * After a shard has received this message it will pull caches from redis, add to the lists and maps, and send them back to Redis.
      * <p>
      * This message can be sent by any shard.
      */
@@ -32,5 +31,6 @@ public enum RedisMessage {
      * <p>
      * This message can be sent by any shard. But only the master shard will take action.
      */
-    SAVE
+    SAVE,
+
 }

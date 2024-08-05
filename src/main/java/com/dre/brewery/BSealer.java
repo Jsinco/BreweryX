@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -138,21 +139,25 @@ public class BSealer implements InventoryHolder {
 
 	public static void registerRecipe() {
 		recipeRegistered = true;
+		NamespacedKey namespacedKey = new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable");
+		if (Bukkit.getRecipe(namespacedKey) != null) {
+			return;
+		}
 		ItemStack sealingTableItem = new ItemStack(Material.SMOKER);
-		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(Material.SMOKER);
+		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(Material.SMOKER);
 		if (meta == null) return;
 		meta.setDisplayName("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 		meta.getPersistentDataContainer().set(TAG_KEY, PersistentDataType.BYTE, (byte)1);
 		sealingTableItem.setItemMeta(meta);
 
-		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable"), sealingTableItem);
+		ShapedRecipe recipe = new ShapedRecipe(namespacedKey, sealingTableItem);
 		recipe.shape("bb ",
 					"ww ",
 					"ww ");
 		recipe.setIngredient('b', Material.GLASS_BOTTLE);
 		recipe.setIngredient('w', new RecipeChoice.MaterialChoice(Tag.PLANKS));
 
-		BreweryPlugin.getInstance().getServer().addRecipe(recipe);
+		Bukkit.addRecipe(recipe);
 	}
 
 	public static void unregisterRecipe() {

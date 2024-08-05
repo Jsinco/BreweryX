@@ -3,6 +3,7 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.storage.redis.RedisManager;
 import com.dre.brewery.storage.redis.RedisMessage;
 import org.bukkit.command.CommandSender;
@@ -18,7 +19,7 @@ public class SaveCommand implements SubCommand {
         if (dataManager != null) {
             dataManager.saveAll(true);
         }
-        if (redisManager != null) {
+        if (redisManager != null && redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
             redisManager.publish(RedisMessage.SAVE);
         }
     }

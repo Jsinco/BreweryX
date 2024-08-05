@@ -26,8 +26,8 @@ redis:
   address: localhost:6379
   password: ''
   # When running Brewery off of Redis, there should be only ONE master shard.
-  # Master shards are responsible for listening to all other shards.
   # The master shard is the only one which will store persistent data and communicate with whatever database you are using.
+  # Storage settings can be omitted if this is a normal shard and using Redis.
   # Available types: MASTER_SHARD, NORMAL_SHARD
   shardType: NORMAL_SHARD
 

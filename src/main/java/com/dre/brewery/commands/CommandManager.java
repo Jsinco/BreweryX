@@ -22,7 +22,7 @@ public class CommandManager implements TabExecutor {
 
     public CommandManager() {
         subCommands.put("help" , new HelpCommand());
-        subCommands.put("reload", new ReloadCommand(plugin));
+        subCommands.put("reload", new ReloadCommand());
         subCommands.put("wakeup", new WakeupCommand());
         subCommands.put("itemName", new ItemName());
         subCommands.put("create", new CreateCommand(plugin));

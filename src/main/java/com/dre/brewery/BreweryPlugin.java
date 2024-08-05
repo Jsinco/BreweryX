@@ -160,14 +160,14 @@ public class BreweryPlugin extends JavaPlugin {
 		if (configuredRedisManager.enabled()) {
             try {
                 redisManager = new RedisManager(configuredRedisManager);
+				if (redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
+					loadDataManager = false;
+					log("DataManager disabled, Redis is enabled and this is not a master shard.");
+				}
             } catch (RedisInitException e) {
                 errorLog("Failed to initialize Redis!", e);
 				Bukkit.getPluginManager().disablePlugin(this);
             }
-            if (redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
-				loadDataManager = false;
-				log("DataManager disabled, Redis is enabled and this is not a master shard.");
-			}
 		}
 
 		// Load DataManager, if Redis allows it
@@ -264,7 +264,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// disconnect from Redis
 		if (redisManager != null) {
-			redisManager.shutdown();
+			redisManager.exit();
 		}
 
 		// save Data to Disk
@@ -420,6 +420,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public static RedisManager getRedisManager() {
 		return redisManager;
+	}
+
+	public static void setRedisManager(RedisManager redisManager) {
+		BreweryPlugin.redisManager = redisManager;
 	}
 
 	// Utility
