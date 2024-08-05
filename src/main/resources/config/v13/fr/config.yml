@@ -900,22 +900,6 @@ useVirtualChestPerms: false
 useLogBlock: true
 
 
-# -- MultiServer/BungeeCord --
-# Si Brewery est exécuté sur plusieurs serveurs connectés (via BungeeCord), une base de données partagée peut être utilisée
-# ici pour synchroniser l'ivresse et pour pouvoir utiliser des boissons codées entre elles.
-
-multiServerDB:
-  # Si l'utilisation de la base de données est activée
-  enabled: false
-  # Si l'ivresse des joueurs devait être synchronisée entre les serveurs
-  syncDrunkeness: true
-  host: localhost
-  port: '3306'
-  user: minec
-  password: xyz
-  database: base
-
-
 # -- Divers autres paramètres --
 
 # If items in Offhand should be added to the cauldron as well [false]

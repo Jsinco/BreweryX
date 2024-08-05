@@ -13,9 +13,11 @@ import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
+import com.dre.brewery.storage.records.ConfiguredRedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public abstract class DataManager {
 
     // TODO: Instead of using UUIDs for Barrels, Cauldrons, and Wakeups. We should figure out some hashing algorithm to generate a unique ID for each of them.
+    private static Jedis jedis;
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
@@ -139,7 +142,6 @@ public abstract class DataManager {
 
             plugin.log("&5Finished migrating legacy data! Took&7: &5" + (System.currentTimeMillis() - start) + "ms");
         }
-
 
         plugin.log("DataManager created: " + record.type());
         return dataManager;

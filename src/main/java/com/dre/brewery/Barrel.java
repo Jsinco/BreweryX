@@ -7,7 +7,6 @@ import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
-import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
@@ -17,7 +16,6 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -38,7 +36,7 @@ import java.util.UUID;
  */
 public class Barrel implements InventoryHolder {
 
-	public static volatile List<Barrel> barrels = new ArrayList<>();
+	public static volatile List<Barrel> barrels = new ArrayList<>(); // This should not be volatile, it's literally final.
 	private static int check = 0; // Which Barrel was last checked
 
 	private final Block spigot;
@@ -505,80 +503,6 @@ public class Barrel implements InventoryHolder {
 		return barrels.stream().anyMatch(barrel -> barrel.spigot.getWorld().equals(world));
 	}
 
-	/**
-	 * unloads barrels that are in a unloading world
-	 */
-	public static void onUnload(World world) {
-		barrels.removeIf(barrel -> barrel.spigot.getWorld().equals(world));
-	}
-
-	/**
-	 * Unload all Barrels that have a Block in a unloaded World
-	 */
-	public static void unloadWorlds() {
-		List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
-		barrels.removeIf(barrel -> !worlds.contains(barrel.spigot.getWorld()));
-	}
-
-	/**
-	 * Saves all data
-	 */
-	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		BUtil.createWorldSections(config);
-
-		if (!barrels.isEmpty()) {
-			int id = 0;
-			for (Barrel barrel : barrels) {
-
-				String worldName = barrel.spigot.getWorld().getName();
-				String prefix;
-
-				if (worldName.startsWith("DXL_")) {
-					prefix = BUtil.getDxlName(worldName) + "." + id;
-				} else {
-					prefix = barrel.spigot.getWorld().getUID() + "." + id;
-				}
-
-				// block: x/y/z
-				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
-
-				// save the body data into the section as well
-				barrel.body.save(config, prefix);
-
-				if (barrel.inventory != null) {
-					int slot = 0;
-					ItemStack item;
-					ConfigurationSection invConfig = null;
-					while (slot < barrel.inventory.getSize()) {
-						item = barrel.inventory.getItem(slot);
-						if (item != null) {
-							if (invConfig == null) {
-								if (barrel.time != 0) {
-									config.set(prefix + ".time", barrel.time);
-								}
-								invConfig = config.createSection(prefix + ".inv");
-							}
-							// ItemStacks are configurationSerializeable, makes them
-							// really easy to save
-							invConfig.set(slot + "", item);
-						}
-
-						slot++;
-					}
-				}
-
-				id++;
-			}
-		}
-		// also save barrels that are not loaded
-		if (oldData != null) {
-			for (String uuid : oldData.getKeys(false)) {
-				if (!config.contains(uuid)) {
-					config.set(uuid, oldData.get(uuid));
-				}
-			}
-		}
-	}
 
 	public static class BarrelCheck extends UniversalRunnable {
 		@Override

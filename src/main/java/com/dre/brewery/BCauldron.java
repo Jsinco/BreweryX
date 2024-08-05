@@ -14,12 +14,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -545,59 +543,6 @@ public class BCauldron {
 		return bcauldrons.remove(block) != null;
 	}
 
-	/**
-	 * Are any Cauldrons in that World
-	 */
-	public static boolean hasDataInWorld(World world) {
-		return bcauldrons.keySet().stream().anyMatch(block -> block.getWorld().equals(world));
-	}
-
-	// unloads cauldrons that are in a unloading world
-	// as they were written to file just before, this is safe to do
-	public static void onUnload(World world) {
-		bcauldrons.keySet().removeIf(block -> block.getWorld().equals(world));
-	}
-
-	/**
-	 * Unload all Cauldrons that have are in a unloaded World
-	 */
-	public static void unloadWorlds() {
-		List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
-		bcauldrons.keySet().removeIf(block -> !worlds.contains(block.getWorld()));
-	}
-
-	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		BUtil.createWorldSections(config);
-
-		if (!bcauldrons.isEmpty()) {
-			int id = 0;
-			for (BCauldron cauldron : bcauldrons.values()) {
-				String worldName = cauldron.block.getWorld().getName();
-				String prefix;
-
-				if (worldName.startsWith("DXL_")) {
-					prefix = BUtil.getDxlName(worldName) + "." + id;
-				} else {
-					prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
-				}
-
-				config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
-				if (cauldron.state != 0) {
-					config.set(prefix + ".state", cauldron.state);
-				}
-				config.set(prefix + ".ingredients", cauldron.ingredients.serializeIngredients());
-				id++;
-			}
-		}
-		// copy cauldrons that are not loaded
-		if (oldData != null){
-			for (String uuid : oldData.getKeys(false)) {
-				if (!config.contains(uuid)) {
-					config.set(uuid, oldData.get(uuid));
-				}
-			}
-		}
-	}
 
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give

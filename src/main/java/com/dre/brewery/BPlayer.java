@@ -17,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -43,7 +42,7 @@ public class BPlayer {
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
-	private static final ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
+	private static final ConcurrentHashMap<Player, Integer> pukeTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
 
@@ -597,14 +596,14 @@ public class BPlayer {
 		}
 		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(80, 4), true);
 
-		if (pTasks.isEmpty()) {
+		if (pukeTasks.isEmpty()) {
 			task = BreweryPlugin.getScheduler().runTaskTimer(player, BPlayer::pukeTask, 1L, 1L);
 		}
-		pTasks.put(player, event.getCount());
+		pukeTasks.put(player, event.getCount());
 	}
 
 	public static void pukeTask() {
-		for (Iterator<Map.Entry<Player, Integer>> iter = pTasks.entrySet().iterator(); iter.hasNext(); ) {
+		for (Iterator<Map.Entry<Player, Integer>> iter = pukeTasks.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry<Player, Integer> entry = iter.next();
 			Player player = entry.getKey();
 			int count = entry.getValue();
@@ -618,7 +617,7 @@ public class BPlayer {
 				entry.setValue(count - 1);
 			}
 		}
-		if (pTasks.isEmpty()) {
+		if (pukeTasks.isEmpty()) {
 			task.cancel();
 		}
 	}
@@ -842,18 +841,6 @@ public class BPlayer {
 		}
 	}
 
-	// save all data
-	public static void save(ConfigurationSection config) {
-		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-			ConfigurationSection section = config.createSection(entry.getKey());
-			BPlayer bPlayer = entry.getValue();
-			section.set("quality", bPlayer.quality);
-			section.set("drunk", bPlayer.drunkenness);
-			if (bPlayer.offlineDrunk != 0) {
-				section.set("offDrunk", bPlayer.offlineDrunk);
-			}
-		}
-	}
 
 
 	// #### getter/setter ####

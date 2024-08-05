@@ -2,13 +2,10 @@ package com.dre.brewery;
 
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -245,53 +242,6 @@ public class Wakeup {
 			return;
 		}
 		breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoCheck"));
-	}
-
-
-	public static void save(ConfigurationSection section, ConfigurationSection oldData) {
-		BUtil.createWorldSections(section);
-
-		// loc is saved as a String in world sections with format x/y/z/pitch/yaw
-		if (!wakeups.isEmpty()) {
-
-			Iterator<Wakeup> iter = wakeups.iterator();
-			for (int id = 0; iter.hasNext(); id++) {
-				Wakeup wakeup = iter.next();
-
-				if (!wakeup.active) {
-					continue;
-				}
-
-				String worldName = wakeup.loc.getWorld().getName();
-				String prefix;
-
-				if (worldName.startsWith("DXL_")) {
-					prefix = BUtil.getDxlName(worldName) + "." + id;
-				} else {
-					prefix = wakeup.loc.getWorld().getUID().toString() + "." + id;
-				}
-
-				section.set(prefix, wakeup.loc.getX() + "/" + wakeup.loc.getY() + "/" + wakeup.loc.getZ() + "/" + wakeup.loc.getPitch() + "/" + wakeup.loc.getYaw());
-			}
-		}
-
-		// copy Wakeups that are not loaded
-		if (oldData != null){
-			for (String uuid : oldData.getKeys(false)) {
-				if (!section.contains(uuid)) {
-					section.set(uuid, oldData.get(uuid));
-				}
-			}
-		}
-	}
-
-	public static void onUnload(World world) {
-		wakeups.removeIf(wakeup -> wakeup.loc.getWorld().equals(world));
-	}
-
-	public static void unloadWorlds() {
-		List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
-		wakeups.removeIf(wakeup -> !worlds.contains(wakeup.loc.getWorld()));
 	}
 
 }

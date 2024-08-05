@@ -47,7 +47,11 @@ import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.StorageInitException;
+import com.dre.brewery.storage.records.ConfiguredRedisManager;
+import com.dre.brewery.storage.redis.BreweryRedisManager;
+import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -79,6 +83,7 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
+	private static BreweryRedisManager redisManager;
 	public static boolean debug;
 	public static boolean useNBT;
 
@@ -146,21 +151,40 @@ public class BreweryPlugin extends JavaPlugin {
 		PluginItem.registerItemLoader(this);
 
 
-		// Load DataManager
-        try {
-            dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
-        } catch (StorageInitException e) {
-            errorLog("Failed to initialize DataManager!", e);
-			Bukkit.getPluginManager().disablePlugin(this);
-        }
 
-		DataManager.loadMiscData(dataManager.getBreweryMiscData());
-        Barrel.getBarrels().addAll(dataManager.getAllBarrels());
-		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-		Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
+		// Load Redis
+		boolean loadDataManager = true;
 
+		ConfiguredRedisManager configuredRedisManager = BConfig.configuredRedisManager;
+		if (configuredRedisManager.enabled()) {
+            try {
+                redisManager = new BreweryRedisManager(configuredRedisManager);
+            } catch (RedisInitException e) {
+                errorLog("Failed to initialize Redis!", e);
+				Bukkit.getPluginManager().disablePlugin(this);
+            }
+            if (redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
+				loadDataManager = false;
+				log("DataManager disabled, Redis is enabled and this is not a master shard.");
+			}
+		}
 
+		// Load DataManager, if Redis allows it
+        if (loadDataManager) {
+			try {
+				dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
+				DataManager.loadMiscData(dataManager.getBreweryMiscData());
+				Barrel.getBarrels().addAll(dataManager.getAllBarrels());
+				BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+				BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+				Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
+			} catch (StorageInitException e) {
+				errorLog("Failed to initialize DataManager!", e);
+				Bukkit.getPluginManager().disablePlugin(this);
+			}
+		}
+
+		// DISABLE IF NOT MASTER REDIS SHARD
 		// Setup Metrics
 		stats.setupBStats();
 
@@ -219,7 +243,9 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if (addonManager != null) addonManager.unloadAddons();
+		if (addonManager != null) {
+			addonManager.unloadAddons();
+		}
 
 		// Disable listeners
 		HandlerList.unregisterAll(this);
@@ -231,8 +257,15 @@ public class BreweryPlugin extends JavaPlugin {
 			return;
 		}
 
+		// disconnect from Redis
+		if (redisManager != null) {
+			redisManager.getRedis().close();
+		}
+
 		// save Data to Disk
-		if (dataManager != null) dataManager.exit(true, false);
+		if (dataManager != null) {
+			dataManager.exit(true, false);
+		}
 
 		// delete config data, in case this is a reload and to clear up some ram
 		clearConfigData();
@@ -490,7 +523,9 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 			//DataSave.autoSave();
-			dataManager.tryAutoSave();
+			if (dataManager != null) {
+				dataManager.tryAutoSave();
+			}
 
 			debugLog("BreweryRunnable: " + (System.currentTimeMillis() - start) + "ms");
 		}

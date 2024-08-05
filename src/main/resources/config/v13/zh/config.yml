@@ -960,20 +960,6 @@ useVirtualChestPerms: false
 # 启用将木桶库存信息记录到 LogBlock [true]
 useLogBlock: true
 
-# -- 多服务器/BungeeCord --
-# 如果 Brewery 插件在多个通过 BungeeCord 连接的服务器上运行
-# 可以在这里使用共享数据库来同步玩家的醉酒状态，并且能够在不同服务器之间使用编码的饮品
-
-multiServerDB:
-  # 如果启用了使用数据库
-  enabled: false
-  # 如果玩家的醉酒状态应该在服务器之间同步
-  syncDrunkeness: true
-  host: localhost
-  port: "3306"
-  user: minec
-  password: xyz
-  database: base
 
 # -- 各种其他设置 --
 
