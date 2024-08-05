@@ -2,6 +2,9 @@ package com.dre.brewery.storage.records;
 
 import com.dre.brewery.BPlayer;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Represents a player that can be serialized.
  * @param id The UUID of the player
@@ -21,5 +24,19 @@ public record SerializableBPlayer(String id, int quality, int drunkenness, int o
     @Override
     public String getId() {
         return id;
+    }
+
+    public static List<SerializableBPlayer> fromBPlayers(Collection<BPlayer> players) {
+        if (players == null) {
+            return List.of();
+        }
+        return players.stream().map(SerializableBPlayer::new).toList();
+    }
+
+    public static List<BPlayer> toBPlayers(List<SerializableBPlayer> players) {
+        if (players == null) {
+            return List.of();
+        }
+        return players.stream().map(SerializableBPlayer::toBPlayer).toList();
     }
 }

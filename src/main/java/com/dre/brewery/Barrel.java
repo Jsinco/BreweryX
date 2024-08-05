@@ -10,6 +10,7 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
+import com.google.gson.annotations.Expose;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +36,17 @@ import java.util.UUID;
 /**
  * A Multi Block Barrel with Inventory
  */
-public class Barrel implements InventoryHolder {
+public class Barrel implements InventoryHolder, Serializable {
 
 	public static volatile List<Barrel> barrels = new ArrayList<>(); // This should not be volatile, it's literally final.
 	private static int check = 0; // Which Barrel was last checked
 
-	private final Block spigot;
-	private final BarrelBody body; // The Blocks that make up a Barrel in the World
-	private boolean checked; // Checked by the random BarrelCheck routine
-	private Inventory inventory;
-	private float time;
-	private final UUID id;
+	@Expose private final Block spigot;
+	@Expose private final BarrelBody body; // The Blocks that make up a Barrel in the World
+	@Expose private boolean checked; // Checked by the random BarrelCheck routine
+	@Expose private Inventory inventory;
+	@Expose private float time;
+	@Expose private final UUID id;
 
 	/**
 	 * Create a new Barrel

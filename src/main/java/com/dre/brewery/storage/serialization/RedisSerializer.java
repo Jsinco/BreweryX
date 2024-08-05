@@ -1,22 +1,23 @@
 package com.dre.brewery.storage.serialization;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.dre.brewery.storage.records.SerializableThing;
 
-import java.lang.reflect.Modifier;
+import java.util.List;
 
-public class RedisSerializer {
+public class RedisSerializer extends SQLDataSerializer {
 
-    private final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC).create();
-
-    public String serialize(Object object) {
-        return gson.toJson(object);
-    }
-
-    public <T> T deserialize(String data, Class<T> type) {
-        if (data == null) {
+    public String[] serializeArray(List<? extends SerializableThing> serializables) {
+        if (serializables == null || serializables.isEmpty()) {
             return null;
         }
-        return gson.fromJson(data, type);
+        return serializables.stream()
+                .map(this::serialize)
+                .toArray(String[]::new);
+    }
+
+    public <T extends SerializableThing> List<T> deserializeArray(List<String> serialized, Class<T> clazz) {
+        return serialized.stream()
+                .map(s -> this.deserialize(s, clazz))
+                .toList();
     }
 }

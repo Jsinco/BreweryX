@@ -11,6 +11,7 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import com.google.gson.annotations.Expose;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -41,18 +42,18 @@ public class BPlayer {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-	private static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
+	public static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
 	private static final ConcurrentHashMap<Player, Integer> pukeTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
 
-	private final String uuid;
-	private int quality = 0;// = quality of drunkenness * drunkenness
-	private int drunkenness = 0;// = amount of drunkenness
-	private int offlineDrunk = 0;// drunkenness when gone offline
-	private int alcRecovery = -1; // Drunkeness reduce per minute
-	private Vector push = new Vector(0, 0, 0);
-	private int time = 20;
+	@Expose private final String uuid;
+	@Expose private int quality = 0;// = quality of drunkenness * drunkenness
+	@Expose private int drunkenness = 0;// = amount of drunkenness
+	@Expose private int offlineDrunk = 0;// drunkenness when gone offline
+	@Expose private int alcRecovery = -1; // Drunkeness reduce per minute
+	@Expose private Vector push = new Vector(0, 0, 0);
+	@Expose private int time = 20;
 
 	public BPlayer(String uuid) {
 		this.uuid = uuid;

@@ -195,11 +195,9 @@ public class BConfig {
 				);
 		configuredRedisManager = new ConfiguredRedisManager(
 				config.getBoolean("redis.enabled", false),
-				config.getString("redis.host"),
-				config.getInt("redis.port"),
-				config.getString("redis.username"),
+				config.getString("redis.address"),
 				config.getString("redis.password"),
-				RedisFamilyType.valueOf(config.getString("redis.shardType", "NORMAL_SHARD").toUpperCase())
+				RedisFamilyType.valueOf(config.getString("redis.shardType", "MASTER_SHARD").toUpperCase())
 		);
 
 		autoSaveInterval = config.getInt("autosave", 3);

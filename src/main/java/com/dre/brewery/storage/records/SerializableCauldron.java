@@ -5,6 +5,9 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Represents a cauldron that can be serialized.
  * @param id The UUID of the cauldron
@@ -24,5 +27,20 @@ public record SerializableCauldron(String id, String serializedLocation, String 
     @Override
     public String getId() {
         return id;
+    }
+
+
+    public static List<SerializableCauldron> fromCauldrons(Collection<BCauldron> cauldrons) {
+        if (cauldrons == null) {
+            return List.of();
+        }
+        return cauldrons.stream().map(SerializableCauldron::new).toList();
+    }
+
+    public static List<BCauldron> toCauldrons(List<SerializableCauldron> cauldrons) {
+        if (cauldrons == null) {
+            return List.of();
+        }
+        return cauldrons.stream().map(SerializableCauldron::toCauldron).toList();
     }
 }

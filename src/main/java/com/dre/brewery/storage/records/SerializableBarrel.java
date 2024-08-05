@@ -30,4 +30,30 @@ public record SerializableBarrel(String id, String serializedLocation, List<Inte
     public String getId() {
         return id;
     }
+
+    public static List<SerializableBarrel> fromBarrels(List<Barrel> barrels) {
+        if (barrels == null) {
+            return List.of();
+        }
+        return barrels.stream().map(SerializableBarrel::new).toList();
+    }
+
+    public static List<Barrel> toBarrels(List<SerializableBarrel> barrels) {
+        if (barrels == null) {
+            return List.of();
+        }
+        return barrels.stream().map(SerializableBarrel::toBarrel).toList();
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableBarrel{" +
+                "id='" + id + '\'' +
+                ", serializedLocation='" + serializedLocation + '\'' +
+                ", bounds=" + bounds +
+                ", time=" + time +
+                ", sign=" + sign +
+                ", serializedItems='" + serializedItems + '\'' +
+                '}';
+    }
 }

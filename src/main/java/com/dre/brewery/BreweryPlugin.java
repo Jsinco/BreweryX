@@ -50,7 +50,7 @@ import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.ConfiguredRedisManager;
-import com.dre.brewery.storage.redis.BreweryRedisManager;
+import com.dre.brewery.storage.redis.RedisManager;
 import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
@@ -83,7 +83,7 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
-	private static BreweryRedisManager redisManager;
+	private static RedisManager redisManager;
 	public static boolean debug;
 	public static boolean useNBT;
 
@@ -158,7 +158,7 @@ public class BreweryPlugin extends JavaPlugin {
 		ConfiguredRedisManager configuredRedisManager = BConfig.configuredRedisManager;
 		if (configuredRedisManager.enabled()) {
             try {
-                redisManager = new BreweryRedisManager(configuredRedisManager);
+                redisManager = new RedisManager(configuredRedisManager);
             } catch (RedisInitException e) {
                 errorLog("Failed to initialize Redis!", e);
 				Bukkit.getPluginManager().disablePlugin(this);
@@ -182,11 +182,15 @@ public class BreweryPlugin extends JavaPlugin {
 				errorLog("Failed to initialize DataManager!", e);
 				Bukkit.getPluginManager().disablePlugin(this);
 			}
+
+			// Only load metrics if DataManager is enabled
+			// Setup Metrics
+			stats.setupBStats();
 		}
 
-		// DISABLE IF NOT MASTER REDIS SHARD
-		// Setup Metrics
-		stats.setupBStats();
+		if (redisManager != null) {
+			redisManager.startRedisCaching();
+		}
 
 
 		getCommand("breweryx").setExecutor(new CommandManager());
@@ -259,7 +263,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// disconnect from Redis
 		if (redisManager != null) {
-			redisManager.getRedis().close();
+			redisManager.shutdown();
 		}
 
 		// save Data to Disk

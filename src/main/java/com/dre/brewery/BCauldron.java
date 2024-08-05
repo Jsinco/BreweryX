@@ -8,6 +8,7 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
+import com.google.gson.annotations.Expose;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -45,14 +46,14 @@ public class BCauldron {
 	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
-	private BIngredients ingredients = new BIngredients();
-	private final Block block;
-	private int state = 0;
-	private boolean changed = false; // Not really needed anymore
-	private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
-	private Color particleColor;
-	private final Location particleLocation;
-	private final UUID id;
+	@Expose private BIngredients ingredients = new BIngredients();
+	@Expose private final Block block;
+	@Expose private int state = 0;
+	@Expose private boolean changed = false; // Not really needed anymore
+	@Expose private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
+	@Expose private Color particleColor;
+	@Expose private final Location particleLocation;
+	@Expose private final UUID id;
 
 	public BCauldron(Block block) {
 		this.block = block;

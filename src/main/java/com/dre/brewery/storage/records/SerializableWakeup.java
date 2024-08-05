@@ -4,6 +4,8 @@ import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
 
+import java.util.List;
+
 /**
  * Represents a wakeup that can be serialized.
  * @param id The UUID of the wakeup
@@ -21,5 +23,19 @@ public record SerializableWakeup(String id, String serializedLocation) implement
     @Override
     public String getId() {
         return id;
+    }
+
+    public static List<SerializableWakeup> fromWakeups(List<Wakeup> wakeups) {
+        if (wakeups == null) {
+            return List.of();
+        }
+        return wakeups.stream().map(SerializableWakeup::new).toList();
+    }
+
+    public static List<Wakeup> toWakeups(List<SerializableWakeup> wakeups) {
+        if (wakeups == null) {
+            return List.of();
+        }
+        return wakeups.stream().map(SerializableWakeup::toWakeup).toList();
     }
 }

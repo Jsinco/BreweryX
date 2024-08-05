@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.utility.BUtil;
+import com.google.gson.annotations.Expose;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,9 +19,9 @@ public class Wakeup {
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
-	private final Location loc;
-	private final UUID id;
-	private boolean active = true;
+	@Expose private final Location loc;
+	@Expose private final UUID id;
+	@Expose private boolean active = true;
 
 	public Wakeup(Location loc) {
 		this.loc = loc;
