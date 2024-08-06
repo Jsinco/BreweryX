@@ -4,7 +4,6 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.records.ConfiguredRedisManager;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +21,7 @@ public class MasterShardedRedis extends AbstractRedisPubSub {
         thread = new UniversalRunnable() {
             @Override
             public void run() {
-
+                redisLog("Synchronizing caches...");
                 for (String shardId : shardIds) { // Loop through every shard
                     publish(RedisMessage.PUSH_CACHE, shardId); // Tell the shard to push its cache
 
@@ -40,11 +39,8 @@ public class MasterShardedRedis extends AbstractRedisPubSub {
                 }
 
                 pushCache(); // Push the master cache to Redis
-
-                for (String shardId : shardIds) {
-                    publish(RedisMessage.CACHE_RETRIEVE, shardId); // Tell all shards to retrieve the cache
-                }
-
+                publish(RedisMessage.CACHE_RETRIEVE, null); // Tell all shards to retrieve the cache
+                redisLog("Finished synchronizing caches!");
             }
         };
 

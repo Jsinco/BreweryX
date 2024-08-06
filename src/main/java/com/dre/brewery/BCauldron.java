@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class BCauldron {
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
-	public static volatile Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
+	public static final Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	@Expose private BIngredients ingredients = new BIngredients();
 	@Expose private final Block block;
@@ -551,4 +552,20 @@ public class BCauldron {
 		BreweryPlugin.getScheduler().runTaskLater(() -> player.getInventory().addItem(item), 1L);
 	}
 
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof BCauldron cauldron)) return false;
+		return Objects.equals(id, cauldron.id);
+	}
+
+	@Override
+	public String toString() {
+		return "BCauldron{" +
+			"block=" + block +
+			", state=" + state +
+			", ingredients=" + ingredients +
+			'}';
+	}
 }

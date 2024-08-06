@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -39,7 +40,7 @@ import java.util.UUID;
  */
 public class Barrel implements InventoryHolder, Serializable {
 
-	public static volatile List<Barrel> barrels = new ArrayList<>(); // This should not be volatile, it's literally final.
+	public static final List<Barrel> barrels = new ArrayList<>(); // This should not be volatile, it's literally final.
 	private static int check = 0; // Which Barrel was last checked
 
 	@Expose private final Block spigot;
@@ -543,6 +544,13 @@ public class Barrel implements InventoryHolder, Serializable {
 
 	}
 
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Barrel barrel)) return false;
+		return Objects.equals(id, barrel.id);
+	}
 
 	@Override
 	public String toString() {

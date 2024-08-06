@@ -18,6 +18,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -140,10 +141,22 @@ public abstract class AbstractRedisPubSub extends JedisPubSub {
             List<SerializableWakeup> serializableWakeups = serializer.deserialize(redis.get(WAKEUPS), new TypeToken<List<SerializableWakeup>>() {}.getType());
             //System.out.println(serializablePlayers);
 
-            Barrel.barrels = SerializableBarrel.toBarrels(serializableBarrels).stream().filter(Objects::nonNull).toList();
-            BPlayer.players = new ConcurrentHashMap<>(SerializableBPlayer.toBPlayers(serializablePlayers).stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-            BCauldron.bcauldrons = SerializableCauldron.toCauldrons(serializableCauldrons).stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity()));
-            Wakeup.wakeups = SerializableWakeup.toWakeups(serializableWakeups).stream().filter(Objects::nonNull).toList();
+
+            // FIXME: cauldron gets removed from list when ingredients taken out but obviously gets added back to list at this point because, the other list no longer contains and
+            // FIXME: we're trying to merge them. HOWTOFIX: idk
+
+            // maybe instead of syncing the lists, we just have brewery pull from redis each time
+            Barrel.barrels.addAll(SerializableBarrel.toBarrels(serializableBarrels).stream()
+                    .filter(Objects::nonNull).filter(k -> !Barrel.barrels.contains(k)).toList());
+
+            BPlayer.players.putAll(SerializableBPlayer.toBPlayers(serializablePlayers).stream().filter(Objects::nonNull)
+                    .filter(k -> !BPlayer.players.containsKey(k.getUuid())).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+
+            BCauldron.bcauldrons.putAll(SerializableCauldron.toCauldrons(serializableCauldrons).stream().filter(Objects::nonNull)
+                    .filter(k -> !BCauldron.bcauldrons.containsValue(k)).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+
+            Wakeup.wakeups.addAll(SerializableWakeup.toWakeups(serializableWakeups).stream()
+                    .filter(Objects::nonNull).filter(k -> !Wakeup.wakeups.contains(k)).toList());
 
             redisLog("Retrieved cache from Redis!");
         } catch (Exception e) {

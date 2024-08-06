@@ -8,13 +8,14 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 // Holy shit this code is so bad. - Jsinco
 public class Wakeup {
 
-	public static volatile List<Wakeup> wakeups = new ArrayList<>();
+	public static final List<Wakeup> wakeups = new ArrayList<>();
 	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
@@ -245,4 +246,15 @@ public class Wakeup {
 		breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoCheck"));
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Wakeup wakeup)) return false;
+        return Objects.equals(id, wakeup.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
 }

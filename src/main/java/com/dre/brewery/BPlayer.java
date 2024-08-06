@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,7 @@ public class BPlayer {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-	public static volatile ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
+	public static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
 	private static final ConcurrentHashMap<Player, Integer> pukeTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
@@ -920,6 +921,14 @@ public class BPlayer {
 			offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
 		}
 		return offlinePlayer.getName();
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof BPlayer player)) return false;
+		return Objects.equals(uuid, player.uuid);
 	}
 
 	@Override
