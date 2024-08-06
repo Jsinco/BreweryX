@@ -17,6 +17,22 @@ storage:
   username: root
   password: ''
 
+# -- Redis Settings --
+# Redis should only be used when you want to use Brewery on multiple servers with shared worlds.
+# Redis is a fast in-memory database that can be used to share data between servers.
+# If you are using MultiPaper, this will be needed for Brewery to function properly across servers.
+redis:
+  enabled: false
+  address: localhost:6379
+  password: ''
+  # When running Brewery off of Redis, there should be only ONE master shard.
+  # The master shard is the only one which will store persistent data and communicate with whatever database you are using.
+  # Storage settings can be omitted if this is a normal shard and using Redis.
+  # Available types: MASTER_SHARD, NORMAL_SHARD
+  shardType: NORMAL_SHARD
+  # Give this shard a unique identifier/name. This should NOT be empty and should not be the same as any other shard.
+  id: ''
+
 # Lingua da usare (fra quelle in plugins/Brewery/languages)
 language: it
 

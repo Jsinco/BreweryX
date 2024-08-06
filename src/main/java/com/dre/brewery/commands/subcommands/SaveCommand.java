@@ -3,9 +3,8 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.storage.DataManager;
-import com.dre.brewery.storage.redis.RedisFamilyType;
-import com.dre.brewery.storage.redis.RedisManager;
-import com.dre.brewery.storage.redis.RedisMessage;
+import com.dre.brewery.storage.redis.AbstractRedisPubSub;
+import com.dre.brewery.storage.redis.NormalShardedRedis;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -15,12 +14,12 @@ public class SaveCommand implements SubCommand {
     public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         breweryPlugin.msg(sender, "Saving all Brewery data!");
         DataManager dataManager = BreweryPlugin.getDataManager();
-        RedisManager redisManager = BreweryPlugin.getRedisManager();
+        AbstractRedisPubSub abstractRedisPubSub = BreweryPlugin.getAbstractRedisPubSub();
         if (dataManager != null) {
             dataManager.saveAll(true);
         }
-        if (redisManager != null && redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
-            redisManager.publish(RedisMessage.SAVE);
+        if (abstractRedisPubSub instanceof NormalShardedRedis normalShardedRedis) {
+            normalShardedRedis.sendSaveRequest();
         }
     }
 

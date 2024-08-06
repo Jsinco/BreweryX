@@ -44,7 +44,7 @@ public record SerializableBarrel(String id, String serializedLocation, List<Inte
     }
 
     public static List<Barrel> toBarrels(List<SerializableBarrel> barrels) {
-        if (barrels == null) {
+        if (barrels == null || barrels.isEmpty()) {
             return List.of();
         }
         return barrels.stream().map(SerializableBarrel::toBarrel).toList();

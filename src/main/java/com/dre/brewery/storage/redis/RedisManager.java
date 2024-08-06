@@ -68,7 +68,7 @@ public class RedisManager extends JedisPubSub {
 
             // Use a thread to subscribe to the Redis channel
             getSubscriber(this).runTaskAsynchronously(plugin);
-            publish(RedisMessage.SHARD_ENABLED);
+            //publish(RedisMessage.SHARD_ENABLED);
         } catch (Throwable e) {
             throw new RedisInitException("Failed to connect to Redis", e);
         }
@@ -119,8 +119,8 @@ public class RedisManager extends JedisPubSub {
             } catch (Exception e) {
                 plugin.errorLog("Failed to clear cache from Redis", e);
             }
-            this.pushCache(RedisFamilyType.MASTER_SHARD, RedisMessage.CACHE_UPDATE, this.id); // Push our cache to redis
-            publish(RedisMessage.CACHE_UPDATE); // Tell all shards to push their cache to Redis
+            //this.pushCache(RedisFamilyType.MASTER_SHARD, RedisMessage.CACHE_UPDATE, this.id); // Push our cache to redis
+            //publish(RedisMessage.CACHE_UPDATE); // Tell all shards to push their cache to Redis
             this.retrieveCached(RedisFamilyType.MASTER_SHARD, RedisMessage.CACHE_RETRIEVE, this.id); // Retrieve all caches from Redis
             publish(RedisMessage.CACHE_RETRIEVE); // Tell all shards to retrieve their cache from Redis
             redisDebugLog("Sent cache update message to Redis");
@@ -155,9 +155,9 @@ public class RedisManager extends JedisPubSub {
         redisDebugLog("Received Redis channel: " + channel + " message: " + message);
         switch (redisMessage) {
             case CACHE_RETRIEVE -> retrieveCached(familyType, redisMessage, id);
-            case CACHE_UPDATE -> pushCache(familyType, redisMessage, id);
+           // case CACHE_UPDATE -> pushCache(familyType, redisMessage, id);
             case SAVE -> save(familyType, redisMessage, id);
-            case SHARD_ENABLED -> shardEnabled(familyType, redisMessage, id);
+            //case SHARD_ENABLED -> shardEnabled(familyType, redisMessage, id);
         }
     }
 

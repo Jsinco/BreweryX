@@ -17,6 +17,7 @@ import com.dre.brewery.storage.records.ConfiguredRedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
@@ -112,15 +113,21 @@ public abstract class DataManager {
         // Implemented in subclasses that use database connections
     }
 
-    public void exit(boolean save, boolean async) {
+    public void exit(boolean save, boolean async, @Nullable Runnable callback) {
         if (save) {
             saveAll(async, () -> {
                 this.closeConnection();
                 plugin.log("DataManager exited.");
+                if (callback != null) {
+                    callback.run();
+                }
             });
         } else {
             this.closeConnection(); // let databases close their connections
             plugin.log("DataManager exited.");
+            if (callback != null) {
+                callback.run();
+            }
         }
     }
 

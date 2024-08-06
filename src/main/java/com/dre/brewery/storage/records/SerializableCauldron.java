@@ -43,9 +43,19 @@ public record SerializableCauldron(String id, String serializedLocation, String 
     }
 
     public static List<BCauldron> toCauldrons(List<SerializableCauldron> cauldrons) {
-        if (cauldrons == null) {
+        if (cauldrons == null || cauldrons.isEmpty()) {
             return List.of();
         }
         return cauldrons.stream().map(SerializableCauldron::toCauldron).toList();
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableCauldron{" +
+                "id='" + id + '\'' +
+                ", serializedLocation='" + serializedLocation + '\'' +
+                ", serializedIngredients='" + serializedIngredients + '\'' +
+                ", state=" + state +
+                '}';
     }
 }

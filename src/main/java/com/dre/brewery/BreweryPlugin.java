@@ -50,7 +50,9 @@ import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.ConfiguredRedisManager;
-import com.dre.brewery.storage.redis.RedisManager;
+import com.dre.brewery.storage.redis.AbstractRedisPubSub;
+import com.dre.brewery.storage.redis.MasterShardedRedis;
+import com.dre.brewery.storage.redis.NormalShardedRedis;
 import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
@@ -84,7 +86,7 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
-	private static RedisManager redisManager;
+	private static AbstractRedisPubSub abstractRedisPubSub;
 	public static boolean debug;
 	public static boolean useNBT;
 
@@ -159,10 +161,11 @@ public class BreweryPlugin extends JavaPlugin {
 		ConfiguredRedisManager configuredRedisManager = BConfig.configuredRedisManager;
 		if (configuredRedisManager.enabled()) {
             try {
-                redisManager = new RedisManager(configuredRedisManager);
-				if (redisManager.getType() != RedisFamilyType.MASTER_SHARD) {
+                if (configuredRedisManager.type() == RedisFamilyType.MASTER_SHARD) {
+					abstractRedisPubSub = new MasterShardedRedis(configuredRedisManager);
+				} else {
 					loadDataManager = false;
-					log("DataManager disabled, Redis is enabled and this is not a master shard.");
+					abstractRedisPubSub = new NormalShardedRedis(configuredRedisManager);
 				}
             } catch (RedisInitException e) {
                 errorLog("Failed to initialize Redis!", e);
@@ -187,10 +190,6 @@ public class BreweryPlugin extends JavaPlugin {
 			// Only load metrics if DataManager is enabled
 			// Setup Metrics
 			stats.setupBStats();
-		}
-
-		if (redisManager != null) {
-			redisManager.startRedisCaching();
 		}
 
 
@@ -263,13 +262,13 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// disconnect from Redis
-		if (redisManager != null) {
-			redisManager.exit();
+		if (abstractRedisPubSub != null) {
+			abstractRedisPubSub.exit();
 		}
 
 		// save Data to Disk
 		if (dataManager != null) {
-			dataManager.exit(true, false);
+			dataManager.exit(true, false, null);
 		}
 
 		// delete config data, in case this is a reload and to clear up some ram
@@ -398,6 +397,10 @@ public class BreweryPlugin extends JavaPlugin {
 		return breweryPlugin;
 	}
 
+	public TaskScheduler getTaskScheduler() {
+		return scheduler;
+	}
+
 	public static TaskScheduler getScheduler() {
 		return scheduler;
 	}
@@ -418,12 +421,12 @@ public class BreweryPlugin extends JavaPlugin {
 		return dataManager;
 	}
 
-	public static RedisManager getRedisManager() {
-		return redisManager;
+	public static AbstractRedisPubSub getAbstractRedisPubSub() {
+		return abstractRedisPubSub;
 	}
 
-	public static void setRedisManager(RedisManager redisManager) {
-		BreweryPlugin.redisManager = redisManager;
+	public static void setAbstractRedisPubSub(AbstractRedisPubSub abstractRedisPubSub) {
+		BreweryPlugin.abstractRedisPubSub = abstractRedisPubSub;
 	}
 
 	// Utility

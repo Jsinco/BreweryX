@@ -38,9 +38,17 @@ public record SerializableWakeup(String id, String serializedLocation) implement
     }
 
     public static List<Wakeup> toWakeups(List<SerializableWakeup> wakeups) {
-        if (wakeups == null) {
+        if (wakeups == null || wakeups.isEmpty()) {
             return List.of();
         }
         return wakeups.stream().map(SerializableWakeup::toWakeup).toList();
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableWakeup{" +
+                "id='" + id + '\'' +
+                ", serializedLocation='" + serializedLocation + '\'' +
+                '}';
     }
 }

@@ -197,7 +197,8 @@ public class BConfig {
 				config.getBoolean("redis.enabled", false),
 				config.getString("redis.address"),
 				config.getString("redis.password"),
-				RedisFamilyType.valueOf(config.getString("redis.shardType", "MASTER_SHARD").toUpperCase())
+				RedisFamilyType.valueOf(config.getString("redis.shardType", "MASTER_SHARD").toUpperCase()),
+				config.getString("redis.id", null)
 		);
 
 		autoSaveInterval = config.getInt("autosave", 3);

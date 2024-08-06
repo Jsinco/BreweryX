@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 // Holy shit this code is so bad. - Jsinco
 public class Wakeup {
 
-	public static List<Wakeup> wakeups = new ArrayList<>();
+	public static volatile List<Wakeup> wakeups = new ArrayList<>();
 	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	public static int checkId = -1;
 	public static Player checkPlayer = null;

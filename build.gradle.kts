@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.5-REDIS_ALPHA"
+version = "3.2.5-REDIS"
 
 repositories {
     mavenCentral()
@@ -87,9 +87,11 @@ tasks {
 
     shadowJar {
         //relocate("org.bstats", "com.dre.brewery.integration.bstats")
-        relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.integration.universalScheduler")
+        relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.dependencies.universalScheduler")
+        relocate("redis.clients", "com.dre.brewery.dependencies.redis")
+        relocate("com.google.gson", "com.dre.brewery.dependencies.gson")
 
-        archiveClassifier.set("")
+        archiveClassifier.set(getBuildNumber())
     }
 
 
@@ -113,10 +115,7 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
         archiveClassifier.set("KtReduced")
     }
-
-
 }
-
 
 
 java {
@@ -128,6 +127,19 @@ publishing {
         create<MavenPublication>("maven") {
             from(components["java"])
         }
+    }
+}
+
+fun getBuildNumber(): String {
+    val buildNumberFile = file("buildNumber.txt")
+    if (buildNumberFile.exists()) {
+        val buildNumber = buildNumberFile.readText().toInt()
+        buildNumberFile.writeText((buildNumber + 1).toString())
+        return buildNumber.toString()
+    } else {
+        buildNumberFile.createNewFile()
+        buildNumberFile.writeText("0")
+        return "0"
     }
 }
 

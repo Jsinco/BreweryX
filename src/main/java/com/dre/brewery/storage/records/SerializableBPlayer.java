@@ -34,9 +34,19 @@ public record SerializableBPlayer(String id, int quality, int drunkenness, int o
     }
 
     public static List<BPlayer> toBPlayers(List<SerializableBPlayer> players) {
-        if (players == null) {
+        if (players == null || players.isEmpty()) {
             return List.of();
         }
         return players.stream().map(SerializableBPlayer::toBPlayer).toList();
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableBPlayer{" +
+                "id='" + id + '\'' +
+                ", quality=" + quality +
+                ", drunkenness=" + drunkenness +
+                ", offlineDrunkenness=" + offlineDrunkenness +
+                '}';
     }
 }

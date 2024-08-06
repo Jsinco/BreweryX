@@ -7,9 +7,7 @@ import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.storage.DataManager;
-import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.storage.redis.RedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -63,27 +61,15 @@ public class ReloadCommand implements SubCommand {
 		}
 
 		DataManager dataManager = BreweryPlugin.getDataManager();
-		RedisManager redisManager = BreweryPlugin.getRedisManager();
 		if (dataManager != null){
-			dataManager.exit(true, true);
-			try {
-				BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
-			} catch (StorageInitException e) {
-				breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
-			}
+			dataManager.exit(true, true, () -> {
+				try {
+					BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
+				} catch (StorageInitException e) {
+					breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
+				}
+			});
 		}
-
-		if (redisManager != null) {
-			redisManager.exit();
-			try {
-				RedisManager newManager = new RedisManager(BConfig.configuredRedisManager);
-				newManager.startRedisCaching();
-				BreweryPlugin.setRedisManager(newManager);
-			} catch (RedisInitException e) {
-				breweryPlugin.errorLog("Failed to initialize the RedisManager! Brewery will be disconnected from Redis. If this is a NORMAL_SHARD, it will not be able to save. Check your config and reload.", e);
-			}
-		}
-
 
 		BreweryPlugin.getAddonManager().reloadAddons();
 		BConfig.reloader = null;

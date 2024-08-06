@@ -30,6 +30,8 @@ redis:
   # Storage settings can be omitted if this is a normal shard and using Redis.
   # Available types: MASTER_SHARD, NORMAL_SHARD
   shardType: NORMAL_SHARD
+  # Give this shard a unique identifier/name. This should NOT be empty and should not be the same as any other shard.
+  id: ''
 
 
 # Languagefile to be used (found in plugins/Brewery/languages)

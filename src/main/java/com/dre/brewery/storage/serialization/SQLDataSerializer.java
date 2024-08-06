@@ -10,7 +10,7 @@ import java.util.Base64;
  * Serializes the given object to JSON and then to a Base64 encoded string.
  */
 public class SQLDataSerializer {
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithModifiers(Modifier.STATIC).create();
+    protected final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithModifiers(Modifier.STATIC).create();
 
     public String serialize(Object object) {
         return Base64.getEncoder().encodeToString(gson.toJson(object).getBytes());

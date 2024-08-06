@@ -25,7 +25,7 @@ public enum MinecraftVersion {
     V1_21("1.21"),
     UNKNOWN("Unknown");
 
-    final String version;
+    private final String version;
 
     MinecraftVersion(String version) {
         this.version = version;

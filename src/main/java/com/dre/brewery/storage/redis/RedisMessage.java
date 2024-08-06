@@ -1,36 +1,22 @@
 package com.dre.brewery.storage.redis;
 
 public enum RedisMessage {
-    /**
-     * Sending a message to all shards to push their cache to Redis. This operation will not overwrite any data in Redis.
-     * <p>
-     * This message can be sent by any shard.
-     */
-    CACHE_UPDATE,
-    /**
-     * Sending a message to all shards to overwrite their cache with the data from Redis.
-     * <p>
-     * This message should only be sent by the master shard.
-     */
+
+    // Sent by the MASTER shard to tell a NORMAL shard to push its cache
+    PUSH_CACHE,
+    // Sent by the MASTER shard to tell a NORMAL shard to retrieve its cache from Redis
     CACHE_RETRIEVE,
-    /**
-     * Sending a message that this shard has come online.
-     * This shard will fill its cache with data from Redis.
-     * <p>
-     * This message can be sent by any shard.
-     */
-    SHARD_ENABLED,
-    /**
-     * Sending a message that this shard is going offline.
-     * <p>
-     * This message can be sent by any shard.
-     */
-    SHARD_DISABLED,
-    /**
-     * Sending a message to Redis telling the master shard to save its data to disk.
-     * <p>
-     * This message can be sent by any shard. But only the master shard will take action.
-     */
+    // Sent by a NORMAL shard to tell the MASTER shard to save to disk
     SAVE,
+    // Sent by a NORMAL shard to tell the MASTER shard that it has finished a task
+    FINISHED_TASK,
+    // Sent by a NORMAL shard to request a handshake with a MASTER shard
+    HANDSHAKE_REQUEST,
+    // Sent by a MASTER shard to respond to a handshake request
+    HANDSHAKE_RESPONSE,
+    // Sent by the MASTER shard to tell all shards that it's shutting down
+    MASTER_SHUTDOWN,
+    // Sent by the MASTER shard to tell all shards that it's online
+    MASTER_ONLINE
 
 }
