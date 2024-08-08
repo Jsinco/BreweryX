@@ -46,15 +46,15 @@ public class Stats {
 		}
 	}
 
-	public static int getOwnedPlayersSize() {
+	public int getOwnedPlayersSize() {
 		return HazelcastCacheManager.getOwnedPlayers().size();
 	}
 
-	public static int getOwnedBarrelsSize() {
+	public int getOwnedBarrelsSize() {
 		return HazelcastCacheManager.getOwnedBarrels().size();
 	}
 
-	public static int getOwnedCauldronsSize() {
+	public int getOwnedCauldronsSize() {
 		return HazelcastCacheManager.getOwnedCauldrons().size();
 	}
 

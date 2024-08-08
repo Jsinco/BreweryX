@@ -1,11 +1,16 @@
 package com.dre.brewery;
 
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
-import com.google.gson.annotations.Expose;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,16 +18,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 // Wtf is this even for, and why is it not in the BPlayer class? - Jsinco
-public class Wakeup {
+public class Wakeup implements Serializable { // Wakeups aren't ticked as far as I can tell so there's no reason to make these ownable for the moment
+
+	@Serial
+	private static final long serialVersionUID = -8998830092919696237L;
 
 	public static final List<Wakeup> wakeups = new ArrayList<>();
 	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
-	@Expose private final Location loc;
-	@Expose private final UUID id;
-	@Expose private boolean active = true;
+	private Location loc;
+	private UUID id;
+	private boolean active = true;
 
 	public Wakeup(Location loc) {
 		this.loc = loc;
@@ -256,5 +264,20 @@ public class Wakeup {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
+	}
+
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(DataManager.serializeLocation(loc));
+		out.writeObject(id);
+		out.writeBoolean(active);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		loc = DataManager.deserializeLocation((String) in.readObject());
+		id = (UUID) in.readObject();
+		active = in.readBoolean();
 	}
 }

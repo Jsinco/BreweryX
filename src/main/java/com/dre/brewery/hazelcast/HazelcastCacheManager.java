@@ -111,6 +111,23 @@ public class HazelcastCacheManager {
                 }
                 System.out.println("Barrels cached: " + barrels.size());
             }
+
+            case CAULDRONS -> {
+                IList<BCauldron> cauldrons = hazelcast.getList(cacheType.getHazelcastName());
+
+                if (cauldrons.isEmpty() && !ignoreNotEmpty) {
+                    cauldrons.addAll((Collection<? extends BCauldron>) list);
+                } else {
+                    plugin.log("List CAULDRONS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
+                    balance(cauldrons, cacheType);
+                }
+
+                for (BCauldron cauldron : cauldrons) {
+                    System.out.println(cauldron);
+                }
+                System.out.println("Cauldrons cached: " + cauldrons.size());
+            }
+
             default -> {
                 throw new IllegalArgumentException("Invalid cache type");
             }
@@ -129,6 +146,10 @@ public class HazelcastCacheManager {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
                     balance(players, cacheType);
                 }
+            }
+
+            default -> {
+                throw new IllegalArgumentException("Invalid cache type");
             }
         }
     }

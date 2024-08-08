@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.5-REDIS"
+version = "3.2.5-Hazelcast"
 
 repositories {
     mavenCentral()
@@ -49,12 +49,12 @@ dependencies {
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
 
-    implementation("redis.clients:jedis:5.0.2")
+
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
     //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
 
-
+    compileOnly("redis.clients:jedis:5.0.2")
     compileOnly("com.hazelcast:hazelcast:5.1.1")
 
 

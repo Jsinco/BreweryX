@@ -71,6 +71,13 @@ public class BPlayer implements Serializable, Ownable {
 	private int alcRecovery = -1; // Drunkeness reduce per minute
 	private int time = 20;
 
+	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk, UUID owner) {
+		this.quality = quality;
+		this.drunkenness = drunkenness;
+		this.offlineDrunk = offlineDrunk;
+		this.uuid = uuid;
+		this.owner = owner;
+	}
 
 	// reading from file
 	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
@@ -78,6 +85,7 @@ public class BPlayer implements Serializable, Ownable {
 		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
+		this.owner = HazelcastCacheManager.getClusterId();
 	}
 
 	public BPlayer(UUID uuid) {

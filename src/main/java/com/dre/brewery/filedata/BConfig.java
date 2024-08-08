@@ -20,7 +20,6 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
-import com.dre.brewery.storage.records.ConfiguredRedisManager;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Bukkit;
@@ -51,7 +50,8 @@ public class BConfig {
 
 	public static boolean updateCheck;
 	public static ConfiguredDataManager configuredDataManager;
-	public static ConfiguredRedisManager configuredRedisManager;
+	public static String hazelcastHost;
+	public static int hazelcastPort;
 	public static int autoSaveInterval;
 
 
@@ -192,13 +192,10 @@ public class BConfig {
 						config.getString("storage.username"),
 						config.getString("storage.password")
 				);
-		/*configuredRedisManager = new ConfiguredRedisManager(
-				config.getBoolean("redis.enabled", false),
-				config.getString("redis.address"),
-				config.getString("redis.password"),
-				RedisFamilyType.valueOf(config.getString("redis.shardType", "MASTER_SHARD").toUpperCase()),
-				config.getString("redis.id", null)
-		);*/
+
+		// hazelcast
+		hazelcastHost = config.getString("hazelcast.host", "localhost");
+		hazelcastPort = config.getInt("hazelcast.port", 5701);
 
 		autoSaveInterval = config.getInt("autosave", 3);
 

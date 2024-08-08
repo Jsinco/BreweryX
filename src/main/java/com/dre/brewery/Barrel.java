@@ -66,7 +66,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	 */
 	public Barrel(Block spigot, byte signOffset) {
 		super(spigot, signOffset);
-		this.owner = BreweryPlugin.ownerID;
+		this.owner = HazelcastCacheManager.getClusterId();
 		this.id = UUID.randomUUID();
 		this.inventory = Bukkit.createInventory(this, getIntendedInvSize(), plugin.languageReader.get("Etc_Barrel"));
 	}
@@ -450,6 +450,33 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	}
 
 
+	// this shit keeps getting in my way so im moving it to the bottom todo: organize this shitshow
+	public void playOpeningSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		Location location = spigot.getLocation();
+		if (location.getWorld() == null) return;
+		if (isLarge()) {
+			location.getWorld().playSound(location, Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
+		} else {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
+	}
+
+	public void playClosingSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		Location location = spigot.getLocation();
+		if (location.getWorld() == null) return;
+		if (isLarge()) {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
+			location.getWorld().playSound(location, Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
+		} else {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
+	}
+
+
+
 	public static void updateAllBarrels() {
 		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()); // Only update barrels we own
 
@@ -489,10 +516,11 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	public static class BarrelCheck extends UniversalRunnable {
 		@Override
 		public void run() { // Only check barrels owned by us
+			List<Barrel> ownedBarrels = HazelcastCacheManager.getOwnedBarrels();
 			boolean repeat = true;
 			while (repeat) {
-				if (check < HazelcastCacheManager.getOwnedBarrels().size()) {
-					Barrel barrel = HazelcastCacheManager.getOwnedBarrels().get(check);
+				if (check < ownedBarrels.size()) {
+					Barrel barrel = ownedBarrels.get(check);
 					if (!barrel.checked) {
 						BreweryPlugin.getScheduler().runTask(barrel.getSpigot().getLocation(), () -> {
 							Block broken = barrel.getBrokenBlock(false);
@@ -518,7 +546,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				}
 			}
 
-			plugin.log("Checked " + HazelcastCacheManager.getOwnedBarrels() + " owned by us");
+			plugin.log("Checked " + ownedBarrels.size() + " owned by us");
 		}
 
 	}
@@ -560,32 +588,5 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		inventory = BukkitSerialization.fromBase64((String) in.readObject(), this, plugin.languageReader.get("Etc_Barrel")); // Read the Inventory
 		checked = in.readBoolean();
 		time = in.readFloat();
-	}
-
-
-	// this shit keeps getting in my way so im moving it to the bottom todo: organize this shitshow
-
-	public void playOpeningSound() {
-		float randPitch = (float) (Math.random() * 0.1);
-		Location location = spigot.getLocation();
-		if (location.getWorld() == null) return;
-		if (isLarge()) {
-			location.getWorld().playSound(location, Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
-			location.getWorld().playSound(location, Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
-		} else {
-			location.getWorld().playSound(location, Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
-		}
-	}
-
-	public void playClosingSound() {
-		float randPitch = (float) (Math.random() * 0.1);
-		Location location = spigot.getLocation();
-		if (location.getWorld() == null) return;
-		if (isLarge()) {
-			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
-			location.getWorld().playSound(location, Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
-		} else {
-			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
-		}
 	}
 }

@@ -77,6 +77,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BreweryPlugin extends JavaPlugin {
 
@@ -158,7 +159,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// REMINDER: FIXME
 		// Load hazelcast 185.73.243.155 // 8827 | 8238
-		hazelcast = new BreweryHazelcast("185.73.243.155", 8238);
+		hazelcast = new BreweryHazelcast(BConfig.hazelcastHost, BConfig.hazelcastPort);
 
 
 
@@ -166,10 +167,13 @@ public class BreweryPlugin extends JavaPlugin {
 
 		try {
 			dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
-			//DataManager.loadMiscData(dataManager.getBreweryMiscData());
+			DataManager.loadMiscData(dataManager.getBreweryMiscData());
 
 			// test
 			HazelcastCacheManager.init(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.BARRELS);
+			HazelcastCacheManager.init(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.CAULDRONS);
+			HazelcastCacheManager.init(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())), HazelcastCacheManager.CacheType.PLAYERS);
+
 
 			//BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
 			//BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));

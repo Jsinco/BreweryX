@@ -12,6 +12,7 @@ import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -36,12 +37,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class BCauldron implements Serializable, Ownable {
@@ -74,10 +73,15 @@ public class BCauldron implements Serializable, Ownable {
 		this.block = block;
 		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.id = UUID.randomUUID();
+		this.owner = HazelcastCacheManager.getClusterId();
 	}
 
 	public BCauldron(Block block, BIngredients ingredients, int state, UUID id, UUID owner) {
-		this(block, ingredients, state, id);
+		this.block = block;
+		this.state = state;
+		this.ingredients = ingredients;
+		this.id = id;
+		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.owner = owner;
 	}
 
@@ -88,6 +92,7 @@ public class BCauldron implements Serializable, Ownable {
 		this.ingredients = ingredients;
 		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.id = id;
+		this.owner = HazelcastCacheManager.getClusterId();
 	}
 
 	public static BCauldron get(Block block) {
@@ -220,7 +225,7 @@ public class BCauldron implements Serializable, Ownable {
 			}
 
 			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
-			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
+			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient(), event.getRecipeItem());
 				//P.p.debugLog("Cauldron add: t2 " + ((t2 - t1) / 1000) + " t3: " + ((t3 - t2) / 1000) + " t4: " + ((t4 - t3) / 1000) + " t5: " + ((t5 - t4) / 1000) + "µs");
@@ -238,7 +243,7 @@ public class BCauldron implements Serializable, Ownable {
 
 
 		if (!player.hasPermission("brewery.cauldron.fill")) {
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronFill"));
+			plugin.msg(player, plugin.languageReader.get("Perms_NoCauldronFill"));
 			return true;
 		}
 		ItemStack potion = ingredients.cook(state, player.getName());
@@ -308,15 +313,15 @@ public class BCauldron implements Serializable, Ownable {
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.time")) {
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
+			plugin.msg(player, plugin.languageReader.get("Error_NoPermissions"));
 			return;
 		}
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CauldronInfo1", "" + bcauldron.state));
+				plugin.msg(player, plugin.languageReader.get("Player_CauldronInfo1", "" + bcauldron.state));
 			} else {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CauldronInfo2"));
+				plugin.msg(player, plugin.languageReader.get("Player_CauldronInfo2"));
 			}
 		}
 	}
@@ -537,7 +542,7 @@ public class BCauldron implements Serializable, Ownable {
 			if (item == null) return;
 
 			if (!player.hasPermission("brewery.cauldron.insert")) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronInsert"));
+				plugin.msg(player, plugin.languageReader.get("Perms_NoCauldronInsert"));
 				return;
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {
