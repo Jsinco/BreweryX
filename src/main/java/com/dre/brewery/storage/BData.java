@@ -204,10 +204,10 @@ public class BData {
                     int drunk = section.getInt(uuid + ".drunk");
                     int offDrunk = section.getInt(uuid + ".offDrunk", 0);
 
-                    players.add(new BPlayer(uuid, quality, drunk, offDrunk));
+                    players.add(new BPlayer(UUID.fromString(uuid), quality, drunk, offDrunk));
                 }
             }
-            BPlayer.getPlayers().putAll(players.stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+            // FIXME: BPlayer.getPlayers().putAll(players.stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
 
 
             final List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();

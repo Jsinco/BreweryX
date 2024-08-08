@@ -80,7 +80,7 @@ public abstract class DataManager {
     public void saveAll(boolean async, Runnable callback) {
         Collection<Barrel> barrels = new ArrayList<>(); // FIXME: Cache.getOwnedBarrels();
         Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
-        Collection<BPlayer> bPlayers = BPlayer.getPlayers().values();
+        Collection<BPlayer> bPlayers = new ArrayList<>(); // FIXME: BPlayer.getPlayers().values();
         Collection<Wakeup> wakeups = Wakeup.getWakeups();
 
         if (async) {

@@ -165,8 +165,8 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		// REMINDER: FIXME
-		// Load hazelcast 185.73.243.155
-		hazelcast = new BreweryHazelcast("185.73.243.155", 8827);
+		// Load hazelcast 185.73.243.155 // 8827 | 8238
+		hazelcast = new BreweryHazelcast("185.73.243.155", 8238);
 
 
 

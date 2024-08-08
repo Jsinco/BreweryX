@@ -3,6 +3,7 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -60,7 +61,7 @@ public class InfoCommand implements SubCommand {
             }
         }
 
-        Player player = BreweryPlugin.getInstance().getServer().getPlayerExact(playerName);
+        Player player = Bukkit.getPlayerExact(playerName);
         BPlayer bPlayer;
         if (player == null) {
             bPlayer = BPlayer.getByName(playerName);

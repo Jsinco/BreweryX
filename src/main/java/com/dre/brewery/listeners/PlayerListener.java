@@ -188,38 +188,37 @@ public class PlayerListener implements Listener {
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
-		if (item != null) {
-			if (item.getType() == Material.POTION) {
-				Brew brew = Brew.get(item);
-				if (brew != null) {
-					if (!BPlayer.drink(brew, item.getItemMeta(), player)) {
-						event.setCancelled(true);
-						return;
-					}
-					/*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
-						brew.remove(item);
-					}*/
-					if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
-						if (player.getGameMode() != GameMode.CREATIVE) {
-							// replace the potion with an empty potion to avoid effects
-							event.setItem(new ItemStack(Material.POTION));
-						} else {
-							// Dont replace the item when keeping the potion, just cancel the event
-							event.setCancelled(true);
-						}
-					}
-				}
-			} else if (BConfig.drainItems.containsKey(item.getType())) {
-				BPlayer bplayer = BPlayer.get(player);
-				if (bplayer != null) {
-					bplayer.drainByItem(player, item.getType());
-					if (BConfig.showStatusOnDrink) {
-						bplayer.showDrunkenness(player);
-					}
-				}
-			}
-		}
-	}
+        if (item.getType() == Material.POTION) {
+            Brew brew = Brew.get(item);
+            if (brew != null) {
+                if (!BPlayer.drink(brew, item.getItemMeta(), player)) {
+                    event.setCancelled(true);
+                    return;
+                }
+                /*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+                    brew.remove(item);
+                }*/
+                if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
+                    if (player.getGameMode() != GameMode.CREATIVE) {
+						// replace the potion with an empty potion to avoid effects
+                        event.setItem(new ItemStack(Material.POTION));
+                    } else {
+						// Dont replace the item when keeping the potion, just cancel the event
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        } else if (BConfig.drainItems.containsKey(item.getType())) {
+            BPlayer bplayer = BPlayer.get(player);
+            if (bplayer != null) {
+                bplayer.drainByItem(player, item.getType());
+                if (BConfig.showStatusOnDrink) {
+                    bplayer.showDrunkenness(player);
+                }
+				bplayer.saveToHazelcast();
+            }
+        }
+    }
 
 	// Player has died! Decrease Drunkeness by 20
 	@EventHandler

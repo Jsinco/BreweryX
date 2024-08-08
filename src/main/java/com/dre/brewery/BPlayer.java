@@ -32,6 +32,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -93,17 +96,20 @@ public class BPlayer implements Serializable, Ownable {
 	}
 
 	public static boolean hasPlayer(OfflinePlayer player) {
-		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
-		return players.containsKey(player.getUniqueId());
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).containsKey(player.getUniqueId());
+	}
+
+	public static boolean isEmpty() {
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).isEmpty();
 	}
 
 
 	// This method may be slow and should not be used if not needed
 	@Nullable
 	public static BPlayer getByName(String playerName) {
-		IMap<String, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
-		for (Map.Entry<String, BPlayer> entry : players) {
-			OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey()));
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		for (Map.Entry<UUID, BPlayer> entry : players) {
+			OfflinePlayer p = Bukkit.getOfflinePlayer(entry.getKey());
 			String name = p.getName();
 			if (name != null) {
 				if (name.equalsIgnoreCase(playerName)) {
@@ -194,6 +200,7 @@ public class BPlayer implements Serializable, Ownable {
 			}
 		}
 
+		bPlayer.saveToHazelcast();
 		if (bPlayer.drunkenness <= 0) {
 			bPlayer.remove();
 		}
@@ -268,7 +275,7 @@ public class BPlayer implements Serializable, Ownable {
 				return drunkenness <= -BConfig.hangoverTime;
 			}
 		}
-		saveToHazelcast(); // OPERATION SAVED
+		// TODO: Savehere?
 		return false;
 	}
 
@@ -519,7 +526,7 @@ public class BPlayer implements Serializable, Ownable {
 		l.add(PotionEffectType.CONFUSION.createEffect(duration, 0));
 
 		PlayerEffectEvent event = new PlayerEffectEvent(player, PlayerEffectEvent.EffectType.ALCOHOL, l);
-		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
+		Bukkit.getPluginManager().callEvent(event);
 		l = event.getEffects();
 		if (event.isCancelled() || l == null) {
 			return;
@@ -527,6 +534,7 @@ public class BPlayer implements Serializable, Ownable {
 		for (PotionEffect effect : l) {
 			BreweryPlugin.getScheduler().runTask(player, () -> effect.apply(player)); // Fix can't add effect to entities Async
 		}
+		saveToHazelcast();
 	}
 
 	public static List<PotionEffect> getQualityEffects(int quality, int brewAlc) {
@@ -626,7 +634,7 @@ public class BPlayer implements Serializable, Ownable {
 	// #### Scheduled ####
 
 	public static void drunkenness() {
-		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		Map<UUID, BPlayer> players = HazelcastCacheManager.getOwnedPlayers();
 		for (Map.Entry<UUID, BPlayer> entry : players.entrySet()) {
 			BPlayer bplayer = entry.getValue();
 
@@ -644,6 +652,7 @@ public class BPlayer implements Serializable, Ownable {
 					}
 				}
 			}
+			bplayer.saveToHazelcast();
 		}
 	}
 
@@ -654,19 +663,17 @@ public class BPlayer implements Serializable, Ownable {
 			return;
 		}
 
-		Iterator<Map.Entry<UUID, BPlayer>> iter = players.entrySet().iterator();
-		while (iter.hasNext()) {
-			Map.Entry<UUID, BPlayer> entry = iter.next();
+		for (Map.Entry<UUID, BPlayer> entry : HazelcastCacheManager.getOwnedPlayers().entrySet()) { // lil jank
 			UUID uuid = entry.getKey();
 			BPlayer bplayer = entry.getValue();
 			Player playerIfOnline = Bukkit.getPlayer(uuid);
 
+
 			if (bplayer.getAlcRecovery() == -1) {
 				bplayer.recalculateAlcRecovery(playerIfOnline);
 			}
-
 			if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
-				iter.remove();
+				players.remove(uuid);
 			}
 		}
 	}
@@ -937,5 +944,31 @@ public class BPlayer implements Serializable, Ownable {
 				", time=" + time +
 				'}';
 	}
+
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(owner);
+		out.writeObject(uuid);
+		out.writeObject(push.serialize());
+		out.writeInt(quality);
+		out.writeInt(drunkenness);
+		out.writeInt(offlineDrunk);
+		out.writeInt(alcRecovery);
+		out.writeInt(time);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		owner = (UUID) in.readObject();
+		uuid = (UUID) in.readObject();
+		push = Vector.deserialize((Map<String, Object>) in.readObject());
+		quality = in.readInt();
+		drunkenness = in.readInt();
+		offlineDrunk = in.readInt();
+		alcRecovery = in.readInt();
+		time = in.readInt();
+	}
+
 }
 

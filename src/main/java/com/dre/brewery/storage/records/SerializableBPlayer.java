@@ -4,6 +4,7 @@ import com.dre.brewery.BPlayer;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents a player that can be serialized.
@@ -14,11 +15,11 @@ import java.util.List;
  */
 public record SerializableBPlayer(String id, int quality, int drunkenness, int offlineDrunkenness) implements SerializableThing {
     public SerializableBPlayer(BPlayer player) {
-        this(player.getUuid(), player.getQuality(), player.getDrunkeness(), player.getOfflineDrunkeness());
+        this(player.getUuid().toString(), player.getQuality(), player.getDrunkeness(), player.getOfflineDrunkeness());
     }
 
     public BPlayer toBPlayer() {
-        return new BPlayer(id, quality, drunkenness, offlineDrunkenness);
+        return new BPlayer(UUID.fromString(id), quality, drunkenness, offlineDrunkenness);
     }
 
     @Override
