@@ -23,7 +23,7 @@ public class ShowStatsCommand implements SubCommand {
             breweryPlugin.msg(sender, "Barrels built: " + hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).size());
             breweryPlugin.msg(sender, "Cauldrons boiling: " + hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).size());
             breweryPlugin.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
-            breweryPlugin.msg(sender, "Wakeups: " + Wakeup.wakeups.size());
+            breweryPlugin.msg(sender, "Wakeups: " + hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName()).size());
         });
     }
 

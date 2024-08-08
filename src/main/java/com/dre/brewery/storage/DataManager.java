@@ -82,7 +82,7 @@ public abstract class DataManager {
         Collection<Barrel> barrels = HazelcastCacheManager.getOwnedBarrels(); // FIXME: Cache.getOwnedBarrels();
         Collection<BCauldron> cauldrons = HazelcastCacheManager.getOwnedCauldrons(); // FIXME: BCauldron.getCauldrons().values();
         Collection<BPlayer> bPlayers = HazelcastCacheManager.getOwnedPlayers().values(); // FIXME: BPlayer.getPlayers().values();
-        Collection<Wakeup> wakeups = Wakeup.getWakeups();
+        Collection<Wakeup> wakeups = BreweryPlugin.getHazelcast().getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
 
         if (async) {
             BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {

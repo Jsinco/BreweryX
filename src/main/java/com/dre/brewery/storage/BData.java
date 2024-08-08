@@ -456,7 +456,7 @@ public class BData {
         }
 
         if (!initWakeups.isEmpty()) {
-            Wakeup.wakeups.addAll(initWakeups);
+            HazelcastCacheManager.init(initWakeups, HazelcastCacheManager.CacheType.WAKEUPS, true);
         }
 
     }

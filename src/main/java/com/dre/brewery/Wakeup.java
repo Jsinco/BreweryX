@@ -1,7 +1,10 @@
 package com.dre.brewery;
 
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
+import com.hazelcast.collection.IList;
+import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,8 +26,9 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 	@Serial
 	private static final long serialVersionUID = -8998830092919696237L;
 
-	public static final List<Wakeup> wakeups = new ArrayList<>();
-	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
+	private static final HazelcastInstance hazelcast = BreweryPlugin.getHazelcast();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
@@ -51,12 +55,25 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 		return id;
 	}
 
-	public static List<Wakeup> getWakeups() {
-		return wakeups;
+
+	public void saveToHazelcast() {
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+		int i = 0;
+		for (Wakeup barrel : wakeups) {
+			if (barrel.getId().equals(id)) {
+				wakeups.set(i, this); // OPERATION SAVED
+				System.out.println("Barrel saved to Hazelcast: " + this.id);
+				return;
+			}
+			i++;
+		}
 	}
+
 
 	// get the nearest of two random Wakeup-Locations
 	public static Location getRandom(Location playerLoc) {
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+
 		if (wakeups.isEmpty()) {
 			return null;
 		}
@@ -75,7 +92,7 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 		if (w1 == null) return null;
 
 		while (!w1.check()) {
-			breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
+			plugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
 
 			w1 = calcRandom(worldWakes);
 			if (w1 == null) {
@@ -89,7 +106,7 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 			worldWakes.remove(w2);
 
 			while (!w2.check()) {
-				breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
+				plugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
 
 				w2 = calcRandom(worldWakes);
 				if (w2 == null) {
@@ -114,20 +131,22 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 	}
 
 	public static void set(CommandSender sender) {
-		if (sender instanceof Player) {
+		if (sender instanceof Player player) {
+			IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
 
-			Player player = (Player) sender;
-			wakeups.add(new Wakeup(player.getLocation()));
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeCreated", "" + (wakeups.size() - 1)));
+            wakeups.add(new Wakeup(player.getLocation()));
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeCreated", "" + (wakeups.size() - 1)));
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
+			plugin.msg(sender, plugin.languageReader.get("Error_PlayerCommand"));
 		}
 	}
 
 	public static void remove(CommandSender sender, int id) {
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+
 		if (wakeups.isEmpty() || id < 0 || id >= wakeups.size()) {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
 			return;
 		}
 
@@ -135,16 +154,19 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 
 		if (wakeup.active) {
 			wakeup.active = false;
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeDeleted", "" + id));
+			wakeups.set(id, wakeup); // OPERATION SAVED
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeDeleted", "" + id));
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeAlreadyDeleted", "" + id));
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeAlreadyDeleted", "" + id));
 		}
 	}
 
 	public static void list(CommandSender sender, int page, String worldOnly) {
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+
 		if (wakeups.isEmpty()) {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoPoints"));
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeNoPoints"));
 			return;
 		}
 
@@ -172,41 +194,39 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 	}
 
 	public static void check(CommandSender sender, int id, boolean all) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+		if (!(sender instanceof Player player)) {
+			plugin.msg(sender, plugin.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
 
-			if (!all) {
-				if (wakeups.isEmpty() || id >= wakeups.size()) {
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNotExist", "" + id));
-					return;
-				}
-
-				Wakeup wakeup = wakeups.get(id);
-				if (wakeup.check()) {
-					player.teleport(wakeup.loc);
-				} else {
-					String world = wakeup.loc.getWorld().getName();
-					int x = (int) wakeup.loc.getX();
-					int y = (int) wakeup.loc.getY();
-					int z = (int) wakeup.loc.getZ();
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
-				}
-
-			} else {
-				if (wakeups.isEmpty()) {
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoPoints"));
-					return;
-				}
-				if (checkPlayer != null && checkPlayer != player) {
-					checkId = -1;
-				}
-				checkPlayer = player;
-				tpNext();
+		if (!all) {
+			if (wakeups.isEmpty() || id >= wakeups.size()) {
+				plugin.msg(sender, plugin.languageReader.get("Player_WakeNotExist", "" + id));
+				return;
 			}
 
+			Wakeup wakeup = wakeups.get(id);
+			if (wakeup.check()) {
+				player.teleport(wakeup.loc);
+			} else {
+				String world = wakeup.loc.getWorld().getName();
+				int x = (int) wakeup.loc.getX();
+				int y = (int) wakeup.loc.getY();
+				int z = (int) wakeup.loc.getZ();
+				plugin.msg(sender, plugin.languageReader.get("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
+			}
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
+			if (wakeups.isEmpty()) {
+				plugin.msg(sender, plugin.languageReader.get("Player_WakeNoPoints"));
+				return;
+			}
+			if (checkPlayer != null && checkPlayer != player) {
+				checkId = -1;
+			}
+			checkPlayer = player;
+			tpNext();
 		}
 	}
 
@@ -215,9 +235,11 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 	}
 
 	public static void tpNext() {
+		IList<Wakeup> wakeups = hazelcast.getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName());
+
 		checkId++;
 		if (checkId >= wakeups.size()) {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeLast"));
+			plugin.msg(checkPlayer, plugin.languageReader.get("Player_WakeLast"));
 			checkId = -1;
 			checkPlayer = null;
 			return;
@@ -235,23 +257,23 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 		int z = (int) wakeup.loc.getZ();
 
 		if (wakeup.check()) {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeTeleport", "" + checkId, world, "" + x , "" + y, "" + z));
+			plugin.msg(checkPlayer, plugin.languageReader.get("Player_WakeTeleport", "" + checkId, world, "" + x , "" + y, "" + z));
 			checkPlayer.teleport(wakeup.loc);
 		} else {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeFilled", "" + checkId, world, "" + x , "" + y, "" + z));
+			plugin.msg(checkPlayer, plugin.languageReader.get("Player_WakeFilled", "" + checkId, world, "" + x , "" + y, "" + z));
 		}
-		breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeHint1"));
-		breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeHint2"));
+		plugin.msg(checkPlayer, plugin.languageReader.get("Player_WakeHint1"));
+		plugin.msg(checkPlayer, plugin.languageReader.get("Player_WakeHint2"));
 	}
 
 	public static void cancel(CommandSender sender) {
 		if (checkPlayer != null) {
 			checkPlayer = null;
 			checkId = -1;
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeCancel"));
+			plugin.msg(sender, plugin.languageReader.get("Player_WakeCancel"));
 			return;
 		}
-		breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoCheck"));
+		plugin.msg(sender, plugin.languageReader.get("Player_WakeNoCheck"));
 	}
 
 	@Override

@@ -125,7 +125,7 @@ public class Stats {
 				if (!BConfig.enableWake) {
 					return "disabled";
 				}
-				int wakeups = Wakeup.wakeups.size();
+				int wakeups = BreweryPlugin.getHazelcast().getList(HazelcastCacheManager.CacheType.WAKEUPS.getHazelcastName()).size();
 				if (wakeups == 0) {
 					return "0";
 				} else if (wakeups <= 5) {
