@@ -71,7 +71,7 @@ public class InfoCommand implements SubCommand {
             breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Info_NotDrunk", playerName));
         } else {
             if (selfInfo) {
-                bPlayer.showDrunkeness(player);
+                bPlayer.showDrunkenness(player);
             } else {
                 breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
             }

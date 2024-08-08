@@ -121,7 +121,6 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				}
 			}
 		}
-
 	}
 
 	@Override
@@ -490,7 +489,6 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	public static class BarrelCheck extends UniversalRunnable {
 		@Override
 		public void run() { // Only check barrels owned by us
-
 			boolean repeat = true;
 			while (repeat) {
 				if (check < HazelcastCacheManager.getOwnedBarrels().size()) {
@@ -519,6 +517,8 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 					cancel();
 				}
 			}
+
+			plugin.log("Checked " + HazelcastCacheManager.getOwnedBarrels() + " owned by us");
 		}
 
 	}

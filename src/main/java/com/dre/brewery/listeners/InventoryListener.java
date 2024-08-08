@@ -299,7 +299,7 @@ public class InventoryListener implements Listener {
 
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
 
-		// Barrel Closing Sound
+		// Save barrel on close
 		if (event.getInventory().getHolder() instanceof Barrel barrel) {
             barrel.playClosingSound();
 			barrel.saveToHazelcast();

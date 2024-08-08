@@ -5,13 +5,15 @@ import com.dre.brewery.api.events.PlayerPukeEvent;
 import com.dre.brewery.api.events.PlayerPushEvent;
 import com.dre.brewery.api.events.brew.BrewDrinkEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
-import com.google.gson.annotations.Expose;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -30,6 +32,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,56 +43,67 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BPlayer {
+// should already be serializable
+// Todo: tasks should only be done by node that own this
+public class BPlayer implements Serializable, Ownable {
+
+	@Serial
+	private static final long serialVersionUID = -3022726699310234549L;
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+	private static final HazelcastInstance hazelcast = BreweryPlugin.getHazelcast();
 
-	public static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
-	private static final ConcurrentHashMap<Player, Integer> pukeTasks = new ConcurrentHashMap<>();// Player and count
+
+	private static final ConcurrentHashMap<Player, Integer> pukeTasks = new ConcurrentHashMap<>(); // Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
 
-	@Expose private final String uuid;
-	@Expose private int quality = 0;// = quality of drunkenness * drunkenness
-	@Expose private int drunkenness = 0;// = amount of drunkenness
-	@Expose private int offlineDrunk = 0;// drunkenness when gone offline
-	@Expose private int alcRecovery = -1; // Drunkeness reduce per minute
-	@Expose private Vector push = new Vector(0, 0, 0);
-	@Expose private int time = 20;
+	private UUID owner;
+	private UUID uuid;
+	private Vector push = new Vector(0, 0, 0);
+	private int quality = 0;// = quality of drunkenness * drunkenness
+	private int drunkenness = 0;// = amount of drunkenness
+	private int offlineDrunk = 0;// drunkenness when gone offline
+	private int alcRecovery = -1; // Drunkeness reduce per minute
+	private int time = 20;
 
-	public BPlayer(String uuid) {
-		this.uuid = uuid;
-	}
 
 	// reading from file
-	public BPlayer(String uuid, int quality, int drunkenness, int offlineDrunk) {
+	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
 		this.quality = quality;
 		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
 	}
 
-	public BPlayer(UUID uuid, int quality, int drunkenness, int offlineDrunk) {
-		this(uuid.toString(), quality, drunkenness, offlineDrunk);
-	}
-
 	public BPlayer(UUID uuid) {
-		this(uuid.toString());
+		this.uuid = uuid;
+		this.owner = HazelcastCacheManager.getClusterId();
 	}
 
-	@Nullable
-	public static BPlayer get(OfflinePlayer player) {
-		if (!players.isEmpty()) {
-			return players.get(BUtil.playerString(player));
-		}
-		return null;
+	public void saveToHazelcast() {
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).put(uuid, this);
 	}
+
+	@Nullable // TODOHERE
+	public static BPlayer get(OfflinePlayer player) {
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		return players.get(player.getUniqueId());
+	}
+
+	public static boolean hasPlayer(OfflinePlayer player) {
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		return players.containsKey(player.getUniqueId());
+	}
+
 
 	// This method may be slow and should not be used if not needed
 	@Nullable
 	public static BPlayer getByName(String playerName) {
-		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+		IMap<String, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		for (Map.Entry<String, BPlayer> entry : players) {
+			OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey()));
 			String name = p.getName();
 			if (name != null) {
 				if (name.equalsIgnoreCase(playerName)) {
@@ -99,62 +114,30 @@ public class BPlayer {
 		return null;
 	}
 
-	// This method may be slow and should not be used if not needed
-	public static boolean hasPlayerbyName(String playerName) {
-		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-			OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
-			if (p != null) {
-				String name = p.getName();
-				if (name != null) {
-					if (name.equalsIgnoreCase(playerName)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
 
-	public static ConcurrentHashMap<String, BPlayer> getPlayers() {
-		return players;
-	}
-
-	public static boolean isEmpty() {
-		return players.isEmpty();
-	}
-
-	public static boolean hasPlayer(OfflinePlayer player) {
-		return players.containsKey(BUtil.playerString(player));
-	}
 
 	// Create a new BPlayer and add it to the list
 	public static BPlayer addPlayer(OfflinePlayer player) {
-		BPlayer bPlayer = new BPlayer(BUtil.playerString(player));
-		players.put(BUtil.playerString(player), bPlayer);
+		BPlayer bPlayer = new BPlayer(player.getUniqueId());
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).put(player.getUniqueId(), bPlayer); // OPERATION SAVED
 		return bPlayer;
 	}
 
 	public static void remove(OfflinePlayer player) {
-		players.remove(BUtil.playerString(player));
-	}
-
-
-	public static int numDrunkPlayers() {
-		return players.size();
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).remove(player.getUniqueId()); // OPERATION SAVED
 	}
 
 	public void remove() {
-		for (Iterator<Map.Entry<String, BPlayer>> iterator = players.entrySet().iterator(); iterator.hasNext(); ) {
-			Map.Entry<String, BPlayer> entry = iterator.next();
-			if (entry.getValue() == this) {
-				iterator.remove();
-				return;
-			}
-		}
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).remove(this.uuid); // OPERATION SAVED
 	}
 
+	public static int numDrunkPlayers() {
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).size();
+	}
+
+
 	public static void clear() {
-		players.clear();
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).clear(); // OPERATION SAVED
 	}
 
 	// Drink a brew and apply effects, etc.
@@ -166,7 +149,7 @@ public class BPlayer {
 		// In this event the added alcohol amount is calculated, based on the sensitivity permission
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		if (meta != null) {
-			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(drinkEvent);
+			Bukkit.getPluginManager().callEvent(drinkEvent);
 			if (brew != drinkEvent.getBrew()) brew = drinkEvent.getBrew();
 			if (drinkEvent.isCancelled()) {
 				if (bPlayer.drunkenness <= 0) {
@@ -179,7 +162,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player, brew.getQuality());
 		}
-		BreweryPlugin.getInstance().stats.forDrink(brew);
+		plugin.stats.forDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();
@@ -207,7 +190,7 @@ public class BPlayer {
 		if (BConfig.showStatusOnDrink) {
 			// Only show the Player his drunkenness if he is already drunk, or this drink changed his drunkenness
 			if (brewAlc != 0 || bPlayer.drunkenness > 0) {
-				bPlayer.showDrunkeness(player);
+				bPlayer.showDrunkenness(player);
 			}
 		}
 
@@ -220,129 +203,18 @@ public class BPlayer {
 	/**
 	 * Show the Player his current drunkenness and quality as an Actionbar graphic or when unsupported, in chat
 	 */
-	public void showDrunkeness(Player player) {
+	public void showDrunkenness(Player player) {
 		try {
-			// It this returns false, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
-			if (sendDrunkenessMessage(player)) {
-				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 40);
-				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
+			// If this returns false, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
+			if (sendDrunkennessMessage(player)) {
+				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkennessMessage(player), 40);
+				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkennessMessage(player), 80);
 			}
 		} catch (Exception e) {
-			BreweryPlugin.getInstance().errorLog("Failed to show drunkenness to " + player.getName(), e);
+			plugin.errorLog("Failed to show drunkenness to " + player.getName(), e);
 		}
 	}
 
-	/**
-	 * Send one Message to the player, showing his drunkenness or hangover
-	 *
-	 * @param player The Player to send the message to
-	 * @return false if the message should not be repeated.
-	 */
-	public boolean sendDrunkenessMessage(Player player) {
-		StringBuilder b = new StringBuilder(100);
-
-		int strength = drunkenness;
-		boolean hangover = false;
-		if (offlineDrunk > 0) {
-			strength = offlineDrunk;
-			hangover = true;
-		}
-
-		b.append(BreweryPlugin.getInstance().languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
-
-		// Drunkenness or Hangover Strength Bars
-		b.append(": §7[");
-		b.append(generateBars(strength, hangover));
-		b.append("§7] ");
-
-		int quality;
-		if (hangover) {
-			quality = 11 - getHangoverQuality();
-		} else {
-			quality = strength > 0 ? getQuality() : 0;
-		}
-
-		// Quality Stars
-		b.append("§7[");
-		b.append(generateStars(quality));
-		b.append("§7]");
-
-		final String text = b.toString();
-		if (hangover && VERSION.isOrLater(MinecraftVersion.V1_11)) {
-			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
-			return false;
-		}
-		try {
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
-			return true;
-		} catch (UnsupportedOperationException | NoSuchMethodError e) {
-			player.sendMessage(text);
-			return false;
-		}
-	}
-
-	private String generateBars(int strength, boolean hangover) {
-		// Generate 25 Bars, color one per 4 drunkenness
-		StringBuilder b = new StringBuilder();
-		int bars;
-		if (strength <= 0) {
-			bars = 0;
-		} else if (strength == 1) {
-			bars = 1;
-		} else {
-			bars = Math.round(strength / 4.0f);
-		}
-		int noBars = 25 - bars;
-		if (bars > 0) {
-			b.append(hangover ? "§c" : "§6");
-		}
-		for (int addedBars = 0; addedBars < bars; addedBars++) {
-			b.append("|");
-			if (addedBars == 20) {
-				// color the last 4 bars red
-				b.append("§c");
-			}
-		}
-		if (noBars > 0) {
-			b.append("§0");
-			for (; noBars > 0; noBars--) {
-				b.append("|");
-			}
-		}
-		return b.toString();
-	}
-
-	public String generateBars() {
-		return generateBars(offlineDrunk > 0 ? offlineDrunk : drunkenness, offlineDrunk > 0);
-	}
-
-	private String generateStars(int quality) {
-		// Generate stars representing the quality
-		StringBuilder b = new StringBuilder();
-		int stars = quality / 2;
-		boolean half = quality % 2 > 0;
-		int noStars = 5 - stars - (half ? 1 : 0);
-
-		b.append(BrewLore.getQualityColor(quality));
-		for (; stars > 0; stars--) {
-			b.append("⭑");
-		}
-		if (half) {
-			b.append("⭒");
-		}
-		if (noStars > 0) {
-			b.append("§0");
-			for (; noStars > 0; noStars--) {
-				b.append("⭑");
-			}
-		}
-
-		return b.toString();
-	}
-
-	public String generateStars() {
-		return generateStars(offlineDrunk > 0 ? 11 - getHangoverQuality() : drunkenness > 0 ? getQuality() : 0);
-	}
 
 	// Player has drunken too much
 	public void drinkCap(Player player) {
@@ -352,7 +224,7 @@ public class BPlayer {
 			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CantDrink"));
+			BreweryPlugin.getInstance().msg(player, plugin.languageReader.get("Player_CantDrink"));
 		}
 	}
 
@@ -396,57 +268,11 @@ public class BPlayer {
 				return drunkenness <= -BConfig.hangoverTime;
 			}
 		}
+		saveToHazelcast(); // OPERATION SAVED
 		return false;
 	}
 
-	// player is drunk
-	public void move(PlayerMoveEvent event) {
-		// has player more alc than 10
-		if (drunkenness >= 10 && BConfig.stumbleModifier > 0.001f) {
-			if (drunkenness <= 100) {
-				if (time > 1) {
-					time--;
-				} else {
-					// Is he moving
-					if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-						Player player = event.getPlayer();
-						// We have to cast here because it had issues otherwise on previous versions of Minecraft
-						// Don't know if that's still the case, but we better leave it
-                        // not in midair
-						if (((Entity) player).isOnGround()) {
-							time--;
-							if (time == 0) {
-								// push him only to the side? or any direction
-								// like now
-								if (VERSION.isOrLater(MinecraftVersion.V1_9)) { // Pushing is way stronger in 1.9
-									push.setX((Math.random() - 0.5) / 2.0);
-									push.setZ((Math.random() - 0.5) / 2.0);
-								} else {
-									push.setX(Math.random() - 0.5);
-									push.setZ(Math.random() - 0.5);
-								}
-								push.multiply(BConfig.stumbleModifier);
-								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
-								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(pushEvent);
-								push = pushEvent.getPush();
-								if (pushEvent.isCancelled() || push.lengthSquared() <= 0) {
-									time = -10;
-									return;
-								}
-								player.setVelocity(push);
-							} else if (time < 0 && time > -10) {
-								// push him some more in the same direction
-								player.setVelocity(push);
-							} else {
-								// when more alc, push him more often
-								time = (int) (Math.random() * (201.0 - (drunkenness * 2)));
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+
 
 	public void passOut(Player player) {
 		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
@@ -457,8 +283,8 @@ public class BPlayer {
 	// #### Login ####
 
 	public boolean canJoinSimpleStatus() {
-        return canJoin() == 0;
-    }
+		return canJoin() == 0;
+	}
 
 	// can the player login or is he too drunk
 	public int canJoin() {
@@ -508,7 +334,7 @@ public class BPlayer {
 			}
 			if (offlineDrunk > 20) {
 				hangoverEffects(player);
-				showDrunkeness(player);
+				showDrunkenness(player);
 			}
 			if (drunkenness <= 0) {
 				remove(player);
@@ -519,11 +345,10 @@ public class BPlayer {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
 					player.teleport(randomLoc);
-					BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_Wake"));
+					plugin.msg(player, plugin.languageReader.get("Player_Wake"));
 				}
 			}
-			offlineDrunk = 0;
-		}
+        }
 		offlineDrunk = 0;
 	}
 
@@ -542,7 +367,7 @@ public class BPlayer {
 			} else if (homeType.startsWith("cmd:")) {
 				player.performCommand(homeType.substring(4));
 			} else {
-				BreweryPlugin.getInstance().errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
+				plugin.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 			}
 			if (home != null) {
 				player.teleport(home);
@@ -668,7 +493,7 @@ public class BPlayer {
 
 	public static void applyEffects(List<PotionEffect> effects, Player player, PlayerEffectEvent.EffectType effectType) {
 		PlayerEffectEvent event = new PlayerEffectEvent(player, effectType, effects);
-		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
+		Bukkit.getPluginManager().callEvent(event);
 		effects = event.getEffects();
 		if (event.isCancelled() || effects == null) {
 			return;
@@ -743,7 +568,7 @@ public class BPlayer {
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		List<PotionEffect> list = getQualityEffects(quality, brewAlc);
 		PlayerEffectEvent event = new PlayerEffectEvent(player, PlayerEffectEvent.EffectType.QUALITY, list);
-		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
+		Bukkit.getPluginManager().callEvent(event);
 		list = event.getEffects();
 		if (event.isCancelled() || list == null) {
 			return;
@@ -801,13 +626,13 @@ public class BPlayer {
 	// #### Scheduled ####
 
 	public static void drunkenness() {
-		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-			String name = entry.getKey();
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		for (Map.Entry<UUID, BPlayer> entry : players.entrySet()) {
 			BPlayer bplayer = entry.getValue();
 
 			if (bplayer.drunkenness > 30) {
 				if (bplayer.offlineDrunk == 0) {
-					Player player = BUtil.getPlayerfromString(name);
+					Player player = Bukkit.getPlayer(entry.getKey());
 					if (player != null) {
 
 						bplayer.drunkEffects(player);
@@ -824,38 +649,43 @@ public class BPlayer {
 
 	// decreasing drunkenness over time
 	public static void onUpdate() {
-		if (!players.isEmpty()) {
-			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry<String, BPlayer> entry = iter.next();
-				String uuid = entry.getKey();
-				BPlayer bplayer = entry.getValue();
-				Player playerIfOnline = BUtil.getPlayerfromString(uuid);
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		if (players.isEmpty()) {
+			return;
+		}
 
-				if (bplayer.getAlcRecovery() == -1) {
-					bplayer.recalculateAlcRecovery(playerIfOnline);
-				}
+		Iterator<Map.Entry<UUID, BPlayer>> iter = players.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<UUID, BPlayer> entry = iter.next();
+			UUID uuid = entry.getKey();
+			BPlayer bplayer = entry.getValue();
+			Player playerIfOnline = Bukkit.getPlayer(uuid);
 
-				if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
-					iter.remove();
-				}
+			if (bplayer.getAlcRecovery() == -1) {
+				bplayer.recalculateAlcRecovery(playerIfOnline);
+			}
+
+			if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
+				iter.remove();
 			}
 		}
 	}
 
 
-
 	// #### getter/setter ####
 
 
-	public String getUuid() {
+	public UUID getUuid() {
 		return uuid;
 	}
 
 	public int getDrunkeness() {
 		return drunkenness;
 	}
-	public void setDrunkeness(int value) { drunkenness = value; }
+
+	public void setDrunkeness(int value) {
+		drunkenness = value;
+	}
 
 	public void setData(int drunkenness, int quality) {
 		if (quality > 0) {
@@ -885,7 +715,10 @@ public class BPlayer {
 		return quality;
 	}
 
-	public void setQuality(int value) { quality = value; }
+	public void setQuality(int value) {
+		quality = value;
+		saveToHazelcast(); // OPERATION SAVED
+	}
 
 	// opposite of quality
 	public int getHangoverQuality() {
@@ -908,21 +741,181 @@ public class BPlayer {
 
 	public void setAlcRecovery(int alcRecovery) {
 		this.alcRecovery = alcRecovery;
+		saveToHazelcast(); // OPERATION SAVED
 	}
 
 
-	public String getName() {
-		Player player = BUtil.getPlayerfromString(uuid);
-		OfflinePlayer offlinePlayer;
-
-		if (player != null) {
-			return player.getName();
-		} else {
-			offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+	// player is drunk
+	public void move(PlayerMoveEvent event) {
+		// has player more alc than 10
+		if (drunkenness >= 10 && BConfig.stumbleModifier > 0.001f) {
+			if (drunkenness <= 100) {
+				if (time > 1) {
+					time--;
+				} else {
+					// Is he moving
+					if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+						Player player = event.getPlayer();
+						// We have to cast here because it had issues otherwise on previous versions of Minecraft
+						// Don't know if that's still the case, but we better leave it
+						// not in midair
+						if (((Entity) player).isOnGround()) {
+							time--;
+							if (time == 0) {
+								// push him only to the side? or any direction
+								// like now
+								if (VERSION.isOrLater(MinecraftVersion.V1_9)) { // Pushing is way stronger in 1.9
+									push.setX((Math.random() - 0.5) / 2.0);
+									push.setZ((Math.random() - 0.5) / 2.0);
+								} else {
+									push.setX(Math.random() - 0.5);
+									push.setZ(Math.random() - 0.5);
+								}
+								push.multiply(BConfig.stumbleModifier);
+								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
+								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(pushEvent);
+								push = pushEvent.getPush();
+								if (pushEvent.isCancelled() || push.lengthSquared() <= 0) {
+									time = -10;
+									return;
+								}
+								player.setVelocity(push);
+							} else if (time < 0 && time > -10) {
+								// push him some more in the same direction
+								player.setVelocity(push);
+							} else {
+								// when more alc, push him more often
+								time = (int) (Math.random() * (201.0 - (drunkenness * 2)));
+							}
+						}
+					}
+				}
+			}
 		}
-		return offlinePlayer.getName();
 	}
 
+	/**
+	 * Send one Message to the player, showing his drunkenness or hangover
+	 *
+	 * @param player The Player to send the message to
+	 * @return false if the message should not be repeated.
+	 */
+	public boolean sendDrunkennessMessage(Player player) {
+		StringBuilder b = new StringBuilder(100);
+
+		int strength = drunkenness;
+		boolean hangover = false;
+		if (offlineDrunk > 0) {
+			strength = offlineDrunk;
+			hangover = true;
+		}
+
+		b.append(BreweryPlugin.getInstance().languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
+
+		// Drunkenness or Hangover Strength Bars
+		b.append(": §7[");
+		b.append(generateBars(strength, hangover));
+		b.append("§7] ");
+
+		int quality;
+		if (hangover) {
+			quality = 11 - getHangoverQuality();
+		} else {
+			quality = strength > 0 ? getQuality() : 0;
+		}
+
+		// Quality Stars
+		b.append("§7[");
+		b.append(generateStars(quality));
+		b.append("§7]");
+
+		final String text = b.toString();
+		if (hangover && VERSION.isOrLater(MinecraftVersion.V1_11)) {
+			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
+			return false;
+		}
+		try {
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
+			return true;
+		} catch (UnsupportedOperationException | NoSuchMethodError e) {
+			player.sendMessage(text);
+			return false;
+		}
+	}
+
+	private String generateBars(int strength, boolean hangover) {
+		// Generate 25 Bars, color one per 4 drunkenness
+		StringBuilder b = new StringBuilder();
+		int bars;
+		if (strength <= 0) {
+			bars = 0;
+		} else if (strength == 1) {
+			bars = 1;
+		} else {
+			bars = Math.round(strength / 4.0f);
+		}
+		int noBars = 25 - bars;
+		if (bars > 0) {
+			b.append(hangover ? "§c" : "§6");
+		}
+		for (int addedBars = 0; addedBars < bars; addedBars++) {
+			b.append("|");
+			if (addedBars == 20) {
+				// color the last 4 bars red
+				b.append("§c");
+			}
+		}
+		if (noBars > 0) {
+			b.append("§0");
+			for (; noBars > 0; noBars--) {
+				b.append("|");
+			}
+		}
+		return b.toString();
+	}
+
+	public String generateBars() {
+		return generateBars(offlineDrunk > 0 ? offlineDrunk : drunkenness, offlineDrunk > 0);
+	}
+
+	private String generateStars(int quality) {
+		// Generate stars representing the quality
+		StringBuilder b = new StringBuilder();
+		int stars = quality / 2;
+		boolean half = quality % 2 > 0;
+		int noStars = 5 - stars - (half ? 1 : 0);
+
+		b.append(BrewLore.getQualityColor(quality));
+		for (; stars > 0; stars--) {
+			b.append("⭑");
+		}
+		if (half) {
+			b.append("⭒");
+		}
+		if (noStars > 0) {
+			b.append("§0");
+			for (; noStars > 0; noStars--) {
+				b.append("⭑");
+			}
+		}
+
+		return b.toString();
+	}
+
+	public String generateStars() {
+		return generateStars(offlineDrunk > 0 ? 11 - getHangoverQuality() : drunkenness > 0 ? getQuality() : 0);
+	}
+
+
+	@Override
+	public void setOwner(UUID owner) {
+		this.owner = owner;
+	}
+
+	@Override
+	public UUID getOwner() {
+		return owner;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -934,11 +927,15 @@ public class BPlayer {
 	@Override
 	public String toString() {
 		return "BPlayer{" +
-				"uuid='" + uuid + '\'' +
+				"owner=" + owner +
+				", uuid='" + uuid + '\'' +
+				", push=" + push +
 				", quality=" + quality +
 				", drunkenness=" + drunkenness +
 				", offlineDrunk=" + offlineDrunk +
 				", alcRecovery=" + alcRecovery +
+				", time=" + time +
 				'}';
 	}
 }
+

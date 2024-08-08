@@ -214,7 +214,7 @@ public class PlayerListener implements Listener {
 				if (bplayer != null) {
 					bplayer.drainByItem(player, item.getType());
 					if (BConfig.showStatusOnDrink) {
-						bplayer.showDrunkeness(player);
+						bplayer.showDrunkenness(player);
 					}
 				}
 			}

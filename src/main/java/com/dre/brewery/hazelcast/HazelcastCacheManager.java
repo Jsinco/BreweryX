@@ -1,5 +1,6 @@
 package com.dre.brewery.hazelcast;
 
+import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.Ownable;
@@ -7,10 +8,13 @@ import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -42,6 +46,22 @@ public class HazelcastCacheManager {
         return ownedBarrels;
     }
 
+    public static Map<UUID, BPlayer> getOwnedPlayers() {
+        IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelCastName());
+
+        Map<UUID, BPlayer> ownedPlayers = new HashMap<>();
+        UUID ownerID = getClusterId();
+
+        for (Map.Entry<UUID, BPlayer> entry : players.entrySet()) {
+            if (entry.getValue().getOwner().equals(ownerID)) {
+                ownedPlayers.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        System.out.println("Owned players: " + ownedPlayers.size());
+        return ownedPlayers;
+    }
+
 
 
     public static <T> void init(List<T> list, CacheType cacheType) {
@@ -64,6 +84,21 @@ public class HazelcastCacheManager {
             }
             default -> {
                 throw new IllegalArgumentException("Invalid cache type");
+            }
+        }
+    }
+
+    public static <T, A> void init(Map<T, A> map, CacheType cacheType) {
+        switch (cacheType) {
+            case PLAYERS -> {
+                IMap<UUID, BPlayer> players = hazelcast.getMap(cacheType.getHazelCastName());
+
+                if (players.isEmpty()) {
+                    players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
+                } else {
+                    plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
+                    balance(players, cacheType);
+                }
             }
         }
     }
@@ -109,6 +144,44 @@ public class HazelcastCacheManager {
 
         plugin.log("Balanced " + cacheType.getHazelCastName() + " cache between " + clusterCount + " clusters");
     }
+
+    public static <T extends Ownable, A> void balance(Map<A, T> map, CacheType cacheType) {
+        List<UUID> clusters = getAllClusterIds();
+        int clusterCount = clusters.size();
+
+        if (clusterCount == 1) {
+            return;
+        }
+
+        int totalObjects = map.size();
+        int objectsPerCluster = totalObjects / clusterCount;
+        int remainder = totalObjects % clusterCount;
+
+        int objectsAssigned = 0;
+        for (int i = 0; i < clusterCount; i++) {
+            int objectsToAssign = objectsPerCluster;
+            if (remainder > 0) {
+                objectsToAssign++;
+                remainder--;
+            }
+
+            for (int j = 0; j < objectsToAssign; j++) {
+                A key = (A) map.keySet().toArray()[objectsAssigned];
+                T object = map.get(key);
+                objectsAssigned++;
+                // Assign object to cluster
+                object.setOwner(clusters.get(i));
+            }
+        }
+
+        // Update the cache
+        IMap<A, T> cache = hazelcast.getMap(cacheType.getHazelCastName());
+        cache.clear();
+        cache.putAll(map);
+
+        plugin.log("Balanced " + cacheType.getHazelCastName() + " cache between " + clusterCount + " clusters");
+    }
+
 
 
     public static UUID getClusterId() {

@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// Holy shit this code is so bad. - Jsinco
+// Wtf is this even for, and why is it not in the BPlayer class? - Jsinco
 public class Wakeup {
 
 	public static final List<Wakeup> wakeups = new ArrayList<>();
