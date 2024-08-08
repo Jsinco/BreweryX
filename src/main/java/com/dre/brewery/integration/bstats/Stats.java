@@ -6,6 +6,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.integration.bstats.Metrics.AdvancedPie;
 import com.dre.brewery.integration.bstats.Metrics.DrilldownPie;
 import com.dre.brewery.integration.bstats.Metrics.SimplePie;
@@ -45,13 +46,25 @@ public class Stats {
 		}
 	}
 
+	public static int getOwnedPlayersSize() {
+		return HazelcastCacheManager.getOwnedPlayers().size();
+	}
+
+	public static int getOwnedBarrelsSize() {
+		return HazelcastCacheManager.getOwnedBarrels().size();
+	}
+
+	public static int getOwnedCauldronsSize() {
+		return HazelcastCacheManager.getOwnedCauldrons().size();
+	}
+
 	public void setupBStats() {
 		try {
 			Metrics metrics = new Metrics(BreweryPlugin.getInstance(), 3494);
-			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", this::getOwnedPlayersSize));
 			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
-			// FIXME: metrics.addCustomChart(new SingleLineChart("barrels_built", Cache.getAllBarrels()::size));
-			metrics.addCustomChart(new SingleLineChart("cauldrons_boiling", BCauldron.bcauldrons::size));
+			metrics.addCustomChart(new SingleLineChart("barrels_built", this::getOwnedBarrelsSize));
+			metrics.addCustomChart(new SingleLineChart("cauldrons_boiling", this::getOwnedCauldronsSize));
 			metrics.addCustomChart(new AdvancedPie("brew_quality", () -> {
 				Map<String, Integer> map = new HashMap<>(8);
 				map.put("excellent", exc);

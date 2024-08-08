@@ -170,7 +170,4 @@ public class BukkitSerialization {
         return null;
     }
 
-
-    public static
-
 }

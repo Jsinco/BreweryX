@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.events.IngedientAddEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.storage.DataManager;
@@ -9,6 +10,7 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
+import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Color;
 import org.bukkit.Effect;
@@ -25,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -56,9 +57,6 @@ public class BCauldron implements Serializable, Ownable {
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
-
-
-	public static final Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 
 	private UUID owner;
@@ -92,6 +90,30 @@ public class BCauldron implements Serializable, Ownable {
 		this.id = id;
 	}
 
+	public static BCauldron get(Block block) {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
+		for (BCauldron cauldron : cauldrons) {
+			if (cauldron.getBlock().equals(block)) {
+				return cauldron;
+			}
+		}
+		return null;
+	}
+
+	public void saveToHazelcast() {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+		int i = 0;
+		for (BCauldron cauldron : cauldrons) {
+			if (cauldron.getId().equals(id)) {
+				cauldrons.set(i, this); // OPERATION SAVED
+				System.out.println("Cauldron saved to Hazelcast: " + this.id);
+				return;
+			}
+			i++;
+		}
+	}
+
 	/**
 	 * Updates this Cauldron, increasing the cook time and checking for Heatsource
 	 *
@@ -111,6 +133,7 @@ public class BCauldron implements Serializable, Ownable {
 				increaseState();
 			}
 		}
+		this.saveToHazelcast();
 		return true;
 	}
 
@@ -167,23 +190,16 @@ public class BCauldron implements Serializable, Ownable {
 		return ingredients;
 	}
 
-	public static Map<Block, BCauldron> getBcauldrons() {
-		return bcauldrons;
-	}
-
 	public UUID getId() {
 		return id;
 	}
 
-	// get cauldron by Block
-	@Nullable
-	public static BCauldron get(Block block) {
-		return bcauldrons.get(block);
-	}
 
 	// get cauldron from block and add given ingredient
 	// Calls the IngredientAddEvent and may be cancelled or changed
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
 		// if not empty
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 
@@ -200,7 +216,7 @@ public class BCauldron implements Serializable, Ownable {
 			BCauldron bcauldron = get(block);
 			if (bcauldron == null) {
 				bcauldron = new BCauldron(block);
-				BCauldron.bcauldrons.put(block, bcauldron);
+				cauldrons.add(bcauldron);
 			}
 
 			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
@@ -218,6 +234,9 @@ public class BCauldron implements Serializable, Ownable {
 
 	// fills players bottle with cooked brew
 	public boolean fill(Player player, Block block) {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
+
 		if (!player.hasPermission("brewery.cauldron.fill")) {
 			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronFill"));
 			return true;
@@ -227,13 +246,12 @@ public class BCauldron implements Serializable, Ownable {
 
 		if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 			BlockData data = block.getBlockData();
-			if (!(data instanceof Levelled)) {
-				bcauldrons.remove(block);
+			if (!(data instanceof Levelled cauldron)) {
+				cauldrons.remove(get(block));
 				return false;
 			}
-			Levelled cauldron = ((Levelled) data);
-			if (cauldron.getLevel() <= 0) {
-				bcauldrons.remove(block);
+            if (cauldron.getLevel() <= 0) {
+				cauldrons.remove(get(block));
 				return false;
 			}
 
@@ -241,7 +259,7 @@ public class BCauldron implements Serializable, Ownable {
 			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
 				// Empty Cauldron
 				block.setType(Material.CAULDRON);
-				bcauldrons.remove(block);
+				cauldrons.remove(get(block));
 			} else {
 				cauldron.setLevel(cauldron.getLevel() - 1);
 
@@ -251,7 +269,7 @@ public class BCauldron implements Serializable, Ownable {
 				block.setBlockData(data);
 
 				if (cauldron.getLevel() <= 0) {
-					bcauldrons.remove(block);
+					cauldrons.remove(get(block));
 				} else {
 					changed = true;
 				}
@@ -263,14 +281,14 @@ public class BCauldron implements Serializable, Ownable {
 			if (data > 3) {
 				data = 3;
 			} else if (data <= 0) {
-				bcauldrons.remove(block);
+				cauldrons.remove(block);
 				return false;
 			}
 			data -= 1;
 			LegacyUtil.setData(block, data);
 
 			if (data == 0) {
-				bcauldrons.remove(block);
+				cauldrons.remove(block);
 			} else {
 				changed = true;
 			}
@@ -424,13 +442,15 @@ public class BCauldron implements Serializable, Ownable {
 	}
 
 	public static void processCookEffects() {
+		 IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
 		if (!BConfig.enableCauldronParticles) return;
-		if (bcauldrons.isEmpty()) {
+		if (cauldrons.isEmpty()) {
 			return;
 		}
 		final float chance = 1f / PARTICLEPAUSE;
 
-		for (BCauldron cauldron : bcauldrons.values()) {
+		for (BCauldron cauldron : cauldrons) {
 			if (particleRandom.nextFloat() < chance) {
 				BreweryPlugin.getScheduler().runTask(cauldron.block.getLocation(), cauldron::cookEffect);
 			}
@@ -548,7 +568,10 @@ public class BCauldron implements Serializable, Ownable {
 	 * Recalculate the Cauldron Particle Recipe
 	 */
 	public static void reload() {
-		for (BCauldron cauldron : bcauldrons.values()) {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
+		int i = 0;
+		for (BCauldron cauldron : cauldrons) {
 			cauldron.particleRecipe = null;
 			cauldron.particleColor = null;
 			if (BConfig.enableCauldronParticles) {
@@ -556,6 +579,7 @@ public class BCauldron implements Serializable, Ownable {
 					cauldron.getParticleColor();
 				}
 			}
+			cauldrons.set(i, cauldron);
 		}
 	}
 
@@ -563,7 +587,7 @@ public class BCauldron implements Serializable, Ownable {
 	 * reset to normal cauldron
  	 */
 	public static boolean remove(Block block) {
-		return bcauldrons.remove(block) != null;
+		return hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).remove(get(block));
 	}
 
 

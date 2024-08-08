@@ -1,8 +1,12 @@
 package com.dre.brewery.commands.subcommands;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.Wakeup;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.recipe.BRecipe;
+import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -10,13 +14,14 @@ import java.util.List;
 public class ShowStatsCommand implements SubCommand {
     @Override
     public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
-        //if (sender instanceof ConsoleCommandSender && !sender.isOp()) return;
 
         breweryPlugin.getTaskScheduler().runTaskAsynchronously(() -> {
+            HazelcastInstance hazelcast = BreweryPlugin.getHazelcast();
+
             breweryPlugin.msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
             breweryPlugin.msg(sender, "Brews created: " + BreweryPlugin.getInstance().stats.brewsCreated);
-            //FIXME: breweryPlugin.msg(sender, "Barrels built: " + Cache.getAllBarrels().size());
-            breweryPlugin.msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
+            breweryPlugin.msg(sender, "Barrels built: " + hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).size());
+            breweryPlugin.msg(sender, "Cauldrons boiling: " + hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).size());
             breweryPlugin.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
             breweryPlugin.msg(sender, "Wakeups: " + Wakeup.wakeups.size());
         });
@@ -34,6 +39,6 @@ public class ShowStatsCommand implements SubCommand {
 
     @Override
     public boolean playerOnly() {
-        return true;
+        return false;
     }
 }

@@ -1,7 +1,10 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.utility.LegacyUtil;
+import com.hazelcast.collection.IList;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -11,6 +14,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.CauldronLevelChangeEvent;
+
+import java.util.List;
 
 public class CauldronListener implements Listener {
 
@@ -55,11 +60,14 @@ public class CauldronListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPistonExtend(BlockPistonExtendEvent event) {
-		for (Block block : event.getBlocks()) {
-			if (BCauldron.bcauldrons.containsKey(block)) {
-				BCauldron.remove(block);
+		BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
+			List<Block> cauldronBlocks = HazelcastCacheManager.getOwnedCauldrons().stream().map(BCauldron::getBlock).toList();
+			for (Block block : event.getBlocks()) {
+				if (cauldronBlocks.contains(block)) {
+					BCauldron.remove(block);
+				}
 			}
-		}
+		});
 	}
 
 	@SuppressWarnings("deprecation")

@@ -1,5 +1,6 @@
 package com.dre.brewery.hazelcast;
 
+import com.dre.brewery.BCauldron;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
@@ -46,6 +47,20 @@ public class HazelcastCacheManager {
         return ownedBarrels;
     }
 
+    public static List<BCauldron> getOwnedCauldrons() {
+        IList<BCauldron> cauldrons = hazelcast.getList(CacheType.CAULDRONS.getHazelcastName());
+        List<BCauldron> ownedCauldrons = new ArrayList<>();
+        UUID ownerID = getClusterId();
+
+        for (BCauldron cauldron : cauldrons) {
+            if (cauldron.getOwner().equals(ownerID)) {
+                ownedCauldrons.add(cauldron);
+            }
+        }
+        System.out.println("Owned cauldrons: " + ownedCauldrons.size());
+        return ownedCauldrons;
+    }
+
     public static Map<UUID, BPlayer> getOwnedPlayers() {
         IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
 
@@ -63,13 +78,27 @@ public class HazelcastCacheManager {
     }
 
 
-
     public static <T> void init(List<T> list, CacheType cacheType) {
+        init(list, cacheType, false);
+    }
+
+    public static <T, A> void init(Map<T, A> map, CacheType cacheType) {
+        init(map, cacheType, false);
+    }
+
+    /**
+     * Initialize the cache with the given list of objects.
+     * @param list List of objects to cache from persistent data
+     * @param cacheType Type of cache to initialize
+     * @param override Whether to add to the list even if the list is not empty
+     * @param <T> Type of object to cache
+     */
+    public static <T> void init(List<T> list, CacheType cacheType, boolean ignoreNotEmpty) {
         switch (cacheType) {
             case BARRELS -> {
                 IList<Barrel> barrels = hazelcast.getList(cacheType.getHazelcastName());
 
-                if (barrels.isEmpty()) {
+                if (barrels.isEmpty() && !ignoreNotEmpty) {
                     barrels.addAll((Collection<? extends Barrel>) list);
                 } else {
                     plugin.log("List BARRELS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
@@ -88,12 +117,13 @@ public class HazelcastCacheManager {
         }
     }
 
-    public static <T, A> void init(Map<T, A> map, CacheType cacheType) {
+
+    public static <T, A> void init(Map<T, A> map, CacheType cacheType, boolean ignoreNotEmpty) {
         switch (cacheType) {
             case PLAYERS -> {
                 IMap<UUID, BPlayer> players = hazelcast.getMap(cacheType.getHazelcastName());
 
-                if (players.isEmpty()) {
+                if (players.isEmpty() && !ignoreNotEmpty) {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
                 } else {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");

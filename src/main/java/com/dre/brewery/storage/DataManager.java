@@ -8,6 +8,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
@@ -78,9 +79,9 @@ public abstract class DataManager {
     }
 
     public void saveAll(boolean async, Runnable callback) {
-        Collection<Barrel> barrels = new ArrayList<>(); // FIXME: Cache.getOwnedBarrels();
-        Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
-        Collection<BPlayer> bPlayers = new ArrayList<>(); // FIXME: BPlayer.getPlayers().values();
+        Collection<Barrel> barrels = HazelcastCacheManager.getOwnedBarrels(); // FIXME: Cache.getOwnedBarrels();
+        Collection<BCauldron> cauldrons = HazelcastCacheManager.getOwnedCauldrons(); // FIXME: BCauldron.getCauldrons().values();
+        Collection<BPlayer> bPlayers = HazelcastCacheManager.getOwnedPlayers().values(); // FIXME: BPlayer.getPlayers().values();
         Collection<Wakeup> wakeups = Wakeup.getWakeups();
 
         if (async) {

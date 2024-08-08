@@ -9,12 +9,14 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.MinecraftVersion;
+import com.hazelcast.collection.IList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -35,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 /**
@@ -193,21 +193,21 @@ public class BData {
             }
 
             // loading BPlayer
-            List<BPlayer> players = new ArrayList<>();
+            Map<UUID, BPlayer> players = new HashMap<>();
             section = data.getConfigurationSection("Player");
             if (section != null) {
                 // keys have players uuid
                 for (String uuid : section.getKeys(false)) {
 
-
+                    UUID uuidObj = UUID.fromString(uuid);
                     int quality = section.getInt(uuid + ".quality");
                     int drunk = section.getInt(uuid + ".drunk");
                     int offDrunk = section.getInt(uuid + ".offDrunk", 0);
 
-                    players.add(new BPlayer(UUID.fromString(uuid), quality, drunk, offDrunk));
+                    players.put(uuidObj, new BPlayer(uuidObj, quality, drunk, offDrunk));
                 }
             }
-            // FIXME: BPlayer.getPlayers().putAll(players.stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+            HazelcastCacheManager.init(players, HazelcastCacheManager.CacheType.PLAYERS, true);
 
 
             final List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
@@ -327,7 +327,7 @@ public class BData {
         }
 
         // loading BCauldron
-        final Map<Block, BCauldron> initCauldrons = new HashMap<>();
+        final List<BCauldron> initCauldrons = new ArrayList<>();
         if (BData.worldData.contains("BCauldron." + uuid)) {
             ConfigurationSection section = BData.worldData.getConfigurationSection("BCauldron." + uuid);
             for (String cauldron : section.getKeys(false)) {
@@ -341,7 +341,7 @@ public class BData {
                         BIngredients ingredients = loadCauldronIng(section, cauldron + ".ingredients");
                         int state = section.getInt(cauldron + ".state", 0);
 
-                        initCauldrons.put(worldBlock, new BCauldron(worldBlock, ingredients, state, UUID.randomUUID()));
+                        initCauldrons.add(new BCauldron(worldBlock, ingredients, state, UUID.randomUUID()));
                     } else {
                         BreweryPlugin.getInstance().errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
                     }
@@ -449,10 +449,10 @@ public class BData {
             return;
         }
         if (!initCauldrons.isEmpty()) {
-            BCauldron.bcauldrons.putAll(initCauldrons);
+            HazelcastCacheManager.init(initCauldrons, HazelcastCacheManager.CacheType.CAULDRONS, true);
         }
         if (!initBarrels.isEmpty()) {
-            //FIXME: Cache.add(initBarrels, Barrel.class);
+            HazelcastCacheManager.init(initBarrels, HazelcastCacheManager.CacheType.BARRELS, true);
         }
 
         if (!initWakeups.isEmpty()) {

@@ -56,15 +56,12 @@ import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.integration.bstats.Stats;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
-import com.hazelcast.client.Client;
-import com.hazelcast.client.ClientService;
 import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
@@ -74,17 +71,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class BreweryPlugin extends JavaPlugin {
 
@@ -523,18 +515,18 @@ public class BreweryPlugin extends JavaPlugin {
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();
-			BConfig.reloader = null;
-            // runs every min to update cooking time
-			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
-			while (bCauldronsToRemove.hasNext()) {
-				// runs every min to update cooking time
-				BCauldron bCauldron = bCauldronsToRemove.next();
-				BreweryPlugin.getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> {
-					if (!bCauldron.onUpdate()) {
-						bCauldronsToRemove.remove();
+			BConfig.reloader = null; // <-- Why is this here - Jsinco
+
+			// runs every min to update cooking time
+			IList<BCauldron> cauldrons = hazelcast.getHazelcastInstance().getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+			for (BCauldron cauldron : cauldrons) {
+				BreweryPlugin.getScheduler().runTask(cauldron.getBlock().getLocation(), () -> {
+					if (!cauldron.onUpdate()) {
+						cauldrons.remove(cauldron);
 					}
 				});
 			}
+
 
 			Barrel.updateAllBarrels();// runs every min to check and update ageing time
 
