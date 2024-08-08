@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,9 +23,12 @@ import java.util.stream.Collectors;
  * <p>They are not necessarily only loaded from config
  * <p>They are immutable if used in a recipe. If one implements Ingredient,
  * it can be used as mutable copy directly in a
- * BIngredients. Otherwise it needs to be converted to an Ingredient
+ * BIngredients. Otherwise, it needs to be converted to an Ingredient
  */
-public abstract class RecipeItem implements Cloneable {
+public abstract class RecipeItem implements Cloneable, Serializable {
+
+	@Serial
+	private static final long serialVersionUID = 5329120396357968569L;
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 

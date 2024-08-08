@@ -86,28 +86,28 @@ public class BPlayer implements Serializable, Ownable {
 	}
 
 	public void saveToHazelcast() {
-		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).put(uuid, this);
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).put(uuid, this);
 	}
 
 	@Nullable // TODOHERE
 	public static BPlayer get(OfflinePlayer player) {
-		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName());
 		return players.get(player.getUniqueId());
 	}
 
 	public static boolean hasPlayer(OfflinePlayer player) {
-		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).containsKey(player.getUniqueId());
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).containsKey(player.getUniqueId());
 	}
 
 	public static boolean isEmpty() {
-		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).isEmpty();
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).isEmpty();
 	}
 
 
 	// This method may be slow and should not be used if not needed
 	@Nullable
 	public static BPlayer getByName(String playerName) {
-		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName());
 		for (Map.Entry<UUID, BPlayer> entry : players) {
 			OfflinePlayer p = Bukkit.getOfflinePlayer(entry.getKey());
 			String name = p.getName();
@@ -125,25 +125,25 @@ public class BPlayer implements Serializable, Ownable {
 	// Create a new BPlayer and add it to the list
 	public static BPlayer addPlayer(OfflinePlayer player) {
 		BPlayer bPlayer = new BPlayer(player.getUniqueId());
-		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).put(player.getUniqueId(), bPlayer); // OPERATION SAVED
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).put(player.getUniqueId(), bPlayer); // OPERATION SAVED
 		return bPlayer;
 	}
 
 	public static void remove(OfflinePlayer player) {
-		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).remove(player.getUniqueId()); // OPERATION SAVED
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).remove(player.getUniqueId()); // OPERATION SAVED
 	}
 
 	public void remove() {
-		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).remove(this.uuid); // OPERATION SAVED
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).remove(this.uuid); // OPERATION SAVED
 	}
 
 	public static int numDrunkPlayers() {
-		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).size();
+		return hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).size();
 	}
 
 
 	public static void clear() {
-		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName()).clear(); // OPERATION SAVED
+		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).clear(); // OPERATION SAVED
 	}
 
 	// Drink a brew and apply effects, etc.
@@ -658,7 +658,7 @@ public class BPlayer implements Serializable, Ownable {
 
 	// decreasing drunkenness over time
 	public static void onUpdate() {
-		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelCastName());
+		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName());
 		if (players.isEmpty()) {
 			return;
 		}

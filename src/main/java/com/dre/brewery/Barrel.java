@@ -241,7 +241,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 
 
 	public void saveToHazelcast() {
-		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName());
+		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
 
 		int i = 0;
 		for (Barrel barrel : barrels) {
@@ -286,7 +286,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
             signOffset = 0;
         }
 
-		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName());
+		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
 
         int i = 0;
 		for (Barrel barrel : barrels) {
@@ -313,7 +313,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	public static Barrel getByWood(Block wood) {
 		if (LegacyUtil.isWoodPlanks(wood.getType()) || LegacyUtil.isWoodStairs(wood.getType())) {
 
-			IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName());
+			IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
 
 			int i = 0;
 			for (Barrel barrel : barrels) {
@@ -373,7 +373,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
 				Bukkit.getPluginManager().callEvent(createEvent);
 				if (!createEvent.isCancelled()) {
-					hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName()).add(0, barrel); // OPERATION SAVED
+					hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).add(0, barrel); // OPERATION SAVED
 					return true;
 				}
 			}
@@ -451,7 +451,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 
 
 	public static void updateAllBarrels() {
-		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName()); // Only update barrels we own
+		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()); // Only update barrels we own
 
 		int i = 0;
 		for (Barrel barrel : barrels) {
@@ -505,7 +505,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 								// as now this is only the backup if we don't register the barrel breaking,
 								// for example when removing it with some world editor
 								barrel.checked = true;
-								hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelCastName()).set(check, barrel); // OPERATION SAVED
+								hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).set(check, barrel); // OPERATION SAVED
 							}
 						});
 						repeat = false;

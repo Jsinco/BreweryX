@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -304,6 +305,18 @@ public class BRecipe {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
 			return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
+		}
+		return null;
+	}
+
+	/**
+	 * Load a list of strings from a ConfigurationSection and parse the quality
+	 */
+	@Nullable
+	public static Map<Integer, String> loadQualityStringMap(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
+		List<String> load = BUtil.loadCfgStringList(cfg, path);
+		if (load != null) {
+			return StringParser.parseQualityMap(load, parseType);
 		}
 		return null;
 	}

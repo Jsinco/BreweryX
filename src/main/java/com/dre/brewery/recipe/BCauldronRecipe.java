@@ -10,13 +10,29 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * A Recipe for the Base Potion coming out of the Cauldron.
  */
-public class BCauldronRecipe {
+public class BCauldronRecipe implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -4005272288362151007L;
+
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes;
 	public static List<RecipeItem> acceptedCustom = new ArrayList<>(); // All accepted custom and other items
@@ -26,7 +42,7 @@ public class BCauldronRecipe {
 	private String name;
 	private List<RecipeItem> ingredients;
 	private PotionColor color;
-	private List<Tuple<Integer, Color>> particleColor = new ArrayList<>();
+	private Map<Integer, Color> particleColor = new HashMap<>();
 	private List<String> lore;
 	private int cmData; // Custom Model Data
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
@@ -95,11 +111,13 @@ public class BCauldronRecipe {
 				BreweryPlugin.getInstance().errorLog("Color of cookParticle: '" + entry + "' in: " + recipe.name);
 				return null;
 			}
-			recipe.particleColor.add(new Tuple<>(minute, partCol.getColor()));
+			recipe.particleColor.put(minute, partCol.getColor());
 		}
 		if (!recipe.particleColor.isEmpty()) {
 			// Sort by minute
-			recipe.particleColor.sort(Comparator.comparing(Tuple::first));
+			recipe.particleColor = recipe.particleColor.entrySet().stream()
+					.sorted(Map.Entry.comparingByKey())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 		}
 
 
@@ -131,9 +149,14 @@ public class BCauldronRecipe {
 		return color;
 	}
 
-	@NotNull
-	public List<Tuple<Integer, Color>> getParticleColor() {
+	public Map<Integer, Color> getParticleColor() {
 		return particleColor;
+	}
+
+	public List<Tuple<Integer, Color>> getParticleColorTuple() {
+		return particleColor.entrySet().stream()
+				.map(e -> new Tuple<>(e.getKey(), e.getValue()))
+				.collect(Collectors.toList());
 	}
 
 	@Nullable
@@ -367,7 +390,7 @@ public class BCauldronRecipe {
 		}
 
 		public Builder addParticleColor(int atMinute, Color color) {
-			recipe.particleColor.add(new Tuple<>(atMinute, color));
+			recipe.particleColor.put(atMinute, color);
 			return this;
 		}
 
@@ -394,9 +417,51 @@ public class BCauldronRecipe {
 			}
 			if (!recipe.particleColor.isEmpty()) {
 				// Sort particleColor by minute
-				recipe.particleColor.sort(Comparator.comparing(Tuple::first));
+				recipe.particleColor = recipe.particleColor.entrySet().stream()
+						.sorted(Map.Entry.comparingByKey())
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 			}
 			return recipe;
 		}
+	}
+
+
+	public Map<Integer, Integer> serializeParticleColorMap() {
+		Map<Integer, Integer> map = new HashMap<>();
+		for (Map.Entry<Integer, Color> entry : particleColor.entrySet()) {
+			map.put(entry.getKey(),entry.getValue().asARGB());
+		}
+		return map;
+	}
+
+	public static Map<Integer, Color> deserializeParticleColorMap(Map<Integer, Integer> map) {
+		Map<Integer, Color> particleColor = new HashMap<>();
+		for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+			particleColor.put(entry.getKey(), Color.fromARGB(entry.getValue()));
+		}
+		return particleColor;
+	}
+
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(name);
+		out.writeObject(ingredients);
+		out.writeObject(color);
+		out.writeObject(serializeParticleColorMap());
+		out.writeObject(lore);
+		out.writeInt(cmData);
+		out.writeBoolean(saveInData);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		name = (String) in.readObject();
+		ingredients = (List<RecipeItem>) in.readObject();
+		color = (PotionColor) in.readObject();
+		particleColor = deserializeParticleColorMap((Map<Integer, Integer>) in.readObject());
+		lore = (List<String>) in.readObject();
+		cmData = in.readInt();
+		saveInData = in.readBoolean();
 	}
 }

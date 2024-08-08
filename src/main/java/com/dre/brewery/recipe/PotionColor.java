@@ -9,8 +9,18 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Map;
 
-public class PotionColor {
+
+public class PotionColor implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -3699871293931192333L;
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
@@ -33,9 +43,9 @@ public class PotionColor {
 	public static final PotionColor TEAL = new PotionColor(Color.TEAL);
 	public static final PotionColor YELLOW = new PotionColor(Color.YELLOW);
 
-	private final int colorId;
-	private final PotionType type;
-	private final Color color;
+	private int colorId;
+	private PotionType type;
+	private Color color;
 
 	PotionColor(int colorId, PotionType type, Color color) {
 		this.colorId = colorId;
@@ -125,4 +135,18 @@ public class PotionColor {
 		return new PotionColor(color);
 	}
 
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeInt(colorId);
+		out.writeObject(type.name());
+		out.writeObject(color.serialize());
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		colorId = in.readInt();
+		type = PotionType.valueOf((String) in.readObject());
+		color = Color.deserialize((Map<String, Object>) in.readObject());
+	}
 }

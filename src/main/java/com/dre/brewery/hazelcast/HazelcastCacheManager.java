@@ -33,7 +33,7 @@ public class HazelcastCacheManager {
 
 
     public static List<Barrel> getOwnedBarrels() {
-        IList<Barrel> barrels = hazelcast.getList(CacheType.BARRELS.getHazelCastName());
+        IList<Barrel> barrels = hazelcast.getList(CacheType.BARRELS.getHazelcastName());
         List<Barrel> ownedBarrels = new ArrayList<>();
         UUID ownerID = getClusterId();
 
@@ -47,7 +47,7 @@ public class HazelcastCacheManager {
     }
 
     public static Map<UUID, BPlayer> getOwnedPlayers() {
-        IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelCastName());
+        IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
 
         Map<UUID, BPlayer> ownedPlayers = new HashMap<>();
         UUID ownerID = getClusterId();
@@ -67,7 +67,7 @@ public class HazelcastCacheManager {
     public static <T> void init(List<T> list, CacheType cacheType) {
         switch (cacheType) {
             case BARRELS -> {
-                IList<Barrel> barrels = hazelcast.getList(cacheType.getHazelCastName());
+                IList<Barrel> barrels = hazelcast.getList(cacheType.getHazelcastName());
 
                 if (barrels.isEmpty()) {
                     barrels.addAll((Collection<? extends Barrel>) list);
@@ -91,7 +91,7 @@ public class HazelcastCacheManager {
     public static <T, A> void init(Map<T, A> map, CacheType cacheType) {
         switch (cacheType) {
             case PLAYERS -> {
-                IMap<UUID, BPlayer> players = hazelcast.getMap(cacheType.getHazelCastName());
+                IMap<UUID, BPlayer> players = hazelcast.getMap(cacheType.getHazelcastName());
 
                 if (players.isEmpty()) {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
@@ -138,11 +138,11 @@ public class HazelcastCacheManager {
         }
 
         // Update the cache
-        IList<T> cache = hazelcast.getList(cacheType.getHazelCastName());
+        IList<T> cache = hazelcast.getList(cacheType.getHazelcastName());
         cache.clear();
         cache.addAll(list);
 
-        plugin.log("Balanced " + cacheType.getHazelCastName() + " cache between " + clusterCount + " clusters");
+        plugin.log("Balanced " + cacheType.getHazelcastName() + " cache between " + clusterCount + " clusters");
     }
 
     public static <T extends Ownable, A> void balance(Map<A, T> map, CacheType cacheType) {
@@ -175,11 +175,11 @@ public class HazelcastCacheManager {
         }
 
         // Update the cache
-        IMap<A, T> cache = hazelcast.getMap(cacheType.getHazelCastName());
+        IMap<A, T> cache = hazelcast.getMap(cacheType.getHazelcastName());
         cache.clear();
         cache.putAll(map);
 
-        plugin.log("Balanced " + cacheType.getHazelCastName() + " cache between " + clusterCount + " clusters");
+        plugin.log("Balanced " + cacheType.getHazelcastName() + " cache between " + clusterCount + " clusters");
     }
 
 
@@ -200,16 +200,16 @@ public class HazelcastCacheManager {
 
 
     public enum CacheType {
-        BARRELS("barrels"), PLAYERS("players"), CAULDRONS("cauldrons");
+        BARRELS("barrels"), PLAYERS("players"), CAULDRONS("cauldrons"), WAKEUPS("wakeups");
 
-        private final String hazelCastName;
+        private final String hazelcastName;
 
-        CacheType(String hazelCastName) {
-            this.hazelCastName = hazelCastName;
+        CacheType(String hazelcastName) {
+            this.hazelcastName = hazelcastName;
         }
 
-        public String getHazelCastName() {
-            return hazelCastName;
+        public String getHazelcastName() {
+            return hazelcastName;
         }
     }
 }

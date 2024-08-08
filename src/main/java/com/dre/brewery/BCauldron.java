@@ -4,11 +4,12 @@ import com.dre.brewery.api.events.IngedientAddEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
-import com.google.gson.annotations.Expose;
+import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -26,6 +27,11 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,25 +42,35 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.dre.brewery.utility.MinecraftVersion.V1_9;
 
-public class BCauldron {
+public class BCauldron implements Serializable, Ownable {
+
+	@Serial
+	private static final long serialVersionUID = 2943204069862239977L;
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+	private static final HazelcastInstance hazelcast = BreweryPlugin.getHazelcast();
+
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
+
+
 	public static final Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
-	@Expose private BIngredients ingredients = new BIngredients();
-	@Expose private final Block block;
-	@Expose private int state = 0;
-	@Expose private boolean changed = false; // Not really needed anymore
-	@Expose private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
-	@Expose private Color particleColor;
-	@Expose private final Location particleLocation;
-	@Expose private final UUID id;
+
+	private UUID owner;
+	private UUID id;
+	private Block block;
+	private BIngredients ingredients = new BIngredients();
+	private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
+	private Color particleColor;
+	private Location particleLocation;
+	private int state = 0;
+	private boolean changed = false; // Not really needed anymore
+
 
 	public BCauldron(Block block) {
 		this.block = block;
@@ -62,12 +78,17 @@ public class BCauldron {
 		this.id = UUID.randomUUID();
 	}
 
+	public BCauldron(Block block, BIngredients ingredients, int state, UUID id, UUID owner) {
+		this(block, ingredients, state, id);
+		this.owner = owner;
+	}
+
 	// loading from file
 	public BCauldron(Block block, BIngredients ingredients, int state, UUID id) {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
-		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
+		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.id = id;
 	}
 
@@ -254,7 +275,7 @@ public class BCauldron {
 				changed = true;
 			}
 		}
-		if (VERSION.isOrLater(V1_9)) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
 			block.getWorld().playSound(block.getLocation(), Sound.ITEM_BOTTLE_FILL, 1f, 1f);
 		}
 		// Bukkit Bug, inventory not updating while in event so this
@@ -348,7 +369,7 @@ public class BCauldron {
 
 		List<Tuple<Integer, Color>> colorList = null;
 		if (particleRecipe != null) {
-			colorList = particleRecipe.getParticleColor();
+			colorList = particleRecipe.getParticleColorTuple();
 		}
 
 		if (colorList == null || colorList.isEmpty()) {
@@ -454,7 +475,7 @@ public class BCauldron {
 
 			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
-			if (VERSION.isOrEarlier(V1_9)) {
+			if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) {
 				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
@@ -476,7 +497,7 @@ public class BCauldron {
 			// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
 			// We mark if a player had the event for the main hand
 			// If not, we handle the main hand in the event for the offhand
-			if (VERSION.isOrLater(V1_9)) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
@@ -552,6 +573,15 @@ public class BCauldron {
 		BreweryPlugin.getScheduler().runTaskLater(() -> player.getInventory().addItem(item), 1L);
 	}
 
+	@Override
+	public void setOwner(UUID owner) {
+		this.owner = owner;
+	}
+
+	@Override
+	public UUID getOwner() {
+		return owner;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -567,5 +597,31 @@ public class BCauldron {
 			", state=" + state +
 			", ingredients=" + ingredients +
 			'}';
+	}
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(owner);
+		out.writeObject(id);
+		out.writeObject(DataManager.serializeBlock(block)); // Write the Inventory
+		out.writeObject(ingredients.serializeIngredients());
+		out.writeObject(particleRecipe);
+		out.writeInt(particleColor.asARGB());
+		out.writeObject(DataManager.serializeLocation(particleLocation));
+		out.writeInt(state);
+		out.writeBoolean(changed);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		owner = (UUID) in.readObject();
+		id = (UUID) in.readObject();
+		block = DataManager.deserializeBlock((String) in.readObject());
+		ingredients = BIngredients.deserializeIngredients((String) in.readObject());
+		particleRecipe = (BCauldronRecipe) in.readObject();
+		particleColor = Color.fromARGB(in.readInt());
+		particleLocation = DataManager.deserializeLocation((String) in.readObject());
+		state = in.readInt();
+		changed = in.readBoolean();
 	}
 }
