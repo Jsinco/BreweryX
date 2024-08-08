@@ -25,7 +25,7 @@ public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 	}
 
 	public BarrelAccessEvent(Barrel barrel, Player player, Block clickedBlock, BlockFace clickedBlockFace) {
-		super(barrel);
+		super(barrel, false);
 		this.player = player;
 		this.clickedBlock = clickedBlock;
 		this.clickedBlockFace = clickedBlockFace;

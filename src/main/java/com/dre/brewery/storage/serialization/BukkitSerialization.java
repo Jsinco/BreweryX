@@ -3,6 +3,7 @@ package com.dre.brewery.storage.serialization;
 import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -113,14 +114,14 @@ public class BukkitSerialization {
      * @return Inventory created from the Base64 string.
      * @throws IOException
      */
-    public static Inventory fromBase64(String data) throws IOException {
+    public static Inventory fromBase64(String data, InventoryHolder holder, String name) throws IOException {
         if (data == null || data.isEmpty()) {
             return null;
         }
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt());
+            Inventory inventory = Bukkit.getServer().createInventory(holder, dataInput.readInt(), name);
 
             // Read the serialized inventory
             for (int i = 0; i < inventory.getSize(); i++) {

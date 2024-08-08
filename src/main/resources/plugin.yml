@@ -6,7 +6,7 @@ softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopk
 authors: [Jonah (Jsinco), Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
 folia-supported: true
 api-version: 1.13
-libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']
+libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10', 'com.hazelcast:hazelcast:5.1.1']
 commands:
   breweryx:
     description: Mostly admin commands to create/modify Brews and drunkenness

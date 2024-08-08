@@ -22,7 +22,7 @@ public class BarrelDestroyEvent extends BarrelEvent implements Cancellable {
 	private boolean cancelled;
 
 	public BarrelDestroyEvent(Barrel barrel, Block broken, Reason reason, Player player) {
-		super(barrel);
+		super(barrel, false);
 		this.broken = broken;
 		this.player = player;
 		this.reason = reason;

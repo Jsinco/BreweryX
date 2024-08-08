@@ -125,6 +125,7 @@ public class Brew implements Cloneable {
 	 */
 	@Nullable
 	public static Brew get(ItemStack item) {
+		if (item == null) return null;
 		if (item.getType() != Material.POTION) return null;
 		if (!item.hasItemMeta()) return null;
 

@@ -14,7 +14,7 @@ public class BarrelRemoveEvent extends BarrelEvent {
 	private boolean dropItems;
 
 	public BarrelRemoveEvent(Barrel barrel, boolean dropItems) {
-		super(barrel);
+		super(barrel, false);
 		this.dropItems = dropItems;
 	}
 

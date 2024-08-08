@@ -122,7 +122,7 @@ public class IntegrationListener implements Listener {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
 				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
-					Block sign = event.getBarrel().getBody().getSignOfSpigot();
+					Block sign = event.getBarrel().getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
 						Player player = event.getPlayer();

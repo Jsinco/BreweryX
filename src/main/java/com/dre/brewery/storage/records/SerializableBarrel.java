@@ -7,6 +7,7 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +21,9 @@ import java.util.List;
  */
 public record SerializableBarrel(String id, String serializedLocation, List<Integer> bounds, float time, byte sign, String serializedItems) implements SerializableThing {
     public SerializableBarrel(Barrel barrel) {
-        this(barrel.getId().toString(), DataManager.serializeLocation(barrel.getSpigot().getLocation()), barrel.getBody().getBounds().serializeToIntList(), barrel.getTime(), barrel.getBody().getSignoffset(), BukkitSerialization.itemStackArrayToBase64(barrel.getInventory().getContents()));
+        this(barrel.getId().toString(), DataManager.serializeLocation(barrel.getSpigot().getLocation()), barrel.getBounds().serializeToIntList(), barrel.getTime(), barrel.getSignOffset(), BukkitSerialization.itemStackArrayToBase64(barrel.getInventory().getContents()));
     }
+
 
     public Barrel toBarrel() {
         Location loc = DataManager.deserializeLocation(serializedLocation);
@@ -38,7 +40,7 @@ public record SerializableBarrel(String id, String serializedLocation, List<Inte
 
     public static List<SerializableBarrel> fromBarrels(List<Barrel> barrels) {
         if (barrels == null) {
-            return List.of();
+            return new ArrayList<>();
         }
         return barrels.stream().map(SerializableBarrel::new).toList();
     }

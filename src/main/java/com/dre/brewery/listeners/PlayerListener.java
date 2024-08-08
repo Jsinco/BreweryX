@@ -130,7 +130,7 @@ public class PlayerListener implements Listener {
 		if (barrel != null) {
 			event.setCancelled(true);
 
-			if (!barrel.hasPermsOpen(player, event)) {
+			if (!barrel.hasOpenPerms(player, event)) {
 				return;
 			}
 

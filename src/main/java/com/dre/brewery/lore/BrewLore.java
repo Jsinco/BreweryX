@@ -516,6 +516,7 @@ public class BrewLore {
 	 * True if the PotionMeta has Lore in quality color
  	 */
 	public static boolean hasColorLore(PotionMeta meta) {
+		if (meta == null) return false;
 		if (!meta.hasLore()) return false;
 		List<String> lore = meta.getLore();
 		if (lore.size() < 2) {

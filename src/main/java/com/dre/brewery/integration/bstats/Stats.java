@@ -2,7 +2,6 @@ package com.dre.brewery.integration.bstats;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BPlayer;
-import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.Wakeup;
@@ -51,7 +50,7 @@ public class Stats {
 			Metrics metrics = new Metrics(BreweryPlugin.getInstance(), 3494);
 			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
 			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
-			metrics.addCustomChart(new SingleLineChart("barrels_built", Barrel.barrels::size));
+			// FIXME: metrics.addCustomChart(new SingleLineChart("barrels_built", Cache.getAllBarrels()::size));
 			metrics.addCustomChart(new SingleLineChart("cauldrons_boiling", BCauldron.bcauldrons::size));
 			metrics.addCustomChart(new AdvancedPie("brew_quality", () -> {
 				Map<String, Integer> map = new HashMap<>(8);

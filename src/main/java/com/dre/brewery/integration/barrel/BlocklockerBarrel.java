@@ -55,14 +55,14 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 				}
 				Barrel barrel = new Barrel(spigot, signoffset);
 
-				return barrel.getBody().getBrokenBlock(true) == null;
+				return barrel.getBrokenBlock(true) == null;
 			}
 		}
 		return false;
 	}
 
 	public static boolean checkAccess(BarrelAccessEvent event) {
-		Block sign = event.getBarrel().getBody().getSignOfSpigot();
+		Block sign = event.getBarrel().getSignOfSpigot();
 		if (!LegacyUtil.isSign(sign.getType())) {
 			return true;
 		}

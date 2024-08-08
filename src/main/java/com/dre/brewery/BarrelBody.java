@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
@@ -9,30 +10,36 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * The Blocks that make up a Barrel in the World
  */
-public class BarrelBody {
+public abstract class BarrelBody implements Serializable {
 
-	private final Barrel barrel;
-	private final Block spigot;
-	private BoundingBox bounds;
-	private byte signoffset;
+	@Serial
+	private static final long serialVersionUID = 5265214885523380505L;
 
-	public BarrelBody(Barrel barrel, byte signoffset) {
-		this.barrel = barrel;
-		this.signoffset = signoffset;
-		spigot = barrel.getSpigot();
+	protected Block spigot;
+	protected BoundingBox bounds;
+	protected byte signOffset;
+
+	public BarrelBody(Block spigot, byte signOffset) {
+		this.signOffset = signOffset;
+		this.spigot = spigot;
 		this.bounds = new BoundingBox(0, 0, 0, 0, 0, 0);
 	}
 
 	/**
 	 * Loading from file
 	 */
-	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
-		this(barrel, signoffset);
+	public BarrelBody(Block spigot, byte signOffset, BoundingBox bounds) {
+		this(spigot, signOffset);
 
 		if (boundsSeemBad(bounds)) {
 			if (!Bukkit.isPrimaryThread()) {
@@ -47,9 +54,10 @@ public class BarrelBody {
 		}
 	}
 
-	public Barrel getBarrel() {
-		return barrel;
-	}
+	/**
+	 * Regenerate the Barrel Bounds.
+	 */
+	public abstract void regenerateBounds();
 
 	public Block getSpigot() {
 		return spigot;
@@ -65,19 +73,19 @@ public class BarrelBody {
 		this.bounds = bounds;
 	}
 
-	public byte getSignoffset() {
-		return signoffset;
+	public byte getSignOffset() {
+		return signOffset;
 	}
 
-	public void setSignoffset(byte signoffset) {
-		this.signoffset = signoffset;
+	public void setSignOffset(byte signOffset) {
+		this.signOffset = signOffset;
 	}
 
 	/**
 	 * If the Sign of a Large Barrel gets destroyed, set signOffset to 0
 	 */
 	public void destroySign() {
-		signoffset = 0;
+		signOffset = 0;
 	}
 
 	/**
@@ -123,20 +131,6 @@ public class BarrelBody {
 			}
 		}
 		return direction;
-	}
-
-	/**
-	 * is this a Large barrel?
-	 */
-	public boolean isLarge() {
-		return barrel.isLarge();
-	}
-
-	/**
-	 * is this a Small barrel?
-	 */
-	public boolean isSmall() {
-		return barrel.isSmall();
 	}
 
 	/**
@@ -190,22 +184,22 @@ public class BarrelBody {
 	 * <p>This prevents adding another sign to the barrel and clicking that.
 	 */
 	public boolean isSignOfBarrel(byte offset) {
-		return offset == 0 || signoffset == 0 || signoffset == offset;
+		return offset == 0 || signOffset == 0 || signOffset == offset;
 	}
 
 	/**
 	 * returns the Sign of a large barrel, the spigot if there is none
 	 */
 	public Block getSignOfSpigot() {
-		if (signoffset != 0) {
+		if (signOffset != 0) {
 			if (LegacyUtil.isSign(spigot.getType())) {
 				return spigot;
 			}
 
-			if (LegacyUtil.isSign(spigot.getRelative(0, signoffset, 0).getType())) {
-				return spigot.getRelative(0, signoffset, 0);
+			if (LegacyUtil.isSign(spigot.getRelative(0, signOffset, 0).getType())) {
+				return spigot.getRelative(0, signOffset, 0);
 			} else {
-				signoffset = 0;
+				signOffset = 0;
 			}
 		}
 		return spigot;
@@ -228,20 +222,7 @@ public class BarrelBody {
 		return block;
 	}
 
-	/**
-	 * Regenerate the Barrel Bounds.
-	 *
-	 * @return true if successful, false if Barrel was broken and should be removed.
-	 */
-	public boolean regenerateBounds() {
-		BreweryPlugin.getInstance().log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
-		Block broken = getBrokenBlock(true);
-		if (broken != null) {
-			barrel.remove(broken, null, true);
-			return false;
-		}
-		return true;
-	}
+
 
 	/**
 	 * returns null if Barrel is correctly placed; the block that is missing when not.
@@ -401,10 +382,22 @@ public class BarrelBody {
 		return null;
 	}
 
-	public void save(ConfigurationSection config, String prefix) {
-		if (signoffset != 0) {
-			config.set(prefix + ".sign", signoffset);
-		}
-		config.set(prefix + ".bounds", bounds.serialize());
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		// Write the non-transient fields
+		out.writeObject(DataManager.serializeBlock(spigot)); // Ensure Block is Serializable
+		out.writeObject(bounds);
+		out.writeByte(signOffset);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		// Read the non-transient fields
+
+		// Deserialize custom fields, e.g., Block, BarrelBody, Inventory
+		spigot = DataManager.deserializeBlock((String) in.readObject());
+		bounds = (BoundingBox) in.readObject();
+		signOffset = in.readByte();
 	}
 }

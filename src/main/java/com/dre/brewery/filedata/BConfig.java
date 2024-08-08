@@ -21,7 +21,6 @@ import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.storage.records.ConfiguredRedisManager;
-import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Bukkit;
@@ -193,13 +192,13 @@ public class BConfig {
 						config.getString("storage.username"),
 						config.getString("storage.password")
 				);
-		configuredRedisManager = new ConfiguredRedisManager(
+		/*configuredRedisManager = new ConfiguredRedisManager(
 				config.getBoolean("redis.enabled", false),
 				config.getString("redis.address"),
 				config.getString("redis.password"),
 				RedisFamilyType.valueOf(config.getString("redis.shardType", "MASTER_SHARD").toUpperCase()),
 				config.getString("redis.id", null)
-		);
+		);*/
 
 		autoSaveInterval = config.getInt("autosave", 3);
 

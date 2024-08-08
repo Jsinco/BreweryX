@@ -9,7 +9,6 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +41,7 @@ public class BreweryApi {
 	 *
 	 * @return true if anything was removed
 	 */
-	public static boolean removeAny(Block block) {
+	public static Boolean removeAny(Block block) {
 		if (removeCauldron(block)) return true;
 		return removeBarrel(block, true);
 	}
@@ -51,7 +50,7 @@ public class BreweryApi {
 	 * <p>Like removeAny() but removes data as if the given player broke the Block.
 	 * <p>Currently only makes a difference for Logging
 	 */
-	public static boolean removeAnyByPlayer(Block block, Player player) {
+	public static Boolean removeAnyByPlayer(Block block, Player player) {
 		if (removeCauldron(block)) return true;
 		return removeBarrelByPlayer(block, player, true);
 	}
@@ -248,28 +247,14 @@ public class BreweryApi {
 	}
 
 	/**
-	 * Get the Inventory of a Block part of a Barrel.
-	 * <p>May be any Wood, Fence or Sign that is part of a Barrel
-	 * <p>Returns null if block is not part of a Barrel
-	 */
-	@Nullable
-	public static Inventory getBarrelInventory(Block block) {
-		Barrel barrel = Barrel.get(block);
-		if (barrel != null) {
-			return barrel.getInventory();
-		}
-		return null;
-	}
-
-	/**
 	 * Remove any Barrel that this Block may be Part of.
 	 * Does not remove any actual Block
 	 *
-	 * @param block The Block thats part of the barrel, potions will drop there
+	 * @param block     The Block thats part of the barrel, potions will drop there
 	 * @param dropItems If the items in the barrels inventory should drop to the ground
 	 * @return True if a Barrel was removed
 	 */
-	public static boolean removeBarrel(Block block, boolean dropItems) {
+	public static Boolean removeBarrel(Block block, boolean dropItems) {
 		return removeBarrelByPlayer(block, null, dropItems);
 	}
 
@@ -282,14 +267,14 @@ public class BreweryApi {
 	 * @param dropItems If the items in the barrels inventory should drop to the ground
 	 * @return True if a Barrel was removed
 	 */
-	public static boolean removeBarrelByPlayer(Block block, Player player, boolean dropItems) {
+	public static Boolean removeBarrelByPlayer(Block block, Player player, boolean dropItems) {
 		Barrel barrel = Barrel.get(block);
-		if (barrel != null) {
-			barrel.remove(block, player, dropItems);
-			return true;
+		if (barrel == null) {
+			return false;
 		}
-		return false;
-	}
+        barrel.remove(block, player, dropItems);
+        return true;
+    }
 
 	// # # # # # #            # # # # # #
 	// # # # # #    Cauldron    # # # # #

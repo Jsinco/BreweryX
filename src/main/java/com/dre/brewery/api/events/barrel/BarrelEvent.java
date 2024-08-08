@@ -8,7 +8,7 @@ import org.bukkit.inventory.Inventory;
 public abstract class BarrelEvent extends Event {
 	protected final Barrel barrel;
 
-	public BarrelEvent(Barrel barrel) {
+	public BarrelEvent(Barrel barrel, boolean async) {
 		this.barrel = barrel;
 	}
 

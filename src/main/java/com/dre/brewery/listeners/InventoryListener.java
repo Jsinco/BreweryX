@@ -3,6 +3,7 @@ package com.dre.brewery.listeners;
 import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.Barrel;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -37,7 +38,7 @@ public class InventoryListener implements Listener {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
-		if (player == null || !(inv instanceof BrewerInventory)) return;
+		if (!(inv instanceof BrewerInventory)) return;
 
 		BreweryPlugin.getInstance().debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
@@ -299,9 +300,9 @@ public class InventoryListener implements Listener {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
 
 		// Barrel Closing Sound
-		if (event.getInventory().getHolder() instanceof Barrel) {
-			Barrel barrel = ((Barrel) event.getInventory().getHolder());
-			barrel.playClosingSound();
+		if (event.getInventory().getHolder() instanceof Barrel barrel) {
+            barrel.playClosingSound();
+			barrel.saveToHazelcast();
 		}
 
 		// Check for MC Barrel

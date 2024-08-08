@@ -27,6 +27,8 @@ import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.hazelcast.BreweryHazelcast;
+import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -47,33 +49,40 @@ import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
-import com.dre.brewery.storage.RedisInitException;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.storage.records.ConfiguredRedisManager;
-import com.dre.brewery.storage.redis.AbstractRedisPubSub;
-import com.dre.brewery.storage.redis.MasterShardedRedis;
-import com.dre.brewery.storage.redis.NormalShardedRedis;
-import com.dre.brewery.storage.redis.RedisFamilyType;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.integration.bstats.Stats;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import com.hazelcast.client.Client;
+import com.hazelcast.client.ClientService;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
+import com.hazelcast.collection.IList;
+import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -86,9 +95,10 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
-	private static AbstractRedisPubSub abstractRedisPubSub;
+	private static BreweryHazelcast hazelcast;
 	public static boolean debug;
 	public static boolean useNBT;
+	public static UUID ownerID = UUID.randomUUID();
 
 	// Public Listeners
 	public PlayerListener playerListener;
@@ -154,43 +164,42 @@ public class BreweryPlugin extends JavaPlugin {
 		PluginItem.registerItemLoader(this);
 
 
+		// REMINDER: FIXME
+		// Load hazelcast 185.73.243.155
+		hazelcast = new BreweryHazelcast("185.73.243.155", 8827);
 
-		// Load Redis
-		boolean loadDataManager = true;
 
-		ConfiguredRedisManager configuredRedisManager = BConfig.configuredRedisManager;
-		if (configuredRedisManager.enabled()) {
-            try {
-                if (configuredRedisManager.type() == RedisFamilyType.MASTER_SHARD) {
-					abstractRedisPubSub = new MasterShardedRedis(configuredRedisManager);
-				} else {
-					loadDataManager = false;
-					abstractRedisPubSub = new NormalShardedRedis(configuredRedisManager);
-				}
-            } catch (RedisInitException e) {
-                errorLog("Failed to initialize Redis!", e);
-				Bukkit.getPluginManager().disablePlugin(this);
-            }
+
+
+
+		try {
+			dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
+			//DataManager.loadMiscData(dataManager.getBreweryMiscData());
+
+			// test
+			HazelcastCacheManager.init(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.BARRELS);
+
+			//BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+			//BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+			//Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
+		} catch (StorageInitException e) {
+			errorLog("Failed to initialize DataManager!", e);
+			Bukkit.getPluginManager().disablePlugin(this);
 		}
 
-		// Load DataManager, if Redis allows it
-        if (loadDataManager) {
-			try {
-				dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
-				DataManager.loadMiscData(dataManager.getBreweryMiscData());
-				Barrel.getBarrels().addAll(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList());
-				BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-				BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-				Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
-			} catch (StorageInitException e) {
-				errorLog("Failed to initialize DataManager!", e);
-				Bukkit.getPluginManager().disablePlugin(this);
-			}
 
-			// Only load metrics if DataManager is enabled
-			// Setup Metrics
-			stats.setupBStats();
+
+		Cluster cluster = hazelcast.getHazelcastInstance().getCluster();
+
+		System.out.println("Members {size:" + cluster.getMembers().size() + ", ver:" + cluster.getClusterState().ordinal() + "} [");
+		for (Member member : cluster.getMembers()) {
+			System.out.println("    Member [" + member.getAddress() + "] - " + member.getUuid() + " " + (member.localMember() ? "this" : ""));
 		}
+		System.out.println("]");
+
+		// Setup Metrics
+		//stats.setupBStats();
+
 
 
 		getCommand("breweryx").setExecutor(new CommandManager());
@@ -262,8 +271,8 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// disconnect from Redis
-		if (abstractRedisPubSub != null) {
-			abstractRedisPubSub.exit();
+		if (hazelcast != null) {
+			hazelcast.shutdown();
 		}
 
 		// save Data to Disk
@@ -421,12 +430,9 @@ public class BreweryPlugin extends JavaPlugin {
 		return dataManager;
 	}
 
-	public static AbstractRedisPubSub getAbstractRedisPubSub() {
-		return abstractRedisPubSub;
-	}
-
-	public static void setAbstractRedisPubSub(AbstractRedisPubSub abstractRedisPubSub) {
-		BreweryPlugin.abstractRedisPubSub = abstractRedisPubSub;
+	@NotNull
+	public static HazelcastInstance getHazelcast() {
+		return hazelcast.getHazelcastInstance();
 	}
 
 	// Utility
@@ -530,7 +536,7 @@ public class BreweryPlugin extends JavaPlugin {
 				});
 			}
 
-			Barrel.onUpdate();// runs every min to check and update ageing time
+			Barrel.updateAllBarrels();// runs every min to check and update ageing time
 
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
 			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();

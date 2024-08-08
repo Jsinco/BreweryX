@@ -452,7 +452,7 @@ public class BData {
             BCauldron.bcauldrons.putAll(initCauldrons);
         }
         if (!initBarrels.isEmpty()) {
-            Barrel.barrels.addAll(initBarrels);
+            //FIXME: Cache.add(initBarrels, Barrel.class);
         }
 
         if (!initWakeups.isEmpty()) {

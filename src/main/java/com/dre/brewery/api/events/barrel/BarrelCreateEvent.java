@@ -16,7 +16,7 @@ public class BarrelCreateEvent extends BarrelEvent implements Cancellable {
 	private boolean cancelled;
 
 	public BarrelCreateEvent(Barrel barrel, Player player) {
-		super(barrel);
+		super(barrel, false);
 		this.player = player;
 	}
 

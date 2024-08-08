@@ -13,12 +13,11 @@ import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
-import com.dre.brewery.storage.records.ConfiguredRedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +27,6 @@ import java.util.UUID;
 public abstract class DataManager {
 
     // TODO: Instead of using UUIDs for Barrels, Cauldrons, and Wakeups. We should figure out some hashing algorithm to generate a unique ID for each of them.
-    private static Jedis jedis;
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
@@ -80,7 +78,7 @@ public abstract class DataManager {
     }
 
     public void saveAll(boolean async, Runnable callback) {
-        Collection<Barrel> barrels = Barrel.getBarrels();
+        Collection<Barrel> barrels = new ArrayList<>(); // FIXME: Cache.getOwnedBarrels();
         Collection<BCauldron> cauldrons = BCauldron.getBcauldrons().values();
         Collection<BPlayer> bPlayers = BPlayer.getPlayers().values();
         Collection<Wakeup> wakeups = Wakeup.getWakeups();
@@ -192,6 +190,14 @@ public abstract class DataManager {
         );
     }
 
+    public static String serializeBlock(Block block) {
+        return serializeLocation(block.getLocation());
+    }
+
+    public static Block deserializeBlock(String blockString) {
+        return deserializeLocation(blockString).getBlock();
+    }
+
 
     public static Location deserializeLocation(String locationString) {
         return deserializeLocation(locationString, false);
@@ -203,7 +209,6 @@ public abstract class DataManager {
 
     public static Location deserializeLocation(String locationString, boolean yawPitch) {
         if (locationString == null) {
-            System.out.println("LocationString is null");
             return null;
         }
         String[] loc = locationString.split(",");

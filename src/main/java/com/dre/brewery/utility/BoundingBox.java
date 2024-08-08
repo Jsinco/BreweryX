@@ -3,9 +3,15 @@ package com.dre.brewery.utility;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
-public class BoundingBox {
+// These fucking idiots didn't decide to include the world for this.
+public class BoundingBox implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = 3145185291434476112L;
 
 	private final int x1, y1, z1, x2, y2, z2;
 

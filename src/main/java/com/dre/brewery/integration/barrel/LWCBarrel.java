@@ -24,7 +24,7 @@ public class LWCBarrel {
 
 	public static boolean denyDestroy(Player player, Barrel barrel) {
 		LWC lwc = LWC.getInstance();
-		Block sign = barrel.getBody().getSignOfSpigot();
+		Block sign = barrel.getSignOfSpigot();
 		//if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(sign, "ignoreBlockDestruction"))) {
 			Protection protection = lwc.findProtection(sign);
 			if (protection != null) {
@@ -83,7 +83,7 @@ public class LWCBarrel {
 
 	// If a Barrel is destroyed without player
 	public static void remove(Barrel barrel) {
-		Protection protection = LWC.getInstance().findProtection(barrel.getBody().getSignOfSpigot());
+		Protection protection = LWC.getInstance().findProtection(barrel.getSignOfSpigot());
 		if (protection != null) {
 			protection.remove();
 		}
@@ -91,13 +91,13 @@ public class LWCBarrel {
 
 	// Returns true if the block that exploded should not be removed
 	public static boolean denyExplosion(Barrel barrel) {
-		Protection protection = LWC.getInstance().findProtection(barrel.getBody().getSignOfSpigot());
+		Protection protection = LWC.getInstance().findProtection(barrel.getSignOfSpigot());
 
 		return protection != null && !protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS);
 	}
 
 	// Returns true if the block that was destroyed should not be removed
 	public static boolean denyDestroyOther(Barrel barrel) {
-		return LWC.getInstance().findProtection(barrel.getBody().getSignOfSpigot()) != null;
+		return LWC.getInstance().findProtection(barrel.getSignOfSpigot()) != null;
 	}
 }
