@@ -9,9 +9,7 @@ import com.hazelcast.core.HazelcastInstance;
 public class BreweryHazelcast {
 
     private static boolean started = false;
-
     private HazelcastInstance hazelcastInstance;
-
 
 
     public BreweryHazelcast(String address, int port) {

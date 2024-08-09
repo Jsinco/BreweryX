@@ -254,6 +254,21 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		}
 	}
 
+	public static void saveBarrelsToHazelcast(List<Barrel> barrelList) {
+		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
+		for (Barrel barrel : barrelList) {
+			int i = 0;
+			for (Barrel hazelcastBarrel : barrels) {
+				if (hazelcastBarrel.getId().equals(barrel.getId())) {
+					barrels.set(i, barrel); // OPERATION SAVED
+					System.out.println("Barrel saved to Hazelcast: " + barrel.getId());
+					break;
+				}
+				i++;
+			}
+		}
+	}
+
 
 	/**
 	 * Get the Barrel by Block, null if that block is not part of a barrel
@@ -298,7 +313,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				barrel.setSignOffset(signOffset);
 				barrels.set(i, barrel); // set hazelcastlist because hazelcast doesn't factor in for mutated objects // OPERATION SAVED
 				moveMRU(barrels, i);
-
+				System.out.println("found barrel");
 				return barrel;
 			}
 			i++;
@@ -319,6 +334,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 			for (Barrel barrel : barrels) {
 				if (barrel.getSpigot().getWorld().equals(wood.getWorld()) && barrel.getBounds().contains(wood)) {
 					moveMRU(barrels, i);
+					System.out.println("found barrel");
 					return barrel;
 				}
 				i++;
@@ -533,7 +549,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 								// as now this is only the backup if we don't register the barrel breaking,
 								// for example when removing it with some world editor
 								barrel.checked = true;
-								hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).set(check, barrel); // OPERATION SAVED
+								barrel.saveToHazelcast(); // OPERATION SAVED
 							}
 						});
 						repeat = false;

@@ -90,24 +90,19 @@ public class HazelcastCacheManager {
      * Initialize the cache with the given list of objects.
      * @param list List of objects to cache from persistent data
      * @param cacheType Type of cache to initialize
-     * @param override Whether to add to the list even if the list is not empty
+     * @param force Whether to add to the list even if the list is not empty
      * @param <T> Type of object to cache
      */
-    public static <T> void init(List<T> list, CacheType cacheType, boolean ignoreNotEmpty) {
+    public static <T> void init(List<T> list, CacheType cacheType, boolean force) {
         switch (cacheType) {
             case BARRELS -> {
                 IList<Barrel> barrels = hazelcast.getList(cacheType.getHazelcastName());
 
-                if (barrels.isEmpty() && !ignoreNotEmpty) {
+                if (barrels.isEmpty() || force) {
                     barrels.addAll((Collection<? extends Barrel>) list);
                 } else {
                     plugin.log("List BARRELS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    balance(barrels, cacheType);
-                }
-
-
-                for (Barrel barrel : barrels) {
-                    System.out.println(barrel);
+                    splitArrayList(barrels, cacheType);
                 }
                 System.out.println("Barrels cached: " + barrels.size());
             }
@@ -115,16 +110,13 @@ public class HazelcastCacheManager {
             case CAULDRONS -> {
                 IList<BCauldron> cauldrons = hazelcast.getList(cacheType.getHazelcastName());
 
-                if (cauldrons.isEmpty() && !ignoreNotEmpty) {
+                if (cauldrons.isEmpty() || force) {
                     cauldrons.addAll((Collection<? extends BCauldron>) list);
                 } else {
                     plugin.log("List CAULDRONS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    balance(cauldrons, cacheType);
+                    splitArrayList(cauldrons, cacheType);
                 }
 
-                for (BCauldron cauldron : cauldrons) {
-                    System.out.println(cauldron);
-                }
                 System.out.println("Cauldrons cached: " + cauldrons.size());
             }
 
@@ -135,16 +127,16 @@ public class HazelcastCacheManager {
     }
 
 
-    public static <T, A> void init(Map<T, A> map, CacheType cacheType, boolean ignoreNotEmpty) {
+    public static <T, A> void init(Map<T, A> map, CacheType cacheType, boolean force) {
         switch (cacheType) {
             case PLAYERS -> {
                 IMap<UUID, BPlayer> players = hazelcast.getMap(cacheType.getHazelcastName());
 
-                if (players.isEmpty() && !ignoreNotEmpty) {
+                if (players.isEmpty() || force) {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
                 } else {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    balance(players, cacheType);
+                    splitMap(players, cacheType);
                 }
             }
 
@@ -155,84 +147,121 @@ public class HazelcastCacheManager {
     }
 
 
-
-
-
     // Based on the number of instances, balance the objects between them
     // And gives ownership as equally possible
-    public static <T extends Ownable> void balance(List<T> list, CacheType cacheType) {
+    public static <T extends Ownable> boolean splitArrayList(List<T> list, CacheType cacheType) {
         List<UUID> clusters = getAllClusterIds();
         int clusterCount = clusters.size();
 
         if (clusterCount == 1) {
-            return;
+            return false;
         }
 
-        int totalObjects = list.size();
-        int objectsPerCluster = totalObjects / clusterCount;
-        int remainder = totalObjects % clusterCount;
+        int size = list.size();
+        int partSize = size / clusterCount;
+        int remainder = size % clusterCount;
 
-        int objectsAssigned = 0;
+
+
+        int startIndex = 0;
+
         for (int i = 0; i < clusterCount; i++) {
-            int objectsToAssign = objectsPerCluster;
-            if (remainder > 0) {
-                objectsToAssign++;
-                remainder--;
+            // Calculate end index for the current cluster
+            int endIndex = startIndex + partSize + (i < remainder ? 1 : 0);
+
+            // Set owners for the sublist
+            for (int j = startIndex; j < endIndex; j++) {
+                list.get(j).setOwner(clusters.get(i));
             }
 
-            for (int j = 0; j < objectsToAssign; j++) {
-                T object = list.get(objectsAssigned);
-                objectsAssigned++;
-                // Assign object to cluster
-                object.setOwner(clusters.get(i));
-            }
+            // Update start index for the next cluster
+            startIndex = endIndex;
         }
 
-        // Update the cache
-        IList<T> cache = hazelcast.getList(cacheType.getHazelcastName());
-        cache.clear();
-        cache.addAll(list);
+        switch (cacheType) {
+            case BARRELS -> {
+                IList<Barrel> barrels = hazelcast.getList(CacheType.BARRELS.getHazelcastName());
 
-        plugin.log("Balanced " + cacheType.getHazelcastName() + " cache between " + clusterCount + " clusters");
+                for (int i = 0; i < list.size(); i++) {
+                    barrels.set(i, (Barrel) list.get(i));
+                }
+                System.out.println("Barrels balanced: " + barrels.size());
+            }
+
+            case CAULDRONS -> {
+                IList<BCauldron> cauldrons = hazelcast.getList(CacheType.CAULDRONS.getHazelcastName());
+                for (int i = 0; i < list.size(); i++) {
+                    cauldrons.set(i, (BCauldron) list.get(i));
+                }
+                System.out.println("Cauldrons balanced: " + cauldrons.size());
+            }
+
+            default -> {
+                throw new IllegalArgumentException("Invalid cache type");
+            }
+        }
+        return true; // or return a meaningful result based on your logic
     }
 
-    public static <T extends Ownable, A> void balance(Map<A, T> map, CacheType cacheType) {
+
+
+    public static <A, T extends Ownable> void splitMap(Map<A, T> map, CacheType cacheType) {
         List<UUID> clusters = getAllClusterIds();
         int clusterCount = clusters.size();
 
         if (clusterCount == 1) {
-            return;
+            return; // No need to balance if there's only one cluster
         }
 
-        int totalObjects = map.size();
-        int objectsPerCluster = totalObjects / clusterCount;
-        int remainder = totalObjects % clusterCount;
+        // Extract the values from the map
+        List<T> values = new ArrayList<>(map.values());
+        int size = values.size();
+        int partSize = size / clusterCount;
+        int remainder = size % clusterCount;
 
-        int objectsAssigned = 0;
+        // Create a new map for the balanced data
+        Map<A, T> balancedMap = new HashMap<>();
+
+        // Track the current index in the values list
+        int startIndex = 0;
+
         for (int i = 0; i < clusterCount; i++) {
-            int objectsToAssign = objectsPerCluster;
-            if (remainder > 0) {
-                objectsToAssign++;
-                remainder--;
+            // Calculate end index for the current cluster
+            int endIndex = startIndex + partSize + (i < remainder ? 1 : 0);
+
+            // Set owners for the current partition
+            for (int j = startIndex; j < endIndex; j++) {
+                T value = values.get(j);
+                value.setOwner(clusters.get(i));
+                // You need to map the values back to their keys
+                // Ensure you have a way to get the key associated with this value
+                // For example, if you have a way to map back:
+                A key = getKeyForValue(map, value);
+                balancedMap.put(key, value);
             }
 
-            for (int j = 0; j < objectsToAssign; j++) {
-                A key = (A) map.keySet().toArray()[objectsAssigned];
-                T object = map.get(key);
-                objectsAssigned++;
-                // Assign object to cluster
-                object.setOwner(clusters.get(i));
-            }
+            // Update start index for the next cluster
+            startIndex = endIndex;
         }
 
-        // Update the cache
-        IMap<A, T> cache = hazelcast.getMap(cacheType.getHazelcastName());
-        cache.clear();
-        cache.putAll(map);
+        // Now update Hazelcast cache
+        switch (cacheType) {
+            case PLAYERS -> {
+                IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
+                for (Map.Entry<A, T> entry : balancedMap.entrySet()) {
+                    players.set((UUID) entry.getKey(), (BPlayer) entry.getValue());
+                }
+                System.out.println("Players balanced: " + players.size());
+            }
 
-        plugin.log("Balanced " + cacheType.getHazelcastName() + " cache between " + clusterCount + " clusters");
+            default -> {
+                throw new IllegalArgumentException("Invalid cache type");
+            }
+        }
     }
 
+
+    // utility methods
 
 
     public static UUID getClusterId() {
@@ -247,6 +276,16 @@ public class HazelcastCacheManager {
             clusterIds.add(member.getUuid());
         }
         return clusterIds;
+    }
+
+    private static <A, T extends Ownable> A getKeyForValue(Map<A, T> map, T value) {
+        // Implement this method to find the key associated with a given value
+        // This is a placeholder implementation; adjust as needed
+        return map.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(value))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Key not found for value"));
     }
 
 

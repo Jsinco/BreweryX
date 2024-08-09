@@ -29,6 +29,7 @@ import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.hazelcast.BreweryHazelcast;
 import com.dre.brewery.hazelcast.HazelcastCacheManager;
+import com.dre.brewery.hazelcast.HazelcastLogFilter;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -91,7 +92,6 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryHazelcast hazelcast;
 	public static boolean debug;
 	public static boolean useNBT;
-	public static UUID ownerID = UUID.randomUUID();
 
 	// Public Listeners
 	public PlayerListener playerListener;
@@ -111,6 +111,7 @@ public class BreweryPlugin extends JavaPlugin {
 		breweryPlugin = this;
 		minecraftVersion = MinecraftVersion.getIt();
 		scheduler = UniversalScheduler.getScheduler(this);
+		new HazelcastLogFilter().registerFilter();
 	}
 
 	@Override
@@ -266,14 +267,14 @@ public class BreweryPlugin extends JavaPlugin {
 			return;
 		}
 
-		// disconnect from Redis
-		if (hazelcast != null) {
-			hazelcast.shutdown();
-		}
-
 		// save Data to Disk
 		if (dataManager != null) {
 			dataManager.exit(true, false, null);
+		}
+
+		// shutdown hazelcast
+		if (hazelcast != null) {
+			hazelcast.shutdown();
 		}
 
 		// delete config data, in case this is a reload and to clear up some ram
@@ -460,9 +461,11 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public void errorLog(String msg, Throwable throwable) {
 		errorLog(msg);
-		errorLog("&6" + throwable.toString());
-		for (StackTraceElement ste : throwable.getStackTrace()) {
-			errorLog(ste.toString());
+		if (throwable != null) {
+			errorLog("&6" + throwable.toString());
+			for (StackTraceElement ste : throwable.getStackTrace()) {
+				errorLog(ste.toString());
+			}
 		}
 	}
 

@@ -126,6 +126,7 @@ public class PlayerListener implements Listener {
 		} else if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {
 			barrel = Barrel.getBySpigot(clickedBlock);
 		}
+		System.out.println(barrel == null);
 
 		if (barrel != null) {
 			event.setCancelled(true);
