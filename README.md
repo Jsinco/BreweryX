@@ -2,7 +2,7 @@
 
 ---
 # A note from me (Jsinco):
-BreweryX is based off of an over decade old plugin called Brewery. A lot of this code is old and awful to look at. If you see poorly written code, don't assume the worst because chances are I didn't even write it. Thanks
+BreweryX is based off of an over decade old plugin called Brewery. A lot of this code is old and awful to look at. If you see poorly written code, don't assume the worst because chances are, I didn't even write it. Thanks
 ---
 
 ## Need help, have a feature request, or found a bug? Join the discord [here](https://discord.gg/aV5Am7uxWr)!
