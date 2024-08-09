@@ -22,7 +22,7 @@ storage:
 # REQUIRED FOR MULTIPAPER <-
 # You need to open up a port on each server for Hazelcast to communicate.
 hazelcast:
-  host: localhost
+  host: null
   port: 5701
 
 

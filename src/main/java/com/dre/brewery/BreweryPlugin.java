@@ -158,9 +158,13 @@ public class BreweryPlugin extends JavaPlugin {
 		SimpleItem.registerItemLoader(this);
 		PluginItem.registerItemLoader(this);
 
+		String hazelcastHost = BConfig.hazelcastHost;
+		if (hazelcastHost.equals("null")) {
+			errorLog("This version of Brewery requires Hazelcast! You must properly configure Hazelcast in the config.yml");
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
 
-
-		hazelcast = new BreweryHazelcast(BConfig.hazelcastHost, BConfig.hazelcastPort);
+		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort);
 
 
 		try {

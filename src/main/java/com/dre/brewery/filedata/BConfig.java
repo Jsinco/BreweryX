@@ -194,7 +194,7 @@ public class BConfig {
 				);
 
 		// hazelcast
-		hazelcastHost = config.getString("hazelcast.host", "localhost");
+		hazelcastHost = config.getString("hazelcast.host", "null");
 		hazelcastPort = config.getInt("hazelcast.port", 5701);
 
 		autoSaveInterval = config.getInt("autosave", 3);
