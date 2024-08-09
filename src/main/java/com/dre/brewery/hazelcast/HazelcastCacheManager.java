@@ -120,6 +120,16 @@ public class HazelcastCacheManager {
                 System.out.println("Cauldrons cached: " + cauldrons.size());
             }
 
+            case WAKEUPS -> {
+                IList<UUID> wakeups = hazelcast.getList(cacheType.getHazelcastName());
+                if (wakeups.isEmpty() || force) {
+                    wakeups.addAll((Collection<? extends UUID>) list);
+                } else {
+                    plugin.log("List WAKEUPS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
+                }
+                System.out.println("Wakeups cached: " + wakeups.size());
+            }
+
             default -> {
                 throw new IllegalArgumentException("Invalid cache type");
             }

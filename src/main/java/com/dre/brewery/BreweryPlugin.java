@@ -60,6 +60,7 @@ import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskSchedule
 import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.collection.IList;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -158,27 +159,19 @@ public class BreweryPlugin extends JavaPlugin {
 		PluginItem.registerItemLoader(this);
 
 
-		// REMINDER: FIXME
-		// Load hazelcast 185.73.243.155 // 8827 | 8238
+
 		hazelcast = new BreweryHazelcast(BConfig.hazelcastHost, BConfig.hazelcastPort);
-
-
-
 
 
 		try {
 			dataManager = DataManager.createDataManager(BConfig.configuredDataManager);
 			DataManager.loadMiscData(dataManager.getBreweryMiscData());
 
-			// test
+
 			HazelcastCacheManager.init(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.BARRELS);
 			HazelcastCacheManager.init(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.CAULDRONS);
 			HazelcastCacheManager.init(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())), HazelcastCacheManager.CacheType.PLAYERS);
-
-
-			//BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-			//BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-			//Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
+			HazelcastCacheManager.init(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList(), HazelcastCacheManager.CacheType.WAKEUPS);
 		} catch (StorageInitException e) {
 			errorLog("Failed to initialize DataManager!", e);
 			Bukkit.getPluginManager().disablePlugin(this);

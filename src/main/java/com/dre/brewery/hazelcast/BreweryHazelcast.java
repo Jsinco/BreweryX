@@ -8,7 +8,7 @@ import com.hazelcast.core.HazelcastInstance;
 
 public class BreweryHazelcast {
 
-    private static boolean started = false;
+    private final Object lock = new Object();
     private HazelcastInstance hazelcastInstance;
 
 
@@ -16,23 +16,26 @@ public class BreweryHazelcast {
         Config config = new Config();
 
         NetworkConfig networkConfig = config.getNetworkConfig();
+        networkConfig.setPublicAddress(address);
         networkConfig.setPort(port);
         networkConfig.setPortAutoIncrement(true); // Enable port auto-increment
-        networkConfig.setPublicAddress(address);
         config.setClassLoader(BreweryPlugin.getInstance().getClass().getClassLoader());
 
         BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
             hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-            started = true;
+            synchronized (lock) {
+                lock.notifyAll();
+            }
         });
 
-        while (!started) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try {
+            synchronized (lock) {
+                lock.wait();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
     }
 
     public void shutdown() {

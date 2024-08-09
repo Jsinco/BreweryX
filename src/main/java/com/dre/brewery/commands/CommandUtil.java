@@ -21,7 +21,7 @@ public class CommandUtil {
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
     private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-    // Todo: Replace with a map
+    // Replace with a map - Jsinco
     private static Set<Tuple<String, String>> mainSet;
     private static Set<Tuple<String, String>> altSet;
     private static final String[] QUALITY = {"1", "10"};

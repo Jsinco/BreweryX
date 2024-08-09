@@ -313,7 +313,6 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				barrel.setSignOffset(signOffset);
 				barrels.set(i, barrel); // set hazelcastlist because hazelcast doesn't factor in for mutated objects // OPERATION SAVED
 				moveMRU(barrels, i);
-				System.out.println("found barrel");
 				return barrel;
 			}
 			i++;
@@ -334,7 +333,6 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 			for (Barrel barrel : barrels) {
 				if (barrel.getSpigot().getWorld().equals(wood.getWorld()) && barrel.getBounds().contains(wood)) {
 					moveMRU(barrels, i);
-					System.out.println("found barrel");
 					return barrel;
 				}
 				i++;

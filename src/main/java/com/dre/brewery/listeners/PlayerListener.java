@@ -126,7 +126,6 @@ public class PlayerListener implements Listener {
 		} else if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {
 			barrel = Barrel.getBySpigot(clickedBlock);
 		}
-		System.out.println(barrel == null);
 
 		if (barrel != null) {
 			event.setCancelled(true);
@@ -139,7 +138,7 @@ public class PlayerListener implements Listener {
 
 			if (VERSION.isOrLater(MinecraftVersion.V1_14)) {
 
-				// When right clicking a normal Block in 1.14 with a potion or any edible item in hand,
+				// When right-clicking a normal Block in 1.14 with a potion or any edible item in hand,
 				// even when cancelled, the consume animation will continue playing while opening the Barrel inventory.
 				// The Animation and sound will play endlessly while the inventory is open, though no item is consumed.
 				// This seems to be a client bug.
