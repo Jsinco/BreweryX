@@ -6,7 +6,12 @@ import com.dre.brewery.recipe.PluginItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.Serial;
+
 public class SlimefunPluginItem extends PluginItem {
+
+	@Serial
+	private static final long serialVersionUID = 425585490883101070L;
 
 // When implementing this, put Brewery as softdepend in your plugin.yml!
 // We're calling this as server start:

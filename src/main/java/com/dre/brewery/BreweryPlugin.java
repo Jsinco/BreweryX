@@ -60,7 +60,6 @@ import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskSchedule
 import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.collection.IList;
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -74,10 +73,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -106,6 +103,11 @@ public class BreweryPlugin extends JavaPlugin {
 
 	// Metrics
 	public Stats stats = new Stats();
+
+	// Bug: MultiPaper will pass events to the first plugin started up first. We need to check to see if the player is connected through our server before passing
+	// events.
+	// Bug: Cauldrons not serializing
+	// Bug: Objects not being balanced between clusters
 
 	@Override
 	public void onLoad() {
@@ -223,7 +225,7 @@ public class BreweryPlugin extends JavaPlugin {
 		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
 		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
-			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
+			BreweryPlugin.getScheduler().runTaskTimerAsynchronously(new CauldronParticles(), 1, 1);
 		}
 
 
@@ -519,13 +521,17 @@ public class BreweryPlugin extends JavaPlugin {
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();
-			BConfig.reloader = null; // <-- Why is this here - Jsinco
+			BConfig.reloader = null;
 
 			// runs every min to update cooking time
 			IList<BCauldron> cauldrons = hazelcast.getHazelcastInstance().getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
+			int i = 0;
 			for (BCauldron cauldron : cauldrons) {
 				BreweryPlugin.getScheduler().runTask(cauldron.getBlock().getLocation(), () -> {
-					if (!cauldron.onUpdate()) {
+					if (cauldron.onUpdate()) {
+						cauldrons.set(i, cauldron); // update the cauldron in the list
+					} else {
 						cauldrons.remove(cauldron);
 					}
 				});

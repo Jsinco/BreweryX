@@ -6,7 +6,6 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,12 +22,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 
+// A class with 4+ fucking inventory click events. Sn0wStorm and the original developers were horrible...
 public class InventoryListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	/* === Recreating manually the prior BrewEvent behavior. === */
-	private HashSet<UUID> trackedBrewmen = new HashSet<>();
+	private final HashSet<UUID> trackedBrewmen = new HashSet<>();
 
 	/**
 	 * Start tracking distillation for a person when they open the brewer window.
@@ -36,12 +36,12 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerOpen(InventoryOpenEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) return;
-		HumanEntity player = event.getPlayer();
+
 		Inventory inv = event.getInventory();
 		if (!(inv instanceof BrewerInventory)) return;
 
 		BreweryPlugin.getInstance().debugLog("Starting brew inventory tracking");
-		trackedBrewmen.add(player.getUniqueId());
+		trackedBrewmen.add(event.getPlayer().getUniqueId());
 	}
 
 	/**
@@ -50,12 +50,12 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClose(InventoryCloseEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) return;
-		HumanEntity player = event.getPlayer();
+
 		Inventory inv = event.getInventory();
-		if (player == null || !(inv instanceof BrewerInventory)) return;
+		if (!(inv instanceof BrewerInventory)) return;
 
 		BreweryPlugin.getInstance().debugLog("Stopping brew inventory tracking");
-		trackedBrewmen.remove(player.getUniqueId());
+		trackedBrewmen.remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -74,13 +74,14 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
+
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) return;
 
-		HumanEntity player = event.getWhoClicked();
-		Inventory inv = event.getInventory();
-		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		UUID puid = player.getUniqueId();
+		Inventory inv = event.getInventory();
+		if (!(inv instanceof BrewerInventory)) return;
+
+		UUID puid = event.getWhoClicked().getUniqueId();
 		if (!trackedBrewmen.contains(puid)) return;
 
 		if (InventoryType.BREWING != inv.getType()) return;
@@ -127,15 +128,11 @@ public class InventoryListener implements Listener {
 						}
 					}
 				}
-				/*Brew brew = Brew.get(item);
-				if (brew != null) {
-					brew.touch();
-				}*/
 			}
 		}
 	}
 
-	// convert to non colored Lore when taking out of Barrel/Brewer
+	// convert to non-colored Lore when taking out of Barrel/Brewer
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.BREWING) {
@@ -206,17 +203,15 @@ public class InventoryListener implements Listener {
 		((BSealer) holder).clickInv();
 	}
 
-	//public static boolean opening = false;
+
 
 	@SuppressWarnings("deprecation")
-	@EventHandler(ignoreCancelled = false)
+	@EventHandler()
 	public void onInventoryOpenLegacyConvert(InventoryOpenEvent event) {
-		if (Brew.noLegacy()) {
+		if (Brew.noLegacy()|| event.getInventory().getType() == InventoryType.PLAYER) {
 			return;
 		}
-		if (event.getInventory().getType() == InventoryType.PLAYER) {
-			return;
-		}
+
 		for (ItemStack item : event.getInventory().getContents()) {
 			if (item != null && item.getType() == Material.POTION) {
 				int uid = Brew.getUID(item);

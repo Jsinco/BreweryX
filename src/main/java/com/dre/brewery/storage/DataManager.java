@@ -228,9 +228,9 @@ public abstract class DataManager {
         }
 
         if (yawPitch && loc.length == 6) {
-            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]), plugin.parseFloat(loc[4]), plugin.parseFloat(loc[5]));
+            return new Location(world, plugin.parseDouble(loc[1]), plugin.parseDouble(loc[2]), plugin.parseDouble(loc[3]), plugin.parseFloat(loc[4]), plugin.parseFloat(loc[5]));
         } else {
-            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]));
+            return new Location(world, plugin.parseDouble(loc[1]), plugin.parseDouble(loc[2]), plugin.parseDouble(loc[3]));
         }
     }
 
@@ -240,9 +240,9 @@ public abstract class DataManager {
             return null;
         }
         if (yawPitch) {
-            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
+            return location.getWorld().getUID() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
         } else {
-            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+            return location.getWorld().getUID() + "," + location.getX() + "," + location.getY() + "," + location.getZ();
         }
     }
 }

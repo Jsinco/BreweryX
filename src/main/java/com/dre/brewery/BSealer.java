@@ -127,7 +127,7 @@ public class BSealer implements InventoryHolder {
 			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) ||
 				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
 				Container smoker = (Container) block.getState();
-				// Rotate the Block 180° so it doesn't look like a Smoker
+				// Rotate the Block 180°, so it doesn't look like a Smoker
 				Directional dir = (Directional) smoker.getBlockData();
 				dir.setFacing(dir.getFacing().getOppositeFace());
 				smoker.setBlockData(dir);

@@ -1,7 +1,9 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BSealer;
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.DistortChat;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
@@ -15,39 +17,34 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 public class BlockListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event) {
-		String[] lines = event.getLines();
+		Player player = event.getPlayer();
 
+		String[] lines = event.getLines();
 		if (hasBarrelLine(lines) || !BConfig.requireKeywordOnSigns) {
-			Player player = event.getPlayer();
+
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBarrelCreate"));
+				plugin.msg(player, plugin.languageReader.get("Perms_NoBarrelCreate"));
 				return;
 			}
 
 			if (Barrel.create(event.getBlock(), player)) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_BarrelCreated"));
+				plugin.msg(player, plugin.languageReader.get("Player_BarrelCreated"));
 			}
 		}
-	}
-
-	public static boolean hasBarrelLine(String[] lines) {
-		for (String line : lines) {
-			if (line.equalsIgnoreCase("Barrel") || line.equalsIgnoreCase(BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"))) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSignChangeLow(SignChangeEvent event) {
+
 		if (DistortChat.doSigns) {
 			if (BPlayer.hasPlayer(event.getPlayer())) {
 				DistortChat.signWrite(event);
@@ -76,6 +73,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBurn(BlockBurnEvent event) {
+
 		if (!BUtil.blockDestroy(event.getBlock(), null, BarrelDestroyEvent.Reason.BURNED)) {
 			event.setCancelled(true);
 		}
@@ -83,18 +81,9 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPistonRetract(BlockPistonRetractEvent event) {
-		if (event.isSticky()) {
-			for (Block block : event.getBlocks()) {
-				if (Barrel.get(block) != null) {
-					event.setCancelled(true);
-					return;
-				}
-			}
+		if (!event.isSticky()) { // Ignore blocks from other servers
+			return;
 		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onPistonExtend(BlockPistonExtendEvent event) {
 		for (Block block : event.getBlocks()) {
 			if (Barrel.get(block) != null) {
 				event.setCancelled(true);
@@ -102,4 +91,32 @@ public class BlockListener implements Listener {
 			}
 		}
 	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+
+		for (Block block : event.getBlocks()) {
+			if (Barrel.get(block) != null) {
+				event.setCancelled(true);
+				return;
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBlockChange(EntityChangeBlockEvent event) {
+		if (Barrel.get(event.getBlock()) != null) {
+			event.setCancelled(true);
+		}
+	}
+
+	public static boolean hasBarrelLine(String[] lines) {
+		for (String line : lines) {
+			if (line.equalsIgnoreCase("Barrel") || line.equalsIgnoreCase(plugin.languageReader.get("Etc_Barrel"))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

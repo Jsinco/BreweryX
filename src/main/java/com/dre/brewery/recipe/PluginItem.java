@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,9 @@ import java.util.function.Supplier;
  * <p>This class stores items as name of the plugin and item id
  */
 public abstract class PluginItem extends RecipeItem implements Ingredient {
+
+	@Serial
+	private static final long serialVersionUID = 5937303387223685263L;
 
 	private static Map<String, Supplier<PluginItem>> constructors = new HashMap<>();
 

@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Item used in a BIngredients, inside BCauldron or Brew,
@@ -12,7 +13,7 @@ import java.io.IOException;
  * <p>Will be saved and loaded with a DataStream
  * <p>Each implementing class needs to register a static function as Item Loader
  */
-public interface Ingredient {
+public interface Ingredient extends Serializable {
 
 	/**
 	 * Saves this Ingredient to the DataOutputStream.

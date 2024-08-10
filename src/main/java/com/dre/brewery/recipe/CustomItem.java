@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +21,9 @@ import java.util.Objects;
  * <p>Mostly used for Custom Items of the Config, but also for general custom items
  */
 public class CustomItem extends RecipeItem implements Ingredient {
+
+	@Serial
+	private static final long serialVersionUID = -8723121790688472530L;
 
 	private Material mat;
 	private String name;

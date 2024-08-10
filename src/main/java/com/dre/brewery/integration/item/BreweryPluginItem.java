@@ -6,10 +6,15 @@ import com.dre.brewery.recipe.PluginItem;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.Serial;
+
 /**
  * For recipes that use Brewery Items as input
  */
 public class BreweryPluginItem extends PluginItem {
+
+	@Serial
+	private static final long serialVersionUID = -5831929508367739773L;
 
 // When implementing this, put Brewery as softdepend in your plugin.yml!
 // We're calling this as server start:

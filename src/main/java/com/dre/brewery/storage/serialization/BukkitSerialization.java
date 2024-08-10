@@ -79,6 +79,9 @@ public class BukkitSerialization {
      * @throws IllegalStateException
      */
     public static String toBase64(Inventory inventory) throws IllegalStateException {
+        if (inventory == null) {
+            return null;
+        }
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
@@ -94,7 +97,7 @@ public class BukkitSerialization {
             // Serialize that array
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Unable to save item stacks.", e);
         }
     }

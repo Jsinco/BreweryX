@@ -26,7 +26,6 @@ hazelcast:
   port: 5701
 
 
-
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
 

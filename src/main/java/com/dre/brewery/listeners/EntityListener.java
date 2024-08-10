@@ -12,7 +12,6 @@ import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
@@ -80,13 +79,6 @@ public class EntityListener implements Listener {
 					barrel.remove(block, null, true);
 				}
 			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onBlockChange(EntityChangeBlockEvent event) {
-		if (Barrel.get(event.getBlock()) != null) {
-			event.setCancelled(true);
 		}
 	}
 

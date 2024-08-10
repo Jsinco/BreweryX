@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,34 +21,38 @@ import java.util.Objects;
  */
 public class SimpleItem extends RecipeItem implements Ingredient {
 
+
+	@Serial
+	private static final long serialVersionUID = -1984224739164679875L;
+
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-	private Material mat;
-	private short dur; // Old Mc
+	private Material material;
+	private short duration; // Old Mc
 
 
-	public SimpleItem(Material mat) {
-		this(mat, (short) 0);
+	public SimpleItem(Material material) {
+		this(material, (short) 0);
 	}
 
-	public SimpleItem(Material mat, short dur) {
-		this.mat = mat;
-		this.dur = dur;
+	public SimpleItem(Material material, short duration) {
+		this.material = material;
+		this.duration = duration;
 	}
 
 	@Override
 	public boolean hasMaterials() {
-		return mat != null;
+		return material != null;
 	}
 
 	public Material getMaterial() {
-		return mat;
+		return material;
 	}
 
 	@Override
 	public List<Material> getMaterials() {
 		List<Material> l = new ArrayList<>(1);
-		l.add(mat);
+		l.add(material);
 		return l;
 	}
 
@@ -63,11 +70,11 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 
 	@Override
 	public boolean matches(ItemStack item) {
-		if (!mat.equals(item.getType())) {
+		if (!material.equals(item.getType())) {
 			return false;
 		}
 		//noinspection deprecation
-		return VERSION.isOrLater(MinecraftVersion.V1_13) || dur == item.getDurability();
+		return VERSION.isOrLater(MinecraftVersion.V1_13) || duration == item.getDurability();
 	}
 
 	@Override
@@ -83,7 +90,7 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 				// Only match if the Custom Item also only defines material
 				// If the custom item has more info like name and lore, it is not supposed to match a simple item
 				CustomItem ci = (CustomItem) ingredient;
-				return !ci.hasLore() && !ci.hasName() && mat == ci.getMaterial();
+				return !ci.hasLore() && !ci.hasName() && material == ci.getMaterial();
 			}
 		}
 		return false;
@@ -96,7 +103,7 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 		}
 		if (item instanceof SimpleItem) {
 			SimpleItem si = ((SimpleItem) item);
-			return si.mat == mat && si.dur == dur;
+			return si.material == material && si.duration == duration;
 		}
 		return false;
 	}
@@ -107,19 +114,19 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 		if (o == null || getClass() != o.getClass()) return false;
 		if (!super.equals(o)) return false;
 		SimpleItem item = (SimpleItem) o;
-		return dur == item.dur &&
-			mat == item.mat;
+		return duration == item.duration &&
+			material == item.material;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), mat, dur);
+		return Objects.hash(super.hashCode(), material, duration);
 	}
 
 	@Override
 	public String toString() {
 		return "SimpleItem{" +
-			"mat=" + mat.name().toLowerCase() +
+			"mat=" + material.name().toLowerCase() +
 			" amount=" + getAmount() +
 			'}';
 	}
@@ -127,8 +134,8 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 	@Override
 	public void saveTo(DataOutputStream out) throws IOException {
 		out.writeUTF("SI");
-		out.writeUTF(mat.name());
-		out.writeShort(dur);
+		out.writeUTF(material.name());
+		out.writeShort(duration);
 	}
 
 	public static SimpleItem loadFrom(ItemLoader loader) {
@@ -149,6 +156,19 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 	// Needs to be called at Server start
 	public static void registerItemLoader(BreweryPlugin breweryPlugin) {
 		breweryPlugin.registerForItemLoader("SI", SimpleItem::loadFrom);
+	}
+
+
+	@Serial
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(material.name());
+		out.writeShort(duration);
+	}
+
+	@Serial
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		material = Material.valueOf((String) in.readObject());
+		duration = in.readShort();
 	}
 
 }

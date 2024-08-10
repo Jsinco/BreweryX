@@ -234,7 +234,7 @@ public class BCauldronRecipe implements Serializable {
 					//double mod = 0.1 + (0.9 * Math.exp(-0.03 * difference)); // logarithmic curve from 1 to 0.1
 					double mod = 1 + (0.9 * -Math.exp(-0.03 * factor)); // logarithmic curve from 0.1 to 1, small for a low factor
 
-					match *= mod;
+					match *= (float) mod;
 					continue search;
 				}
 			}
@@ -245,7 +245,7 @@ public class BCauldronRecipe implements Serializable {
 			// So that even if every other ingredient is perfect, a recipe that expects all these items will fare better
 			float tooMuch = items.size() - ingredients.size();
 			double mod = Math.pow(0.1, tooMuch);
-			match *= mod;
+			match *= (float) mod;
 		}
 		BreweryPlugin.getInstance().debugLog("Match for Cauldron Recipe " + name + ": " + match);
 		return match;

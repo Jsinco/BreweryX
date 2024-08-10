@@ -4,7 +4,6 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.hazelcast.HazelcastCacheManager;
 import com.dre.brewery.utility.LegacyUtil;
-import com.hazelcast.collection.IList;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;

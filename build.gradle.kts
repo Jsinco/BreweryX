@@ -9,13 +9,14 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.5-Hazelcast"
+version = "3.2.5-Hazelcast-b${getBuildNumber()}"
 
 repositories {
     mavenCentral()
     maven("https://jitpack.io") // GriefPrevention, SlimeFun, PlaceholderAPI
     maven("https://repo.md-5.net/content/groups/public/") // Bungee
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
+    //maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
+    maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://nexus.hc.to/content/repositories/pub_releases") // Vault
     maven("https://maven.enginehub.org/repo/") // WorldEdit, WorldGuard
     maven("https://ci.ender.zone/plugin/repository/everything/") // LWC Extended
@@ -25,11 +26,12 @@ repositories {
     maven("https://repo.projectshard.dev/repository/releases/") // Shopkeepers
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
+    maven("https://repo.clojars.org/")
 }
 
 // TODO: Figure out exclusions because this is a mess.
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT") //compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files
@@ -55,6 +57,7 @@ dependencies {
 
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
+    //implementation("com.github.puregero:multilib:1.2.3")
 
 
 
@@ -68,7 +71,7 @@ dependencies {
 tasks {
     build {
         dependsOn(shadowJar)
-        finalizedBy("kotlinReducedJar")
+        //finalizedBy("kotlinReducedJar")
     }
 
     jar {
@@ -94,8 +97,9 @@ tasks {
         //relocate("com.hazelcast", "com.dre.brewery.dependencies.hazelcast")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.dependencies.universalScheduler")
         relocate("com.google.gson", "com.dre.brewery.dependencies.gson")
+        //relocate("com.github.puregero.multilib", "com.dre.brewery.dependencies.multilib")
 
-        archiveClassifier.set("b${getBuildNumber()}")
+        archiveClassifier.set("")
     }
 
 

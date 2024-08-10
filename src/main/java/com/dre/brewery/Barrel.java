@@ -235,7 +235,17 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 			}
 		}
 
-		hazelcast.getList("barrels").remove(this);
+		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
+		for (int i = 0; i < barrels.size(); i++) {
+			if (barrels.get(i).getId().equals(id)) {
+				barrels.remove(i); // OPERATION SAVED
+				System.out.println("Barrel removed: " + id);
+				break;
+			}
+		}
+
+		// This doesn't wanna work for some reason
+		//hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).remove(this);
 	}
 
 
@@ -294,24 +304,21 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		// convert spigot if neccessary
 		Block spigot = BarrelBody.getSpigotOfSign(signOrSpigot);
 
-		final byte signOffset;
+		byte signOffset = 0;
 		if (!spigot.equals(signOrSpigot)) {
 			signOffset = (byte) (signOrSpigot.getY() - spigot.getY());
-		} else {
-            signOffset = 0;
-        }
+		}
 
 		IList<Barrel> barrels = hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName());
 
-        int i = 0;
+		int i = 0;
 		for (Barrel barrel : barrels) {
-			if (barrel == null) continue;
-
-			// Barrel has no signOffset even though we clicked a sign, may be old
-			// No fucking clue what this means ^ - Jsinco
-			if (barrel.isSignOfBarrel(signOffset) && barrel.spigot.equals(spigot) && barrel.getSignOffset() == 0 && signOffset != 0) {
-				barrel.setSignOffset(signOffset);
-				barrels.set(i, barrel); // set hazelcastlist because hazelcast doesn't factor in for mutated objects // OPERATION SAVED
+			if (barrel != null && barrel.isSignOfBarrel(signOffset) && barrel.spigot.equals(spigot)) {
+				if (barrel.getSignOffset() == 0 && signOffset != 0) {
+					// Barrel has no signOffset even though we clicked a sign, may be old
+					barrel.setSignOffset(signOffset);
+					barrels.set(i, barrel); // set hazelcastlist because hazelcast doesn't factor in for mutated objects // OPERATION SAVED
+				}
 				moveMRU(barrels, i);
 				return barrel;
 			}
@@ -560,7 +567,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 				}
 			}
 
-			plugin.log("Checked " + ownedBarrels.size() + " owned by us");
+			plugin.log("Checked " + ownedBarrels.size() + " barrel owned by us");
 		}
 
 	}
@@ -569,7 +576,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Barrel barrel)) return false;
-		return Objects.equals(id, barrel.id);
+		return barrel.id.equals(this.id);
 	}
 
 	@Override

@@ -43,14 +43,15 @@ public class PlayerListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock == null) return;
 
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-		Player player = event.getPlayer();
+
 		Material type = clickedBlock.getType();
 
 		// -- Clicking an Hopper --
@@ -172,11 +173,12 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onClickAir(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
 		if (Wakeup.checkPlayer == null) return;
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR) {
 			if (!event.hasItem()) {
-				if (event.getPlayer() == Wakeup.checkPlayer) {
+				if (player == Wakeup.checkPlayer) {
 					Wakeup.tpNext();
 				}
 			}
@@ -223,12 +225,13 @@ public class PlayerListener implements Listener {
 	// Player has died! Decrease Drunkeness by 20
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		BPlayer bPlayer = BPlayer.get(event.getPlayer());
+		Player player = event.getPlayer();
+		BPlayer bPlayer = BPlayer.get(player);
 		if (bPlayer != null) {
 			if (bPlayer.getDrunkeness() > 20) {
 				bPlayer.setData(bPlayer.getDrunkeness() - 20, 0);
 			} else {
-				BPlayer.remove(event.getPlayer());
+				bPlayer.remove();
 			}
 		}
 	}
@@ -236,6 +239,11 @@ public class PlayerListener implements Listener {
 	// player walks while drunk, push him around!
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event) {
+		if (!event.hasExplicitlyChangedPosition()) {
+			return;
+		}
+
+		// Yeah... this will probably not perform well especially because of Hazelcast - Jsinco
 		if (BPlayer.hasPlayer(event.getPlayer())) {
 			BPlayer.playerMove(event);
 		}

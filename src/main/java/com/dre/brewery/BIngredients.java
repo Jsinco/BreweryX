@@ -24,13 +24,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Represents ingredients in Cauldron, Brew
  */
-public class BIngredients {
+public class BIngredients implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = 8805707247678974367L;
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 	private static int lastId = 0; // Legacy
@@ -121,11 +126,12 @@ public class BIngredients {
 		Brew brew;
 
 		//int uid = Brew.generateUID();
-
+		System.out.println("Cooking potion with state " + state + " and time " + cookedTime);
+		System.out.println("Cook Recipe: " + cookRecipe);
 		if (cookRecipe != null) {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
-			int alc = (int) Math.round(cookRecipe.getAlcohol() * ((float) quality / 10.0f));
+			int alc = Math.round(cookRecipe.getAlcohol() * ((float) quality / 10.0f));
 			BreweryPlugin.getInstance().debugLog("cooked potion has Quality: " + quality + ", Alc: " + alc);
 			brew = new Brew(quality, alc, cookRecipe, this);
 			BrewLore lore = new BrewLore(brew, potionMeta);
@@ -165,6 +171,8 @@ public class BIngredients {
 					if (VERSION.isOrLater(MinecraftVersion.V1_14) && cauldronRecipe.getCmData() != 0) {
 						potionMeta.setCustomModelData(cauldronRecipe.getCmData());
 					}
+				} else {
+					System.out.println("No recipe found for potion");
 				}
 			}
 		}
@@ -284,6 +292,7 @@ public class BIngredients {
 		for (BCauldronRecipe recipe : BCauldronRecipe.getAllRecipes()) {
 			match = recipe.getIngredientMatch(ingredients);
 			if (match >= 10) {
+				System.out.println("Found perfect match " + match);
 				return recipe;
 			}
 			if (match > bestMatch) {
@@ -291,6 +300,7 @@ public class BIngredients {
 				bestMatch = match;
 			}
 		}
+		System.out.println("Best match " + best);
 		return best;
 	}
 
@@ -416,9 +426,8 @@ public class BIngredients {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!(obj instanceof BIngredients)) return false;
-		BIngredients other = ((BIngredients) obj);
-		return cookedTime == other.cookedTime &&
+		if (!(obj instanceof BIngredients other)) return false;
+        return cookedTime == other.cookedTime &&
 				ingredients.equals(other.ingredients);
 	}
 
@@ -436,37 +445,6 @@ public class BIngredients {
 				"cookedTime=" + cookedTime +
 				", total ingredients: " + getIngredientsCount() + '}';
 	}
-
-	/*public void testStore(DataOutputStream out) throws IOException {
-		out.writeInt(cookedTime);
-		out.writeByte(ingredients.size());
-		for (ItemStack item : ingredients) {
-			out.writeUTF(item.getType().name());
-			out.writeShort(item.getDurability());
-			out.writeShort(item.getAmount());
-		}
-	}
-
-	public void testLoad(DataInputStream in) throws IOException {
-		if (in.readInt() != cookedTime) {
-			P.p.log("cookedtime wrong");
-		}
-		if (in.readUnsignedByte() != ingredients.size()) {
-			P.p.log("size wrong");
-			return;
-		}
-		for (ItemStack item : ingredients) {
-			if (!in.readUTF().equals(item.getType().name())) {
-				P.p.log("name wrong");
-			}
-			if (in.readShort() != item.getDurability()) {
-				P.p.log("dur wrong");
-			}
-			if (in.readShort() != item.getAmount()) {
-				P.p.log("amount wrong");
-			}
-		}
-	}*/
 
 	public void save(DataOutputStream out) throws IOException {
 		out.writeInt(cookedTime);
@@ -507,7 +485,6 @@ public class BIngredients {
 		config.set(path + ".mats", serializeIngredients());
 		return id;
 	}
-
 
 	// Serialize Ingredients to String for storing in yml, ie for Cauldrons
 	public String serializeIngredients() {

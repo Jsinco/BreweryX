@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class BCauldron implements Serializable, Ownable {
 	private Block block;
 	private BIngredients ingredients = new BIngredients();
 	private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
-	private Color particleColor;
+	private Color particleColor = null;
 	private Location particleLocation;
 	private int state = 0;
 	private boolean changed = false; // Not really needed anymore
@@ -125,6 +126,8 @@ public class BCauldron implements Serializable, Ownable {
 	 * @return false if Cauldron needs to be removed
 	 */
 	public boolean onUpdate() {
+		System.out.println("updating cauldron");
+		System.out.println("BI: " + ingredients);
 		// add a minute to cooking time
 		if (!BUtil.isChunkLoaded(block)) {
 			increaseState();
@@ -138,7 +141,6 @@ public class BCauldron implements Serializable, Ownable {
 				increaseState();
 			}
 		}
-		this.saveToHazelcast();
 		return true;
 	}
 
@@ -147,6 +149,7 @@ public class BCauldron implements Serializable, Ownable {
 	 */
 	public void increaseState() {
 		state++;
+		System.out.println("State: " + state);
 		if (changed) {
 			ingredients = ingredients.copy();
 			changed = false;
@@ -228,7 +231,7 @@ public class BCauldron implements Serializable, Ownable {
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient(), event.getRecipeItem());
-				//P.p.debugLog("Cauldron add: t2 " + ((t2 - t1) / 1000) + " t3: " + ((t3 - t2) / 1000) + " t4: " + ((t4 - t3) / 1000) + " t5: " + ((t5 - t4) / 1000) + "µs");
+				bcauldron.saveToHazelcast(); // OPERATION SAVED
 				return event.willTakeItem();
 			} else {
 				return false;
@@ -240,6 +243,7 @@ public class BCauldron implements Serializable, Ownable {
 	// fills players bottle with cooked brew
 	public boolean fill(Player player, Block block) {
 		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+		BCauldron bCauldron = get(block);
 
 
 		if (!player.hasPermission("brewery.cauldron.fill")) {
@@ -252,11 +256,11 @@ public class BCauldron implements Serializable, Ownable {
 		if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 			BlockData data = block.getBlockData();
 			if (!(data instanceof Levelled cauldron)) {
-				cauldrons.remove(get(block));
+				cauldrons.remove(bCauldron);
 				return false;
 			}
             if (cauldron.getLevel() <= 0) {
-				cauldrons.remove(get(block));
+				cauldrons.remove(bCauldron);
 				return false;
 			}
 
@@ -264,7 +268,7 @@ public class BCauldron implements Serializable, Ownable {
 			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
 				// Empty Cauldron
 				block.setType(Material.CAULDRON);
-				cauldrons.remove(get(block));
+				cauldrons.remove(bCauldron);
 			} else {
 				cauldron.setLevel(cauldron.getLevel() - 1);
 
@@ -274,7 +278,7 @@ public class BCauldron implements Serializable, Ownable {
 				block.setBlockData(data);
 
 				if (cauldron.getLevel() <= 0) {
-					cauldrons.remove(get(block));
+					cauldrons.remove(bCauldron);
 				} else {
 					changed = true;
 				}
@@ -286,14 +290,14 @@ public class BCauldron implements Serializable, Ownable {
 			if (data > 3) {
 				data = 3;
 			} else if (data <= 0) {
-				cauldrons.remove(block);
+				cauldrons.remove(bCauldron);
 				return false;
 			}
 			data -= 1;
 			LegacyUtil.setData(block, data);
 
 			if (data == 0) {
-				cauldrons.remove(block);
+				cauldrons.remove(bCauldron);
 			} else {
 				changed = true;
 			}
@@ -305,8 +309,6 @@ public class BCauldron implements Serializable, Ownable {
 		// will delay the give
 		// but could also just use deprecated updateInventory()
 		giveItem(player, potion);
-		// player.getInventory().addItem(potion);
-		// player.getInventory().updateInventory();
 		return true;
 	}
 
@@ -531,7 +533,6 @@ public class BCauldron implements Serializable, Ownable {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
 						if (item.getType() != Material.AIR) {
-							materialInHand = item.getType();
 							handSwap = true;
 						} else {
 							item = BConfig.useOffhandForCauldron ? event.getItem() : null;
@@ -567,6 +568,8 @@ public class BCauldron implements Serializable, Ownable {
 				}
 			}
 		}
+
+
 	}
 
 	/**
@@ -584,7 +587,7 @@ public class BCauldron implements Serializable, Ownable {
 					cauldron.getParticleColor();
 				}
 			}
-			cauldrons.set(i, cauldron);
+			cauldrons.set(i, cauldron); // OPERATION SAVED
 		}
 	}
 
@@ -592,7 +595,19 @@ public class BCauldron implements Serializable, Ownable {
 	 * reset to normal cauldron
  	 */
 	public static boolean remove(Block block) {
-		return hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).remove(get(block));
+		BCauldron cauldron = get(block);
+		assert cauldron != null;
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+
+		for (BCauldron c : cauldrons) {
+            if (c.getId().equals(cauldron.id)) {
+				cauldrons.remove(c);
+				return true;
+			}
+		}
+
+		//return hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).remove();
+		return false;
 	}
 
 
@@ -632,10 +647,10 @@ public class BCauldron implements Serializable, Ownable {
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(owner);
 		out.writeObject(id);
-		out.writeObject(DataManager.serializeBlock(block)); // Write the Inventory
-		out.writeObject(ingredients.serializeIngredients());
+		out.writeObject(DataManager.serializeBlock(block));
+		out.writeObject(ingredients);
 		out.writeObject(particleRecipe);
-		out.writeInt(particleColor.asARGB());
+		out.writeObject(particleColor != null ? particleColor.serialize() : null);
 		out.writeObject(DataManager.serializeLocation(particleLocation));
 		out.writeInt(state);
 		out.writeBoolean(changed);
@@ -646,9 +661,10 @@ public class BCauldron implements Serializable, Ownable {
 		owner = (UUID) in.readObject();
 		id = (UUID) in.readObject();
 		block = DataManager.deserializeBlock((String) in.readObject());
-		ingredients = BIngredients.deserializeIngredients((String) in.readObject());
+		ingredients = (BIngredients) in.readObject();
 		particleRecipe = (BCauldronRecipe) in.readObject();
-		particleColor = Color.fromARGB(in.readInt());
+		final Map<String, Object> particleColorMap = (Map<String, Object>) in.readObject();
+		particleColor = particleColorMap != null ? Color.deserialize(particleColorMap) : null;
 		particleLocation = DataManager.deserializeLocation((String) in.readObject());
 		state = in.readInt();
 		changed = in.readBoolean();

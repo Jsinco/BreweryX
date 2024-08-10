@@ -104,6 +104,11 @@ public class HazelcastCacheManager {
                     plugin.log("List BARRELS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
                     splitArrayList(barrels, cacheType);
                 }
+
+
+                for (Barrel barrel : barrels) {
+                    System.out.println(barrel);
+                }
                 System.out.println("Barrels cached: " + barrels.size());
             }
 
@@ -117,6 +122,9 @@ public class HazelcastCacheManager {
                     splitArrayList(cauldrons, cacheType);
                 }
 
+                for (BCauldron cauldron : cauldrons) {
+                    System.out.println(cauldron);
+                }
                 System.out.println("Cauldrons cached: " + cauldrons.size());
             }
 
@@ -146,7 +154,7 @@ public class HazelcastCacheManager {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
                 } else {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    splitMap(players, cacheType);
+                    //balance(players, cacheType);
                 }
             }
 
@@ -215,7 +223,7 @@ public class HazelcastCacheManager {
 
 
 
-    public static <A, T extends Ownable> void splitMap(Map<A, T> map, CacheType cacheType) {
+    public static <A, T extends Ownable> void balance(Map<A, T> map, CacheType cacheType) {
         List<UUID> clusters = getAllClusterIds();
         int clusterCount = clusters.size();
 
@@ -270,8 +278,16 @@ public class HazelcastCacheManager {
         }
     }
 
+    private static <A, T extends Ownable> A getKeyForValue(Map<A, T> map, T value) {
+        // Implement this method to find the key associated with a given value
+        // This is a placeholder implementation; adjust as needed
+        return map.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(value))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Key not found for value"));
+    }
 
-    // utility methods
 
 
     public static UUID getClusterId() {
@@ -286,16 +302,6 @@ public class HazelcastCacheManager {
             clusterIds.add(member.getUuid());
         }
         return clusterIds;
-    }
-
-    private static <A, T extends Ownable> A getKeyForValue(Map<A, T> map, T value) {
-        // Implement this method to find the key associated with a given value
-        // This is a placeholder implementation; adjust as needed
-        return map.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(value))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Key not found for value"));
     }
 
 
