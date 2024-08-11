@@ -105,6 +105,7 @@ public class BreweryPlugin extends JavaPlugin {
 	public Stats stats = new Stats();
 
 	// Bug: Objects not being balanced between clusters
+	// Bug: Players are able to dupe items by being able to open a barrel at the same time and it not updating the inventory
 
 	@Override
 	public void onLoad() {
@@ -163,7 +164,7 @@ public class BreweryPlugin extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 
-		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort, BConfig.hazelcastClusterName, this);
+		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort, this);
 
 
 		try {

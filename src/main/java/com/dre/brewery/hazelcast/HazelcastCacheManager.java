@@ -62,7 +62,7 @@ public class HazelcastCacheManager {
                 ownedBarrels.add(barrel);
             }
         }
-        System.out.println("Owned barrels: " + ownedBarrels.size());
+
         return ownedBarrels;
     }
 
@@ -76,7 +76,7 @@ public class HazelcastCacheManager {
                 ownedCauldrons.add(cauldron);
             }
         }
-        System.out.println("Owned cauldrons: " + ownedCauldrons.size());
+
         return ownedCauldrons;
     }
 
@@ -134,7 +134,7 @@ public class HazelcastCacheManager {
                 }
 
 
-                System.out.println("Barrels cached: " + barrels.size());
+
             }
 
             case CAULDRONS -> {
@@ -148,7 +148,6 @@ public class HazelcastCacheManager {
                 }
 
 
-                System.out.println("Cauldrons cached: " + cauldrons.size());
             }
 
             case WAKEUPS -> {
@@ -158,7 +157,7 @@ public class HazelcastCacheManager {
                 } else {
                     plugin.log("List WAKEUPS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
                 }
-                System.out.println("Wakeups cached: " + wakeups.size());
+
             }
 
             default -> {
@@ -242,7 +241,7 @@ public class HazelcastCacheManager {
                 for (int i = 0; i < list.size(); i++) {
                     barrels.set(i, (Barrel) list.get(i));
                 }
-                System.out.println("Barrels balanced: " + barrels.size());
+                plugin.debugLog("Barrels balanced: " + barrels.size());
             }
 
             case CAULDRONS -> {
@@ -250,7 +249,7 @@ public class HazelcastCacheManager {
                 for (int i = 0; i < list.size(); i++) {
                     cauldrons.set(i, (BCauldron) list.get(i));
                 }
-                System.out.println("Cauldrons balanced: " + cauldrons.size());
+                plugin.debugLog("Cauldrons balanced: " + cauldrons.size());
             }
 
             default -> {
@@ -308,7 +307,7 @@ public class HazelcastCacheManager {
                 for (Map.Entry<A, T> entry : balancedMap.entrySet()) {
                     players.set((UUID) entry.getKey(), (BPlayer) entry.getValue());
                 }
-                System.out.println("Players balanced: " + players.size());
+                plugin.debugLog("BPlayers balanced: " + players.size());
             }
 
             default -> {

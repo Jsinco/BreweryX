@@ -14,7 +14,7 @@ public class BreweryHazelcast {
     private HazelcastInstance hazelcastInstance;
 
 
-    public BreweryHazelcast(String address, int port, String clusterName, BreweryPlugin plugin) {
+    public BreweryHazelcast(String address, int port, BreweryPlugin plugin) {
         Config config = new Config();
 
         NetworkConfig networkConfig = config.getNetworkConfig();
@@ -22,7 +22,7 @@ public class BreweryHazelcast {
         networkConfig.setPort(port);
         networkConfig.setPortAutoIncrement(true); // Enable port auto-increment
         config.setClassLoader(BreweryPlugin.getInstance().getClass().getClassLoader());
-        config.setClusterName(clusterName);
+        config.setClusterName("breweryx");
 
         BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
             hazelcastInstance = Hazelcast.newHazelcastInstance(config);

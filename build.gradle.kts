@@ -96,7 +96,7 @@ tasks {
     shadowJar {
         //relocate("com.hazelcast", "com.dre.brewery.dependencies.hazelcast")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.dependencies.universalScheduler")
-        relocate("com.google.gson", "com.dre.brewery.dependencies.gson")
+        //relocate("com.google.gson", "com.dre.brewery.dependencies.gson")
         //relocate("com.github.puregero.multilib", "com.dre.brewery.dependencies.multilib")
 
         archiveClassifier.set("")

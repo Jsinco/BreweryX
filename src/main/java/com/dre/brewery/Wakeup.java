@@ -62,7 +62,7 @@ public class Wakeup implements Serializable { // Wakeups aren't ticked as far as
 		for (Wakeup barrel : wakeups) {
 			if (barrel.getId().equals(id)) {
 				wakeups.set(i, this); // OPERATION SAVED
-				System.out.println("Barrel saved to Hazelcast: " + this.id);
+				plugin.debugLog("Wakeup saved to Hazelcast! " + id);
 				return;
 			}
 			i++;

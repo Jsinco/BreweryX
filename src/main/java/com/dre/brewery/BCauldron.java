@@ -117,7 +117,7 @@ public class BCauldron implements Serializable, Ownable {
 		for (BCauldron cauldron : cauldrons) {
 			if (cauldron.getId().equals(id)) {
 				cauldrons.set(i, this); // OPERATION SAVED
-				System.out.println("Cauldron saved to Hazelcast: " + this.id);
+				plugin.debugLog("Cauldron saved to Hazelcast! " + id);
 				return;
 			}
 			i++;

@@ -35,6 +35,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 
 	private UUID id;
 	private Inventory inventory;
+	private UUID inventoryViewer = null; // Need this to prevent dupes on multicast and because serialization of inventories does not factor this in.
 	private boolean checked; // Checked by the random BarrelCheck routine
 	private float time;
 
@@ -166,6 +168,19 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	 * Opens this barrels inventory for a player
 	 */
 	public void open(Player player) {
+		// Some checks to prevent barrels from being opened by multiple players at once and causing dupes
+		// Todo: this can be simplified, but I'll leave it like this for now for redundancy
+		if (inventoryViewer != null) {
+			Player viewer = Bukkit.getPlayer(inventoryViewer);
+			if (viewer != null && viewer.getOpenInventory().getTopInventory().getHolder() instanceof Barrel openBarrel && openBarrel.id.equals(this.id)) {
+				plugin.msg(player, "This barrel is currently being viewed by another player.");
+				return;
+			} else {
+				inventoryViewer = null;
+			}
+		}
+
+
 		if (inventory == null) {
 			inventory = Bukkit.createInventory(this, getIntendedInvSize(), plugin.languageReader.get("Etc_Barrel"));
 		} else if (time > 0) {
@@ -186,7 +201,10 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		if (BConfig.useLB) {
 			LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 		}
+
 		player.openInventory(inventory);
+		setInventoryViewer(player.getUniqueId());
+		saveToHazelcast();
 	}
 
 
@@ -239,13 +257,9 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		for (int i = 0; i < barrels.size(); i++) {
 			if (barrels.get(i).getId().equals(id)) {
 				barrels.remove(i); // OPERATION SAVED
-				System.out.println("Barrel removed: " + id);
 				break;
 			}
 		}
-
-		// This doesn't wanna work for some reason
-		//hazelcast.getList(HazelcastCacheManager.CacheType.BARRELS.getHazelcastName()).remove(this);
 	}
 
 
@@ -257,7 +271,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		for (Barrel barrel : barrels) {
 			if (barrel.getId().equals(id)) {
 				barrels.set(i, this); // OPERATION SAVED
-				System.out.println("Barrel saved to Hazelcast: " + this.id);
+				plugin.debugLog("Barrel saved to Hazelcast! " + id);
 				return;
 			}
 			i++;
@@ -271,7 +285,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 			for (Barrel hazelcastBarrel : barrels) {
 				if (hazelcastBarrel.getId().equals(barrel.getId())) {
 					barrels.set(i, barrel); // OPERATION SAVED
-					System.out.println("Barrel saved to Hazelcast: " + barrel.getId());
+					plugin.debugLog("Barrel saved to Hazelcast! " + barrel.getId());
 					break;
 				}
 				i++;
@@ -451,6 +465,14 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		return !isSmall();
 	}
 
+	public void setInventoryViewer(UUID inventoryViewer) {
+		this.inventoryViewer = inventoryViewer;
+	}
+
+	public UUID getInventoryViewer() {
+		return inventoryViewer;
+	}
+
 	public int getIntendedInvSize() {
 		if (isLarge()) {
 			return 27;
@@ -598,6 +620,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		out.writeObject(owner);
 		out.writeObject(id);
 		out.writeObject(BukkitSerialization.toBase64(inventory)); // Write the Inventory
+		out.writeObject(inventoryViewer);
 		out.writeBoolean(checked);
 		out.writeFloat(time);
 	}
@@ -607,6 +630,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 		owner = (UUID) in.readObject();
 		id = (UUID) in.readObject();
 		inventory = BukkitSerialization.fromBase64((String) in.readObject(), this, plugin.languageReader.get("Etc_Barrel")); // Read the Inventory
+		inventoryViewer = (UUID) in.readObject();
 		checked = in.readBoolean();
 		time = in.readFloat();
 	}

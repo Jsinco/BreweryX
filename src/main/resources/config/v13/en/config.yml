@@ -22,8 +22,6 @@ storage:
 # REQUIRED FOR MULTIPAPER <-
 # You need to open up a port on each server for Hazelcast to communicate.
 hazelcast:
-  # This has no effect on hazelcast, but if you'd like to name this cluster for easier identification, you can do so here.
-  clusterName: 'dev'
   host: null
   port: 5701
 

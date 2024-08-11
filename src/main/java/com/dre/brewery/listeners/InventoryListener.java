@@ -296,8 +296,9 @@ public class InventoryListener implements Listener {
 
 		// Save barrel on close
 		if (event.getInventory().getHolder() instanceof Barrel barrel) {
-            barrel.playClosingSound();
+			barrel.setInventoryViewer(null);
 			barrel.saveToHazelcast();
+			barrel.playClosingSound();
 		}
 
 		// Check for MC Barrel

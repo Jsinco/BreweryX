@@ -95,6 +95,7 @@ public class BPlayer implements Serializable, Ownable {
 
 	public void saveToHazelcast() {
 		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).put(uuid, this);
+		plugin.debugLog("BPlayer saved to Hazelcast! " + uuid);
 	}
 
 	@Nullable
