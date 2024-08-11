@@ -104,8 +104,8 @@ public class BreweryPlugin extends JavaPlugin {
 	// Metrics
 	public Stats stats = new Stats();
 
-	// Bug: Objects not being balanced between clusters
-	// Bug: Players are able to dupe items by being able to open a barrel at the same time and it not updating the inventory
+	// TODO Bug: Objects not being balanced between clusters
+	// TODO Bug: Need to rebalance when a cluster disconnects
 
 	@Override
 	public void onLoad() {
