@@ -216,8 +216,6 @@ public class BCauldron implements Serializable, Ownable {
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
-				System.out.println("not accepted");
-				System.out.println(BCauldronRecipe.acceptedMaterials);
 				// Extremely fast way to check for most items
 				return false;
 			}
@@ -392,6 +390,7 @@ public class BCauldron implements Serializable, Ownable {
 		}
 		if (particleRecipe == null) {
 			// Check for Cauldron Recipe
+			System.out.println("Getting Particle Color");
 			particleRecipe = ingredients.getCauldronRecipe();
 		}
 
@@ -447,6 +446,8 @@ public class BCauldron implements Serializable, Ownable {
 				}
 			}
 		}
+
+		this.saveToHazelcast();
 		//P.p.log("RGB: " + particleColor.getRed() + "|" + particleColor.getGreen() + "|" + particleColor.getBlue());
 		return particleColor;
 	}
@@ -663,13 +664,23 @@ public class BCauldron implements Serializable, Ownable {
 			'}';
 	}
 
+	// 	private UUID owner;
+	//	private UUID id;
+	//	private Block block;
+	//	private BIngredients ingredients = new BIngredients();
+	//private BCauldronRecipe particleRecipe; // null if we haven't checked, empty if there is none
+	//	private Color particleColor = null;
+	//	private Location particleLocation;
+	//	private int state = 0;
+	//	private boolean changed = false; // Not really needed anymore
+
 	@Serial
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(owner);
 		out.writeObject(id);
 		out.writeObject(DataManager.serializeBlock(block));
 		out.writeObject(ingredients);
-		out.writeObject(particleRecipe);
+		out.writeObject(particleRecipe);//
 		out.writeObject(particleColor != null ? particleColor.serialize() : null);
 		out.writeObject(DataManager.serializeLocation(particleLocation));
 		out.writeInt(state);
