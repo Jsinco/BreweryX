@@ -177,9 +177,8 @@ public class BDistiller {
 		public void run() {
 			BreweryPlugin.getScheduler().runTask(standBlock.getLocation(), () -> {
 				BlockState now = standBlock.getState();
-				if (now instanceof BrewingStand) {
-					BrewingStand stand = (BrewingStand) now;
-					if (brewTime == -1) { // check at the beginning for distillables
+				if (now instanceof BrewingStand stand) {
+                    if (brewTime == -1) { // check at the beginning for distillables
 						if (!prepareForDistillables(stand)) {
 							return;
 						}

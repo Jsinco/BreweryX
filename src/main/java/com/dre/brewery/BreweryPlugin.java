@@ -92,7 +92,7 @@ public class BreweryPlugin extends JavaPlugin {
 	public static boolean useNBT;
 
 	// Public Listeners
-	public PlayerListener playerListener;
+	public static PlayerListener playerListener;
 
 	// Registrations
 	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
@@ -528,17 +528,22 @@ public class BreweryPlugin extends JavaPlugin {
 
 			int i = 0;
 			for (BCauldron cauldron : cauldrons) {
+				final int finalI = i;
+
 				BreweryPlugin.getScheduler().runTask(cauldron.getBlock().getLocation(), () -> {
 					if (cauldron.onUpdate()) {
-						cauldrons.set(i, cauldron); // update the cauldron in the list
+						cauldrons.set(finalI, cauldron); // update the cauldron in the list
+						System.out.println(cauldron.getId() + " INDEX: " + finalI);
 					} else {
+						System.out.println("Removing cauldron");
 						cauldrons.remove(cauldron);
 					}
 				});
+				i++;
 			}
 
 
-			Barrel.updateAllBarrels();// runs every min to check and update ageing time
+			Barrel.updateAllBarrels();// runs every min to check and update aging time
 
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
 			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();

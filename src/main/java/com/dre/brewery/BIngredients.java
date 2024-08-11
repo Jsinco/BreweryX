@@ -111,7 +111,7 @@ public class BIngredients implements Serializable {
 	}
 
 	/**
-	 * returns an Potion item with cooked ingredients
+	 * returns a Potion item with cooked ingredients
 	 */
 	public ItemStack cook(int state, String brewer) {
 
@@ -292,7 +292,6 @@ public class BIngredients implements Serializable {
 		for (BCauldronRecipe recipe : BCauldronRecipe.getAllRecipes()) {
 			match = recipe.getIngredientMatch(ingredients);
 			if (match >= 10) {
-				System.out.println("Found perfect match " + match);
 				return recipe;
 			}
 			if (match > bestMatch) {
@@ -300,7 +299,6 @@ public class BIngredients implements Serializable {
 				bestMatch = match;
 			}
 		}
-		System.out.println("Best match " + best);
 		return best;
 	}
 

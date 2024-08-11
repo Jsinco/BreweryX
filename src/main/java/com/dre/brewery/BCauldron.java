@@ -109,6 +109,10 @@ public class BCauldron implements Serializable, Ownable {
 
 	public void saveToHazelcast() {
 		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+		this.saveToHazelcast(cauldrons);
+	}
+
+	public void saveToHazelcast(IList<BCauldron> cauldrons) {
 		int i = 0;
 		for (BCauldron cauldron : cauldrons) {
 			if (cauldron.getId().equals(id)) {
@@ -212,6 +216,8 @@ public class BCauldron implements Serializable, Ownable {
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
+				System.out.println("not accepted");
+				System.out.println(BCauldronRecipe.acceptedMaterials);
 				// Extremely fast way to check for most items
 				return false;
 			}
@@ -231,7 +237,7 @@ public class BCauldron implements Serializable, Ownable {
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient(), event.getRecipeItem());
-				bcauldron.saveToHazelcast(); // OPERATION SAVED
+				bcauldron.saveToHazelcast(cauldrons); // OPERATION SAVED
 				return event.willTakeItem();
 			} else {
 				return false;
@@ -241,10 +247,7 @@ public class BCauldron implements Serializable, Ownable {
 	}
 
 	// fills players bottle with cooked brew
-	public boolean fill(Player player, Block block) {
-		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
-		BCauldron bCauldron = get(block);
-
+	public boolean fill(Player player, Block block, BCauldron bCauldron) {
 
 		if (!player.hasPermission("brewery.cauldron.fill")) {
 			plugin.msg(player, plugin.languageReader.get("Perms_NoCauldronFill"));
@@ -256,11 +259,11 @@ public class BCauldron implements Serializable, Ownable {
 		if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
 			BlockData data = block.getBlockData();
 			if (!(data instanceof Levelled cauldron)) {
-				cauldrons.remove(bCauldron);
+				bCauldron.remove();
 				return false;
 			}
             if (cauldron.getLevel() <= 0) {
-				cauldrons.remove(bCauldron);
+				bCauldron.remove();
 				return false;
 			}
 
@@ -268,7 +271,7 @@ public class BCauldron implements Serializable, Ownable {
 			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
 				// Empty Cauldron
 				block.setType(Material.CAULDRON);
-				cauldrons.remove(bCauldron);
+				bCauldron.remove();
 			} else {
 				cauldron.setLevel(cauldron.getLevel() - 1);
 
@@ -278,7 +281,7 @@ public class BCauldron implements Serializable, Ownable {
 				block.setBlockData(data);
 
 				if (cauldron.getLevel() <= 0) {
-					cauldrons.remove(bCauldron);
+					bCauldron.remove();
 				} else {
 					changed = true;
 				}
@@ -290,14 +293,14 @@ public class BCauldron implements Serializable, Ownable {
 			if (data > 3) {
 				data = 3;
 			} else if (data <= 0) {
-				cauldrons.remove(bCauldron);
+				bCauldron.remove();
 				return false;
 			}
 			data -= 1;
 			LegacyUtil.setData(block, data);
 
 			if (data == 0) {
-				cauldrons.remove(bCauldron);
+				bCauldron.remove();
 			} else {
 				changed = true;
 			}
@@ -484,7 +487,7 @@ public class BCauldron implements Serializable, Ownable {
 			if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
 				BCauldron bcauldron = get(clickedBlock);
 				if (bcauldron != null) {
-					if (bcauldron.fill(player, clickedBlock)) {
+					if (bcauldron.fill(player, clickedBlock, bcauldron)) {
 						event.setCancelled(true);
 						if (player.hasPermission("brewery.cauldron.fill")) {
 							if (item.getAmount() > 1) {
@@ -600,7 +603,24 @@ public class BCauldron implements Serializable, Ownable {
 		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
 
 		for (BCauldron c : cauldrons) {
-            if (c.getId().equals(cauldron.id)) {
+			if (c.getId().equals(cauldron.id)) {
+				cauldrons.remove(c);
+				return true;
+			}
+		}
+
+		//return hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).remove();
+		return false;
+	}
+
+	public boolean remove() {
+		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+		return remove(cauldrons);
+	}
+
+	public boolean remove(IList<BCauldron> cauldrons) {
+		for (BCauldron c : cauldrons) {
+			if (c.getId().equals(this.id)) {
 				cauldrons.remove(c);
 				return true;
 			}
