@@ -1,6 +1,8 @@
 package com.dre.brewery.hazelcast;
 
 import com.dre.brewery.BreweryPlugin;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
@@ -13,6 +15,16 @@ public class HazelcastLogFilter extends AbstractFilter {
 
     private static final String PACKAGE = "com.hazelcast"; //"com.dre.brewery.dependencies.hazelcast";
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+
+    private static final String[] filteredMsgs = new String[]{
+            "o    o     o     o---o", // big ass hazelcast banner
+            "Integrity Checker is disabled.",
+            "The Jet engine is disabled.",
+            "Enable DEBUG/FINE log level",
+            "Diagnostics disabled.",
+            "CP Subsystem is not",
+            "Copyright (c)"
+    };
 
     public void registerFilter() {
         Logger logger = (Logger) LogManager.getRootLogger();
@@ -49,25 +61,37 @@ public class HazelcastLogFilter extends AbstractFilter {
             return Result.NEUTRAL;
         }
 
-        boolean shouldBeOmitted = false; // Implement
-
-        switch (level.name()) {
-            case "INFO" -> {
-                shouldBeOmitted = true;
-                plugin.log("&5[Hazelcast] &f" + message);
-            }
-            case "WARN" -> {
-                shouldBeOmitted = true;
-                plugin.warningLog(message);
-            }
-            case "ERROR" -> {
-                shouldBeOmitted = true;
-                plugin.errorLog(message, throwable);
+        for (String filteredMsg : filteredMsgs) {
+            if (message.contains(filteredMsg)) {
+                return Result.DENY;
             }
         }
 
+        if (message.contains("Members")) {
+            if (BreweryPlugin.getHazelcastManager() == null) {
+                return Result.DENY;
+            }
 
-       return shouldBeOmitted ? Result.DENY : Result.NEUTRAL;
+            Cluster cluster = BreweryPlugin.getHazelcast().getCluster();
+            plugin.log("&d[Hazelcast] Total member count&7:&d " + cluster.getMembers().size());
+            for (Member member : cluster.getMembers()) {
+                plugin.log("&d[Hazelcast] Member &e" + member.getAddress() + " &d- &6" + member.getUuid() + (member.localMember() ? " &a<-- this cluster" : ""));
+            }
+            return Result.DENY;
+        } else if (message.contains("[5.1.1]")) {
+            message = message.substring(message.indexOf("[5.1.1]") + 8);
+        }
+
+
+
+        switch (level.name()) {
+            case "INFO" -> plugin.log("&d[Hazelcast] " + message);
+            case "WARN" -> plugin.log("&d[Hazelcast] &eWARNING: " + message);
+            case "ERROR" -> plugin.errorLog(message, throwable);
+        }
+
+
+       return Result.DENY;
     }
 
 }

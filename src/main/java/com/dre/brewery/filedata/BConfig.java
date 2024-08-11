@@ -52,6 +52,7 @@ public class BConfig {
 	public static ConfiguredDataManager configuredDataManager;
 	public static String hazelcastHost;
 	public static int hazelcastPort;
+	public static String hazelcastClusterName;
 	public static int autoSaveInterval;
 
 
@@ -196,6 +197,7 @@ public class BConfig {
 		// hazelcast
 		hazelcastHost = config.getString("hazelcast.host", "null");
 		hazelcastPort = config.getInt("hazelcast.port", 5701);
+		hazelcastClusterName = config.getString("hazelcast.clusterName", "brewery");
 
 		autoSaveInterval = config.getInt("autosave", 3);
 

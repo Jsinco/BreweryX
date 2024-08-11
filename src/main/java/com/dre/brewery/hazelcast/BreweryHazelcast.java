@@ -1,6 +1,8 @@
 package com.dre.brewery.hazelcast;
 
 import com.dre.brewery.BreweryPlugin;
+import com.hazelcast.cluster.Cluster;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
@@ -12,7 +14,7 @@ public class BreweryHazelcast {
     private HazelcastInstance hazelcastInstance;
 
 
-    public BreweryHazelcast(String address, int port) {
+    public BreweryHazelcast(String address, int port, String clusterName, BreweryPlugin plugin) {
         Config config = new Config();
 
         NetworkConfig networkConfig = config.getNetworkConfig();
@@ -20,11 +22,18 @@ public class BreweryHazelcast {
         networkConfig.setPort(port);
         networkConfig.setPortAutoIncrement(true); // Enable port auto-increment
         config.setClassLoader(BreweryPlugin.getInstance().getClass().getClassLoader());
+        config.setClusterName(clusterName);
 
         BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
             hazelcastInstance = Hazelcast.newHazelcastInstance(config);
             synchronized (lock) {
                 lock.notifyAll();
+            }
+
+            Cluster cluster = hazelcastInstance.getCluster();
+            plugin.log("&d[Hazelcast] Total member count: " + cluster.getMembers().size());
+            for (Member member : cluster.getMembers()) {
+                plugin.log("&d[Hazelcast] Member &e" + member.getAddress() + " &d- &6" + member.getUuid() + (member.localMember() ? " &a<-- this cluster" : ""));
             }
         });
 
@@ -33,9 +42,11 @@ public class BreweryHazelcast {
                 lock.wait();
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            plugin.errorLog("Hazelcast initialization interrupted", e);
         }
 
+        // Start balancing task - TEST
+        BreweryPlugin.getScheduler().runTaskTimerAsynchronously(HazelcastCacheManager::balanceAll, 0, 3600L);
     }
 
     public void shutdown() {

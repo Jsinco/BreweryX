@@ -104,9 +104,6 @@ public class BreweryPlugin extends JavaPlugin {
 	// Metrics
 	public Stats stats = new Stats();
 
-	// Bug: MultiPaper will pass events to the first plugin started up first. We need to check to see if the player is connected through our server before passing
-	// events.
-	// Bug: Cauldrons not serializing
 	// Bug: Objects not being balanced between clusters
 
 	@Override
@@ -122,7 +119,7 @@ public class BreweryPlugin extends JavaPlugin {
 		migrateBreweryDataFolder();
 
 		// Version check
-		log("Minecraft Version: " + minecraftVersion.getVersion());
+		log("Minecraft Version&7:&f " + minecraftVersion.getVersion());
 		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
 			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
@@ -166,7 +163,7 @@ public class BreweryPlugin extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 		}
 
-		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort);
+		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort, BConfig.hazelcastClusterName, this);
 
 
 		try {
@@ -184,17 +181,8 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 
-
-		Cluster cluster = hazelcast.getHazelcastInstance().getCluster();
-
-		System.out.println("Members {size:" + cluster.getMembers().size() + ", ver:" + cluster.getClusterState().ordinal() + "} [");
-		for (Member member : cluster.getMembers()) {
-			System.out.println("    Member [" + member.getAddress() + "] - " + member.getUuid() + " " + (member.localMember() ? "this" : ""));
-		}
-		System.out.println("]");
-
 		// Setup Metrics
-		//stats.setupBStats();
+		stats.setupBStats();
 
 
 
@@ -426,7 +414,10 @@ public class BreweryPlugin extends JavaPlugin {
 		return dataManager;
 	}
 
-	@NotNull
+	public static BreweryHazelcast getHazelcastManager() {
+		return hazelcast;
+	}
+
 	public static HazelcastInstance getHazelcast() {
 		return hazelcast.getHazelcastInstance();
 	}
@@ -461,7 +452,7 @@ public class BreweryPlugin extends JavaPlugin {
 	public void errorLog(String msg, Throwable throwable) {
 		errorLog(msg);
 		if (throwable != null) {
-			errorLog("&6" + throwable.toString());
+			errorLog("&6" + throwable);
 			for (StackTraceElement ste : throwable.getStackTrace()) {
 				errorLog(ste.toString());
 			}
@@ -533,9 +524,7 @@ public class BreweryPlugin extends JavaPlugin {
 				BreweryPlugin.getScheduler().runTask(cauldron.getBlock().getLocation(), () -> {
 					if (cauldron.onUpdate()) {
 						cauldrons.set(finalI, cauldron); // update the cauldron in the list
-						System.out.println(cauldron.getId() + " INDEX: " + finalI);
 					} else {
-						System.out.println("Removing cauldron");
 						cauldrons.remove(cauldron);
 					}
 				});
@@ -556,6 +545,7 @@ public class BreweryPlugin extends JavaPlugin {
 				dataManager.tryAutoSave();
 			}
 
+			//HazelcastCacheManager.balanceAll();
 			debugLog("BreweryRunnable: " + (System.currentTimeMillis() - start) + "ms");
 		}
 

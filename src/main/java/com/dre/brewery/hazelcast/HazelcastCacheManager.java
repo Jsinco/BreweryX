@@ -31,6 +31,25 @@ public class HazelcastCacheManager {
     private static final HazelcastInstance hazelcast = BreweryPlugin.getHazelcast();
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 
+    private static int lastAssignedOwner = 0;
+
+    public static UUID getNextOwner() {
+        List<UUID> clusters = getAllClusterIds();
+        int clusterCount = clusters.size();
+        int nextOwnerIndex = lastAssignedOwner + 1;
+
+        if (nextOwnerIndex >= clusterCount) {
+            nextOwnerIndex = 0;
+        }
+
+        lastAssignedOwner = nextOwnerIndex;
+        return clusters.get(nextOwnerIndex);
+    }
+
+
+    // TODO: make owner of players always be the server they're connected to
+
+    // Todo figure out which instance should get the next one of these objects
 
 
     public static List<Barrel> getOwnedBarrels() {
@@ -73,8 +92,17 @@ public class HazelcastCacheManager {
             }
         }
 
-        System.out.println("Owned players: " + ownedPlayers.size());
         return ownedPlayers;
+    }
+
+    public static void balanceAll() {
+        IList<Barrel> barrels = hazelcast.getList(CacheType.BARRELS.getHazelcastName());
+        IList<BCauldron> cauldrons = hazelcast.getList(CacheType.CAULDRONS.getHazelcastName());
+        IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
+
+        splitArrayList(barrels, CacheType.BARRELS);
+        splitArrayList(cauldrons, CacheType.CAULDRONS);
+        splitMap(players, CacheType.PLAYERS);
     }
 
 
@@ -106,9 +134,6 @@ public class HazelcastCacheManager {
                 }
 
 
-                for (Barrel barrel : barrels) {
-                    System.out.println(barrel);
-                }
                 System.out.println("Barrels cached: " + barrels.size());
             }
 
@@ -122,9 +147,7 @@ public class HazelcastCacheManager {
                     splitArrayList(cauldrons, cacheType);
                 }
 
-                for (BCauldron cauldron : cauldrons) {
-                    System.out.println(cauldron);
-                }
+
                 System.out.println("Cauldrons cached: " + cauldrons.size());
             }
 
@@ -154,7 +177,7 @@ public class HazelcastCacheManager {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
                 } else {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    //balance(players, cacheType);
+                    splitMap(players, cacheType);
                 }
             }
 
@@ -162,6 +185,22 @@ public class HazelcastCacheManager {
                 throw new IllegalArgumentException("Invalid cache type");
             }
         }
+    }
+
+
+
+    public static UUID getClusterId() {
+        return hazelcast.getCluster().getLocalMember().getUuid();
+    }
+
+    // Get all cluster ids
+    public static List<UUID> getAllClusterIds() {
+        Cluster cluster = hazelcast.getCluster();
+        List<UUID> clusterIds = new ArrayList<>();
+        for (Member member : cluster.getMembers()) {
+            clusterIds.add(member.getUuid());
+        }
+        return clusterIds;
     }
 
 
@@ -223,7 +262,7 @@ public class HazelcastCacheManager {
 
 
 
-    public static <A, T extends Ownable> void balance(Map<A, T> map, CacheType cacheType) {
+    public static <A, T extends Ownable> void splitMap(Map<A, T> map, CacheType cacheType) {
         List<UUID> clusters = getAllClusterIds();
         int clusterCount = clusters.size();
 
@@ -287,23 +326,6 @@ public class HazelcastCacheManager {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Key not found for value"));
     }
-
-
-
-    public static UUID getClusterId() {
-        return hazelcast.getCluster().getLocalMember().getUuid();
-    }
-
-    // Get all cluster ids
-    public static List<UUID> getAllClusterIds() {
-        Cluster cluster = hazelcast.getCluster();
-        List<UUID> clusterIds = new ArrayList<>();
-        for (Member member : cluster.getMembers()) {
-            clusterIds.add(member.getUuid());
-        }
-        return clusterIds;
-    }
-
 
     public enum CacheType {
         BARRELS("barrels"), PLAYERS("players"), CAULDRONS("cauldrons"), WAKEUPS("wakeups");

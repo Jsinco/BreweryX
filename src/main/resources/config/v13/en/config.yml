@@ -22,6 +22,8 @@ storage:
 # REQUIRED FOR MULTIPAPER <-
 # You need to open up a port on each server for Hazelcast to communicate.
 hazelcast:
+  # This has no effect on hazelcast, but if you'd like to name this cluster for easier identification, you can do so here.
+  clusterName: 'dev'
   host: null
   port: 5701
 
@@ -40,7 +42,7 @@ autosave: 3
 debug: false
 
 # Prefix used on messages
-pluginPrefix: '&2[Brewery]&f '
+pluginPrefix: '&2[BreweryX]&f '
 
 # If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
 enableHome: true

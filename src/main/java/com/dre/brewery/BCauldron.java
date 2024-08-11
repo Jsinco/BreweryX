@@ -74,7 +74,7 @@ public class BCauldron implements Serializable, Ownable {
 		this.block = block;
 		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.id = UUID.randomUUID();
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 	}
 
 	public BCauldron(Block block, BIngredients ingredients, int state, UUID id, UUID owner) {
@@ -93,7 +93,7 @@ public class BCauldron implements Serializable, Ownable {
 		this.ingredients = ingredients;
 		this.particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 		this.id = id;
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 	}
 
 	public static BCauldron get(Block block) {
@@ -130,8 +130,6 @@ public class BCauldron implements Serializable, Ownable {
 	 * @return false if Cauldron needs to be removed
 	 */
 	public boolean onUpdate() {
-		System.out.println("updating cauldron");
-		System.out.println("BI: " + ingredients);
 		// add a minute to cooking time
 		if (!BUtil.isChunkLoaded(block)) {
 			increaseState();
@@ -153,7 +151,6 @@ public class BCauldron implements Serializable, Ownable {
 	 */
 	public void increaseState() {
 		state++;
-		System.out.println("State: " + state);
 		if (changed) {
 			ingredients = ingredients.copy();
 			changed = false;
@@ -390,7 +387,6 @@ public class BCauldron implements Serializable, Ownable {
 		}
 		if (particleRecipe == null) {
 			// Check for Cauldron Recipe
-			System.out.println("Getting Particle Color");
 			particleRecipe = ingredients.getCauldronRecipe();
 		}
 
@@ -447,7 +443,7 @@ public class BCauldron implements Serializable, Ownable {
 			}
 		}
 
-		this.saveToHazelcast();
+		this.saveToHazelcast(); // OPERATION SAVED
 		//P.p.log("RGB: " + particleColor.getRed() + "|" + particleColor.getGreen() + "|" + particleColor.getBlue());
 		return particleColor;
 	}

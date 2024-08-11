@@ -66,7 +66,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	 */
 	public Barrel(Block spigot, byte signOffset) {
 		super(spigot, signOffset);
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 		this.id = UUID.randomUUID();
 		this.inventory = Bukkit.createInventory(this, getIntendedInvSize(), plugin.languageReader.get("Etc_Barrel"));
 	}
@@ -78,7 +78,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, @Nullable Map<String, Object> items, float time, UUID id) {
 		super(spigot, sign, bounds);
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 		this.time = time;
 		this.id = id;
 		this.inventory = Bukkit.createInventory(this, getIntendedInvSize(), plugin.languageReader.get("Etc_Barrel"));
@@ -94,7 +94,7 @@ public class Barrel extends BarrelBody implements InventoryHolder, Serializable,
 
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, UUID id) {
 		super(spigot, sign, bounds);
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 		this.time = time;
 		this.id = id;
 		this.inventory = Bukkit.createInventory(this, getIntendedInvSize(), plugin.languageReader.get("Etc_Barrel"));

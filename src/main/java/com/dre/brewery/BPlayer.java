@@ -85,19 +85,19 @@ public class BPlayer implements Serializable, Ownable {
 		this.drunkenness = drunkenness;
 		this.offlineDrunk = offlineDrunk;
 		this.uuid = uuid;
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 	}
 
 	public BPlayer(UUID uuid) {
 		this.uuid = uuid;
-		this.owner = HazelcastCacheManager.getClusterId();
+		this.owner = HazelcastCacheManager.getNextOwner();
 	}
 
 	public void saveToHazelcast() {
 		hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName()).put(uuid, this);
 	}
 
-	@Nullable // TODOHERE
+	@Nullable
 	public static BPlayer get(OfflinePlayer player) {
 		IMap<UUID, BPlayer> players = hazelcast.getMap(HazelcastCacheManager.CacheType.PLAYERS.getHazelcastName());
 		return players.get(player.getUniqueId());

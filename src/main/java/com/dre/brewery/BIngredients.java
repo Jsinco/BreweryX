@@ -126,8 +126,6 @@ public class BIngredients implements Serializable {
 		Brew brew;
 
 		//int uid = Brew.generateUID();
-		System.out.println("Cooking potion with state " + state + " and time " + cookedTime);
-		System.out.println("Cook Recipe: " + cookRecipe);
 		if (cookRecipe != null) {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
@@ -171,8 +169,6 @@ public class BIngredients implements Serializable {
 					if (VERSION.isOrLater(MinecraftVersion.V1_14) && cauldronRecipe.getCmData() != 0) {
 						potionMeta.setCustomModelData(cauldronRecipe.getCmData());
 					}
-				} else {
-					System.out.println("No recipe found for potion");
 				}
 			}
 		}
