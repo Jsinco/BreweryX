@@ -3,11 +3,7 @@ site_author: Jsinco, szarkan
 
 repo_url: https://github.com/Jsinco/BreweryX
 
-docs_dir: '../../docs/ru'
-site_dir: '../../generated/ru'
-
 theme:
-  language: ru
   name: material
   palette:
     scheme: slate
@@ -69,8 +65,18 @@ extra_css:
   - stylesheets/my.css
 plugins:
   - open-in-new-tab
-  - search:
-      lang: ru
+  - search
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: ru
+          default: false
+          name: Русский
+          build: true
   - minify:
       minify_html: true
 extra:

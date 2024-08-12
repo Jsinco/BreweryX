@@ -32,13 +32,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install mkdocs
-        run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin
+        run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin mkdocs-static-i18n
 
-      - name: Build en docs
-        run: mkdocs build -f config/en/mkdocs.yml
-
-      - name: Build ru docs
-        run: mkdocs build -f config/ru/mkdocs.yml
+      - name: Build docs
+        run: mkdocs build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

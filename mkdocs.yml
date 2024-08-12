@@ -2,8 +2,6 @@ site_name: BreweryX
 site_author: Jsinco, szarkan
 
 repo_url: https://github.com/Jsinco/BreweryX
-docs_dir: '../../docs/en'
-site_dir: '../../generated/en'
 
 theme:
   language: en
@@ -72,14 +70,25 @@ plugins:
       lang: en
   - minify:
       minify_html: true
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: ru
+          default: false
+          name: Русский
+          build: true
 extra:
-  alternate:
-    - name: English
-      link: /en/
-      lang: en
-    - name: Русский
-      link: /ru/
-      lang: ru
+  # alternate:
+  #   - name: English
+  #     link: /en/
+  #     lang: en
+  #   - name: Русский
+  #     link: /ru/
+  #     lang: ru
   status:
     new: Recently updated!
     inprogress: Article is in progress
