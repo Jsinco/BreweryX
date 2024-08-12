@@ -34,8 +34,11 @@ jobs:
       - name: Install mkdocs
         run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin
 
-      - name: Build docs
-        run: mkdocs build
+      - name: Build en docs
+        run: mkdocs build -f config/en/mkdocs.yml
+
+      - name: Build ru docs
+        run: mkdocs build -f config/ru/mkdocs.yml
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
