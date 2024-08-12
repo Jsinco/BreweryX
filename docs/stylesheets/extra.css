@@ -1,0 +1,307 @@
+/* Много кода пренадлежит сайту https://anelllya.github.io/portfolio/ */
+
+:root {
+  --md-text-font: "Inter", system-ui, 'Roboto', Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
+  --md-typeset-heading: "Segoe UI", system-ui, sans-serif;
+  --md-primary-fg-color: #3c129e;
+  --md-primary-fg-color--light: #ECB7B7;
+  --md-primary-fg-color--dark:  #90030C;
+  --md-status--inprogress: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/></svg>');
+  --md-accent-fg-color: #ffffff;
+  --md-accent-fg-color--transparent: #526cfe1a
+}
+
+.md-typeset code {
+  font-size: inherit;
+  border-radius: 5px;
+  padding: 0.15rem;
+}
+
+.md-grid {
+  max-width: 63rem;
+}
+
+.md-header--shadow {
+  box-shadow: 2px;
+}
+
+.md-header {
+  background-color: #05050580;
+  color: var(--md-default-fg-color);
+  backdrop-filter: blur(8px);
+}
+
+.md-tabs {
+  background-color: #ffffff00;
+  color: var(--md-default-fg-color);
+}
+
+.md-header__button.md-logo img {
+  height: 1.5rem;
+}
+
+[data-md-color-primary=indigo] {
+  --md-primary-fg-color: #ffffff;
+  --md-accent-fg-color--transparent: #526cfe1a
+}
+
+
+[data-md-color-scheme=slate] { 
+  --md-default-bg-color: hsla(var(--md-hue),15%,12%,1);
+  --md-default-fg-color: #d4d4d8;
+
+  --md-code-fg-color: hsla(var(--md-hue),18%,86%,0.9);
+  --md-code-bg-color: hsla(var(--md-hue),15%,18%,1);
+}
+
+[data-md-color-accent=indigo] {
+  --md-accent-fg-color: #ffffff;
+  --md-accent-fg-color--transparent: #ffffff1a;
+}
+
+/* Добавляет свг картинку в хедер 
+.md-header, .md-tabs {
+  background-image: url('../assets/background.svg'); /* Image taken from https://docs.kolena.com
+  background-size: cover;
+} /*
+
+/* Делает картинку сверху во весь хедер  */
+
+.md-tabs {
+  background-size: cover;
+}
+
+/* Увеличивает размер текста в таблица */
+td {
+  font-size: 0.75rem;
+}
+
+@keyframes fadeInDown {
+  0% {
+      opacity: 0;
+      transform: translateY(-1.25em);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.md-content {
+  animation-name: fadeInDown;
+  animation-duration: 0.5s;
+}
+
+@media screen and (min-width: 45em) {
+  .md-copyright  {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Делает адмонитионы (плашки) более красивыми */
+.md-typeset .admonition, .md-typeset details {
+  border-width: 0;
+  border-left-width: 4px;
+  font-size: .8rem;
+  box-shadow: 0 0 0.2rem #00000036, 0 0.2rem 0.4rem rgba(0, 0, 0, 0.308);
+}
+
+.md-typeset summary:not(.focus-visible) {
+  font-size: 0.9rem;
+  box-shadow: 0 0 0.2rem #00000036, 0 0.2rem 0.4rem rgba(0, 0, 0, 0.308);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Тут смена размеров всего для разных устройств */
+@media screen and (min-width: 1600px) {
+  .md-tabs {
+    background-position-y: -52.8px; 
+  }
+}
+@media screen and (min-width: 2000px) {
+  .md-tabs {
+    background-position-y: -57.6px; 
+  }
+}
+
+@media (max-width: 768px) {
+  .margin-center {
+      margin-left: 20px; /* Smaller margin for mobile */
+      margin-right: 20px;
+  }
+}
+
+
+.md-status--inprogress::after {
+  mask-image: var(--md-status--inprogress);
+  -webkit-mask-image: var(--md-status--inprogress);
+}
+
+::selection {
+  background-color: var(--md-primary-fg-color--light);
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("../assets/fonts/Mulish/Mulish-VariableFont_wght.ttf");
+}
+
+.md-typeset .grid.cards>ul>li {
+  border-radius: 0.5rem;
+  transition: border .5s,box-shadow .5s;
+}
+
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary .md-nav__title[for=__drawer] {
+    background-color: #05050580;
+    color: var(--md-primary-bg-color);
+    font-weight: 700;
+  }
+}
+
+.md-nav__list {
+  font-family: 'Inter', sans-serif;
+}
+
+.md-nav__link {
+  margin-top: 0; 
+}
+
+.md-nav--primary .md-nav__item>.md-nav__link {
+    margin-right: .4rem;
+    padding: 8px;
+}
+
+.md-nav__link:hover {
+  background-color: #38383880; /* Change to desired hover color */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  transition: background-color 0.125s; /* Smooth transition for hover effect */
+}
+
+@media (min-width: 1220px) {
+  label.md-nav__link {
+    font-size: 1rem;
+    margin-left: -12px;
+  }
+}
+
+.md-nav {
+  font-size: .75rem;
+  font-weight: 450;
+}
+
+.md-tabs__link {
+  font-weight: 500;
+}
+
+/* Это - разделение полосочками между верхними табами  */
+/* .md-tabs__item:hover {
+  background-color: #38383880; 
+  border-radius: 5px; 
+  transition: background-color 0.3s; 
+} */
+
+/* .md-tabs__list {
+  margin-bottom: 10px;
+} */
+
+/* Изменение вообще всего текста */
+.md-typeset{
+  font-weight: 300;
+  font-family: "Inter";
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.md-typeset .md-button {
+  border-radius: 0.4rem;
+}
+
+.md-typeset .md-button--primary {
+  background-color: #7e4bf5;
+  border-color: #704ac9;
+  color: var(--md-primary-bg-color);
+}
+
+.md-typeset .md-button--primary:hover {
+  background-color: #a582f5;
+  border-color: #704ac9;
+  color: var(--md-primary-bg-color);
+}
+
+.md-typeset .grid.cards>ol>li, .md-typeset .grid.cards>ul>li, .md-typeset .grid>.card {
+  border-radius: 0.4rem;
+  border: 0.125rem solid var(--md-typeset-table-color);
+}
+
+.card {
+  position: relative; /* Set .card to position relative */
+  display: block; /* Make the link a block to fill the entire card */
+}
+
+@media screen and (min-width: 76.25em) {
+    [dir=ltr] .md-nav--integrated>.md-nav__list>.md-nav__item--active .md-nav--secondary {
+      border-left: 0.1rem solid var(--md-primary-fg-color);
+      margin-left: 0.5rem;
+  }
+}
+
+
+.card a {
+  display: block; /* Allows the <a> to fill the entire card */
+  height: 100%; /* Sets the height of the <a> to fill its parent */
+  width: 100%; /* Sets the width of the <a> to fill its parent */
+  text-decoration: none; /* Optional: Removes underline from links */
+  color: inherit; /* Optional: Inherits text color from parent */
+}
+
+/* Изменение заголовков */
+.md-typeset h1 {
+  color: #8758f3; 
+  font-size: 2rem;
+  font-family: var(--md-typeset-heading);
+  font-weight: 900;
+  margin: 0 0 var(--spacing-3);
+  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Изменение под-заголовков */
+.md-typeset h2 {
+  color: #966cf8; 
+  font-weight: 600;
+  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.md-social__link svg {
+  max-height: 1rem;
+}
+
+@media screen and (min-width: 45em) {
+  .md-social {
+      padding: 1rem 0;
+  }
+}
+
+/* Изменение под-под-заголовков */
+.md-typeset h3 {
+  color: #b698fc; 
+  font-weight: 500;
+  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Изменение таблиц - делает более широкий бордер */
+.md-typeset table:not([class]) {
+  border-radius: 0.5rem;
+  border: 0.2rem solid var(--md-typeset-table-color);
+}
+
+.md-typeset figcaption {
+  font-style: normal;
+  font-weight: 500;
+}
