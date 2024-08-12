@@ -1,0 +1,82 @@
+site_name: BreweryX
+site_author: Jsinco, szarkan
+
+repo_url: https://github.com/Jsinco/BreweryX
+
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    scheme: slate
+    primary: indigo
+  features:
+    - content.tabs.link
+ #   - navigation.instant
+  #  - navigation.instant.progress
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.tracking
+    - navigation.prune
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - toc.follow
+    - toc.integrate
+    - content.action.edit
+  logo: assets/favicon.jpg
+  favicon: assets/favicon.jpg
+  font:
+    text: Inter
+    code: Fira Code
+markdown_extensions:
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.keys
+  - tables
+  - pymdownx.critic
+  - pymdownx.snippets:
+      auto_append:
+        - includes/links.md
+  - toc:
+      permalink: "#"
+      separator: "_"
+  - pymdownx.tabbed:
+      alternate_style: true
+  - abbr
+  - def_list
+  - md_in_html
+  - attr_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/my.css
+plugins:
+  - open-in-new-tab
+  - search
+  - minify:
+      minify_html: true
+extra:
+  status:
+    new: Recently updated!
+    inprogress: Article is in progress
+nav:
+  - '': index.md
+  - Guides:
+    - guide/recipies.md
+    - guide/brewing_guide.md
+    - guide/custom_items.md

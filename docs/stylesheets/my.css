@@ -1,0 +1,607 @@
+/* Дизайн немножко вдохновлён сайтом https://schalker.ru :3 */
+
+@keyframes animated-index {
+    0% {
+        background: radial-gradient(circle, hsla(var(--md-hue),15%,12%,1) 0%, hsla(var(--md-hue),15%,17%,1) 50%, hsla(var(--md-hue),15%,12%,1) 100%);
+    }
+    25% {
+        background: radial-gradient(circle, hsla(var(--md-hue),15%,12%,1) 15%, hsla(var(--md-hue),15%,17%,1) 35%, hsla(var(--md-hue),15%,12%,1) 115%);
+    }
+    50% {
+        background: radial-gradient(circle, hsla(var(--md-hue),15%,12%,1) 0%, hsla(var(--md-hue),15%,17%,1) 65%, hsla(var(--md-hue),15%,12%,1) 85%);
+    }
+    75% {
+        background: radial-gradient(circle, hsla(var(--md-hue),15%,12%,1) 10%, hsla(var(--md-hue),15%,17%,1) 45%, hsla(var(--md-hue),15%,12%,1) 90%);
+    }
+    100% {
+        background: radial-gradient(circle, hsla(var(--md-hue),15%,12%,1) 15%, hsla(var(--md-hue),15%,17%,1) 35%, hsla(var(--md-hue),15%,12%,1) 85%);
+    }
+}
+
+:root {
+    --catcraft-color: #4f2dbe;
+    --catcraft-gradient-1color: #7648e1;
+    --catcraft-gradient-2color: #4728b6;
+    --catcraft-gradient: linear-gradient(90deg, rgba(118,72,225,1) 0%, rgba(163,82,162,1) 100%, rgba(71,40,182,1) 100%);
+}
+
+.index-title {
+    display: flex;
+    justify-content: space-between; /* Aligns children to each side */
+    align-items: center; /* Vertically centers the children */
+    padding: 20px; /* Adds some padding around the container */
+    flex-wrap: wrap; /* Allows items to wrap in smaller screens */
+}
+
+/* Styling for the image */
+.image-shadow {
+    width: 50%; /* Takes half of the container's width */
+    max-width: 600px; /* Maximum width to ensure it's not too large */
+    height: auto; /* Maintains the aspect ratio of the image */
+    order: 2; /* Puts the image on the right */
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(5px 5px 5px #000000);
+}
+
+/* Styling for the header text */
+.title-text {
+    width: 100%; /* Takes half of the container's width */
+    font-size: 1.5em; /* Larger text size */
+    color: #333; /* Text color */
+    /* text-align: left; Aligns text to the left */
+    order: 1; /* Puts text on the left */
+}
+
+.text-container {
+    width: 50%;
+    order: 1;
+}
+
+.description {
+    font-size: 1.2em; /* Slightly smaller than the title */
+    color: #333;
+    margin-top: 10px; /* Adds space between the title and this paragraph */
+    text-wrap: balance;
+}
+
+.version-info {
+    font-size: 1em; /* Standard text size for info */
+    color: #666; /* Lighter color for less emphasis */
+    margin-top: 5px; /* Space between the main description and version info */
+}
+
+@media (max-width: 1218px) {
+    .index-title {
+        flex-direction: column; /* Stacks items vertically on small screens */
+        text-align: center;
+        
+    }
+    .text-container {
+        width: 100%; /* Ensures container uses the full width */
+        padding: 10px 20px; /* Add padding to not touch the screen edges */
+    }
+    .title-text {
+        width: 100%; /* Each takes full width of the container */
+        text-align: center;
+        font-size: 2.3rem !important; /* Smaller font size for mobile */
+        line-height: 1.1 !important; /* Adjust line height for better readability */
+        margin-bottom: 10px; /* Adds space between title and description */
+    }
+    .image-shadow {
+        order: 1; /* Puts the image on top */
+        width: 80%;
+    }
+    .title-text {
+        order: 2; /* Puts the text below the image */
+    }
+}
+
+.\*\:transition-all>* {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+    transition-duration: .15s;
+}
+
+.red {
+    color:rgb(209, 6, 6);
+}
+
+.gold {
+    color:gold;
+} 
+
+.vk {
+    color: #0077FF;
+}
+
+.discord {
+    color: #5865F2;
+}
+
+.yt {
+    color: #EE0F0F;
+}
+
+.green {
+    color: #13c422;
+}
+
+.purple {
+    color:#7140e2;
+}
+
+.pink {
+    color:#eba8a8;
+}
+
+.bold {
+font-weight: bold;
+}
+
+.white {
+    color: whitesmoke;
+}
+
+.gray, .grey {
+    color: #848488;
+}
+
+.almost-white {
+    color: rgb(221, 221, 221);
+}
+
+.text {
+    color: #1e0b35;
+}
+
+/* Это - делает цвет жёлтым с золотым обрамлением*/
+.gold-outline {
+    color:gold;
+    border: solid;
+    border-color: #e7b24e;
+    border-width: 2px;
+    border-radius: 5px;
+}
+
+.fake-h1 {
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.big-button {
+    width: 100%;
+}
+
+.half-button {
+    width: 50%;
+}
+
+.links .grid {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 64px;
+    gap: 64px;
+    width: 100%;
+}
+.links .grid .item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: filter 0.15s ease;
+}
+.links .grid .item .image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    background-color: var(--BG_1);
+    margin-right: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.links .grid .item .image.discord {
+    background-color: #5865f2;
+}
+.links .grid .item .image.vk {
+    background-color: #2787f5;
+}
+.links .grid .item .text p + p {
+    margin-top: 2px;
+}
+.links .grid .item:hover {
+    filter: brightness(90%);
+}
+.links .grid .item:active {
+    filter: brightness(80%);
+}
+
+.margin-center {
+    margin-left: 45px;
+    margin-right: 45px;
+    text-align: center;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.bigger-text {
+    font-size: 1rem;
+}
+
+.spoiler {
+    -webkit-filter: blur(0.3em);
+    filter: blur(0.3em);
+    transition: filter 0.25s ease-in-out, -webkit-filter 0.25s ease-in-out;
+}
+
+.spoiler:hover, .spoiler:focus {
+    -webkit-filter: blur(0);
+    filter: blur(0);
+    transition: filter 0.25s ease-in-out, -webkit-filter 0.25s ease-in-out;
+}
+
+.bigger-text {
+    font-size: 0.9rem; /* Slightly smaller font size for mobile */
+}
+
+.shadow {
+    text-shadow: none; /* Removing shadow for better readability */
+}
+
+.shadow {
+    text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.glow {
+    text-shadow: #FC0 1px 0 10px;
+}
+
+@keyframes lights {
+    0% {
+    color: hsl(230, 40%, 80%);
+    text-shadow:
+        0 0 1em hsla(320, 100%, 50%, 0.2),
+        0 0 0.125em hsla(320, 100%, 60%, 0.3),
+        -1em -0.125em 0.5em hsla(40, 100%, 60%, 0),
+        1em 0.125em 0.5em hsla(200, 100%, 60%, 0);
+    }
+    
+    30% { 
+    color: hsl(230, 80%, 90%);
+    text-shadow:
+        0 0 1em hsla(320, 100%, 50%, 0.5),
+        0 0 0.125em hsla(320, 100%, 60%, 0.5),
+        -0.5em -0.125em 0.25em hsla(40, 100%, 60%, 0.2),
+        0.5em 0.125em 0.25em hsla(200, 100%, 60%, 0.4);
+    }
+    
+    40% { 
+    color: hsl(230, 100%, 95%);
+    text-shadow:
+        0 0 1em hsla(320, 100%, 50%, 0.5),
+        0 0 0.125em hsla(320, 100%, 90%, 0.5),
+        -0.25em -0.125em 0.125em hsla(40, 100%, 60%, 0.2),
+        0.25em 0.125em 0.125em hsla(200, 100%, 60%, 0.4);
+    }
+    
+    70% {
+    color: hsl(230, 80%, 90%);
+    text-shadow:
+        0 0 1em hsla(320, 100%, 50%, 0.5),
+        0 0 0.125em hsla(320, 100%, 60%, 0.5),
+        0.5em -0.125em 0.25em hsla(40, 100%, 60%, 0.2),
+        -0.5em 0.125em 0.25em hsla(200, 100%, 60%, 0.4);
+    }
+    
+    100% {
+    color: hsl(230, 40%, 80%);
+    text-shadow:
+        0 0 1em hsla(320, 100%, 50%, 0.2),
+        0 0 0.125em hsla(320, 100%, 60%, 0.3),
+        1em -0.125em 0.5em hsla(40, 100%, 60%, 0),
+        -1em 0.125em 0.5em hsla(200, 100%, 60%, 0);
+    }
+    
+}
+  
+.neon {
+    animation: lights 5s 750ms linear infinite;
+}
+    
+@keyframes sinusoidalWave {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(10px, -10px); /* Moves right and up */
+    }
+    50% {
+        transform: translate(20px, 0); /* Moves further right */
+    }
+    75% {
+        transform: translate(10px, 10px); /* Moves right and down */
+    }
+}
+
+.moving {
+    display: inline-block;
+    animation: sinusoidalWave 2s infinite linear;
+}
+
+@keyframes waveAnimation {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px); /* Change the value for different wave height */
+    }
+}
+
+.wave {
+    display: inline-block;
+    animation: waveAnimation 2s infinite ease-in-out;
+}
+
+@keyframes rainbowAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.rainbow {
+    background: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+    --webkit-background-clip: text;
+    color: transparent; /* Hide the original text color */
+    background-size: 200% auto;
+    animation: rainbowAnimation 5s linear infinite;
+}
+
+
+@keyframes rotate-animation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.rotate-animation {
+    animation: rotate-animation 2s infinite linear;
+}
+
+
+img {
+    cursor: zoom-in;
+    border-radius: 0.25rem;
+    /* border: 10px solid rgba(46, 46, 46, 0.397) */
+}
+
+/* Overlay that covers the entire screen */
+.image-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* High z-index to be on top */
+}
+
+/* Style for the image inside the overlay */
+.image-overlay img {
+    max-height: 90%; /* Limits the image size to the viewport */
+    max-width: 90%; /* Provides some margin around the image */
+    transition: transform 0.3s ease;
+}
+
+@keyframes heart {
+    0%, 40%, 80%, 100% {
+        transform: scale(1); /* Default size */
+    }
+    20%, 60% {
+        transform: scale(1.15); /* Scaled up to 115% */
+    }   
+}
+.heart {
+    display: inline-block; /* Ensures transform applies correctly */
+    animation: heart 1000ms infinite;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.brand-book-color-item {
+    border-radius: 10px;
+    border: 15px black;
+}
+
+.brand-book-color-gradient {
+    background-image: linear-gradient(90deg, rgba(128,79,235,1) 0%, rgba(71,39,182,1) 100%, rgba(71,40,182,1) 100%);
+}
+
+.brand-book-color-main {
+    background-color: #4f2dbe;
+}
+
+.brand-book-color-white {
+    color: black;
+    background-color: #f5f5f5;
+}
+
+.brand-book-color-black {
+    background-color: #101114;
+}
+
+.image-grid {
+    display: flex;
+    justify-content: space-around; /* Distributes space between and around content items */
+    align-items: center; /* Vertically centers the items */
+    margin: 20px;
+  }
+  .image-grid img {
+    width: 35%; /* Each image takes up roughly 30% of the grid width */
+    height: auto; /* Maintain the aspect ratio of the images */
+    border-radius: 8px; /* Optional: Adds rounded corners to your images */
+  }
+
+
+/* ======================================== */
+/* =================FAQ==================== */
+/* ======================================== */
+
+
+.faq-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.faq-section {
+    flex: 1 1 60%; /* Takes as much width as possible on larger screens */
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.faq-dropdown {
+    margin-bottom: -1px;
+    background: transparent;
+    width: 95%;
+    border-top: 1px solid hsla(var(--md-hue),15%,18%,1);
+    border-bottom: 1px solid hsla(var(--md-hue),15%,18%,1);
+}
+
+.dropdown-btn {
+    padding: 22px;
+    padding-right: 30px; /* Increased padding to accommodate the arrow */
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-size: 20px;
+    position: relative; /* Required for proper positioning of the background */
+    background-image: url("data:image/svg+xml;utf8,<svg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M1 1L7 7L13 1' stroke='%2379797A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'></path></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Positions the arrow to the right */
+    transition: background-color 0.2s;
+}
+
+/* .dropdown-btn {
+    padding: 12px;
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 20px;
+    text-align: left;
+    transition: background-color 0.2s;
+}  */
+
+
+.dropdown-btn:hover {
+    background-color: hsla(var(--md-hue),15%,18%,1); /* Light grey color on hover for better UI feedback */
+}
+
+.dropdown-content {
+    padding: 10px;
+    display: none;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out; /* Smooth transition for max-height and padding */
+}
+
+.discord-box {
+    flex: 0 0 35%; /* Adjusts size on larger screens */
+    background: transparent;
+    border: 0.2rem solid hsla(var(--md-hue),15%,18%,1);
+    color: white;
+    padding: 20px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 0.5rem;
+}
+
+.discord-box:hover {
+    background-color: hsla(var(--md-hue),15%,18%,1);
+}
+
+@media screen and (max-width: 1219px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .faq-section, .discord-box {
+        flex: 1 1 100%;
+    }
+    .discord-box {
+        margin-right: auto;
+        margin-left: auto;
+        margin-top: 20px;
+        max-width: 500px;
+    }
+}
+
+.discord-box-top {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+
+.discord-logo {
+    width: 60px;
+    fill:#5865f2;
+}
+
+.discord-box-link {
+    margin-left: auto;
+    width: 30px;
+    fill: var(--md-default-fg-color);
+}
+
+
+@media (max-width: 600px) {
+    .discord-logo {
+        height: 30px; /* Smaller size on smaller screens */
+        
+    }
+    .discord-box-link {
+        width: 30px;
+    }
+}
+
+.no-expand {
+    cursor: default;
+}
+
+.catcraft-logo {
+    max-width: 500px !important;
+}
+
+.small-img-border {
+    border: solid #85858524 5px;
+}
+
+canvas {
+    border: solid black 10px;
+}
+
+.cards .admin-img {
+    display: flex;
+}
