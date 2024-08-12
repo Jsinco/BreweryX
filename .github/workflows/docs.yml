@@ -29,11 +29,11 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-        python-version: "3.12"
+          python-version: "3.12"
 
       - name: Install mkdocs
         run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin
-      
+
       - name: Build docs
         run: mkdocs build
 
