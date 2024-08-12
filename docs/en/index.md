@@ -10,7 +10,9 @@ hide:
 icon: fontawesome/solid/house
 ---
 
-# BreweryX
+<h1 class="white">  
+    Brewery<span class="neon">X</span>
+</h1>
 
 !!! warning "Warning"
     This docs under very heavy construction!
@@ -52,7 +54,7 @@ Original Brewery is **decade** old with no support, so we took this plugin into 
 
 - Constantly adding new things, fixing bugs, and giving life to this old plugin!
 
-<div class="grid cards" markdown>
+<!-- <div class="grid cards" markdown>
 
 - :fontawesome-solid-wine-bottle: Brewing!
 
@@ -68,4 +70,4 @@ Original Brewery is **decade** old with no support, so we took this plugin into 
 
 - :material-unfold-more-vertical: And so much more!
 
-    Plugins, IA & Oraxen items support, cocktails support and etc!
+    Plugins, IA & Oraxen items support, cocktails support and etc! -->

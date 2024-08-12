@@ -157,49 +157,6 @@ td {
   transition: border .5s,box-shadow .5s;
 }
 
-@media screen and (max-width: 76.234375em) {
-  .md-nav--primary .md-nav__title[for=__drawer] {
-    background-color: #05050580;
-    color: var(--md-primary-bg-color);
-    font-weight: 700;
-  }
-}
-
-.md-nav__list {
-  font-family: 'Inter', sans-serif;
-}
-
-.md-nav__link {
-  margin-top: 0; 
-}
-
-.md-nav--primary .md-nav__item>.md-nav__link {
-    margin-right: .4rem;
-    padding: 8px;
-}
-
-.md-nav__link:hover {
-  background-color: #38383880; /* Change to desired hover color */
-  border-radius: 8px; /* Optional: Add rounded corners */
-  transition: background-color 0.125s; /* Smooth transition for hover effect */
-}
-
-@media (min-width: 1220px) {
-  label.md-nav__link {
-    font-size: 1rem;
-    margin-left: -12px;
-  }
-}
-
-.md-nav {
-  font-size: .75rem;
-  font-weight: 450;
-}
-
-.md-tabs__link {
-  font-weight: 500;
-}
-
 /* Это - разделение полосочками между верхними табами  */
 /* .md-tabs__item:hover {
   background-color: #38383880; 
@@ -235,11 +192,6 @@ td {
   color: var(--md-primary-bg-color);
 }
 
-.md-typeset .grid.cards>ol>li, .md-typeset .grid.cards>ul>li, .md-typeset .grid>.card {
-  border-radius: 0.4rem;
-  border: 0.125rem solid var(--md-typeset-table-color);
-}
-
 .card {
   position: relative; /* Set .card to position relative */
   display: block; /* Make the link a block to fill the entire card */
@@ -263,7 +215,7 @@ td {
 
 /* Изменение заголовков */
 .md-typeset h1 {
-  color: #8758f3; 
+  color: rgb(221, 221, 221); 
   font-size: 2rem;
   font-family: var(--md-typeset-heading);
   font-weight: 900;
@@ -273,7 +225,7 @@ td {
 
 /* Изменение под-заголовков */
 .md-typeset h2 {
-  color: #966cf8; 
+  color: rgba(221, 221, 221, 0.884);  
   font-weight: 600;
   text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
@@ -290,7 +242,7 @@ td {
 
 /* Изменение под-под-заголовков */
 .md-typeset h3 {
-  color: #b698fc; 
+  color: rgba(221, 221, 221, 0.849);  
   font-weight: 500;
   text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }

@@ -32,7 +32,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install mkdocs
-        run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin
+        run: pip install mkdocs mkdocs-material mkdocs-open-in-new-tab mkdocs-minify-plugin mkdocs-static-i18n
 
       - name: Build docs
         run: mkdocs build

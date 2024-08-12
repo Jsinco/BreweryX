@@ -4,7 +4,6 @@ site_author: Jsinco, szarkan
 repo_url: https://github.com/Jsinco/BreweryX
 
 theme:
-  language: en
   name: material
   palette:
     scheme: slate
@@ -66,10 +65,7 @@ extra_css:
   - stylesheets/my.css
 plugins:
   - open-in-new-tab
-  - search:
-      lang: en
-  - minify:
-      minify_html: true
+  - search
   - i18n:
       docs_structure: folder
       languages:
@@ -81,20 +77,22 @@ plugins:
           default: false
           name: Русский
           build: true
+  - minify:
+      minify_html: true
 extra:
-  # alternate:
-  #   - name: English
-  #     link: /en/
-  #     lang: en
-  #   - name: Русский
-  #     link: /ru/
-  #     lang: ru
+  alternate:
+    - name: English
+      link: /en/
+      lang: en
+    - name: Русский
+      link: /ru/
+      lang: ru
   status:
-    new: Recently updated!
-    inprogress: Article is in progress
+    new: Недавно обновлено!
+    inprogress: В процессе написания
 nav:
   - '': index.md
   - Guides:
-    - en/guide/recipies.md
-    - en/guide/brewing_guide.md
-    - en/guide/custom_items.md
+    - guide/recipies.md
+    - guide/brewing_guide.md
+    - guide/custom_items.md

@@ -195,7 +195,7 @@ TestBrew:
     - "This text will always be present"
     - + "This text will be present if brew has bad quality"
     - ++ "This text will be present if brew has normal quality"
-    - ++ "This text will be present if brew has good quality"
+    - +++ "This text will be present if brew has good quality"
 ```
 
 ## Executing server commands on drink: `servercommands`
