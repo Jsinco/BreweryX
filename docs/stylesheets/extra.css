@@ -263,7 +263,7 @@ td {
 
 /* Изменение заголовков */
 .md-typeset h1 {
-  color: #8758f3; 
+  color: rgb(221, 221, 221); 
   font-size: 2rem;
   font-family: var(--md-typeset-heading);
   font-weight: 900;
@@ -273,7 +273,7 @@ td {
 
 /* Изменение под-заголовков */
 .md-typeset h2 {
-  color: #966cf8; 
+  color: rgba(221, 221, 221, 0.884);  
   font-weight: 600;
   text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
@@ -290,7 +290,7 @@ td {
 
 /* Изменение под-под-заголовков */
 .md-typeset h3 {
-  color: #b698fc; 
+  color: rgba(221, 221, 221, 0.849);  
   font-weight: 500;
   text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }

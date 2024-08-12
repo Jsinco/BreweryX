@@ -10,7 +10,9 @@ hide:
 icon: fontawesome/solid/house
 ---
 
-# BreweryX
+<h1 class="white">  
+    Brewery<span class="neon">X</span>
+</h1>
 
 !!! warning "Warning"
     This docs under very heavy construction!

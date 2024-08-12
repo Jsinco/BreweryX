@@ -17,23 +17,63 @@ customItems:
 
 ### `matchAny`
 
-`true`/`false` - if you need to match only one param of custom item.
+`true` or `false` - if you need to match only one param or every param of custom item.
+
+In this example it will count as custom item only if name is `Gycha` or it is one of a list.
+
+```yaml
+customItems:
+  ex-item:
+    matchAny: false
+    material: 
+      - Barrier
+      - Bedrock
+    name: 'Gycha'
+```
 
 ### `material`
 
 Material or list of material that should be counted as custom item
 
+```yaml
+customItems:
+  ex-item:
+    material: 
+      - Barrier
+      - Bedrock
+      - Gycha
+```
+
 ### `name`
 
 Custom name that item has to have to be counted as custom item
 
+```yaml
+customItems:
+  ex-item:
+    name: '&8Some name'
+```
+
 ### `lore`
 
-Custom lore that item has to have to be counted as custom item
+Custom lore that item has to have to be counted as custom item.
+
+```yaml
+customItems:
+  ex-item:
+    lore:
+    - '&7Dont end my edge streak.'
+```
 
 ### `customModelData`
 
 Custom model data that item has to have to be counted as custom item
+
+```yaml
+customItems:
+  ex-item:
+    customModelData: 1337
+```
 
 ## Example of usage
 
