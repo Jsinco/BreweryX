@@ -72,11 +72,7 @@ public class HazelcastLogFilter extends AbstractFilter {
                 return Result.DENY;
             }
 
-            Cluster cluster = BreweryPlugin.getHazelcast().getCluster();
-            plugin.log("&d[Hazelcast] Total member count&7:&d " + cluster.getMembers().size());
-            for (Member member : cluster.getMembers()) {
-                plugin.log("&d[Hazelcast] Member &e" + member.getAddress() + " &d- &6" + member.getUuid() + (member.localMember() ? " &a<-- this cluster" : ""));
-            }
+            BreweryHazelcast.logMembers();
             return Result.DENY;
         } else if (message.contains("[5.1.1]")) {
             message = message.substring(message.indexOf("[5.1.1]") + 8);
@@ -85,8 +81,8 @@ public class HazelcastLogFilter extends AbstractFilter {
 
 
         switch (level.name()) {
-            case "INFO" -> plugin.log("&d[Hazelcast] " + message);
-            case "WARN" -> plugin.log("&d[Hazelcast] &eWARNING: " + message);
+            case "INFO" -> BreweryHazelcast.hazelcastLog(message);
+            case "WARN" -> BreweryHazelcast.hazelcastLog("&eWARNING: " + message);
             case "ERROR" -> plugin.errorLog(message, throwable);
         }
 

@@ -30,11 +30,8 @@ public class BreweryHazelcast {
                 lock.notifyAll();
             }
 
-            Cluster cluster = hazelcastInstance.getCluster();
-            plugin.log("&d[Hazelcast] Total member count: " + cluster.getMembers().size());
-            for (Member member : cluster.getMembers()) {
-                plugin.log("&d[Hazelcast] Member &e" + member.getAddress() + " &d- &6" + member.getUuid() + (member.localMember() ? " &a<-- this cluster" : ""));
-            }
+            hazelcastInstance.getCluster().addMembershipListener(new HazelcastMemberShipListener());
+            BreweryHazelcast.logMembers();
         });
 
         try {
@@ -57,6 +54,18 @@ public class BreweryHazelcast {
         return hazelcastInstance;
     }
 
+
+    public static void hazelcastLog(String message) {
+        BreweryPlugin.getInstance().log("&d[Hazelcast] " + message);
+    }
+
+    public static void logMembers() {
+        Cluster cluster = BreweryPlugin.getHazelcast().getCluster();
+        BreweryHazelcast.hazelcastLog("Total member count&7:&d " + cluster.getMembers().size());
+        for (Member member : cluster.getMembers()) {
+            BreweryHazelcast.hazelcastLog("Member &e" + member.getAddress() + " &d- &6" + member.getUuid() + (member.localMember() ? " &a<-- this node" : ""));
+        }
+    }
 
     public enum HazelcastShard {
         MASTER, NODE

@@ -57,8 +57,6 @@ import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.integration.bstats.Stats;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
-import com.hazelcast.cluster.Cluster;
-import com.hazelcast.cluster.Member;
 import com.hazelcast.collection.IList;
 import com.hazelcast.core.HazelcastInstance;
 import org.bukkit.Bukkit;
@@ -67,7 +65,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,6 +103,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	// TODO Bug: Objects not being balanced between clusters
 	// TODO Bug: Need to rebalance when a cluster disconnects
+	// TODO Bug: Shouldn't have every single node be balancing obects, only need one to do so
 
 	@Override
 	public void onLoad() {
