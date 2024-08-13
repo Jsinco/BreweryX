@@ -100,9 +100,9 @@ public class HazelcastCacheManager {
         IList<BCauldron> cauldrons = hazelcast.getList(CacheType.CAULDRONS.getHazelcastName());
         IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
 
-        splitArrayList(barrels, CacheType.BARRELS);
-        splitArrayList(cauldrons, CacheType.CAULDRONS);
-        splitMap(players, CacheType.PLAYERS);
+        HazelcastUtil.splitArrayList(barrels, CacheType.BARRELS);
+        HazelcastUtil.splitArrayList(cauldrons, CacheType.CAULDRONS);
+        HazelcastUtil.splitMap(players, CacheType.PLAYERS);
     }
 
 
@@ -130,7 +130,7 @@ public class HazelcastCacheManager {
                     barrels.addAll((Collection<? extends Barrel>) list);
                 } else {
                     plugin.log("List BARRELS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    splitArrayList(barrels, cacheType);
+                    HazelcastUtil.splitArrayList(barrels, cacheType);
                 }
 
 
@@ -144,10 +144,8 @@ public class HazelcastCacheManager {
                     cauldrons.addAll((Collection<? extends BCauldron>) list);
                 } else {
                     plugin.log("List CAULDRONS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    splitArrayList(cauldrons, cacheType);
+                    HazelcastUtil.splitArrayList(cauldrons, cacheType);
                 }
-
-
             }
 
             case WAKEUPS -> {
@@ -176,7 +174,7 @@ public class HazelcastCacheManager {
                     players.putAll((Map<? extends UUID, ? extends BPlayer>) map);
                 } else {
                     plugin.log("Map PLAYERS is not empty. This must mean Brewery has already loaded up on another server and pulled from db. Skipping init.");
-                    splitMap(players, cacheType);
+                    HazelcastUtil.splitMap(players, cacheType);
                 }
             }
 
@@ -203,128 +201,9 @@ public class HazelcastCacheManager {
     }
 
 
-    // Based on the number of instances, balance the objects between them
-    // And gives ownership as equally possible
-    public static <T extends Ownable> boolean splitArrayList(List<T> list, CacheType cacheType) {
-        List<UUID> clusters = getAllClusterIds();
-        int clusterCount = clusters.size();
-
-        if (clusterCount == 1) {
-            return false;
-        }
-
-        int size = list.size();
-        int partSize = size / clusterCount;
-        int remainder = size % clusterCount;
 
 
 
-        int startIndex = 0;
-
-        for (int i = 0; i < clusterCount; i++) {
-            // Calculate end index for the current cluster
-            int endIndex = startIndex + partSize + (i < remainder ? 1 : 0);
-
-            // Set owners for the sublist
-            for (int j = startIndex; j < endIndex; j++) {
-                list.get(j).setOwner(clusters.get(i));
-            }
-
-            // Update start index for the next cluster
-            startIndex = endIndex;
-        }
-
-        switch (cacheType) {
-            case BARRELS -> {
-                IList<Barrel> barrels = hazelcast.getList(CacheType.BARRELS.getHazelcastName());
-
-                for (int i = 0; i < list.size(); i++) {
-                    barrels.set(i, (Barrel) list.get(i));
-                }
-                plugin.debugLog("Barrels balanced: " + barrels.size());
-            }
-
-            case CAULDRONS -> {
-                IList<BCauldron> cauldrons = hazelcast.getList(CacheType.CAULDRONS.getHazelcastName());
-                for (int i = 0; i < list.size(); i++) {
-                    cauldrons.set(i, (BCauldron) list.get(i));
-                }
-                plugin.debugLog("Cauldrons balanced: " + cauldrons.size());
-            }
-
-            default -> {
-                throw new IllegalArgumentException("Invalid cache type");
-            }
-        }
-        return true; // or return a meaningful result based on your logic
-    }
-
-
-
-    public static <A, T extends Ownable> void splitMap(Map<A, T> map, CacheType cacheType) {
-        List<UUID> clusters = getAllClusterIds();
-        int clusterCount = clusters.size();
-
-        if (clusterCount == 1) {
-            return; // No need to balance if there's only one cluster
-        }
-
-        // Extract the values from the map
-        List<T> values = new ArrayList<>(map.values());
-        int size = values.size();
-        int partSize = size / clusterCount;
-        int remainder = size % clusterCount;
-
-        // Create a new map for the balanced data
-        Map<A, T> balancedMap = new HashMap<>();
-
-        // Track the current index in the values list
-        int startIndex = 0;
-
-        for (int i = 0; i < clusterCount; i++) {
-            // Calculate end index for the current cluster
-            int endIndex = startIndex + partSize + (i < remainder ? 1 : 0);
-
-            // Set owners for the current partition
-            for (int j = startIndex; j < endIndex; j++) {
-                T value = values.get(j);
-                value.setOwner(clusters.get(i));
-                // You need to map the values back to their keys
-                // Ensure you have a way to get the key associated with this value
-                // For example, if you have a way to map back:
-                A key = getKeyForValue(map, value);
-                balancedMap.put(key, value);
-            }
-
-            // Update start index for the next cluster
-            startIndex = endIndex;
-        }
-
-        // Now update Hazelcast cache
-        switch (cacheType) {
-            case PLAYERS -> {
-                IMap<UUID, BPlayer> players = hazelcast.getMap(CacheType.PLAYERS.getHazelcastName());
-                for (Map.Entry<A, T> entry : balancedMap.entrySet()) {
-                    players.set((UUID) entry.getKey(), (BPlayer) entry.getValue());
-                }
-                plugin.debugLog("BPlayers balanced: " + players.size());
-            }
-
-            default -> {
-                throw new IllegalArgumentException("Invalid cache type");
-            }
-        }
-    }
-
-    private static <A, T extends Ownable> A getKeyForValue(Map<A, T> map, T value) {
-        // Implement this method to find the key associated with a given value
-        // This is a placeholder implementation; adjust as needed
-        return map.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(value))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Key not found for value"));
-    }
 
     public enum CacheType {
         BARRELS("barrels"), PLAYERS("players"), CAULDRONS("cauldrons"), WAKEUPS("wakeups");

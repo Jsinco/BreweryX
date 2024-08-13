@@ -31,7 +31,6 @@ public class BreweryHazelcast {
             }
 
             hazelcastInstance.getCluster().addMembershipListener(new HazelcastMemberShipListener());
-            BreweryHazelcast.logMembers();
         });
 
         try {

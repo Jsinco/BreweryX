@@ -69,7 +69,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -163,6 +165,7 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		hazelcast = new BreweryHazelcast(hazelcastHost, BConfig.hazelcastPort, this);
+		BreweryHazelcast.logMembers();
 
 
 		try {
@@ -515,19 +518,26 @@ public class BreweryPlugin extends JavaPlugin {
 
 			// runs every min to update cooking time
 			IList<BCauldron> cauldrons = hazelcast.getHazelcastInstance().getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
+			List<Integer> indicesToRemove = new ArrayList<>();
 
 			int i = 0;
 			for (BCauldron cauldron : cauldrons) {
-				final int finalI = i;
-
+				int finalI = i;
 				BreweryPlugin.getScheduler().runTask(cauldron.getBlock().getLocation(), () -> {
 					if (cauldron.onUpdate()) {
 						cauldrons.set(finalI, cauldron); // update the cauldron in the list
+						System.out.println("Updated cauldron " + finalI + " in Hazelcast " + cauldron.getId());
 					} else {
-						cauldrons.remove(cauldron);
+						indicesToRemove.add(finalI); // collect index to remove later
+						System.out.println("Marked cauldron " + finalI + " for removal from Hazelcast " + cauldron.getId());
 					}
 				});
 				i++;
+			}
+
+			// Remove elements after iteration
+			for (int index : indicesToRemove) {
+				cauldrons.remove(index);
 			}
 
 

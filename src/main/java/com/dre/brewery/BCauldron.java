@@ -596,7 +596,9 @@ public class BCauldron implements Serializable, Ownable {
  	 */
 	public static boolean remove(Block block) {
 		BCauldron cauldron = get(block);
-		assert cauldron != null;
+		if (cauldron == null) {
+			return false;
+		}
 		IList<BCauldron> cauldrons = hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName());
 
 		for (BCauldron c : cauldrons) {

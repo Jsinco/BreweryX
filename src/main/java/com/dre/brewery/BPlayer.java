@@ -284,15 +284,16 @@ public class BPlayer implements Serializable, Ownable {
 				return drunkenness <= -BConfig.hangoverTime;
 			}
 		}
-		// TODO: Savehere?
+		saveToHazelcast();
 		return false;
 	}
 
 
 
 	public void passOut(Player player) {
-		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
+		player.kickPlayer(plugin.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkenness;
+		saveToHazelcast();
 	}
 
 
@@ -366,10 +367,12 @@ public class BPlayer implements Serializable, Ownable {
 			}
         }
 		offlineDrunk = 0;
+		saveToHazelcast();
 	}
 
 	public void disconnecting() {
 		offlineDrunk = drunkenness;
+		saveToHazelcast();
 	}
 
 	public void goHome(final Player player) {
@@ -647,21 +650,18 @@ public class BPlayer implements Serializable, Ownable {
 		for (Map.Entry<UUID, BPlayer> entry : players.entrySet()) {
 			BPlayer bplayer = entry.getValue();
 
-			if (bplayer.drunkenness > 30) {
-				if (bplayer.offlineDrunk == 0) {
-					Player player = Bukkit.getPlayer(entry.getKey());
-					if (player != null) {
+			if (bplayer.drunkenness > 30 && bplayer.offlineDrunk == 0) {
+				Player player = Bukkit.getPlayer(entry.getKey());
+				if (player != null) {
 
-						bplayer.drunkEffects(player);
+					bplayer.drunkEffects(player);
 
-						if (BConfig.enablePuke) {
-							bplayer.drunkPuke(player);
-						}
-
+					if (BConfig.enablePuke) {
+						bplayer.drunkPuke(player);
 					}
+
 				}
 			}
-			bplayer.saveToHazelcast();
 		}
 	}
 
@@ -714,6 +714,7 @@ public class BPlayer implements Serializable, Ownable {
 			}
 		}
 		this.drunkenness = drunkenness;
+		this.saveToHazelcast(); // OPERATION SAVED
 	}
 
 	public int getQuality() {
