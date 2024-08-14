@@ -607,8 +607,6 @@ public class BCauldron implements Serializable, Ownable {
 				return true;
 			}
 		}
-
-		//return hazelcast.getList(HazelcastCacheManager.CacheType.CAULDRONS.getHazelcastName()).remove();
 		return false;
 	}
 
