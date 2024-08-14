@@ -94,7 +94,9 @@ extra:
     inprogress: Article is in progress
 nav:
   - '': index.md
-  - Guides:
+  - Documentation:
     - en/guide/recipies.md
     - en/guide/brewing_guide.md
     - en/guide/custom_items.md
+    - en/guide/edit_config.md
+    - en/guide/default_config.md

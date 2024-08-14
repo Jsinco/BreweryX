@@ -5,8 +5,9 @@ Creating new recipe is somewhat easy with BreweryX. All you need is to follow th
 
 ## Name*s* of a drink: `name`
 
-!!! warning ""
-    Required at all time
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|  Yes      | `Name of bad brew/Name of normal brew/Name of good brew`|None|
 
 The name of the drink. Can contain three variations, each for different quality of a drink. It'll look like that:
 
@@ -23,6 +24,10 @@ ColorfulBrew:
 ```
 
 ## Ingredients: `ingredients`
+
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+| Yes |- ItemName/Amount|None|
 
 !!! warning ""
     Required at all time
@@ -54,6 +59,10 @@ TestBrew:
 
 ## Time to brew: `cookingtime`
 
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|Yes|Number in minutes|None|
+
 How much in minutes player need to brew. Can be checked with right clicking Clock on Cauldron.
 
 ```yaml
@@ -64,8 +73,9 @@ TestBrew:
 
 ## How much distilling: `distillruns`
 
-!!! warning ""
-    Not required, unless `distilltime` present
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No, unless `distilltime` present|Number|0|
 
 How much times player need to distill brew
 
@@ -77,8 +87,9 @@ TestBrew:
 
 ## Distill time: `distilltime`
 
-!!! warning ""
-    Not required, unless `distillruns` present
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|Number in seconds|0|
 
 How much it will take to distill brew one time
 
@@ -90,8 +101,9 @@ TestBrew:
 
 ## Type of barrel wood: `wood`
 
-!!! warning ""
-    Not required, default value - `0`
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|Wood type's number|None|
 
 Type of barrel wood needed to age brew properly. Posible values:
 
@@ -127,8 +139,9 @@ TestBrew:
 
 ## Aging time: `age`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|Number in MC days|0|
 
 How many MC days brew have to be in barrel for best quality.
 
@@ -140,8 +153,10 @@ TestBrew:
 
 ## Color of a drink: `color`
 
-!!! warning ""
-    Not required, default value - `WHITE`
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|HEX without `#` or color's name|`WHITE`|
+
 
 Color of a potion. Can be HEX color or `DARK_RED`, `RED`, `BRIGHT_RED`, `ORANGE`, `YELLOW`, `PINK`, `PURPLE`, `BLUE`, `CYAN`, `WATER`, `TEAL`, `OLIVE`, `GREEN`, `LIME`, `BLACK`, `GREY`, `BRIGHT_GREY`, `WHITE`
 
@@ -155,8 +170,9 @@ TestBrew:
 
 ## Difficulty of brewing: `difficulty`
 
-!!! warning ""
-    Required at all time
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|Yes|Number 1 - 10|None|
 
 Accuracy needed to get good quality, from `1` to `10`, where `1` is very unaccurate and `10` is very precise.
 
@@ -170,10 +186,11 @@ TestBrew:
 
 ## Alcohol level: `alcohol`
 
-!!! warning ""
-    Not required, default value - `0`
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|Number 0 - 100|0|
 
-How much alcohol "points" player will get after drinking, from `1` to `100`, where `1` is almost nothing and `100` player will most likely faint
+How much alcohol "points" player will get after drinking, from `0` to `100`, where `0` is no alcohol and `100` player will most likely faint
 
 ```yaml
 TestBrew:
@@ -183,8 +200,9 @@ TestBrew:
 
 ## Lore of brew: `lore`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|List|None|
 
 Lore of a potion. It may vary depending on the quality of the drink.
 
@@ -200,8 +218,9 @@ TestBrew:
 
 ## Executing server commands on drink: `servercommands`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|List|None|
 
 Commands that will execute as server. They can be executed depending on the quality of the drink.
 
@@ -220,8 +239,9 @@ TestBrew:
 
 ## Executing commands as player: `playercommands`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|List|None|
 
 Commands that will execute as player. They can be executed depending on the quality of the drink.
 
@@ -240,8 +260,9 @@ TestBrew:
 
 ## Message after drinking: `drinkmessage`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|String|None|
 
 Message that will be sent to a player after drinking brew.
 
@@ -253,8 +274,9 @@ TestBrew:
 
 ## Title after drinking: `drinktitle`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|String|None|
 
 Title message that will be sent to a player after drinking brew.
 
@@ -266,8 +288,9 @@ TestBrew:
 
 ## Glint effect: `glint`
 
-!!! warning ""
-    Not required, default value `false`
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|bool `true` or `false`|`false`|
 
 Whether brew will have glint effect (as it were enchanted)
 
@@ -279,8 +302,9 @@ TestBrew:
 
 ## CMD of item: `customModelData`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|Numbers `CMD of bad brew`/`CMD of normal brew`/`CMD of good brew`|None|
 
 Custom model data of a brew, can vary based on quality of a brew.
 
@@ -292,8 +316,9 @@ TestBrew:
 
 ## Potion effects: `effects`
 
-!!! warning ""
-    Not required
+| Required? | Value | Default Value |
+| --------- | ----- | ------------- |
+|No|`EffectName/level/duration`|None|
 
 Effects that will be given to a player after drinking.
 
