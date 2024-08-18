@@ -3,6 +3,7 @@ package com.dre.brewery.storage.records;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
+import org.bukkit.Location;
 
 /**
  * Represents a wakeup that can be serialized.
@@ -15,7 +16,11 @@ public record SerializableWakeup(String id, String serializedLocation) implement
     }
 
     public Wakeup toWakeup() {
-        return new Wakeup(DataManager.deserializeLocation(serializedLocation), BUtil.uuidFromString(id));
+        Location loc = DataManager.deserializeLocation(serializedLocation, true);
+        if (loc == null) {
+            return null;
+        }
+        return new Wakeup(loc, BUtil.uuidFromString(id));
     }
 
     @Override

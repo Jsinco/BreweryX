@@ -205,6 +205,7 @@ public abstract class DataManager {
 
     public static Location deserializeLocation(String locationString, boolean yawPitch) {
         if (locationString == null) {
+            plugin.errorLog("Location is null!");
             return null;
         }
         String[] loc = locationString.split(",");

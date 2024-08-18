@@ -4,6 +4,7 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.BUtil;
+import org.bukkit.Location;
 
 /**
  * Represents a cauldron that can be serialized.
@@ -18,7 +19,11 @@ public record SerializableCauldron(String id, String serializedLocation, String 
     }
 
     public BCauldron toCauldron() {
-        return new BCauldron(DataManager.deserializeLocation(serializedLocation).getBlock(), BIngredients.deserializeIngredients(serializedIngredients), state, BUtil.uuidFromString(id));
+        Location loc = DataManager.deserializeLocation(serializedLocation);
+        if (loc == null) {
+            return null;
+        }
+        return new BCauldron(loc.getBlock(), BIngredients.deserializeIngredients(serializedIngredients), state, BUtil.uuidFromString(id));
     }
 
     @Override
