@@ -24,7 +24,7 @@ public class VersionCommand implements SubCommand {
 
         breweryPlugin.msg(sender, "&2BreweryX version&7: &av" + breweryPlugin.getDescription().getVersion() + " &7(Latest: v" + UpdateChecker.getLatestVersion() + ")");
         breweryPlugin.msg(sender, "&2Original authors&7: &aGrafe&f, &aTTTheKing&f, &aSn0wStorm");
-        breweryPlugin.msg(sender, "&2BreweryX authors, maintainers, contributors&7: &aJsinco&f, &aMitality");
+        breweryPlugin.msg(sender, "&dBreweryX authors&7: &aJsinco&f, &aMitality, &aSzarkans");
         breweryPlugin.msg(sender, "&2Loaded addons&7: &a" + addonString);
     }
 
