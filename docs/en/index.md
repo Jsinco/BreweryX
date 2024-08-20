@@ -14,60 +14,102 @@ icon: fontawesome/solid/house
     Brewery<span class="neon">X</span>
 </h1>
 
-!!! warning "Warning"
-    This docs under very heavy construction!
-
 BreweryX is an actively maintained fork of Brewery which includes many new features, bug fixes and gives support to the inactive plugin!
 
-This Plugin works with **Spigot**, **Paper**, and **Folia** for 1.21 - 1.8.x.
+This Plugin works with **Spigot**, **Paper**, and **Folia** for 1.21.1 - 1.8.x.
 
-[Quick start](guide/recipies.md){ .md-button .md-button--primary }
-[Download latest](https://www.spigotmc.org/resources/breweryx.114777/){ .md-button .md-button--primary }
-[Discord support](https://discord.gg/3FkNaNDnta){ .md-button .md-button--primary }
+[:octicons-info-16: Quick start](guide/recipies.md){ .md-button .md-button--primary }
+[:material-download: Download latest](https://www.spigotmc.org/resources/breweryx.114777/){ .md-button .md-button--primary }
+[:simple-discord: Discord support](https://discord.gg/3FkNaNDnta){ .md-button .md-button--primary }
 
-## What is BreweryX?
+## Why i should use Brewery<span class="neon">X</span>?
 
-The somewhat difficult brewing process rewards you with a diversity of Potions, which, through their effects, create a drunkeness that has never existed in Minecraft before.
+<div class="grid cards" markdown>
 
-Learn the art of brewing through fermenting, distilling and barrel aging on your Minecraft server. Experience how from spring water and wheat, through hard work, a cool beer is created. Distill high-proof liquor, which gets that unique taste after some aging in oak barrels.
-Celebrate the biggest feasts you can imagine and always keep the cheerful atmosphere. Fill the taverns with laughter and loud music, while the drunkards scuffle on the streets.
+- 
+    **Fun**!
 
-## Why Brewery*X*?
+    ***
 
-Original Brewery is **decade** old with no support, so we took this plugin into our hands and added new features and fixed some critical bugs:
+    Let your player brew any drink **you** can imagine and add very cool effects to it in most unique way possible!
 
-- Patches like [this](https://github.com/DieReicheErethons/Brewery/issues/541)
+    Brewing with cauldron, aging with barrels, distilling with brewing stand;
 
-- Support for Brewery and BreweryX in our discord
+    Drunkness, stuttering, stumbling, hungover, player effects, server commands and much more!
 
-- [Folia](https://github.com/PaperMC/Folia) support
+- 
 
-- Customizable plugin prefix
+    **Maintained**!
 
-- Full RGB support for 1.16+
+    ***
 
-- Multi-puke items
+    Brewery<span class="neon">X</span> is actively maintained, fixes many bugs and adds so many feature into **decade** old plugin!
 
-- Ability to specify custom ingredients by CustomModelData
+    Latest versions support, Folia support, [IA & Oraxen support]((https://www.spigotmc.org/resources/iaoraxenaddon-breweryx-addon.114778/)), patches like [this](https://github.com/DieReicheErethons/Brewery/issues/541)!
 
-- Addons! (Things like [Recipes](https://www.spigotmc.org/resources/breweryrecipes-breweryx-addon.114897/) and [IAOraxenAddon](https://www.spigotmc.org/resources/iaoraxenaddon-breweryx-addon.114778/))
+    Also we give out support in our :simple-discord: [Discord](https://discord.gg/3FkNaNDnta)!
+</div>
 
-- Constantly adding new things, fixing bugs, and giving life to this old plugin!
 
-<!-- <div class="grid cards" markdown>
+## Contributors
 
-- :fontawesome-solid-wine-bottle: Brewing!
+Our awesome team!
 
-    Brew non or alcoholic drinks, that **actually** makes you drunk!
+<div class="grid cards" markdown>
+-  
 
-    Create your own awesome drinks, that will have unique effects that depends of brew quality!
+    <figure markdown="span">
+        ![Jsinco](https://avatars.githubusercontent.com/u/67713846?v=4){ align=right width="150" }
+        <figcaption>Jsinco, owner</figcaption>
+    </figure>
 
-- :fontawesome-solid-face-grin-tongue-wink: Drunkness!
+</div>
 
-    Drunk players will stumble, stutter, get sick and much more!
+<div class="grid cards" markdown>
 
-    Now those parties will get **much** crazier!
+-  
 
-- :material-unfold-more-vertical: And so much more!
+    <figure markdown="span">
+        ![Mitality](https://avatars.githubusercontent.com/u/96748385?v=4){ width="150" }
+        <figcaption>Mitality, contributer</figcaption>
+    </figure>
 
-    Plugins, IA & Oraxen items support, cocktails support and etc! -->
+-  
+
+    <figure markdown="span">
+        ![TTTheKing](https://cravatar.eu/avatar/adas123b1dsna/600.png){ width="150" }
+        <figcaption>TTTheKing, contributer</figcaption>
+    </figure>
+
+-  
+
+    <figure markdown="span">
+        ![Sn0wStorm](https://avatars.githubusercontent.com/u/4077108?v=4){ width="150" }
+        <figcaption>Sn0wStorm, author of original Brewery</figcaption>
+    </figure>
+
+-  
+
+    <figure markdown="span">
+        ![Grafe](https://avatars.githubusercontent.com/u/2846040?v=4){ width="150" }
+        <figcaption>Grafe, author of original Brewery</figcaption>
+    </figure>
+
+- 
+
+    <figure markdown="span">
+        ![Szarkan](https://avatars.githubusercontent.com/u/150809885?v=4){ width="150" }
+        <figcaption>szarkan, i made this wiki!</figcaption>
+    </figure>
+
+- 
+
+    <figure markdown="span">
+        ![You](https://cravatar.eu/avatar/crijgh/600.png){ width="150" }
+        <figcaption>You</figcaption>
+    </figure>
+
+    You can also be here! If you want to contribute - feel free to tell us in [our Discord](https://discord.gg/3FkNaNDnta)!
+
+
+</div>

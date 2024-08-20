@@ -49,18 +49,6 @@ Most of drinks need **to age** from base potion to drink or to get better qualit
 
 For that you need a **Barrel**. You can use default Minecraft barrel as **Oak barrel** that can contain up to 6 drinks or build multiblock structure if drink has to age in different type of wood. Structure barrels also can store more brews than default barrel!
 
-### Small barrel | 9 slots
-
-In order to "activate" barrel, you have to put sign with "barrel" written on it (or whatever server admin put in config)
-
-![Small barrel](https://camo.githubusercontent.com/91a5735dcfa7bbf4aba6c26edf3fe911ec620646fb812be94dc8a897b7534f76/68747470733a2f2f696d6775722e636f6d2f426b4e736935342e706e67)
-
-![Small barrel, side look](https://camo.githubusercontent.com/9788dbdd8e96f04a5cd63dabd556efc640816806a0fe38b8c131ed0506e20983/68747470733a2f2f696d6775722e636f6d2f4d73706c356e362e706e67)
-
-### Big barrel | 27 slots
-
-![Big barrel](https://camo.githubusercontent.com/5bf4cf08f7f625abe4031cba4da0383dd4f748721b23322da91593072c1043f8/68747470733a2f2f696d6775722e636f6d2f464f72376c4e352e706e67)
-
-![Big barrel, 2 look](https://camo.githubusercontent.com/106931a5179693500c3f9614bcc2290aa299458b2bb9a10354572d9695dab75f/68747470733a2f2f696d6775722e636f6d2f6b336834716a302e706e67)
+![Barrels used in BreweryX](../../assets/barrels.png)
 
 After you put your drinks in barrels, you need to just wait! 1 "year" is equals 1 in-game day. If you overdo the drink or use the wrong type of wood, the drink is likely to spoil.
