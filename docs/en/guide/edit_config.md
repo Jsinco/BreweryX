@@ -2,11 +2,15 @@
 
 The Brewery<span class="neon">X</span> config has a lot of its own jokes, which we will now analyze.yze.
 
+***
+
 ## Language: `language`
 
 The BreweryX message language. It can be any of the `BreweryX/languages/` folder.
 
 Current languages: `en`, `ru`, `de`, `es`, `fr`, `it`, `tw` and `zh`
+
+***
 
 ## Plugin prefix: `pluginPrefix`
 
@@ -14,11 +18,15 @@ This is what will be written before the plugin message.
 
 Default value: `pluginPrefix: '&2[Brewery]&f "`
 
+***
+
 ## Home type: `homeType`
 
 This is the command that will be registered on behalf of the player when he gets drunk and logs back on the server.
 
 Default value: `homeType: 'cmd: home"`
+
+***
 
 ## Consequences of drinking: `enableWake`
 
@@ -28,11 +36,15 @@ Default value: `homeType: 'cmd: home"`
 
 Default value: `enableWake: true`
 
+***
+
 ## Difficulty logging in: `enableLoginDisallow`
 
 `true` - the player will need to log in to the server several times if he is extremely drunk
 
 `false` - disables this feature
+
+***
 
 ## Consequences of Drinking 2.0: `enableKickOnOverdrink`
 
@@ -40,11 +52,15 @@ Default value: `enableWake: true`
 
 `false` - disables this feature
 
+***
+
 ## Vomit: `enablePuke`
 
 `true` - if the player is very drunk, he will "vomit" items defined in `pukeItem`
 
 `false` - disables this feature
+
+***
 
 ## Type of vomit: `pukeItem`
 
@@ -52,11 +68,15 @@ A comma-separated list of items that the player will burp with if `enablePuke` i
 
 Default value: `pukeItem: [Soul_Sand]`
 
+***
+
 ## Vomit disappearing time: `pukeDespawnTime'
 
 How many seconds will vomit items disappear.
 
 Default value: `pukeDespawntime: 60`
+
+***
 
 ## Difficulty walking: `stumblePercent`
 
@@ -64,11 +84,15 @@ The number of how difficult it is for a player to walk when heavily intoxicated,
 
 Default value: `stumblePercent: 100`
 
+***
+
 ## Alcohol level when drinking: `showStatusOnDrink`
 
 `true` - to show the player how drunk he is when drinking
 
 `false` - do not show
+
+***
 
 ## Withdrawal of intoxication: `drainItems`
 
@@ -82,11 +106,15 @@ drainItems:
   - Milk_Bucket/2
 ```
 
+***
+
 ## Cauldron Effects: `enableCauldronParticles`
 
 `true` - the Cauldronhas effects
 
 `false` - no
+
+***
 
 ## Number of Cauldron particles: `minimalParticles`
 
@@ -94,11 +122,15 @@ drainItems:
 
 `false` - leave everything as it is
 
+***
+
 ## Craft Sealing Table: `craftSealingTable`
 
 `true` - sealing table crafting is enabled
 
 `false` - disabled
+
+***
 
 ## Is the Sealing table enabled: `enableSealingTable`
 
@@ -106,11 +138,15 @@ drainItems:
 
 `false` - not allowed
 
+***
+
 ## Show the quality of the drink: `alwaysShowQuality`
 
 `true` - always show the quality of the drink in the lore of the drink
 
 `false` - only during fermentation/distillation
+
+***
 
 ## Show the alcohol level of the drink: `alwaysShowAlc`
 
@@ -118,11 +154,15 @@ drainItems:
 
 `false` - only during distillation
 
+***
+
 ## Show who brewed the drink: `showBrewer`
 
 `true` - show who brewed the drink in the lore of the drink
 
 `false` - do not show
+
+***
 
 ## Is it possible to ferment in Minecraft barrels: `ageInMCBarrels`
 
@@ -130,11 +170,15 @@ drainItems:
 
 `false` - not allowed
 
+***
+
 ## How many slots are in a regular barrel: `maxBrewsInMCBarrels`
 
 The number is how many slots are available in a regular barrel.
 
 Default value: `maxBrewsInMCBarrels: 6`
+
+***
 
 ## Encoding of drinks: `enableEncode`
 
@@ -142,25 +186,37 @@ This setting (if set to `true`) allows you to encode the components (NBT) of the
 
 **Important**! With the setting enabled, drinks can only be stored on one server. All encoded drinks will not be able to be transmitted through worlds, their downloads, schematics, etc.
 
+***
+
 ## Encoding type: `encodeKey`
 
 Not sure, we need to ask the developer...
+
+***
 
 ## Checking for updates: `updateCheck`
 
 Whether to check for BreweryX updates
 
+***
+
 ## Autosave: `autosave`
 
 The number in minutes, once in how many minutes to save BreweryX data
+
+***
 
 ## Debug: `debug`
 
 Whether to enable the plugin's debug
 
+***
+
 ## Config version: `version`
 
 <span class="red bold">NEVER TOUCH.</span>
+
+***
 
 ## Confusing chat: `words`
 
@@ -182,5 +238,7 @@ alcohol: 30 # What alcohol level will this setting work on?
    alcohol: 10 # What alcohol level will this setting work on?
    percentage: 70 # Chance that the letter "y" will be replaced
 ```
+
+***
 
 ## To be continued...

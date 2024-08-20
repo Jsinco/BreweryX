@@ -3,11 +3,13 @@
 
 Creating new recipe is somewhat easy with BreweryX. All you need is to follow this guide!
 
+***
+
 ## Name*s* of a drink: `name`
 
 | Required? | Value | Default Value |
 | --------- | ----- | ------------- |
-|  Yes      | `Name of bad brew/Name of normal brew/Name of good brew`|None|
+|  Yes      | `Bad Name/Name/Good Name`|None|
 
 The name of the drink. Can contain three variations, each for different quality of a drink. It'll look like that:
 
@@ -23,11 +25,13 @@ ColorfulBrew:
     name: '&8Bad brew/Brew/&#ffb424Good brew'
 ```
 
+***
+
 ## Ingredients: `ingredients`
 
 | Required? | Value | Default Value |
 | --------- | ----- | ------------- |
-| Yes |- ItemName/Amount|None|
+| Yes |`- ItemName/Amount`|None|
 
 !!! warning ""
     Required at all time
@@ -57,6 +61,8 @@ TestBrew:
         - blue_flowers/2 # You'll need 2 items defined in brewery's CustomItems
 ```
 
+***
+
 ## Time to brew: `cookingtime`
 
 | Required? | Value | Default Value |
@@ -70,6 +76,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     cookingtime: 12 # 12 minutes
 ```
+
+***
 
 ## How much distilling: `distillruns`
 
@@ -85,6 +93,8 @@ TestBrew:
     distillruns: 4
 ```
 
+***
+
 ## Distill time: `distilltime`
 
 | Required? | Value | Default Value |
@@ -98,6 +108,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     distilltime: 10
 ```
+
+***
 
 ## Type of barrel wood: `wood`
 
@@ -137,6 +149,8 @@ TestBrew:
     wood: 4 # Spruce barrel
 ```
 
+***
+
 ## Aging time: `age`
 
 | Required? | Value | Default Value |
@@ -150,6 +164,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     age: 12 # 12 minecraft days
 ```
+
+***
 
 ## Color of a drink: `color`
 
@@ -168,6 +184,8 @@ TestBrew:
     color: '99FF33'
 ```
 
+***
+
 ## Difficulty of brewing: `difficulty`
 
 | Required? | Value | Default Value |
@@ -184,6 +202,8 @@ TestBrew:
     difficulty: 5
 ```
 
+***
+
 ## Alcohol level: `alcohol`
 
 | Required? | Value | Default Value |
@@ -197,6 +217,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     alcohol: 45
 ```
+
+***
 
 ## Lore of brew: `lore`
 
@@ -215,6 +237,8 @@ TestBrew:
     - ++ "This text will be present if brew has normal quality"
     - +++ "This text will be present if brew has good quality"
 ```
+
+***
 
 ## Executing server commands on drink: `servercommands`
 
@@ -237,6 +261,8 @@ TestBrew:
     - +++ op %player% # This will execute if brew quality is good. Also don't give OP to players =)
 ```
 
+***
+
 ## Executing commands as player: `playercommands`
 
 | Required? | Value | Default Value |
@@ -258,6 +284,8 @@ TestBrew:
     - +++ give %player% diamond 9999 # This will execute if brew quality is good. 
 ```
 
+***
+
 ## Message after drinking: `drinkmessage`
 
 | Required? | Value | Default Value |
@@ -271,6 +299,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     drinkmessage: "UR DRUNK!"
 ```
+
+***
 
 ## Title after drinking: `drinktitle`
 
@@ -286,6 +316,8 @@ TestBrew:
     drinktitle: "UR DRUNK AND THIS IS TITLE!"
 ```
 
+***
+
 ## Glint effect: `glint`
 
 | Required? | Value | Default Value |
@@ -300,11 +332,13 @@ TestBrew:
     glint: true
 ```
 
+***
+
 ## CMD of item: `customModelData`
 
 | Required? | Value | Default Value |
 | --------- | ----- | ------------- |
-|No|Numbers `CMD of bad brew`/`CMD of normal brew`/`CMD of good brew`|None|
+|No|`Bad CMD/CMD/Good CMD`|None|
 
 Custom model data of a brew, can vary based on quality of a brew.
 
@@ -313,6 +347,8 @@ TestBrew:
     name: Bad Brew/Brew/Good Brew
     customModelData: 1337/1338/1339
 ```
+
+***
 
 ## Potion effects: `effects`
 
@@ -338,6 +374,8 @@ TestBrew:
       - WEAKNESS/3-1/50-10 # Better the brew - less Weakness player will have
       - REGENERATION/1-3/10-50 # Vica versa
 ```
+
+***
 
 ## Examples
 

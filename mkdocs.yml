@@ -6,6 +6,7 @@ repo_url: https://github.com/Jsinco/BreweryX
 theme:
   language: en
   name: material
+  custom_dir: overrides
   palette:
     scheme: slate
     primary: indigo
@@ -92,11 +93,23 @@ extra:
   status:
     new: Recently updated!
     inprogress: Article is in progress
+  social:
+    - icon: simple/discord
+      link: https://discord.gg/3FkNaNDnta
+      name: Discord
+    - icon: simple/github
+      link: https://github.com/Jsinco/BreweryX
+      name: Github
 nav:
   - '': index.md
   - Documentation:
-    - en/guide/recipies.md
-    - en/guide/brewing_guide.md
-    - en/guide/custom_items.md
-    - en/guide/edit_config.md
-    - en/guide/default_config.md
+    - Config:
+      - en/guide/recipies.md
+      - en/guide/edit_config.md
+      - en/guide/default_config.md
+    - Other:
+      - en/guide/brewing_guide.md
+      - en/guide/custom_items.md
+  - API:
+    - en/api/api.md
+    - en/api/depenizen.md

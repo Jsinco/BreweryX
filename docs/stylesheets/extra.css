@@ -257,3 +257,46 @@ td {
   font-style: normal;
   font-weight: 500;
 }
+
+.md-nav__list[data-md-component="toc"] {
+  font-family: 'Inter', sans-serif;
+  border-left: 2px solid rgba(221, 221, 221, 0.432);
+}
+
+.md-nav {
+  font-size: .75rem;
+  font-weight: 450;
+}  
+
+.md-nav__list .md-nav__item {
+  margin: 0;
+  padding: 0;
+}
+
+.md-nav__list .md-nav__link {
+  padding: 10px 4px; /* Adjust padding as needed */
+  border-radius: 4px; /* Optional: Add rounded corners */
+  margin-top: 0;
+}
+
+.md-nav__list .md-nav__link:hover {
+  background-color: #38383880; 
+  border-radius: 8px; 
+  transition: background-color 0.125s; 
+}
+
+.md-nav__item {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+@media (min-width: 1220px) {
+  label.md-nav__link {
+    font-size: 1rem;
+    margin-left: -12px;
+  }
+}
