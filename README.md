@@ -10,8 +10,6 @@ Help, feature requests, bug reports? Join our [Discord](https://discord.gg/aV5Am
 > Brewery**X** is based off of an over decade old plugin called Brewery. A lot of this code is old and awful to look at. If you see poorly written code, don't assume the worst because chances are, I didn't even write it. Thanks
 
 
-<br>
-
 ### Brewery is a Plugin for an alternate brewing process, including alcoholic Potions.
 
 This Plugin works with Spigot, Paper, and Folia from `1.21.1` to `1.8.x`.
