@@ -213,10 +213,15 @@ public abstract class DataManager {
         try {
             worldUUID = UUID.fromString(loc[0]);
         } catch (IllegalArgumentException e) {
-            plugin.errorLog("Invalid world UUID! " + loc[0], e);
+            plugin.errorLog("Invalid world UUID! Checking via world name instead. If this world doesn't exist, this object will not be instantiated." + loc[0], e);
             return null;
         }
+
         World world = Bukkit.getWorld(worldUUID);
+        if (world == null) {
+            world = Bukkit.getWorld(loc[0]);
+        }
+
 
         if (world == null) {
             plugin.errorLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
