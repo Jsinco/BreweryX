@@ -5,16 +5,18 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.StorageInitException;
+import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.records.ConfiguredDataManager;
 import com.dre.brewery.storage.records.SerializableBPlayer;
 import com.dre.brewery.storage.records.SerializableBarrel;
 import com.dre.brewery.storage.records.SerializableCauldron;
 import com.dre.brewery.storage.records.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
-import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.storage.records.BreweryMiscData;
-import com.dre.brewery.storage.records.ConfiguredDataManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,11 +27,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-// I don't write the greatest SQL, but I did my best ¯\_(ツ)_/¯ - Jsinco
-@SuppressWarnings("Duplicates") // Dupe code from SQLiteStorage
-public class MySQLStorage extends DataManager {
+@SuppressWarnings("Duplicates") // Dupe code from MySQLStorage
+public class SQLiteStorage extends DataManager {
 
-    private static final String URL = "jdbc:mysql://";
+    private static final String URL = "jdbc:sqlite:";
     private static final String[] TABLES = {
             "misc (id VARCHAR(4) PRIMARY KEY, data LONGTEXT);",
             "barrels (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);",
@@ -42,19 +43,22 @@ public class MySQLStorage extends DataManager {
     private final String tablePrefix;
     private final SQLDataSerializer serializer;
 
-    public MySQLStorage(ConfiguredDataManager record) throws StorageInitException {
-        try {
-            this.connection = DriverManager.getConnection(URL + record.address(), record.username(), record.password());
-            this.tablePrefix = record.tablePrefix();
-            this.serializer = new SQLDataSerializer();
-        } catch (SQLException e) {
-            throw new StorageInitException("Failed to connect to MySQL database! (Did you configure it correctly?)", e);
+    public SQLiteStorage(ConfiguredDataManager record) throws StorageInitException {
+        String fileName = record.database() + ".db";
+        File rawFile = new File(plugin.getDataFolder(), fileName);
+
+        if (!rawFile.exists()) {
+            try {
+                rawFile.createNewFile();
+            } catch (IOException e) {
+                throw new StorageInitException("Failed to create db file! " + fileName, e);
+            }
         }
 
         try {
-            try (PreparedStatement statement = connection.prepareStatement("USE " + record.database())) {
-                statement.execute();
-            }
+            this.connection = DriverManager.getConnection(URL + rawFile.getAbsolutePath());
+            this.tablePrefix = record.tablePrefix();
+            this.serializer = new SQLDataSerializer();
 
             for (String table : TABLES) {
                 try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + tablePrefix + table)) {
@@ -62,7 +66,7 @@ public class MySQLStorage extends DataManager {
                 }
             }
         } catch (SQLException e) {
-            throw new StorageInitException("Failed to create tables!", e);
+            throw new StorageInitException("Failed to connect or create tables!", e);
         }
     }
 
@@ -71,7 +75,7 @@ public class MySQLStorage extends DataManager {
         try {
             connection.close();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to close MySQL connection!", e);
+            plugin.errorLog("Failed to close SQLite connection!", e);
         }
     }
 
@@ -85,7 +89,7 @@ public class MySQLStorage extends DataManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve object from table: " + table + ", from: MySQL!", e);
+            plugin.errorLog("Failed to retrieve object from table: " + table + ", from: SQLite!", e);
         }
         return null;
     }
@@ -102,7 +106,7 @@ public class MySQLStorage extends DataManager {
                 objects.add(serializer.deserialize(data, type));
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve objects from table: " + table + ", from: MySQL!", e);
+            plugin.errorLog("Failed to retrieve objects from table: " + table + ", from: SQLite!", e);
         }
         return objects;
     }
@@ -110,7 +114,7 @@ public class MySQLStorage extends DataManager {
 
     private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
         if (!overwrite) {
-            String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+            String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
             try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
                 for (SerializableThing serializableThing : serializableThings) {
                     insertStatement.setString(1, serializableThing.getId());
@@ -119,58 +123,49 @@ public class MySQLStorage extends DataManager {
                 }
                 insertStatement.executeBatch();
             } catch (SQLException e) {
-                plugin.errorLog("Failed to save barrels to MySQL!", e);
+                plugin.errorLog("Failed to save objects to SQLite!", e);
             }
             return;
         }
 
-        String createTempTableSql = "CREATE TEMPORARY TABLE temp_" + table + " (id VARCHAR(36), data LONGTEXT, PRIMARY KEY (id))";
-        String insertTempTableSql = "INSERT INTO temp_" + table + " (id, data) VALUES (?, ?)";
-        String replaceTableSql = "REPLACE INTO " + tablePrefix + table + " SELECT * FROM temp_" + table;
-        String dropTempTableSql = "DROP TEMPORARY TABLE temp_" + table;
+        String clearTableSql = "DELETE FROM " + tablePrefix + table;
+        String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?)";
 
-        try  {
+        try {
             connection.setAutoCommit(false);
 
-            try (PreparedStatement createTempTableStmt = connection.prepareStatement(createTempTableSql);
-                 PreparedStatement insertTempTableStmt = connection.prepareStatement(insertTempTableSql)) {
+            try (PreparedStatement clearTableStmt = connection.prepareStatement(clearTableSql);
+                 PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
 
-                createTempTableStmt.execute();
+                clearTableStmt.execute();
 
                 for (SerializableThing serializableThing : serializableThings) {
-                    insertTempTableStmt.setString(1, serializableThing.getId());
-                    insertTempTableStmt.setString(2, serializer.serialize(serializableThing));
-                    insertTempTableStmt.addBatch();
+                    insertStmt.setString(1, serializableThing.getId());
+                    insertStmt.setString(2, serializer.serialize(serializableThing));
+                    insertStmt.addBatch();
                 }
-                insertTempTableStmt.executeBatch();
-
-                try (PreparedStatement replaceTableStmt = connection.prepareStatement(replaceTableSql);
-                     PreparedStatement dropTempTableStmt = connection.prepareStatement(dropTempTableSql)) {
-
-                    replaceTableStmt.execute();
-                    dropTempTableStmt.execute();
-                }
+                insertStmt.executeBatch();
 
                 connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
-                plugin.errorLog("Failed to save objects to: " + table + ", to: MySQL!", e);
+                plugin.errorLog("Failed to save objects to: " + table + ", to: SQLite!", e);
             } finally {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: MySQL!", e);
+            plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: SQLite!", e);
         }
     }
 
     private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
-        String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+        String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, serializableThing.getId());
             statement.setString(2, serializer.serialize(serializableThing));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save object to:" + table + ", to: MySQL!", e);
+            plugin.errorLog("Failed to save object to:" + table + ", to: SQLite!", e);
         }
     }
 
@@ -180,7 +175,7 @@ public class MySQLStorage extends DataManager {
             statement.setString(1, id.toString());
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to delete object from: " + table + ", from: MySQL!", e);
+            plugin.errorLog("Failed to delete object from: " + table + ", from: SQLite!", e);
         }
     }
 
@@ -329,19 +324,19 @@ public class MySQLStorage extends DataManager {
                 return serializer.deserialize(resultSet.getString("data"), BreweryMiscData.class);
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve misc data from MySQL!", e);
+            plugin.errorLog("Failed to retrieve misc data from SQLite!", e);
         }
         return new BreweryMiscData(System.currentTimeMillis(), 0, new ArrayList<>(), new ArrayList<>(), 0);
     }
 
     @Override
     public void saveBreweryMiscData(BreweryMiscData data) {
-        String sql = "INSERT INTO " + tablePrefix + "misc (id, data) VALUES ('misc', ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+        String sql = "INSERT INTO " + tablePrefix + "misc (id, data) VALUES ('misc', ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, serializer.serialize(data));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save misc data to MySQL!", e);
+            plugin.errorLog("Failed to save misc data to SQLite!", e);
         }
     }
 }

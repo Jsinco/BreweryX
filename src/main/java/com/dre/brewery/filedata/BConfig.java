@@ -107,7 +107,7 @@ public class BConfig {
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
 	public static boolean enableSealingTable; // Allow Usage of Sealing Table
-	public static String pluginPrefix = "&2[Brewery]&f ";
+	public static String pluginPrefix = "&2[BreweryX]&f ";
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();

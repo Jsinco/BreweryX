@@ -11,6 +11,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
+import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import org.bukkit.Bukkit;
@@ -136,23 +137,25 @@ public abstract class DataManager {
         DataManager dataManager = switch (record.type()) {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> new MySQLStorage(record);
+            case SQLITE -> new SQLiteStorage(record);
         };
 
         // Legacy data migration
         if (BData.checkForLegacyData()) {
             long start = System.currentTimeMillis();
             plugin.log("&5Brewery is loading data from a legacy format!");
+            plugin.log("&6Brewery can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
 
             BData.readData();
             BData.finalizeLegacyDataMigration();
 
             dataManager.saveAll(false);
 
-            plugin.log("&5Finished migrating legacy data! Took&7: &5" + (System.currentTimeMillis() - start) + "ms");
+            plugin.log("&5Finished migrating legacy data! Took&7: &6" + (System.currentTimeMillis() - start) + "&5ms &cJoin our discord if you need assistance&7: &chttps://discord.gg/3FkNaNDnta");
         }
 
 
-        plugin.log("DataManager created: " + record.type());
+        plugin.log("DataManager created&7:&6 " + record.type());
         return dataManager;
     }
 
@@ -203,23 +206,37 @@ public abstract class DataManager {
         return serializeLocation(location, false);
     }
 
-    public static Location deserializeLocation(String locationString, boolean yawPitch) {
-        if (locationString == null) {
+    public static Location deserializeLocation(String string, boolean yawPitch) {
+        if (string == null) {
             plugin.errorLog("Location is null!");
             return null;
         }
-        String[] loc = locationString.split(",");
-        UUID worldUUID;
-        try {
-            worldUUID = UUID.fromString(loc[0]);
-        } catch (IllegalArgumentException e) {
-            plugin.errorLog("Invalid world UUID! Checking via world name instead. If this world doesn't exist, this object will not be instantiated." + loc[0], e);
-            return null;
+
+        String locationString = string;
+        String worldName = null;
+        if (locationString.contains("?=")) {
+            String[] split = locationString.split("\\?=");
+            locationString = split[0];
+            worldName = split[1];
         }
 
-        World world = Bukkit.getWorld(worldUUID);
-        if (world == null) {
-            world = Bukkit.getWorld(loc[0]);
+        String[] loc = locationString.split(",");
+        UUID worldUUID = null;
+        try {
+            worldUUID = UUID.fromString(loc[0]);
+        } catch (IllegalArgumentException ignored) {
+        }
+
+
+        World world = null;
+
+
+        if (worldUUID != null) {
+            world = Bukkit.getWorld(worldUUID);
+        }
+
+        if (world == null && worldName != null) {
+            world = Bukkit.getWorld(worldName);
         }
 
 
@@ -240,10 +257,15 @@ public abstract class DataManager {
             plugin.errorLog("Location must have a world! " + location);
             return null;
         }
+        String locationString;
         if (yawPitch) {
-            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
+            locationString = location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
         } else {
-            return location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+            locationString = location.getWorld().getUID() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
         }
+
+        // added this extra char separator so brewery can now parse locations via the world uuid or name
+        locationString = locationString + "?=" + location.getWorld().getName();
+        return locationString;
     }
 }

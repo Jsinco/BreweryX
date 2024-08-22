@@ -7,7 +7,7 @@ version: '3.1'
 # -- Storage Settings --
 storage:
   # What type of storage to use [FLATFILE]
-  # Available types: FlatFile, MySQL
+  # Available types: FlatFile, MySQL, SQLite
   type: FlatFile
   # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
   database: brewery-data
@@ -30,7 +30,7 @@ autosave: 3
 debug: false
 
 # Prefix used on messages
-pluginPrefix: '&2[Brewery]&f '
+pluginPrefix: '&2[BreweryX]&f '
 
 # Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
 enableHome: true

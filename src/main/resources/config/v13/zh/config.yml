@@ -7,7 +7,7 @@ version: "3.1"
 # -- Storage Settings --
 storage:
   # What type of storage to use [FLATFILE]
-  # Available types: FlatFile, MySQL
+  # Available types: FlatFile, MySQL, SQLite
   type: FlatFile
   # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
   database: brewery-data
@@ -34,7 +34,7 @@ autosave: 3
 debug: false
 
 # 用于此插件的消息前缀[Brewery]
-pluginPrefix: '&2[Brewery]&f '
+pluginPrefix: '&2[BreweryX]&f '
 
 # 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
 enableHome: true
