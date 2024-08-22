@@ -2,6 +2,7 @@ name: BreweryX
 version: '${version}'
 website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
+load: POSTWORLD
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun, PlaceholderAPI]
 authors: [Jsinco, Mitality, Szarkans, Sn0wStorm, TTTheKing, Grafe]
 folia-supported: true

@@ -208,7 +208,7 @@ public abstract class DataManager {
 
     public static Location deserializeLocation(String string, boolean yawPitch) {
         if (string == null) {
-            plugin.errorLog("Location is null!");
+            plugin.warningLog("Location is null!");
             return null;
         }
 
@@ -241,7 +241,7 @@ public abstract class DataManager {
 
 
         if (world == null) {
-            plugin.errorLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
+            plugin.warningLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
             return null;
         }
 
