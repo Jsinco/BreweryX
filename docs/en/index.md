@@ -60,7 +60,7 @@ Our awesome team!
 
     <figure markdown="span">
         ![Jsinco](https://avatars.githubusercontent.com/u/67713846?v=4){ align=right width="150" }
-        <figcaption>Jsinco, owner</figcaption>
+        <figcaption style="text-align: center;" markdown="1">**Jsinco** Lead Developer</figcaption>
     </figure>
 
 </div>
@@ -71,42 +71,42 @@ Our awesome team!
 
     <figure markdown="span">
         ![Mitality](https://avatars.githubusercontent.com/u/96748385?v=4){ width="150" }
-        <figcaption>Mitality, contributer</figcaption>
+        <figcaption>**Mitality** Developer</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
-        ![TTTheKing](https://cravatar.eu/avatar/adas123b1dsna/600.png){ width="150" }
-        <figcaption>TTTheKing, contributer</figcaption>
+        ![TTTheKing](https://avatars.githubusercontent.com/u/2845957?v=4){ width="150" }
+        <figcaption>**TTTheKing** Original Author</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
         ![Sn0wStorm](https://avatars.githubusercontent.com/u/4077108?v=4){ width="150" }
-        <figcaption>Sn0wStorm, author of original Brewery</figcaption>
+        <figcaption>**Sn0wStorm** Original Author</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
         ![Grafe](https://avatars.githubusercontent.com/u/2846040?v=4){ width="150" }
-        <figcaption>Grafe, author of original Brewery</figcaption>
+        <figcaption>**Grafe** Original Author</figcaption>
     </figure>
 
 - 
 
     <figure markdown="span">
         ![Szarkan](https://avatars.githubusercontent.com/u/150809885?v=4){ width="150" }
-        <figcaption>szarkan, i made this wiki!</figcaption>
+        <figcaption>**szarkan** I made this wiki!</figcaption>
     </figure>
 
 - 
 
     <figure markdown="span">
         ![You](https://cravatar.eu/avatar/crijgh/600.png){ width="150" }
-        <figcaption>You</figcaption>
+        <figcaption>**You**</figcaption>
     </figure>
 
     You can also be here! If you want to contribute - feel free to tell us in [our Discord](https://discord.gg/3FkNaNDnta)!

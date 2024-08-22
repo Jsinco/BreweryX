@@ -56,7 +56,7 @@ BreweryX это поддерживаемый, активно разрабаты�
 
     <figure markdown="span">
         ![Jsinco](https://avatars.githubusercontent.com/u/67713846?v=4){ width="150" }
-        <figcaption>Jsinco, основатель</figcaption>
+        <figcaption style="text-align: center;" markdown="1">**Jsinco** - лид-разработчик</figcaption>
     </figure>
 
 </div>
@@ -67,42 +67,42 @@ BreweryX это поддерживаемый, активно разрабаты�
 
     <figure markdown="span">
         ![Mitality](https://avatars.githubusercontent.com/u/96748385?v=4){ width="150" }
-        <figcaption>Mitality, участник</figcaption>
+        <figcaption>**Mitality** - разработчик</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
-        ![TTTheKing](https://cravatar.eu/avatar/adas123b1dsna/600.png){ width="150" }
-        <figcaption>TTTheKing, участник</figcaption>
+        ![TTTheKing](https://avatars.githubusercontent.com/u/2845957?v=4){ width="150" }
+        <figcaption>**TTTheKing** - автор оригинального Brewery</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
         ![Sn0wStorm](https://avatars.githubusercontent.com/u/4077108?v=4){ width="150" }
-        <figcaption>Sn0wStorm, автор оригинального Brewery</figcaption>
+        <figcaption>**Sn0wStorm** - автор оригинального Brewery</figcaption>
     </figure>
 
 -  
 
     <figure markdown="span">
         ![Grafe](https://avatars.githubusercontent.com/u/2846040?v=4){ width="150" }
-        <figcaption>Grafe, автор оригинального Brewery</figcaption>
+        <figcaption>**Grafe** - автор оригинального Brewery</figcaption>
     </figure>
 
 - 
 
     <figure markdown="span">
         ![Szarkan](https://avatars.githubusercontent.com/u/150809885?v=4){ width="150" }
-        <figcaption>szarkan, я написал эту Вики!</figcaption>
+        <figcaption>**szarkan** - я написал эту Вики!</figcaption>
     </figure>
 
 - 
 
     <figure markdown="span">
         ![Ты](https://cravatar.eu/avatar/crijgh/600.png){ width="150" }
-        <figcaption>Ты!</figcaption>
+        <figcaption>**Ты!**</figcaption>
     </figure>
 
     Здесь можешь оказаться и ты! Если ты хочешь помочь проекту BreweryX - [сообщи нам в Дискорд](https://discord.gg/3FkNaNDnta)!
