@@ -883,7 +883,8 @@ public class BPlayer {
 
 	public int getQuality() {
 		if (drunkenness == 0) {
-			BreweryPlugin.getInstance().errorLog("drunkenness should not be 0!");
+			// PAPI Placeholder %breweryx_quality% may be used on players that aren't drunk!
+			// BreweryPlugin.getInstance().errorLog("drunkenness should not be 0!");
 			return quality;
 		}
 		if (drunkenness < 0) {
