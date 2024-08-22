@@ -60,7 +60,7 @@ Our awesome team!
 
     <figure markdown="span">
         ![Jsinco](https://avatars.githubusercontent.com/u/67713846?v=4){ align=right width="150" }
-        <figcaption>**Jsinco** Lead Developer</figcaption>
+        <figcaption style="text-align: center;" markdown="1">**Jsinco** Lead Developer</figcaption>
     </figure>
 
 </div>
