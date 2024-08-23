@@ -69,7 +69,7 @@ The somewhat difficult brewing process rewards you with a diversity of Potions, 
 <dependency>
    <groupId>com.github.Jsinco</groupId>
    <artifactId>BreweryX</artifactId>
-   <version>3.2.1</version>
+   <version>3.2.5</version>
    <scope>provided</scope>
 </dependency>
 ```

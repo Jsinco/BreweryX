@@ -111,52 +111,26 @@ public class SQLiteStorage extends DataManager {
         return objects;
     }
 
-
     private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
-        if (!overwrite) {
-            String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
-                for (SerializableThing serializableThing : serializableThings) {
-                    insertStatement.setString(1, serializableThing.getId());
-                    insertStatement.setString(2, serializer.serialize(serializableThing));
-                    insertStatement.addBatch();
-                }
-                insertStatement.executeBatch();
-            } catch (SQLException e) {
-                plugin.errorLog("Failed to save objects to SQLite!", e);
-            }
-            return;
+        String sql;
+        if (overwrite) {
+            sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
+        } else {
+            sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO NOTHING";
         }
 
-        String clearTableSql = "DELETE FROM " + tablePrefix + table;
-        String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?)";
-
-        try {
-            connection.setAutoCommit(false);
-
-            try (PreparedStatement clearTableStmt = connection.prepareStatement(clearTableSql);
-                 PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
-
-                clearTableStmt.execute();
-
-                for (SerializableThing serializableThing : serializableThings) {
-                    insertStmt.setString(1, serializableThing.getId());
-                    insertStmt.setString(2, serializer.serialize(serializableThing));
-                    insertStmt.addBatch();
-                }
-                insertStmt.executeBatch();
-
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                plugin.errorLog("Failed to save objects to: " + table + ", to: SQLite!", e);
-            } finally {
-                connection.setAutoCommit(true);
+        try (PreparedStatement insertStatement = connection.prepareStatement(sql)) {
+            for (SerializableThing serializableThing : serializableThings) {
+                insertStatement.setString(1, serializableThing.getId());
+                insertStatement.setString(2, serializer.serialize(serializableThing));
+                insertStatement.addBatch();
             }
+            insertStatement.executeBatch();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: SQLite!", e);
+            plugin.errorLog("Failed to save objects to SQLite!", e);
         }
     }
+
 
     private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
         String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
