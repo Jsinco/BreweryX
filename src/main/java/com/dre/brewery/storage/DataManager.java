@@ -144,14 +144,14 @@ public abstract class DataManager {
         if (BData.checkForLegacyData()) {
             long start = System.currentTimeMillis();
             plugin.log("&5Brewery is loading data from a legacy format!");
-            plugin.log("&6Brewery can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
 
             BData.readData();
             BData.finalizeLegacyDataMigration();
 
             dataManager.saveAll(false);
 
-            plugin.log("&5Finished migrating legacy data! Took&7: &6" + (System.currentTimeMillis() - start) + "&5ms &cJoin our discord if you need assistance&7: &chttps://discord.gg/3FkNaNDnta");
+            plugin.log("&5Finished migrating legacy data! Took&7: &a" + (System.currentTimeMillis() - start) + "ms! &5Join our discord if you need assistance&7: &5https://discord.gg/3FkNaNDnta");
+			plugin.warningLog("Brewery can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
         }
 
 

@@ -90,7 +90,7 @@ public class MySQLStorage extends DataManager {
         return null;
     }
 
-    private <T> List<T> getAllGeneric(String table, Class<T> type) {
+    private <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
         String sql = "SELECT id, data FROM " + tablePrefix + table;
         List<T> objects = new ArrayList<>();
 
@@ -108,60 +108,60 @@ public class MySQLStorage extends DataManager {
     }
 
 
-    private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
-        if (!overwrite) {
-            String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
-                for (SerializableThing serializableThing : serializableThings) {
-                    insertStatement.setString(1, serializableThing.getId());
-                    insertStatement.setString(2, serializer.serialize(serializableThing));
-                    insertStatement.addBatch();
-                }
-                insertStatement.executeBatch();
-            } catch (SQLException e) {
-                plugin.errorLog("Failed to save barrels to MySQL!", e);
-            }
-            return;
-        }
+	private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
+		if (!overwrite) {
+			String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+			try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
+				for (SerializableThing serializableThing : serializableThings) {
+					insertStatement.setString(1, serializableThing.getId());
+					insertStatement.setString(2, serializer.serialize(serializableThing));
+					insertStatement.addBatch();
+				}
+				insertStatement.executeBatch();
+			} catch (SQLException e) {
+				plugin.errorLog("Failed to save to MySQL!", e);
+			}
+			return;
+		}
 
-        String createTempTableSql = "CREATE TEMPORARY TABLE temp_" + table + " (id VARCHAR(36), data LONGTEXT, PRIMARY KEY (id))";
-        String insertTempTableSql = "INSERT INTO temp_" + table + " (id, data) VALUES (?, ?)";
-        String replaceTableSql = "REPLACE INTO " + tablePrefix + table + " SELECT * FROM temp_" + table;
-        String dropTempTableSql = "DROP TEMPORARY TABLE temp_" + table;
+		String createTempTableSql = "CREATE TEMPORARY TABLE temp_" + table + " (id VARCHAR(36), data LONGTEXT, PRIMARY KEY (id))";
+		String insertTempTableSql = "INSERT INTO temp_" + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
+		String replaceTableSql = "REPLACE INTO " + tablePrefix + table + " SELECT * FROM temp_" + table;
+		String dropTempTableSql = "DROP TEMPORARY TABLE temp_" + table;
 
-        try  {
-            connection.setAutoCommit(false);
+		try {
+			connection.setAutoCommit(false);
 
-            try (PreparedStatement createTempTableStmt = connection.prepareStatement(createTempTableSql);
-                 PreparedStatement insertTempTableStmt = connection.prepareStatement(insertTempTableSql)) {
+			try (PreparedStatement createTempTableStmt = connection.prepareStatement(createTempTableSql);
+				 PreparedStatement insertTempTableStmt = connection.prepareStatement(insertTempTableSql)) {
 
-                createTempTableStmt.execute();
+				createTempTableStmt.execute();
 
-                for (SerializableThing serializableThing : serializableThings) {
-                    insertTempTableStmt.setString(1, serializableThing.getId());
-                    insertTempTableStmt.setString(2, serializer.serialize(serializableThing));
-                    insertTempTableStmt.addBatch();
-                }
-                insertTempTableStmt.executeBatch();
+				for (SerializableThing serializableThing : serializableThings) {
+					insertTempTableStmt.setString(1, serializableThing.getId());
+					insertTempTableStmt.setString(2, serializer.serialize(serializableThing));
+					insertTempTableStmt.addBatch();
+				}
+				insertTempTableStmt.executeBatch();
 
-                try (PreparedStatement replaceTableStmt = connection.prepareStatement(replaceTableSql);
-                     PreparedStatement dropTempTableStmt = connection.prepareStatement(dropTempTableSql)) {
+				try (PreparedStatement replaceTableStmt = connection.prepareStatement(replaceTableSql);
+					 PreparedStatement dropTempTableStmt = connection.prepareStatement(dropTempTableSql)) {
 
-                    replaceTableStmt.execute();
-                    dropTempTableStmt.execute();
-                }
+					replaceTableStmt.execute();
+					dropTempTableStmt.execute();
+				}
 
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                plugin.errorLog("Failed to save objects to: " + table + ", to: MySQL!", e);
-            } finally {
-                connection.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            plugin.errorLog("Failed to manage transaction for saving objects to: " + table + ", to: MySQL!", e);
-        }
-    }
+				connection.commit();
+			} catch (SQLException e) {
+				connection.rollback();
+				plugin.errorLog("Failed to save objects to: " + table + " due to SQL exception!", e);
+			} finally {
+				connection.setAutoCommit(true);
+			}
+		} catch (SQLException e) {
+			plugin.errorLog("Failed to manage transaction for saving objects to: " + table + " due to SQL exception!", e);
+		}
+	}
 
     private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
         String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";

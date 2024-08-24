@@ -212,7 +212,7 @@ public class BRecipe {
 			// Check if this is a Plugin Item
 			String[] pluginItem = matParts[0].split(":");
 			if (pluginItem.length > 1) {
-				RecipeItem custom = PluginItem.fromConfig(pluginItem[0], pluginItem[1]);
+				RecipeItem custom = com.dre.brewery.recipe.PluginItem.fromConfig(pluginItem[0], pluginItem[1]);
 				if (custom != null) {
 					custom.setAmount(amount);
 					custom.makeImmutable();

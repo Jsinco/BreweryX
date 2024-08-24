@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.5"
+version = "3.2.6"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,9 @@ repositories {
 
 // TODO: Figure out exclusions because this is a mess.
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
+		exclude("com.google.code.gson", "gson")
+	}
 
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files
@@ -49,6 +51,7 @@ dependencies {
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
 
+	implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
     //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
@@ -85,8 +88,9 @@ tasks {
     }
 
     shadowJar {
-        //relocate("org.bstats", "com.dre.brewery.integration.bstats")
+		relocate("com.google", "com.dre.brewery.integration.google")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.integration.universalScheduler")
+		//relocate("org.bstats", "com.dre.brewery.integration.bstats")
 
         archiveClassifier.set("")
     }

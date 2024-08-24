@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * <p>See /integration/item for examples on how to extend this class.
  * <p>This class stores items as name of the plugin and item id
  */
-public abstract class PluginItem extends RecipeItem implements Ingredient {
+public abstract class PluginItem extends com.dre.brewery.recipe.RecipeItem implements com.dre.brewery.recipe.Ingredient {
 
 	private static Map<String, Supplier<PluginItem>> constructors = new HashMap<>();
 
