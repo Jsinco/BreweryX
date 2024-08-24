@@ -73,7 +73,7 @@ public class SetCommand implements SubCommand {
 
 	@Override
 	public boolean playerOnly() {
-		return true;
+		return false;
 	}
 
 }
