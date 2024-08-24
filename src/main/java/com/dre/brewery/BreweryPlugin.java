@@ -107,7 +107,7 @@ public class BreweryPlugin extends JavaPlugin {
 		migrateBreweryDataFolder();
 
 		// Version check
-		log("Minecraft version&7:&6 " + minecraftVersion.getVersion());
+		log("Minecraft version&7:&a " + minecraftVersion.getVersion());
 		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
 			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
@@ -202,9 +202,9 @@ public class BreweryPlugin extends JavaPlugin {
 
 				if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
 					UpdateChecker.setUpdateAvailable(true);
-					UpdateChecker.setLatestVersion(latestVersion);
 					log(languageReader.get("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
 				}
+				UpdateChecker.setLatestVersion(latestVersion);
 			});
 		}
 
@@ -213,7 +213,7 @@ public class BreweryPlugin extends JavaPlugin {
 			new PlaceholderAPI().register();
 		}
 
-		log("Using scheduler: " + scheduler.getClass().getSimpleName());
+		log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		log(this.getDescription().getName() + " enabled!");
 	}
 
