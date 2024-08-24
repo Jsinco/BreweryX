@@ -150,12 +150,12 @@ public abstract class DataManager {
 
             dataManager.saveAll(false);
 
-            plugin.log("&5Finished migrating legacy data! Took&7: &a" + (System.currentTimeMillis() - start) + "ms! &5Join our discord if you need assistance&7: &5https://discord.gg/3FkNaNDnta");
-			plugin.warningLog("Brewery can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
+            plugin.log("&5Finished migrating legacy data! Took&7: &a" + (System.currentTimeMillis() - start) + "ms&5! Join our discord if you need assistance: &ahttps://discord.gg/3FkNaNDnta");
+			plugin.warningLog("BreweryX can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
         }
 
 
-        plugin.log("DataManager created&7:&6 " + record.type());
+        plugin.log("DataManager created&7:&a " + record.type());
         return dataManager;
     }
 

@@ -154,12 +154,12 @@ public class MySQLStorage extends DataManager {
 				connection.commit();
 			} catch (SQLException e) {
 				connection.rollback();
-				plugin.errorLog("Failed to save objects to: " + table + " due to SQL exception!", e);
+				plugin.errorLog("Failed to save objects to: " + table + " due to MySQL exception!", e);
 			} finally {
 				connection.setAutoCommit(true);
 			}
 		} catch (SQLException e) {
-			plugin.errorLog("Failed to manage transaction for saving objects to: " + table + " due to SQL exception!", e);
+			plugin.errorLog("Failed to manage transaction for saving objects to: " + table + " due to MySQL exception!", e);
 		}
 	}
 
