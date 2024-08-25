@@ -430,7 +430,7 @@ public class Barrel implements InventoryHolder {
 					e.printStackTrace();
 				}
 			}
-			if (event.willDropItems()) {
+			if (event.willDropItems() && body != null) {
 				byte wood = body.getWood();
 				for (ItemStack item : items) {
 					if (item != null) {
