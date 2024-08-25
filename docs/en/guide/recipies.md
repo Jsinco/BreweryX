@@ -25,6 +25,13 @@ ColorfulBrew:
     name: '&8Bad brew/Brew/&#ffb424Good brew'
 ```
 
+If you don't want to do names based on brew's quality - just put one name
+
+```yaml
+TestBrew:
+    name: Brew
+```
+
 ***
 
 ## Ingredients: `ingredients`
