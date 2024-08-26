@@ -76,9 +76,24 @@ public class AddonManager extends ClassLoader {
 					}
 					Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
 					try {
-						BreweryAddon addon = addonClass.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(addonClass));
-						addon.onAddonEnable(new AddonFileManager(addon, file));
-						addons.add(addon);
+						BreweryAddon addon = addonClass.getConstructor().newInstance();
+
+						// Set the logger and file manager
+						Field loggerField = addonClass.getDeclaredField("logger");
+						Field fileManagerField = addonClass.getDeclaredField("addonFileManager");
+						Field infoField = addonClass.getDeclaredField("addonInfo");
+
+						loggerField.setAccessible(true);
+						fileManagerField.setAccessible(true);
+						infoField.setAccessible(true);
+
+						loggerField.set(addon, new AddonLogger(addonClass));
+						fileManagerField.set(addon, new AddonFileManager(addon, file));
+						infoField.set(addon, addonClass.getAnnotation(AddonInfo.class));
+						addons.add(addon); // Add to our list of addons
+
+						// let the addon know it has been enabled
+						addon.onAddonEnable();
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
 					}

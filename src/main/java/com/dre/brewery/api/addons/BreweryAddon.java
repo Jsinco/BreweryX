@@ -1,18 +1,17 @@
 package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BreweryAddon {
 
-	protected final BreweryPlugin plugin;
-	protected final AddonLogger logger;
+	private AddonLogger logger = null;
+	private AddonFileManager addonFileManager = null;
+	private AddonInfo addonInfo = null;
 
-	public BreweryAddon(BreweryPlugin plugin, AddonLogger logger) {
-        this.plugin = plugin;
-		this.logger = logger;
-	}
 
-	public void onAddonEnable(AddonFileManager addonFileManager) {
+	public void onAddonEnable() {
 	}
 
 	public void onAddonDisable() {
@@ -21,7 +20,23 @@ public abstract class BreweryAddon {
 	public void onBreweryReload() {
 	}
 
-	public AddonLogger getLogger() {
+	@NotNull
+	public BreweryPlugin getBreweryPlugin() {
+		return BreweryPlugin.getInstance();
+	}
+
+	@NotNull
+	public AddonFileManager getAddonFileManager() {
+		return addonFileManager;
+	}
+
+	@NotNull
+	public AddonLogger getAddonLogger() {
 		return logger;
+	}
+
+	@Nullable
+	public AddonInfo getAddonInfo() {
+		return addonInfo;
 	}
 }
