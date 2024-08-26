@@ -7,7 +7,7 @@ version: "3.1"
 # -- Storage Settings --
 storage:
   # What type of storage to use [FLATFILE]
-  # Available types: FlatFile, MySQL, SQLite
+  # Available types: FlatFile, MySQL, SQLite, MongoDB
   type: FlatFile
   # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
   database: brewery-data

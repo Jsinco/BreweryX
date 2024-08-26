@@ -12,7 +12,9 @@ import com.dre.brewery.integration.barrel.WGBarrel5;
 import com.dre.brewery.integration.barrel.WGBarrel6;
 import com.dre.brewery.integration.barrel.WGBarrel7;
 import com.dre.brewery.integration.item.BreweryPluginItem;
+import com.dre.brewery.integration.item.ItemsAdderPluginItem;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.integration.item.OraxenPluginItem;
 import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
@@ -68,6 +70,8 @@ public class BConfig {
 	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
 	public static boolean hasChestShop;
 	public static boolean hasShopKeepers;
+	public static boolean hasOraxen;
+	public static boolean hasItemsAdder;
 
 	// Barrel
 	public static boolean openEverywhere;
@@ -234,6 +238,8 @@ public class BConfig {
 		hasChestShop = plMan.isPluginEnabled("ChestShop");
 		hasShopKeepers = plMan.isPluginEnabled("Shopkeepers");
 		hasSlimefun = plMan.isPluginEnabled("Slimefun");
+		hasOraxen = plMan.isPluginEnabled("Oraxen");
+		hasItemsAdder = plMan.isPluginEnabled("ItemsAdder");
 
 		// various Settings
 		BreweryPlugin.debug = config.getBoolean("debug", false);
@@ -283,6 +289,8 @@ public class BConfig {
 		PluginItem.registerForConfig("mmoitems", MMOItemsPluginItem::new);
 		PluginItem.registerForConfig("slimefun", SlimefunPluginItem::new);
 		PluginItem.registerForConfig("exoticgarden", SlimefunPluginItem::new);
+		PluginItem.registerForConfig("oraxen", OraxenPluginItem::new);
+		PluginItem.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
 
 		// Loading custom items
 		ConfigurationSection configSection = config.getConfigurationSection("customItems");

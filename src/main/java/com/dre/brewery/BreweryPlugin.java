@@ -106,12 +106,6 @@ public class BreweryPlugin extends JavaPlugin {
 	public void onEnable() {
 		migrateBreweryDataFolder();
 
-		// Version check
-		log("Minecraft version&7:&a " + minecraftVersion.getVersion());
-		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
-			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
-		}
-
 
 		// MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
@@ -144,6 +138,12 @@ public class BreweryPlugin extends JavaPlugin {
 		CustomItem.registerItemLoader(this);
 		SimpleItem.registerItemLoader(this);
 		PluginItem.registerItemLoader(this);
+
+
+		log("Minecraft version&7:&a " + minecraftVersion.getVersion());
+		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
+			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
+		}
 
 
 		// Load DataManager

@@ -10,6 +10,7 @@ import com.dre.brewery.Wakeup;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
+import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
@@ -119,14 +120,14 @@ public abstract class DataManager {
         if (save) {
             saveAll(async, () -> {
                 this.closeConnection();
-                plugin.log("DataManager exited.");
+                plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
                 if (callback != null) {
                     callback.run();
                 }
             });
         } else {
             this.closeConnection(); // let databases close their connections
-            plugin.log("DataManager exited.");
+            plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
             if (callback != null) {
                 callback.run();
             }
@@ -138,6 +139,7 @@ public abstract class DataManager {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> new MySQLStorage(record);
             case SQLITE -> new SQLiteStorage(record);
+            case MONGODB -> new MongoDBStorage(record);
         };
 
         // Legacy data migration
@@ -155,7 +157,7 @@ public abstract class DataManager {
         }
 
 
-        plugin.log("DataManager created&7:&a " + record.type());
+        plugin.log("DataManager created&7:&a " + record.type().getFormattedName());
         return dataManager;
     }
 

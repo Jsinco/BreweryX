@@ -52,7 +52,7 @@ public class FlatFileStorage extends DataManager {
         try {
             dataFile.save(rawFile);
         } catch (IOException e) {
-            plugin.errorLog("Failed to save brewery-data.yml!", e);
+            plugin.errorLog("Failed to save to Flatfile!", e);
         }
     }
 

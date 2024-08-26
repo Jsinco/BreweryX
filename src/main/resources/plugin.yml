@@ -2,12 +2,25 @@ name: BreweryX
 version: '${version}'
 website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
-load: POSTWORLD
-softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun, PlaceholderAPI]
-authors: [Jsinco, Mitality, Szarkans, Sn0wStorm, TTTheKing, Grafe]
-folia-supported: true
 api-version: 1.13
+load: POSTWORLD
+folia-supported: true
+authors: [Jsinco, Mitality, Szarkans, Sn0wStorm, TTTheKing, Grafe]
 libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']
+softdepend:
+  - LWC
+  - LogBlock
+  - WorldGuard
+  - GriefPrevention
+  - Vault
+  - ChestShop
+  - Shopkeepers
+  - Towny
+  - BlockLocker
+  - Slimefun
+  - PlaceholderAPI
+  - Oraxen
+  - ItemsAdder
 commands:
   breweryx:
     description: Mostly admin commands to create/modify Brews and drunkenness

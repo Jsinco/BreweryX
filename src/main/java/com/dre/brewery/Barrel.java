@@ -430,7 +430,13 @@ public class Barrel implements InventoryHolder {
 					e.printStackTrace();
 				}
 			}
-			if (event.willDropItems() && body != null) {
+			if (event.willDropItems()) {
+				if (body == null) {
+					BreweryPlugin.getInstance().debugLog("Barrel Body is null, can't drop items: " + this.id);
+					barrels.remove(this);
+					return;
+				}
+
 				byte wood = body.getWood();
 				for (ItemStack item : items) {
 					if (item != null) {

@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.2.7"
+version = "3.2.7-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -25,6 +25,7 @@ repositories {
     maven("https://repo.projectshard.dev/repository/releases/") // Shopkeepers
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
+    maven("https://repo.oraxen.com/releases") // Oraxen
 }
 
 // TODO: Figure out exclusions because this is a mess.
@@ -50,7 +51,10 @@ dependencies {
     compileOnly("com.nisovin.shopkeepers:ShopkeepersAPI:2.18.0") // https://www.spigotmc.org/resources/shopkeepers.80756/history
     compileOnly("nl.rutgerkok:blocklocker:1.10.4") // https://www.spigotmc.org/resources/blocklocker.3268/history
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
+    compileOnly("io.th0rgal:oraxen:1.163.0")
+    compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
 
+    implementation("org.mongodb:mongodb-driver-sync:5.0.1")
 	implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
@@ -88,8 +92,9 @@ tasks {
     }
 
     shadowJar {
-		relocate("com.google", "com.dre.brewery.integration.google")
-        relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.integration.universalScheduler")
+		relocate("com.google", "com.dre.brewery.depend.google")
+        relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
+        relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
 		//relocate("org.bstats", "com.dre.brewery.integration.bstats")
 
         archiveClassifier.set("")
