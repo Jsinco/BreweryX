@@ -27,7 +27,7 @@ public class AddonFileManager {
 		this.jarFile = jarFile;
 		this.addonName = addon.getClass().getSimpleName();
 		this.addonFolder = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "addons" + File.separator + addonName);
-		this.logger = addon.getLogger();
+		this.logger = addon.getAddonLogger();
 		this.configFile = new File(addonFolder, addonName + ".yml");
 		this.addonConfig = configFile.exists() ? YamlConfiguration.loadConfiguration(configFile) : null;
 	}
