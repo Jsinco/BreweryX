@@ -54,7 +54,6 @@ dependencies {
     compileOnly("io.th0rgal:oraxen:1.163.0")
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
 
-    implementation("org.mongodb:mongodb-driver-sync:5.0.1")
 	implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
@@ -93,7 +92,6 @@ tasks {
 
     shadowJar {
 		relocate("com.google", "com.dre.brewery.depend.google")
-        relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
 		//relocate("org.bstats", "com.dre.brewery.integration.bstats")
 

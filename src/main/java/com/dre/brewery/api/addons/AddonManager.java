@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionException;
@@ -77,11 +78,12 @@ public class AddonManager extends ClassLoader {
 					Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
 					try {
 						BreweryAddon addon = addonClass.getConstructor().newInstance();
-
+						Class<BreweryAddon> breweryAddonClass = BreweryAddon.class;
 						// Set the logger and file manager
-						Field loggerField = addonClass.getDeclaredField("logger");
-						Field fileManagerField = addonClass.getDeclaredField("addonFileManager");
-						Field infoField = addonClass.getDeclaredField("addonInfo");
+						Field loggerField = breweryAddonClass.getDeclaredField("logger");
+						Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager");
+						Field infoField = breweryAddonClass.getDeclaredField("addonInfo");
+
 
 						loggerField.setAccessible(true);
 						fileManagerField.setAccessible(true);
@@ -90,9 +92,17 @@ public class AddonManager extends ClassLoader {
 						loggerField.set(addon, new AddonLogger(addonClass));
 						fileManagerField.set(addon, new AddonFileManager(addon, file));
 						infoField.set(addon, addonClass.getAnnotation(AddonInfo.class));
-						addons.add(addon); // Add to our list of addons
+
+
+						if (addon.getAddonInfo() == null) {
+							plugin.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
+							continue;
+						}
 
 						// let the addon know it has been enabled
+						addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
+
+						addons.add(addon); // Add to our list of addons
 						addon.onAddonEnable();
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
