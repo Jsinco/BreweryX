@@ -72,7 +72,8 @@ tasks {
     }
 
     jar {
-        enabled = false // Shadow produces our jar files
+		archiveClassifier.set("original")
+        //enabled = false // Shadow produces our jar files
     }
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"

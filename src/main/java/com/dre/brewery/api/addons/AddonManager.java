@@ -103,7 +103,7 @@ public class AddonManager extends ClassLoader {
 						addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
 
 						addons.add(addon); // Add to our list of addons
-						addon.onAddonEnable();
+						//addon.onAddonEnable();
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
 					}
@@ -113,6 +113,9 @@ public class AddonManager extends ClassLoader {
 			}
 		}
 
+		for (BreweryAddon addon : addons) {
+			addon.onAddonEnable();
+		}
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");
 	}
