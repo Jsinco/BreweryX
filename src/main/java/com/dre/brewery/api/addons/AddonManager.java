@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionException;
@@ -103,7 +102,7 @@ public class AddonManager extends ClassLoader {
 						addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
 
 						addons.add(addon); // Add to our list of addons
-						//addon.onAddonEnable();
+						addon.onAddonPreEnable();
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
 					}

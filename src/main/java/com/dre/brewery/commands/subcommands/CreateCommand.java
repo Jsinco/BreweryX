@@ -26,7 +26,7 @@ public class CreateCommand implements SubCommand {
             breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Help_Create"));
             return;
         }
-        // Is this just a map?
+
         Tuple<Brew, Player> brewForPlayer = CommandUtil.getFromCommand(sender, args);
 
         if (brewForPlayer != null) {
@@ -55,7 +55,7 @@ public class CreateCommand implements SubCommand {
 
     @Override
     public boolean playerOnly() {
-        return true;
+        return false;
     }
 
 

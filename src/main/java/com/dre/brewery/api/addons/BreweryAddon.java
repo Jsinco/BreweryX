@@ -10,6 +10,8 @@ public abstract class BreweryAddon {
 	private AddonFileManager addonFileManager = null;
 	private AddonInfo addonInfo = null;
 
+	public void onAddonPreEnable() {
+	}
 
 	public void onAddonEnable() {
 	}
