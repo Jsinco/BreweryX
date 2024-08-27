@@ -279,22 +279,15 @@ public class LegacyUtil {
 				return 0;
 			}
 
-			switch (woodType) {
-				case GENERIC:
-					return 2;
-				case REDWOOD:
-					return 4;
-				case BIRCH:
-					return 1;
-				case JUNGLE:
-					return 3;
-				case ACACIA:
-					return 5;
-				case DARK_OAK:
-					return 6;
-				default:
-					return 0;
-			}
+            return switch (woodType) {
+                case GENERIC -> 2;
+                case REDWOOD -> 4;
+                case BIRCH -> 1;
+                case JUNGLE -> 3;
+                case ACACIA -> 5;
+                case DARK_OAK -> 6;
+                default -> 0;
+            };
 		}
 	}
 

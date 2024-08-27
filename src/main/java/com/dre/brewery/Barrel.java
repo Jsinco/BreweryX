@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A Multi Block Barrel with Inventory
@@ -477,7 +478,15 @@ public class Barrel implements InventoryHolder {
 	 * is this a Small barrel?
 	 */
 	public boolean isSmall() {
-		return LegacyUtil.isSign(spigot.getType());
+		if (!BreweryPlugin.isFolia()) {
+			return LegacyUtil.isSign(spigot.getType());
+		}
+
+
+		AtomicBoolean type = new AtomicBoolean(false);
+		BreweryPlugin.getScheduler().runTask(spigot.getLocation(),
+				() -> type.set(LegacyUtil.isSign(spigot.getType())));
+		return type.get();
 	}
 
 	/**

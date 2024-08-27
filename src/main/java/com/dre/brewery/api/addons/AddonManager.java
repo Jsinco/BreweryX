@@ -37,7 +37,11 @@ public class AddonManager extends ClassLoader {
 
 	public void unloadAddons() {
 		for (BreweryAddon addon : addons) {
-			addon.onAddonDisable();
+			try {
+				addon.onAddonDisable();
+			} catch (Throwable t) {
+				plugin.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
+			}
 		}
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Disabled " + loaded + " addon(s)");
@@ -46,7 +50,11 @@ public class AddonManager extends ClassLoader {
 
 	public void reloadAddons() {
 		for (BreweryAddon addon : addons) {
-			addon.onBreweryReload();
+			try {
+				addon.onBreweryReload();
+			} catch (Throwable t) {
+				plugin.errorLog("Failed to reload addon " + addon.getClass().getSimpleName(), t);
+			}
 		}
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Reloaded " + loaded + " addon(s)");
@@ -113,7 +121,11 @@ public class AddonManager extends ClassLoader {
 		}
 
 		for (BreweryAddon addon : addons) {
-			addon.onAddonEnable();
+			try {
+				addon.onAddonEnable();
+			} catch (Throwable t) {
+				plugin.errorLog("Failed to enable addon " + addon.getClass().getSimpleName(), t);
+			}
 		}
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");

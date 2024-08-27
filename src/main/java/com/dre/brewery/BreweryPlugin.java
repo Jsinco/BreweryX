@@ -79,6 +79,7 @@ public class BreweryPlugin extends JavaPlugin {
 	private static BreweryPlugin breweryPlugin;
 	private static MinecraftVersion minecraftVersion;
 	private static DataManager dataManager;
+	private static boolean isFolia = false;
 	public static boolean debug;
 	public static boolean useNBT;
 
@@ -105,6 +106,11 @@ public class BreweryPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		migrateBreweryDataFolder();
+		try {
+			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+			isFolia = true;
+		} catch (ClassNotFoundException ignored) {
+		}
 
 
 		// MC 1.13 uses a different NBT API than the newer versions.
@@ -378,6 +384,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public static DataManager getDataManager() {
 		return dataManager;
+	}
+
+	public static boolean isFolia() {
+		return isFolia;
 	}
 
 	// Utility
