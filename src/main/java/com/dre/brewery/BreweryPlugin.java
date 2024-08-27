@@ -162,7 +162,13 @@ public class BreweryPlugin extends JavaPlugin {
 
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
         Barrel.getBarrels().addAll(dataManager.getAllBarrels());
-		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+		if (!isFolia){
+			BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+		} else {
+			for (BCauldron bCauldron : dataManager.getAllCauldrons()) {
+				getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> BCauldron.getBcauldrons().put(bCauldron.getBlock(), bCauldron));
+			}
+		}
 		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
 		Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
 
