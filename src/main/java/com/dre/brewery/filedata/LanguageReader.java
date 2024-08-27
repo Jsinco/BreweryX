@@ -95,7 +95,7 @@ public class LanguageReader {
 				}
 			}
 		} else {
-			entry = "%placeholder%";
+			entry = "§c[LanguageReader] Failed to retrieve a config entry for key '" + key + "'!";
 		}
 
 		return entry;

@@ -228,9 +228,8 @@ public class CommandUtil {
             }
             return options;
         } else {
-            if (args[args.length - 2].matches("\\d")) {
-                // Player list
-                return null;
+            if (args[args.length - 1].matches("10|[1-9]")) {
+                return null; // automatically suggests player names
             } else {
                 return filterWithInput(QUALITY, args[args.length - 1]);
             }

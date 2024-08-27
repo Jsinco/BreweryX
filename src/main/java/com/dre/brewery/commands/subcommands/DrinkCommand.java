@@ -46,6 +46,6 @@ public class DrinkCommand implements SubCommand {
 
     @Override
     public boolean playerOnly() {
-        return true;
+        return false;
     }
 }
