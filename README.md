@@ -2,7 +2,7 @@
 
 #### BreweryX is an actively maintained fork of Brewery which includes many new features and gives support to the inactive plugin. Find more info below.
 
-Help, feature requests, bug reports? Join our [Discord](https://discord.gg/aV5Am7uxWr)
+### [Wiki & Docs](https://brewery.lumamc.net) **|** [Discord Support](https://discord.gg/aV5Am7uxWr) **|** [Download Brewery**X**](https://www.spigotmc.org/resources/breweryx.114777/)
 
 ---
 
