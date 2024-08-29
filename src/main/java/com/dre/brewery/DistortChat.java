@@ -5,10 +5,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DistortChat {
 
@@ -16,6 +13,7 @@ public class DistortChat {
 
 	public static List<DistortChat> words = new ArrayList<>();
 	public static List<String> commands;
+	private static List<String> playerParameterCommands = Arrays.asList("/msg", "/tell", "/whisper", "/w"); // e.g. '/msg PLAYER ...' -> don't distort the player name here
 	public static List<String[]> ignoreText = new ArrayList<>();
 	public static Boolean doSigns;
 	public static Boolean log;
@@ -81,7 +79,12 @@ public class DistortChat {
 								if (log) {
 									BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", name, chat));
 								}
-								String message = chat.substring(command.length() + 1);
+
+								// exclude player parameters
+								String message = playerParameterCommands.contains(command.toLowerCase())
+									? chat.substring(chat.indexOf(' ', chat.indexOf(' ', 0) + 1) + 1).trim()
+									: chat.substring(chat.indexOf(' ') + 1).trim();
+
 								String distorted = distortMessage(message, bPlayer.getDrunkeness());
 								PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
 								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
@@ -90,7 +93,11 @@ public class DistortChat {
 								}
 								distorted = call.getDistortedMessage();
 
-								event.setMessage(chat.substring(0, command.length() + 1) + distorted);
+								// reassemble command
+								event.setMessage( playerParameterCommands.contains(command.toLowerCase())
+									? chat.substring(0, chat.indexOf(' ', chat.indexOf(' ', 0) + 1) + 1) + distorted
+									: chat.substring(0, chat.indexOf(' ') + 1) + distorted);
+
 								waitPlayers.put(name, System.currentTimeMillis());
 								return;
 							}
