@@ -176,18 +176,16 @@ public class BDistiller {
 		@Override
 		public void run() {
 			BreweryPlugin.getScheduler().runTask(standBlock.getLocation(), () -> {
-				BlockState now = standBlock.getState();
-				if (!(now instanceof BrewingStand stand)) {
+				if (standBlock.getType() != Material.BREWING_STAND) {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
 					BreweryPlugin.getInstance().debugLog("The block was replaced; not a brewing stand.");
 					return;
 				}
 
-				if (brewTime == -1) { // check at the beginning for distillables
-					if (!prepareForDistillables(stand)) {
-						return;
-					}
+				BrewingStand stand = (BrewingStand) standBlock.getState();
+				if (brewTime == -1 && !prepareForDistillables(stand)) { // check at the beginning for distillables
+					return;
 				}
 
 				brewTime--; // count down.
