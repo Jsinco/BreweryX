@@ -176,40 +176,39 @@ public class BDistiller {
 		@Override
 		public void run() {
 			BreweryPlugin.getScheduler().runTask(standBlock.getLocation(), () -> {
-				BlockState now = standBlock.getState();
-				if (now instanceof BrewingStand stand) {
-                    if (brewTime == -1) { // check at the beginning for distillables
-						if (!prepareForDistillables(stand)) {
-							return;
-						}
-					}
-
-					brewTime--; // count down.
-					stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
-
-					if (brewTime <= 1) { // Done!
-						contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
-						stand.setBrewingTime(0);
-						stand.update();
-						if (!runDistill(stand.getInventory(), contents)) {
-							this.cancel();
-							trackedDistillers.remove(standBlock);
-							BreweryPlugin.getInstance().debugLog("All done distilling");
-						} else {
-							brewTime = -1; // go again.
-							BreweryPlugin.getInstance().debugLog("Can distill more! Continuing.");
-						}
-					} else {
-						stand.update();
-					}
-				} else {
+				if (standBlock.getType() != Material.BREWING_STAND) {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
 					BreweryPlugin.getInstance().debugLog("The block was replaced; not a brewing stand.");
+					return;
+				}
+
+				BrewingStand stand = (BrewingStand) standBlock.getState();
+				if (brewTime == -1 && !prepareForDistillables(stand)) { // check at the beginning for distillables
+					return;
+				}
+
+				brewTime--; // count down.
+				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
+
+				if (brewTime > 1) {
+					stand.update();
+					return;
+				}
+
+				contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
+				stand.setBrewingTime(0);
+				stand.update();
+				if (!runDistill(stand.getInventory(), contents)) {
+					this.cancel();
+					trackedDistillers.remove(standBlock);
+					BreweryPlugin.getInstance().debugLog("All done distilling");
+				} else {
+					brewTime = -1; // go again.
+					BreweryPlugin.getInstance().debugLog("Can distill more! Continuing.");
 				}
 			});
 		}
-
 
 		private boolean prepareForDistillables(BrewingStand stand) {
 			BrewerInventory inventory = stand.getInventory();
