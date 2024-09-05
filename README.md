@@ -37,7 +37,8 @@ The somewhat difficult brewing process rewards you with a diversity of Potions, 
 - Full RGB support for 1.16+
 - Multi-puke items
 - Ability to specify custom ingredients by CustomModelData
-- Addons! (Things like **[Recipes](https://www.spigotmc.org/resources/breweryrecipes-breweryx-addon.114897/)** and **[IAOraxenAddon](https://www.spigotmc.org/resources/iaoraxenaddon-breweryx-addon.114778/)**)
+- Addons! (Things like **[Recipes](https://www.spigotmc.org/resources/breweryrecipes-breweryx-addon.114897/)**)
+- Support for ItemsAdder & Oraxen items!
 - Patches like **[this](https://github.com/DieReicheErethons/Brewery/issues/541)**
 - Support for Brewery and BreweryX in our **[discord](https://discord.gg/6VzjPSNRex)**
 - **[Folia](https://github.com/PaperMC/Folia)** support

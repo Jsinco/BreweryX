@@ -16,7 +16,7 @@ icon: fontawesome/solid/house
 
 BreweryX это поддерживаемый, активно разрабатываемый плагин, который привносит жизнь в устаревший Brewery.
 
-Плагин работает на **Spigot**, **Paper**, и **Folia** для 1.21 - 1.8.x.
+Плагин работает на **Spigot**, **Paper**, и **Folia** для 1.21.1 - 1.8.x.
 
 [:octicons-info-16: Документация ](ru/guide/recipies.md){ .md-button .md-button--primary }
 [:material-download: Последняя версия](https://www.spigotmc.org/resources/breweryx.114777/){ .md-button .md-button--primary }
