@@ -1,8 +1,16 @@
 package com.dre.brewery.utility;
 
+import com.Acrobot.ChestShop.Libs.ORMlite.stmt.query.In;
 import com.dre.brewery.BreweryPlugin;
 
+import java.util.Map;
+
 public class StringParser {
+
+	public static Map.Entry<Integer, String> parseQualityMapEntry(String line, ParseType type) {
+		Tuple<Integer, String> parsedQuality = parseQuality(line, type);
+		return Map.entry(parsedQuality.first(), parsedQuality.second());
+	}
 
 	public static Tuple<Integer, String> parseQuality(String line, ParseType type) {
 		line = BreweryPlugin.getInstance().color(line);
@@ -28,7 +36,7 @@ public class StringParser {
 		if (type == ParseType.LORE && !line.startsWith("§")) {
 			line = "§9" + line;
 		}
-		return new Tuple<Integer,String>(plus, line);
+		return new Tuple<>(plus, line);
 	}
 
 	public enum ParseType {

@@ -36,7 +36,7 @@ public class ReloadCommand implements SubCommand {
 		}
 
 		// clear all existent config Data
-		breweryPlugin. clearConfigData();
+		breweryPlugin.clearConfigData();
 
 		// load the Config
 		try {

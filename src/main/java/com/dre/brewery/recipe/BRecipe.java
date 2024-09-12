@@ -21,7 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,13 +52,13 @@ public class BRecipe {
 	// outcome
 	private PotionColor color; // color of the distilled/finished potion
 	private int alcohol; // Alcohol in perfect potion
-	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
+	private Map<Integer, String> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private int[] cmData; // Custom Model Data[3] for each quality
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private @Nullable List<Tuple<Integer, String>> playercmds; // Commands executed as the player when drinking
-	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
+	private @Nullable Map<Integer, String> playercmds; // Commands executed as the player when drinking
+	private @Nullable Map<Integer, String> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
 	private boolean glint; // If the potion should have a glint effect
@@ -300,10 +302,16 @@ public class BRecipe {
 	 * Load a list of strings from a ConfigurationSection and parse the quality
 	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
+	public static Map<Integer, String> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
+			Map<Integer, String> result = new HashMap<>();
+			for (String line : load) {
+				Tuple<Integer, String> parsed = StringParser.parseQuality(line, parseType);
+                result.put(parsed.first(), parsed.second());
+            }
+			return result;
+			//return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
 		}
 		return null;
 	}
@@ -639,7 +647,7 @@ public class BRecipe {
 	}
 
 	@Nullable
-	public List<Tuple<Integer, String>> getLore() {
+	public Map<Integer, String> getLore() {
 		return lore;
 	}
 
@@ -662,7 +670,7 @@ public class BRecipe {
 	 * Get a quality filtered list of supported attributes
 	 */
 	@Nullable
-	public List<String> getStringsForQuality(int quality, List<Tuple<Integer, String>> source) {
+	public List<String> getStringsForQuality(int quality, Map<Integer, String> source) {
 		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
@@ -673,9 +681,9 @@ public class BRecipe {
 			plus = 3;
 		}
 		List<String> list = new ArrayList<>(source.size());
-		for (Tuple<Integer, String> line : source) {
-			if (line.first() == 0 || line.first() == plus) {
-				list.add(line.second());
+		for (Map.Entry<Integer, String> line : source.entrySet()) {
+			if (line.getKey() == 0 || line.getKey() == plus) {
+				list.add(line.getValue());
 			}
 		}
 		return list;
@@ -689,12 +697,12 @@ public class BRecipe {
 	}
 
 	@Nullable
-	public List<Tuple<Integer, String>> getPlayercmds() {
+	public Map<Integer, String> getPlayercmds() {
 		return playercmds;
 	}
 
 	@Nullable
-	public List<Tuple<Integer, String>> getServercmds() {
+	public Map<Integer, String> getServercmds() {
 		return servercmds;
 	}
 
@@ -759,7 +767,7 @@ public class BRecipe {
 		this.alcohol = alcohol;
 	}
 
-	public void setLore(List<Tuple<Integer, String>> lore) {
+	public void setLore(Map<Integer, String> lore) {
 		this.lore = lore;
 	}
 
@@ -939,9 +947,9 @@ public class BRecipe {
 				throw new IllegalArgumentException("Lore Quality must be 0 - 3");
 			}
 			if (recipe.lore == null) {
-				recipe.lore = new ArrayList<>();
+				recipe.lore = new HashMap<>();
 			}
-			recipe.lore.add(new Tuple<>(quality, line));
+			recipe.lore.put(quality, line);
 			return this;
 		}
 
@@ -949,15 +957,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			ArrayList<Tuple<Integer, String>> playercmds = new ArrayList<>(cmds.length);
+			Map<Integer, String> playercmds = new HashMap<>(cmds.length);
 
 			for (String cmd : cmds) {
-				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
+				Tuple<Integer, String> parsedQuality = StringParser.parseQuality(cmd, StringParser.ParseType.CMD);
+				playercmds.put(parsedQuality.first(), parsedQuality.second());
 			}
 			if (recipe.playercmds == null) {
 				recipe.playercmds = playercmds;
 			} else {
-				recipe.playercmds.addAll(playercmds);
+				recipe.playercmds.putAll(playercmds);
 			}
 			return this;
 		}
@@ -966,15 +975,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			ArrayList<Tuple<Integer, String>> servercmds = new ArrayList<>(cmds.length);
+			Map<Integer, String> servercmds = new HashMap<>(cmds.length);
 
 			for (String cmd : cmds) {
-				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
+				Tuple<Integer, String> parsedQuality = StringParser.parseQuality(cmd, StringParser.ParseType.CMD);
+				servercmds.put(parsedQuality.first(), parsedQuality.second());
 			}
 			if (recipe.servercmds == null) {
 				recipe.servercmds = servercmds;
 			} else {
-				recipe.servercmds.addAll(servercmds);
+				recipe.servercmds.putAll(servercmds);
 			}
 			return this;
 		}
