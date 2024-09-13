@@ -312,4 +312,22 @@ public abstract class RecipeItem implements Cloneable {
 	public String toString() {
 		return "RecipeItem{(" + getClass().getSimpleName() + ") ID: " + getConfigId() + " Materials: " + (hasMaterials() ? getMaterials().size() : 0) + " Amount: " + getAmount();
 	}
+
+	/**
+	 * Converts this RecipeItem to a String that can be used in a config
+	 *
+	 * @return The config String
+	 */
+	public String toConfigString() {
+		String amtAppend = "/" + this.getAmount();
+		if (this instanceof SimpleItem simpleItem) {
+			return simpleItem.getMaterial().toString().toLowerCase() + amtAppend;
+		} else if (this instanceof PluginItem pluginItem) {
+			return pluginItem.getPlugin() + ":" + pluginItem.getItemId() + amtAppend;
+		} else if (this instanceof CustomItem || this instanceof CustomMatchAnyItem) {
+			return this.getConfigId() + amtAppend;
+		} else {
+			throw new IllegalStateException("Unknown RecipeItem Type!");
+		}
+	}
 }

@@ -203,8 +203,8 @@ public class CommandUtil {
                     Set<String> altNames = new HashSet<>(3);
                     altNames.add(recipe.getName(1));
                     altNames.add(recipe.getName(10));
-                    if (recipe.getOptionalID().isPresent()) {
-                        altNames.add(recipe.getOptionalID().get());
+                    if (recipe.getId() != null) { // Leaving a null check JUST in case. But ids are never null in the current implementation
+                        altNames.add(recipe.getId());
                     }
 
                     for (String altName : altNames) {

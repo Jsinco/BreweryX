@@ -145,4 +145,9 @@ public class BEffect {
 	public PotionEffectType getType() {
 		return type;
 	}
+
+	@Override
+	public String toString() {
+		return type.getName() + "/" + minlvl + "-" + maxlvl + "/" + minduration + "-" + maxduration;
+	}
 }

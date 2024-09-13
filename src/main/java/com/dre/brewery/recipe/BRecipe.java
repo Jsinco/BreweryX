@@ -20,12 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
@@ -38,7 +37,7 @@ public class BRecipe {
 	// info
 	private String[] name;
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
-	private String optionalID; // ID that might be given by the config
+	private String id; // ID that might be given by the config
 
 	// brewing
 	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
@@ -93,7 +92,7 @@ public class BRecipe {
 	@Nullable
 	public static BRecipe fromConfig(ConfigurationSection configSectionRecipes, String recipeId) {
 		BRecipe recipe = new BRecipe();
-		recipe.optionalID = recipeId;
+		recipe.id = recipeId;
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
 		if (nameList != null) {
 			String[] name = nameList.split("/");
@@ -241,14 +240,6 @@ public class BRecipe {
 					// Add it as acceptedCustom
 					if (!BCauldronRecipe.acceptedCustom.contains(custom)) {
 						BCauldronRecipe.acceptedCustom.add(custom);
-						/*if (custom instanceof PluginItem || !custom.hasMaterials()) {
-							BCauldronRecipe.acceptedCustom.add(custom);
-						} else if (custom instanceof CustomMatchAnyItem) {
-							CustomMatchAnyItem ma = (CustomMatchAnyItem) custom;
-							if (ma.hasNames() || ma.hasLore()) {
-								BCauldronRecipe.acceptedCustom.add(ma);
-							}
-						}*/
 					}
 					continue listLoop;
 				}
@@ -598,8 +589,9 @@ public class BRecipe {
 		return false;
 	}
 
-	public Optional<String> getOptionalID() {
-		return Optional.ofNullable(optionalID);
+
+	public String getId() {
+		return id;
 	}
 
 	public List<RecipeItem> getIngredients() {
@@ -728,6 +720,40 @@ public class BRecipe {
 
 	// Setters
 
+
+	public void setName(String[] name) {
+		this.name = name;
+	}
+
+	public void setCmData(int[] cmData) {
+		this.cmData = cmData;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setDrinkTitle(String drinkTitle) {
+		this.drinkTitle = drinkTitle;
+	}
+
+	public void setPlayercmds(@Nullable Map<Integer, String> playercmds) {
+		this.playercmds = playercmds;
+	}
+
+	public void setServercmds(@Nullable Map<Integer, String> servercmds) {
+		this.servercmds = servercmds;
+	}
+
+	public void setGlint(boolean glint) {
+		this.glint = glint;
+	}
+
+
+	public void setDrinkMsg(String drinkMsg) {
+		this.drinkMsg = drinkMsg;
+	}
+
 	/**
 	 * When Changing ingredients, Accepted Lists have to be updated in BCauldronRecipe
 	 */
@@ -777,13 +803,31 @@ public class BRecipe {
 
 	public void setSaveInData(boolean saveInData) {
 		throw new UnsupportedOperationException();
-		//this.saveInData = saveInData;
 	}
 
 
 	@Override
 	public String toString() {
-		return "BRecipe{" + getRecipeName() + '}';
+		return "BRecipe{" +
+				"name=" + Arrays.toString(name) +
+				", ingredients=" + ingredients +
+				", difficulty=" + difficulty +
+				", cookingTime=" + cookingTime +
+				", distillruns=" + distillruns +
+				", distillTime=" + distillTime +
+				", wood=" + wood +
+				", age=" + age +
+				", color=" + color +
+				", alcohol=" + alcohol +
+				", lore=" + lore +
+				", cmData=" + Arrays.toString(cmData) +
+				", effects=" + effects +
+				", playercmds=" + playercmds +
+				", servercmds=" + servercmds +
+				", drinkMsg='" + drinkMsg + '\'' +
+				", drinkTitle='" + drinkTitle + '\'' +
+				", glint=" + glint +
+				'}';
 	}
 
 	/**
@@ -845,7 +889,7 @@ public class BRecipe {
 			}
 		}
 		for (BRecipe recipe : recipes) {
-			if (recipe.getOptionalID().isPresent() && recipe.getOptionalID().get().equalsIgnoreCase(name)) {
+			if (name.equalsIgnoreCase(recipe.getId())) {
 				return recipe;
 			}
 		}
@@ -1032,7 +1076,7 @@ public class BRecipe {
 		 * Set the Optional ID of this recipe
 		 */
 		public Builder setID(String id) {
-			recipe.optionalID = id;
+			recipe.id = id;
 			return this;
 		}
 

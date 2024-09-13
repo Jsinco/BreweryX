@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  */
 public abstract class PluginItem extends com.dre.brewery.recipe.RecipeItem implements com.dre.brewery.recipe.Ingredient {
 
-	private static Map<String, Supplier<PluginItem>> constructors = new HashMap<>();
+	private static final Map<String, Supplier<PluginItem>> constructors = new HashMap<>();
 
 	private String plugin;
 	private String itemId;
