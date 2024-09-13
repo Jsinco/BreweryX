@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class BRecipe {
 
-	private static List<BRecipe> recipes = new ArrayList<>();
+	private static final List<BRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes; // The number of recipes in the list that are from config
 
 	// info
@@ -811,6 +811,21 @@ public class BRecipe {
 	 */
 	public static List<BRecipe> getAllRecipes() {
 		return recipes;
+	}
+
+
+
+	public String[] getName() {
+		return name;
+	}
+
+	public boolean isGlint() {
+		return glint;
+	}
+
+
+	public byte getDistillruns() {
+		return distillruns;
 	}
 
 	/**

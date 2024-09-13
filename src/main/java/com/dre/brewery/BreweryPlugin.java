@@ -68,7 +68,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class BreweryPlugin extends JavaPlugin {
 
@@ -491,17 +490,17 @@ public class BreweryPlugin extends JavaPlugin {
 		public void run() {
 			long start = System.currentTimeMillis();
 			BConfig.reloader = null;
+
             // runs every min to update cooking time
-			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
-			while (bCauldronsToRemove.hasNext()) {
-				// runs every min to update cooking time
-				BCauldron bCauldron = bCauldronsToRemove.next();
+
+			for (BCauldron bCauldron : BCauldron.bcauldrons.values()) {
 				BreweryPlugin.getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> {
 					if (!bCauldron.onUpdate()) {
-						bCauldronsToRemove.remove();
+						BCauldron.bcauldrons.remove(bCauldron.getBlock());
 					}
 				});
 			}
+
 
 			Barrel.onUpdate();// runs every min to check and update ageing time
 
