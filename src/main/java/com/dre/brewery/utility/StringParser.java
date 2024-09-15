@@ -1,8 +1,5 @@
 package com.dre.brewery.utility;
 
-import com.Acrobot.ChestShop.Libs.ORMlite.stmt.query.In;
-import com.dre.brewery.BreweryPlugin;
-
 import java.util.Map;
 
 public class StringParser {

@@ -100,7 +100,7 @@ public class BrewLore {
 				index = addLore(Type.CUSTOM, "", line);
 				index++;
 			} else {
-				lore.add(index, Type.CUSTOM.id + line);
+				lore.add(index, BUtil.color("&9" +Type.CUSTOM.id + line));
 				index++;
 			}
 		}
@@ -227,7 +227,7 @@ public class BrewLore {
 					index = addLore(Type.CUSTOM, "", line);
 					index++;
 				} else {
-					lore.add(index, Type.CUSTOM.id + line);
+					lore.add(index, BUtil.color("&9" +Type.CUSTOM.id + line));
 					index++;
 				}
 			}
@@ -360,7 +360,7 @@ public class BrewLore {
 	public int addOrReplaceLore(Type type, String prefix, String line, String suffix) {
 		int index = type.findInLore(lore);
 		if (index > -1) {
-			lore.set(index, type.id + prefix + line + suffix);
+			lore.set(index, BUtil.color("&9" +type.id + prefix + line + suffix));
 			return index;
 		}
 
@@ -395,11 +395,11 @@ public class BrewLore {
 		for (int i = 0; i < lore.size(); i++) {
 			Type existing = Type.get(lore.get(i));
 			if (existing != null && existing.isAfter(type)) {
-				lore.add(i, type.id + prefix + line + suffix);
+				lore.add(i, BUtil.color("&9" +type.id + prefix + line + suffix));
 				return i;
 			}
 		}
-		lore.add(type.id + prefix + line + suffix);
+		lore.add(BUtil.color("&9" +type.id + prefix + line + suffix));
 		return lore.size() - 1;
 	}
 
@@ -495,7 +495,7 @@ public class BrewLore {
 			// Using NBT we don't get the invisible line, so we keep our spacing
 			return;
 		}
-		if (lore.size() > 0 && lore.get(0).equals("")) {
+		if (!lore.isEmpty() && lore.get(0).isEmpty()) {
 			lore.remove(0);
 			write();
 		}
