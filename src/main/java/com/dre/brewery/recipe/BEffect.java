@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class BEffect {
+public class BEffect implements Cloneable {
 
 	private final PotionEffectType type;
 	private short minlvl;
@@ -150,4 +150,19 @@ public class BEffect {
 	public String toString() {
 		return type.getName() + "/" + minlvl + "-" + maxlvl + "/" + minduration + "-" + maxduration;
 	}
+
+    @Override
+    public BEffect clone() {
+        try {
+            BEffect clone = (BEffect) super.clone();
+            clone.minlvl = minlvl;
+			clone.maxlvl = maxlvl;
+			clone.minduration = minduration;
+			clone.maxduration = maxduration;
+			clone.hidden = hidden;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

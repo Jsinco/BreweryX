@@ -36,7 +36,7 @@ public class DrinkCommand implements SubCommand {
 
     @Override
     public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
-        return CommandUtil.tabCreateAndDrink(args);
+        return CommandUtil.recipeNamesAndIds(args);
     }
 
     @Override

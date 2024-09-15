@@ -1,8 +1,6 @@
 package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +37,9 @@ public class AddonManager extends ClassLoader {
 		for (BreweryAddon addon : addons) {
 			try {
 				addon.onAddonDisable();
+				addon.unregisterListeners();
+				addon.unregisterCommands();
+				addon.getAddonLogger().info("Disabled.");
 			} catch (Throwable t) {
 				plugin.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 			}
@@ -47,6 +48,19 @@ public class AddonManager extends ClassLoader {
 		if (loaded > 0) plugin.log("Disabled " + loaded + " addon(s)");
 		addons.clear();
 	}
+
+	public void unloadAddon(BreweryAddon addon) {
+		try {
+			addon.onAddonDisable();
+			addon.unregisterListeners();
+			addon.unregisterCommands();
+			addon.getAddonLogger().info("Disabled.");
+		} catch (Throwable t) {
+			plugin.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
+		}
+		addons.remove(addon);
+	}
+
 
 	public void reloadAddons() {
 		for (BreweryAddon addon : addons) {
@@ -74,50 +88,7 @@ public class AddonManager extends ClassLoader {
 		}
 
 		for (File file : files) {
-
-			try {
-				List<Class<?>> classes = loadAllClassesFromJar(file);
-
-				for (Class<?> clazz : classes) {
-					if (!BreweryAddon.class.isAssignableFrom(clazz)) {
-						continue;
-					}
-					Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
-					try {
-						BreweryAddon addon = addonClass.getConstructor().newInstance();
-						Class<BreweryAddon> breweryAddonClass = BreweryAddon.class;
-						// Set the logger and file manager
-						Field loggerField = breweryAddonClass.getDeclaredField("logger");
-						Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager");
-						Field infoField = breweryAddonClass.getDeclaredField("addonInfo");
-
-
-						loggerField.setAccessible(true);
-						fileManagerField.setAccessible(true);
-						infoField.setAccessible(true);
-
-						loggerField.set(addon, new AddonLogger(addonClass));
-						fileManagerField.set(addon, new AddonFileManager(addon, file));
-						infoField.set(addon, addonClass.getAnnotation(AddonInfo.class));
-
-
-						if (addon.getAddonInfo() == null) {
-							plugin.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
-							continue;
-						}
-
-						// let the addon know it has been enabled
-						addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
-
-						addons.add(addon); // Add to our list of addons
-						addon.onAddonPreEnable();
-					} catch (Exception e) {
-						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
-					}
-				}
-			} catch (Throwable ex) {
-				plugin.getLogger().log(Level.SEVERE, "Failed to load addon classes from jar " + file.getName(), ex);
-			}
+			loadAddon(file);
 		}
 
 		for (BreweryAddon addon : addons) {
@@ -129,6 +100,56 @@ public class AddonManager extends ClassLoader {
 		}
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");
+	}
+
+
+	public void loadAddon(File file) {
+		try {
+			List<Class<?>> classes = loadAllClassesFromJar(file);
+
+			for (Class<?> clazz : classes) {
+				if (!BreweryAddon.class.isAssignableFrom(clazz)) {
+					continue;
+				}
+				Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
+				try {
+					BreweryAddon addon = addonClass.getConstructor().newInstance();
+					Class<BreweryAddon> breweryAddonClass = BreweryAddon.class;
+					// Set the logger and file manager
+					Field loggerField = breweryAddonClass.getDeclaredField("logger");
+					Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager");
+					Field infoField = breweryAddonClass.getDeclaredField("addonInfo");
+					Field managerField = breweryAddonClass.getDeclaredField("addonManager");
+
+
+					loggerField.setAccessible(true);
+					fileManagerField.setAccessible(true);
+					infoField.setAccessible(true);
+					managerField.setAccessible(true);
+
+					loggerField.set(addon, new AddonLogger(addonClass));
+					fileManagerField.set(addon, new AddonFileManager(addon, file));
+					infoField.set(addon, addonClass.getAnnotation(AddonInfo.class));
+					managerField.set(addon, this);
+
+
+					if (addon.getAddonInfo() == null) {
+						plugin.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
+						continue;
+					}
+
+					// let the addon know it has been enabled
+					addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
+
+					addons.add(addon); // Add to our list of addons
+					addon.onAddonPreEnable();
+				} catch (Exception e) {
+					plugin.errorLog("Failed to load addon class " + clazz.getSimpleName(), e);
+				}
+			}
+		} catch (Throwable ex) {
+			plugin.errorLog("Failed to load addon classes from jar " + file.getName(), ex);
+		}
 	}
 
 
@@ -235,43 +256,6 @@ public class AddonManager extends ClassLoader {
 		} catch (final NoClassDefFoundError ignored) {
 		}
 		return null;
-	}
-
-
-	public static void registerAddonCommand(AddonCommand addonCommand) {
-		try {
-			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-			bukkitCommandMap.setAccessible(true);
-			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-			if (commandMap.getCommand(addonCommand.getName()) != null) {
-				commandMap.getCommand(addonCommand.getName()).unregister(commandMap);
-			}
-
-			commandMap.register(addonCommand.getName(), "breweryx", addonCommand);
-			addonCommands.add(addonCommand);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void unRegisterAddonCommand(AddonCommand addonCommand) {
-		try { // no worky :(
-			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-			bukkitCommandMap.setAccessible(true);
-			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-			if (commandMap == null) return;
-
-			for (AddonCommand bukkitCommand : addonCommands) {
-				for (String alias : bukkitCommand.getAliases()) {
-					commandMap.getCommand("breweryx:" + alias).unregister(commandMap);
-				}
-				commandMap.getCommand("breweryx:" + bukkitCommand.getName()).unregister(commandMap);
-			}
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

@@ -191,7 +191,7 @@ public class CommandUtil {
     }
 
 
-    public static List<String> tabCreateAndDrink(String[] args) {
+    public static List<String> recipeNamesAndIds(String[] args) {
         if (args.length == 2) {
 
             if (mainSet == null) {

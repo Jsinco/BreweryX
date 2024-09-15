@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * A Recipe used to Brew a Brewery Potion.
  */
-public class BRecipe {
+public class BRecipe implements Cloneable {
 
 	private static final List<BRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes; // The number of recipes in the list that are from config
@@ -62,7 +62,7 @@ public class BRecipe {
 	private String drinkTitle; // Title to show when drinking
 	private boolean glint; // If the potion should have a glint effect
 
-	private BRecipe() {
+	public BRecipe() {
 	}
 
 	/**
@@ -183,9 +183,13 @@ public class BRecipe {
 		} else {
 			ingredientsList = cfg.getStringList(recipeId + ".ingredients");
 		}
-        List<RecipeItem> ingredients = new ArrayList<>(ingredientsList.size());
-		listLoop:
-		for (String item : ingredientsList) {
+		return loadIngredients(ingredientsList, recipeId);
+	}
+
+	public static List<RecipeItem> loadIngredients(List<String> stringList, String recipeId) {
+        List<RecipeItem> ingredients = new ArrayList<>(stringList.size());
+
+		listLoop: for (String item : stringList) {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
 			if (ingredParts.length == 2) {
@@ -296,15 +300,18 @@ public class BRecipe {
 	public static Map<Integer, String> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			Map<Integer, String> result = new HashMap<>();
-			for (String line : load) {
-				Tuple<Integer, String> parsed = StringParser.parseQuality(line, parseType);
-                result.put(parsed.first(), parsed.second());
-            }
-			return result;
-			//return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
+			return loadQualityStringList(load, parseType);
 		}
 		return null;
+	}
+
+	public static Map<Integer, String> loadQualityStringList(List<String> stringList, StringParser.ParseType parseType) {
+		Map<Integer, String> result = new HashMap<>();
+		for (String line : stringList) {
+			Tuple<Integer, String> parsed = StringParser.parseQuality(line, parseType);
+			result.put(parsed.first(), parsed.second());
+		}
+		return result;
 	}
 
 	/**
@@ -765,8 +772,8 @@ public class BRecipe {
 		this.cookingTime = cookingTime;
 	}
 
-	public void setDistillruns(byte distillruns) {
-		this.distillruns = distillruns;
+	public void setDistillRuns(byte distillRuns) {
+		this.distillruns = distillRuns;
 	}
 
 	public void setDistillTime(int distillTime) {
@@ -868,9 +875,6 @@ public class BRecipe {
 	}
 
 
-	public byte getDistillruns() {
-		return distillruns;
-	}
 
 	/**
 	 * Get the BRecipe that has the given name as one of its quality names.
@@ -896,6 +900,17 @@ public class BRecipe {
 		return null;
 	}
 
+	@Nullable
+	public static BRecipe getById(String id) {
+		for (BRecipe recipe : recipes) {
+			if (id.equals(recipe.getId())) {
+				return recipe;
+			}
+		}
+		return null;
+	}
+
+
 	/**
 	 * Get the BRecipe that has that name as its name
 	 */
@@ -908,6 +923,42 @@ public class BRecipe {
 		}
 		return null;
 	}
+
+    @Override
+    public BRecipe clone() {
+        try {
+            BRecipe clone = (BRecipe) super.clone();
+			clone.name = this.name.clone();
+			clone.ingredients = new ArrayList<>(this.ingredients.size());
+			for (RecipeItem item : this.ingredients) {
+				clone.ingredients.add(item.getMutableCopy());
+			}
+			clone.lore = (this.lore != null) ? new HashMap<>(this.lore) : null;
+			clone.playercmds = (this.playercmds != null) ? new HashMap<>(this.playercmds) : null;
+			clone.servercmds = (this.servercmds != null) ? new HashMap<>(this.servercmds) : null;
+			clone.effects = new ArrayList<>(this.effects.size());
+			for (BEffect effect : this.effects) {
+				clone.effects.add(effect.clone());
+			}
+			clone.cmData = (this.cmData != null) ? this.cmData.clone() : null;
+			clone.drinkMsg = this.drinkMsg;
+			clone.drinkTitle = this.drinkTitle;
+			clone.glint = this.glint;
+			clone.saveInData = this.saveInData;
+			clone.id = this.id;
+			clone.difficulty = this.difficulty;
+			clone.cookingTime = this.cookingTime;
+			clone.distillruns = this.distillruns;
+			clone.distillTime = this.distillTime;
+			clone.wood = this.wood;
+			clone.age = this.age;
+			clone.color = this.color;
+			clone.alcohol = this.alcohol;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 
 	/*public static void saveAddedRecipes(ConfigurationSection cfg) {
 		int i = 0;
@@ -1099,9 +1150,6 @@ public class BRecipe {
 			}
 			if (recipe.name.length != 1 && recipe.name.length != 3) {
 				throw new IllegalArgumentException("Recipe name neither 1 nor 3");
-			}
-			if (BRecipe.get(recipe.getRecipeName()) != null) {
-				throw new IllegalArgumentException("Recipe with name " + recipe.getRecipeName() + " already exists");
 			}
 			if (recipe.color == null) {
 				throw new IllegalArgumentException("Recipe has no color");

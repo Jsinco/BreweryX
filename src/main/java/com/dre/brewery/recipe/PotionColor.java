@@ -125,4 +125,8 @@ public class PotionColor {
 		return new PotionColor(color);
 	}
 
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

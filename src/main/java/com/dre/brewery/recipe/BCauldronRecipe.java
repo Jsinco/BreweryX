@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Color;
@@ -105,7 +106,7 @@ public class BCauldronRecipe {
 
 		Map<Integer, String> lore = BRecipe.loadQualityStringList(cfg, id + ".lore", StringParser.ParseType.LORE);
 		if (lore != null && !lore.isEmpty()) {
-			recipe.lore = lore.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+			recipe.lore = lore.entrySet().stream().map(valu -> BUtil.color(valu.getValue())).collect(Collectors.toList());
 		}
 
 		recipe.cmData = cfg.getInt(id + ".customModelData", 0);

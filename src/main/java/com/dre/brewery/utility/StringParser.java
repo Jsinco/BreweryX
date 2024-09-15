@@ -13,7 +13,7 @@ public class StringParser {
 	}
 
 	public static Tuple<Integer, String> parseQuality(String line, ParseType type) {
-		line = BreweryPlugin.getInstance().color(line);
+		//line = BreweryPlugin.getInstance().color(line);
 		int plus = 0;
 		if (line.startsWith("+++")) {
 			plus = 3;
@@ -33,9 +33,9 @@ public class StringParser {
 			line = line.substring(1);
 		}
 
-		if (type == ParseType.LORE && !line.startsWith("§")) {
-			line = "§9" + line;
-		}
+		//if (type == ParseType.LORE && !line.startsWith("§")) {
+		//			line = "§9" + line;
+		//		}
 		return new Tuple<>(plus, line);
 	}
 

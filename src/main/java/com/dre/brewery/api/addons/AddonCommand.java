@@ -1,12 +1,9 @@
 package com.dre.brewery.api.addons;
 
-import org.bukkit.command.defaults.BukkitCommand;
-import org.jetbrains.annotations.NotNull;
+import com.dre.brewery.commands.SubCommand;
 
-import java.util.List;
-
-public abstract class AddonCommand extends BukkitCommand {
-	public AddonCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, @NotNull List<String> aliases) {
-		super(name, description, usageMessage, aliases);
-	}
+/**
+ * Interface for a command that is part of an addon. Really just a SubCommand, but with a different name/package.
+ */
+public interface AddonCommand extends SubCommand {
 }
