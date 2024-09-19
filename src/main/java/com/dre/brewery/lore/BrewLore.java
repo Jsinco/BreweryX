@@ -30,7 +30,7 @@ public class BrewLore {
 		this.brew = brew;
 		this.meta = meta;
 		if (meta.hasLore()) {
-			lore = meta.getLore().stream().map(it -> BUtil.color("&9" + it)).toList();
+			lore = meta.getLore();
 		} else {
 			lore = new ArrayList<>();
 		}
@@ -39,12 +39,12 @@ public class BrewLore {
 	/**
 	 * Write the new lore into the Meta.
 	 * <p>Should be called at the end of operation on this Brew Lore
- 	 */
+	 */
 	public PotionMeta write() {
 		if (lineAddedOrRem) {
 			updateSpacer();
 		}
-		meta.setLore(lore);
+		meta.setLore(lore.stream().map(it -> BUtil.color("&9" + it)).toList());
 		return meta;
 	}
 
@@ -100,7 +100,7 @@ public class BrewLore {
 				index = addLore(Type.CUSTOM, "", line);
 				index++;
 			} else {
-				lore.add(index, BUtil.color("&9" + Type.CUSTOM.id + line));
+				lore.add(index, Type.CUSTOM.id + line);
 				index++;
 			}
 		}
@@ -227,7 +227,7 @@ public class BrewLore {
 					index = addLore(Type.CUSTOM, "", line);
 					index++;
 				} else {
-					lore.add(index, BUtil.color("&9" + Type.CUSTOM.id + line));
+					lore.add(index, Type.CUSTOM.id + line);
 					index++;
 				}
 			}
@@ -302,7 +302,7 @@ public class BrewLore {
 
 	/**
 	 * Converts to/from qualitycolored Lore
- 	 */
+	 */
 	public void convertLore(boolean toQuality) {
 		if (!brew.hasRecipe()) {
 			return;
@@ -360,7 +360,7 @@ public class BrewLore {
 	public int addOrReplaceLore(Type type, String prefix, String line, String suffix) {
 		int index = type.findInLore(lore);
 		if (index > -1) {
-			lore.set(index, BUtil.color("&9" +type.id + prefix + line + suffix));
+			lore.set(index, type.id + prefix + line + suffix);
 			return index;
 		}
 
@@ -395,17 +395,17 @@ public class BrewLore {
 		for (int i = 0; i < lore.size(); i++) {
 			Type existing = Type.get(lore.get(i));
 			if (existing != null && existing.isAfter(type)) {
-				lore.add(i, BUtil.color("&9" +type.id + prefix + line + suffix));
+				lore.add(i, type.id + prefix + line + suffix);
 				return i;
 			}
 		}
-		lore.add(BUtil.color("&9" +type.id + prefix + line + suffix));
+		lore.add(type.id + prefix + line + suffix);
 		return lore.size() - 1;
 	}
 
 	/**
 	 * Searches for type and if not found for Substring lore and removes it
- 	 */
+	 */
 	public void removeLore(Type type, String line) {
 		int index = type.findInLore(lore);
 		if (index == -1) {
@@ -419,7 +419,7 @@ public class BrewLore {
 
 	/**
 	 * Searches for type and removes it
- 	 */
+	 */
 	public void removeLore(Type type) {
 		if (type != Type.CUSTOM) {
 			int index = type.findInLore(lore);
@@ -452,7 +452,7 @@ public class BrewLore {
 
 	/**
 	 * Adds the Effect names to the Items description
- 	 */
+	 */
 	public void addOrReplaceEffects(List<BEffect> effects, int quality) {
 		if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_9) && effects != null) {
 			for (BEffect effect : effects) {
@@ -475,7 +475,7 @@ public class BrewLore {
 
 	/**
 	 * Removes all effects
- 	 */
+	 */
 	public void removeEffects() {
 		if (meta.hasCustomEffects()) {
 			for (PotionEffect effect : new ArrayList<>(meta.getCustomEffects())) {
@@ -495,7 +495,7 @@ public class BrewLore {
 			// Using NBT we don't get the invisible line, so we keep our spacing
 			return;
 		}
-		if (!lore.isEmpty() && lore.get(0).isEmpty()) {
+		if (lore.size() > 0 && lore.get(0).equals("")) {
 			lore.remove(0);
 			write();
 		}
@@ -514,8 +514,9 @@ public class BrewLore {
 
 	/**
 	 * True if the PotionMeta has Lore in quality color
- 	 */
+	 */
 	public static boolean hasColorLore(PotionMeta meta) {
+		if (meta == null) return false;
 		if (!meta.hasLore()) return false;
 		List<String> lore = meta.getLore();
 		if (lore.size() < 2) {
