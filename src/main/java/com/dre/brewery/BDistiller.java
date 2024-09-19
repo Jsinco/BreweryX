@@ -30,7 +30,7 @@ public class BDistiller {
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	private static final int DISTILLTIME = 400;
-	private static Map<Block, BDistiller> trackedDistillers = new ConcurrentHashMap<>();
+	private static final Map<Block, BDistiller> trackedDistillers = new ConcurrentHashMap<>();
 
 	private MyScheduledTask task;
 	private int runTime = -1;

@@ -22,9 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
@@ -51,13 +49,13 @@ public class BRecipe implements Cloneable {
 	// outcome
 	private PotionColor color; // color of the distilled/finished potion
 	private int alcohol; // Alcohol in perfect potion
-	private Map<Integer, String> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
+	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private int[] cmData; // Custom Model Data[3] for each quality
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private @Nullable Map<Integer, String> playercmds; // Commands executed as the player when drinking
-	private @Nullable Map<Integer, String> servercmds; // Commands executed as the server when drinking
+	private @Nullable List<Tuple<Integer, String>> playercmds; // Commands executed as the player when drinking
+	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
 	private boolean glint; // If the potion should have a glint effect
@@ -297,7 +295,7 @@ public class BRecipe implements Cloneable {
 	 * Load a list of strings from a ConfigurationSection and parse the quality
 	 */
 	@Nullable
-	public static Map<Integer, String> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
 			return loadQualityStringList(load, parseType);
@@ -305,11 +303,10 @@ public class BRecipe implements Cloneable {
 		return null;
 	}
 
-	public static Map<Integer, String> loadQualityStringList(List<String> stringList, StringParser.ParseType parseType) {
-		Map<Integer, String> result = new HashMap<>();
+	public static List<Tuple<Integer, String>> loadQualityStringList(List<String> stringList, StringParser.ParseType parseType) {
+		List<Tuple<Integer, String>> result = new ArrayList<>();
 		for (String line : stringList) {
-			Tuple<Integer, String> parsed = StringParser.parseQuality(line, parseType);
-			result.put(parsed.first(), parsed.second());
+			result.add(StringParser.parseQuality(line, parseType));
 		}
 		return result;
 	}
@@ -646,7 +643,7 @@ public class BRecipe implements Cloneable {
 	}
 
 	@Nullable
-	public Map<Integer, String> getLore() {
+	public List<Tuple<Integer, String>> getLore() {
 		return lore;
 	}
 
@@ -669,7 +666,7 @@ public class BRecipe implements Cloneable {
 	 * Get a quality filtered list of supported attributes
 	 */
 	@Nullable
-	public List<String> getStringsForQuality(int quality, Map<Integer, String> source) {
+	public List<String> getStringsForQuality(int quality, List<Tuple<Integer, String>> source) {
 		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
@@ -680,9 +677,9 @@ public class BRecipe implements Cloneable {
 			plus = 3;
 		}
 		List<String> list = new ArrayList<>(source.size());
-		for (Map.Entry<Integer, String> line : source.entrySet()) {
-			if (line.getKey() == 0 || line.getKey() == plus) {
-				list.add(line.getValue());
+		for (Tuple<Integer, String> line : source) {
+			if (line.first() == 0 || line.first() == plus) {
+				list.add(line.second());
 			}
 		}
 		return list;
@@ -696,12 +693,12 @@ public class BRecipe implements Cloneable {
 	}
 
 	@Nullable
-	public Map<Integer, String> getPlayercmds() {
+	public List<Tuple<Integer, String>> getPlayercmds() {
 		return playercmds;
 	}
 
 	@Nullable
-	public Map<Integer, String> getServercmds() {
+	public List<Tuple<Integer, String>> getServercmds() {
 		return servercmds;
 	}
 
@@ -744,11 +741,11 @@ public class BRecipe implements Cloneable {
 		this.drinkTitle = drinkTitle;
 	}
 
-	public void setPlayercmds(@Nullable Map<Integer, String> playercmds) {
+	public void setPlayercmds(@Nullable List<Tuple<Integer, String>> playercmds) {
 		this.playercmds = playercmds;
 	}
 
-	public void setServercmds(@Nullable Map<Integer, String> servercmds) {
+	public void setServercmds(@Nullable List<Tuple<Integer, String>> servercmds) {
 		this.servercmds = servercmds;
 	}
 
@@ -800,7 +797,7 @@ public class BRecipe implements Cloneable {
 		this.alcohol = alcohol;
 	}
 
-	public void setLore(Map<Integer, String> lore) {
+	public void setLore(List<Tuple<Integer, String>> lore) {
 		this.lore = lore;
 	}
 
@@ -933,9 +930,9 @@ public class BRecipe implements Cloneable {
 			for (RecipeItem item : this.ingredients) {
 				clone.ingredients.add(item.getMutableCopy());
 			}
-			clone.lore = (this.lore != null) ? new HashMap<>(this.lore) : null;
-			clone.playercmds = (this.playercmds != null) ? new HashMap<>(this.playercmds) : null;
-			clone.servercmds = (this.servercmds != null) ? new HashMap<>(this.servercmds) : null;
+			clone.lore = (this.lore != null) ? new ArrayList<>(this.lore) : null;
+			clone.playercmds = (this.playercmds != null) ? new ArrayList<>(this.playercmds) : null;
+			clone.servercmds = (this.servercmds != null) ? new ArrayList<>(this.servercmds) : null;
 			clone.effects = new ArrayList<>(this.effects.size());
 			for (BEffect effect : this.effects) {
 				clone.effects.add(effect.clone());
@@ -1057,9 +1054,9 @@ public class BRecipe implements Cloneable {
 				throw new IllegalArgumentException("Lore Quality must be 0 - 3");
 			}
 			if (recipe.lore == null) {
-				recipe.lore = new HashMap<>();
+				recipe.lore = new ArrayList<>();
 			}
-			recipe.lore.put(quality, line);
+			recipe.lore.add(new Tuple<>(quality, line));
 			return this;
 		}
 
@@ -1067,16 +1064,15 @@ public class BRecipe implements Cloneable {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			Map<Integer, String> playercmds = new HashMap<>(cmds.length);
+			List<Tuple<Integer, String>> playercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
-				Tuple<Integer, String> parsedQuality = StringParser.parseQuality(cmd, StringParser.ParseType.CMD);
-				playercmds.put(parsedQuality.first(), parsedQuality.second());
+				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
 			if (recipe.playercmds == null) {
 				recipe.playercmds = playercmds;
 			} else {
-				recipe.playercmds.putAll(playercmds);
+				recipe.playercmds.addAll(playercmds);
 			}
 			return this;
 		}
@@ -1085,16 +1081,15 @@ public class BRecipe implements Cloneable {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			Map<Integer, String> servercmds = new HashMap<>(cmds.length);
+			List<Tuple<Integer, String>> servercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
-				Tuple<Integer, String> parsedQuality = StringParser.parseQuality(cmd, StringParser.ParseType.CMD);
-				servercmds.put(parsedQuality.first(), parsedQuality.second());
+				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
 			if (recipe.servercmds == null) {
 				recipe.servercmds = servercmds;
 			} else {
-				recipe.servercmds.putAll(servercmds);
+				recipe.servercmds.addAll(servercmds);
 			}
 			return this;
 		}

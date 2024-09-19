@@ -104,9 +104,9 @@ public class BCauldronRecipe {
 		}
 
 
-		Map<Integer, String> lore = BRecipe.loadQualityStringList(cfg, id + ".lore", StringParser.ParseType.LORE);
+		List<Tuple<Integer, String>> lore = BRecipe.loadQualityStringList(cfg, id + ".lore", StringParser.ParseType.LORE);
 		if (lore != null && !lore.isEmpty()) {
-			recipe.lore = lore.entrySet().stream().map(valu -> BUtil.color(valu.getValue())).collect(Collectors.toList());
+			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}
 
 		recipe.cmData = cfg.getInt(id + ".customModelData", 0);

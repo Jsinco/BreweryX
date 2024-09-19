@@ -100,7 +100,7 @@ public class BrewLore {
 				index = addLore(Type.CUSTOM, "", line);
 				index++;
 			} else {
-				lore.add(index, BUtil.color("&9" +Type.CUSTOM.id + line));
+				lore.add(index, BUtil.color("&9" + Type.CUSTOM.id + line));
 				index++;
 			}
 		}
@@ -227,7 +227,7 @@ public class BrewLore {
 					index = addLore(Type.CUSTOM, "", line);
 					index++;
 				} else {
-					lore.add(index, BUtil.color("&9" +Type.CUSTOM.id + line));
+					lore.add(index, BUtil.color("&9" + Type.CUSTOM.id + line));
 					index++;
 				}
 			}
