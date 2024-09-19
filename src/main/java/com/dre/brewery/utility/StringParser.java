@@ -1,13 +1,6 @@
 package com.dre.brewery.utility;
 
-import java.util.Map;
-
 public class StringParser {
-
-	public static Map.Entry<Integer, String> parseQualityMapEntry(String line, ParseType type) {
-		Tuple<Integer, String> parsedQuality = parseQuality(line, type);
-		return Map.entry(parsedQuality.first(), parsedQuality.second());
-	}
 
 	public static Tuple<Integer, String> parseQuality(String line, ParseType type) {
 		//line = BreweryPlugin.getInstance().color(line);
