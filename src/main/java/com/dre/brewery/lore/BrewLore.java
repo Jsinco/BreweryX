@@ -30,7 +30,7 @@ public class BrewLore {
 		this.brew = brew;
 		this.meta = meta;
 		if (meta.hasLore()) {
-			lore = meta.getLore();
+			lore = new ArrayList<>(meta.getLore()); // not null
 		} else {
 			lore = new ArrayList<>();
 		}
