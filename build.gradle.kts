@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.3.1-SNAPSHOT"
+version = "3.3.3"
 
 repositories {
     mavenCentral()
@@ -28,7 +28,6 @@ repositories {
     maven("https://repo.oraxen.com/releases") // Oraxen
 }
 
-// TODO: Figure out exclusions because this is a mess.
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
 		exclude("com.google.code.gson", "gson")

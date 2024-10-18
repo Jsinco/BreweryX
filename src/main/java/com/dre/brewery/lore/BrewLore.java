@@ -30,7 +30,7 @@ public class BrewLore {
 		this.brew = brew;
 		this.meta = meta;
 		if (meta.hasLore()) {
-			lore = new ArrayList<>(meta.getLore()); // not null
+			lore = meta.getLore();
 		} else {
 			lore = new ArrayList<>();
 		}
@@ -44,7 +44,7 @@ public class BrewLore {
 		if (lineAddedOrRem) {
 			updateSpacer();
 		}
-		meta.setLore(lore.stream().map(it -> BUtil.color("&9" + it)).toList());
+		meta.setLore(lore);
 		return meta;
 	}
 
