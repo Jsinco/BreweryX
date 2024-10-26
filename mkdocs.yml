@@ -82,6 +82,10 @@ plugins:
           default: false
           name: Русский
           build: true
+          nav_translations:
+            Documentation: Документация
+            Config: Конфигурации
+            Other: Прочее
 extra:
   # alternate:
   #   - name: English

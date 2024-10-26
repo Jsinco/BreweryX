@@ -1,3 +1,7 @@
+---
+description: Default config of BreweryX
+---
+
 # Default config
 
 This is default config in `en` language

@@ -8,6 +8,7 @@ hide:
   - feedback
   - actions
 icon: fontawesome/solid/house
+description: Лучший плагин на варку алкоголя
 ---
 
 <h1 class="white">  
@@ -70,6 +71,13 @@ BreweryX это поддерживаемый, активно разрабаты�
         <figcaption>**Mitality** - разработчик</figcaption>
     </figure>
 
+- 
+
+    <figure markdown="span">
+        ![Szarkan](https://avatars.githubusercontent.com/u/150809885?v=4){ width="150" }
+        <figcaption>**szarkan** - я написал эту Вики!</figcaption>
+    </figure>
+
 -  
 
     <figure markdown="span">
@@ -89,13 +97,6 @@ BreweryX это поддерживаемый, активно разрабаты�
     <figure markdown="span">
         ![Grafe](https://avatars.githubusercontent.com/u/2846040?v=4){ width="150" }
         <figcaption>**Grafe** - автор оригинального Brewery</figcaption>
-    </figure>
-
-- 
-
-    <figure markdown="span">
-        ![Szarkan](https://avatars.githubusercontent.com/u/150809885?v=4){ width="150" }
-        <figcaption>**szarkan** - я написал эту Вики!</figcaption>
     </figure>
 
 - 

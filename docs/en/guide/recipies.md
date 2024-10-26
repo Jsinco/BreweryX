@@ -1,3 +1,6 @@
+---
+description: How to create new recipe in BreweryX
+---
 
 # Creating new recipe
 
