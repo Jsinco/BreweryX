@@ -16,7 +16,7 @@ Brew_Years: года
 Brew_fermented: ферментировано
 Brew_minute: минут
 Brew_Alc: Алк &v1мл
-Brew_Brewer: 'Brewer: &v1'
+Brew_Brewer: 'Сварил: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cЗелья не поместились в инвентарь'
