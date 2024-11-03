@@ -44,7 +44,7 @@ public class BrewLore {
 		if (lineAddedOrRem) {
 			updateSpacer();
 		}
-		meta.setLore(BUtil.color(lore));
+		meta.setLore(BUtil.color(lore, "&9"));
 		return meta;
 	}
 

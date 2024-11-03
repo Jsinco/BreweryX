@@ -49,8 +49,8 @@ public class BUtil {
 		return block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4);
 	}
 
-	public static List<String> color(List<String> list) {
-		return list.stream().map(BUtil::color).toList();
+	public static List<String> color(List<String> list, String prefix) {
+		return list.stream().map(it -> color(prefix + it)).toList();
 	}
 
 	/**

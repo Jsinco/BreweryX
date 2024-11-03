@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.3.3"
+version = "3.3.4"
 
 repositories {
     mavenCentral()

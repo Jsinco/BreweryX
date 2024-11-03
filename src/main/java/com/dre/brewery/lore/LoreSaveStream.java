@@ -70,7 +70,7 @@ public class LoreSaveStream extends ByteArrayOutputStream {
 			lore.add("");
 		}
 		lore.add(line, loreLineBuilder.toString());
-		meta.setLore(BUtil.color(lore));
+		meta.setLore(BUtil.color(lore, "&9"));
 	}
 
 	@Override
