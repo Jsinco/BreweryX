@@ -49,6 +49,10 @@ public class BUtil {
 		return block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4);
 	}
 
+	public static List<String> color(List<String> list) {
+		return list.stream().map(BUtil::color).toList();
+	}
+
 	/**
 	 * Color code a message. Supports HEX colors and default minecraft colors!
 	 * @param msg The message to color

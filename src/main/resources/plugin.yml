@@ -1,10 +1,10 @@
 name: BreweryX
-version: '${version}'
-website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
+version: '${version}'
 api-version: 1.13
 load: POSTWORLD
 folia-supported: true
+website: 'https://brewery.lumamc.net/'
 authors: [Jsinco, Mitality, Szarkans, Sn0wStorm, TTTheKing, Grafe]
 libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']
 softdepend:

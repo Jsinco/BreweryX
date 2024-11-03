@@ -1,5 +1,6 @@
 package com.dre.brewery.lore;
 
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.ByteArrayOutputStream;
@@ -69,7 +70,7 @@ public class LoreSaveStream extends ByteArrayOutputStream {
 			lore.add("");
 		}
 		lore.add(line, loreLineBuilder.toString());
-		meta.setLore(lore);
+		meta.setLore(BUtil.color(lore));
 	}
 
 	@Override
