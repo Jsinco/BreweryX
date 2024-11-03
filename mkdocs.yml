@@ -82,6 +82,10 @@ plugins:
           default: false
           name: Русский
           build: true
+          nav_translations:
+            Documentation: Документация
+            Config: Конфигурации
+            Other: Прочее
 extra:
   # alternate:
   #   - name: English
@@ -110,6 +114,7 @@ nav:
     - Other:
       - en/guide/brewing_guide.md
       - en/guide/custom_items.md
+      - en/guide/default_recipes.md
   - API:
     - en/api/api.md
     - en/api/depenizen.md

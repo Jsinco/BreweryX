@@ -1,3 +1,6 @@
+---
+description: How custom items work in BreweryX
+---
 
 # Using custom items
 

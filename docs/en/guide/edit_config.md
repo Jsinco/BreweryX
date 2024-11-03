@@ -1,3 +1,7 @@
+---
+description: How to edit config.yml in BreweryX
+---
+
 # Configuring the config
 
 The Brewery<span class="neon">X</span> config has a lot of its own jokes, which we will now analyze.yze.
@@ -9,6 +13,32 @@ The Brewery<span class="neon">X</span> config has a lot of its own jokes, which 
 The BreweryX message language. It can be any of the `BreweryX/languages/` folder.
 
 Current languages: `en`, `ru`, `de`, `es`, `fr`, `it`, `tw` and `zh`
+
+***
+
+## Data storage: `storage`
+
+How to store every BreweryX's data.
+
+`type` - type of data storage, could be:
+
+- `FlatFile` - like in OG Brewery - just an `.yml` file.
+
+- `SQLite` - simple database within a `.db` file
+
+- `MySQL` - big database
+
+Next parameters will work only if `MySQL` is choosen:
+
+- `database` - da name of database
+
+- `tablePrefix` - prefix of tables
+
+- `address` - ip address of mysql databse
+
+- `username` - database access login
+
+- `password` - database access password
 
 ***
 
@@ -75,6 +105,17 @@ Default value: `pukeItem: [Soul_Sand]`
 How many seconds will vomit items disappear.
 
 Default value: `pukeDespawntime: 60`
+
+***
+
+## How much is a year for BreweryX: `agingYearDuration`
+
+ow many days the Brewery will count for an year.
+
+Default value: 20
+
+***
+
 
 ***
 
@@ -190,7 +231,9 @@ This setting (if set to `true`) allows you to encode the components (NBT) of the
 
 ## Encoding type: `encodeKey`
 
-Not sure, we need to ask the developer...
+Like a minecraft seed, but for `enableEncode`.
+
+If you want to use same drinks on multiple server connected via Bungee or Velocity, this parameter have to be the same on every server.
 
 ***
 

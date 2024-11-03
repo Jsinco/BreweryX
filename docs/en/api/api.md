@@ -14,7 +14,7 @@ For Java developers, use any release jar locally or get any release from [Jitpac
 <dependency>
    <groupId>com.github.Jsinco</groupId>
    <artifactId>BreweryX</artifactId>
-   <version>3.2.5</version>
+   <version>3.3.3</version>
    <scope>provided</scope>
 </dependency>
 ```
@@ -27,6 +27,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Jsinco:BreweryX:3.2.5'
+    implementation 'com.github.Jsinco:BreweryX:3.3.3'
 }
 ```
