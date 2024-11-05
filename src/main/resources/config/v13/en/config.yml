@@ -1,3 +1,6 @@
+#   Proper config guide can be found here: http://brewery.lumamc.net/en/guide/edit_config/
+#   Still have questions? We waiting for you in our official Discord channel: https://discord.gg/ZTGCzeKg45
+
 # Config Version
 version: '3.1'
 
@@ -1260,3 +1263,5 @@ words:
    to: '*burp*'
    percentage: 6
    alcohol: 80
+
+# Yep, that's it! The end of config.yml! I had so much fun! And you?...

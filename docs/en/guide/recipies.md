@@ -127,7 +127,7 @@ TestBrew:
 
 | Required? | Value | Default Value |
 | --------- | ----- | ------------- |
-|No|Wood type's number|None|
+|No|Wood type's number|0|
 
 Type of barrel wood needed to age brew properly. Posible values:
 
@@ -154,6 +154,8 @@ Type of barrel wood needed to age brew properly. Posible values:
 - 10 - Cherry 
 
 - 11 - Bamboo
+
+- 12 - Cut copper
 
 ```yaml
 TestBrew:

@@ -7,17 +7,40 @@ description: Default config of BreweryX
 This is default config in `en` language
 
 ```yaml title="config.yml"
-# config for Brewery.jar
+# Config Version
+version: '3.1'
 
 
 # -- Settings --
 # Defaults are written in []
 
+# -- Storage Settings --
+storage:
+  # What type of storage to use [FLATFILE]
+  # Available types: FlatFile, MySQL, SQLite
+  type: FlatFile
+  # The name of the database. When the database is a file, this will be the name of the file. [brewery-data]
+  database: brewery-data
+  tablePrefix: brewery_
+  address: localhost
+  username: root
+  password: ''
+
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
 
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+updateCheck: true
+
+# Autosave interval in minutes [3]
+autosave: 3
+
+# Show debug messages in log [false]
+debug: false
+
 # Prefix used on messages
-pluginPrefix: '&2[Brewery]&f '
+pluginPrefix: '&2[BreweryX]&f '
 
 # If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
 enableHome: true
@@ -43,7 +66,8 @@ enableKickOnOverdrink: false
 # The item can not be collected and stays on the ground until it despawns.
 enablePuke: true
 
-# Item that is dropped multiple times uncollectable when puking [Soul_Sand]
+# Items that is dropped multiple times uncollectable when puking [Soul_Sand]
+# Can be list of items such as [Sould_sand, Slime_block, Dirt]
 pukeItem: [Soul_Sand]
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
@@ -80,42 +104,40 @@ alwaysShowAlc: false
 # If we should show who brewed the drink [false]
 showBrewer: false
 
+# If barrels are only created when the sign placed contains the word "barrel" (or a translation when using another language) [true]
+requireKeywordOnSigns: true
+
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
+# Duration (in minutes) of a "year" when aging drinks [20]
+agingYearDuration: 20
+
 # The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
 # hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
 # This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+#
 # Only drawback: brew items can only be used on another server with the same encodeKey.
 # When using Brews on multiple (BungeeCord) Servers, define a shared Database below at 'multiServerDB'
+#
 # So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
 enableEncode: false
 encodeKey: 0
-
-# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
-updateCheck: true
-
-# Autosave interval in minutes [3]
-autosave: 3
-
-# Show debug messages in log [false]
-debug: false
-
-# Config Version
-version: '3.1'
-
 
 
 # -- Define custom items --
 # The defined id can then be used in recipes
 
-#  matchAny: true if it is already enough if one of the info matches
-#  material: Which type the item has to be
-#  name: Which name the item has to be (Formatting codes possible: such as &6)
-#  lore: What has to be in the lore of the item
-#  customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format
+# matchAny: true if it is already enough if one of the info matches
+#
+# material: Which type the item has to be
+#
+# name: Which name the item has to be (Formatting codes possible: such as &6 or hex as &#<hex>)
+#
+# lore: What has to be in the lore of the item
+#
+# customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format
 customItems:
   # Three Example Items
   ex-item:
@@ -158,21 +180,26 @@ customItems:
 # Which Ingredients are accepted by the Cauldron and the base potion resulting from them
 # You only need to add something here if you want to specify a custom name or color for the base potion
 
- # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
- # ingredients: List of 'material/amount'
- #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
- #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
- #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Color of the base potion from a cauldron. Defaults to CYAN
- #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
- #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
- # cookParticles:
- #   Color of the Particles above the cauldron at different cooking-times
- #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
- #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
- #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
- # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
- # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+# name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+#
+# ingredients: List of 'material/amount'
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#
+# color: Color of the base potion from a cauldron. Defaults to CYAN
+#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+#
+# cookParticles:
+#   Color of the Particles above the cauldron at different cooking-times
+#   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+#   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+#   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
+#
+# lore: List of additional text on the base potion. (Formatting codes possible: such as &6 or hex as #&<hex>)
+#
+# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
 cauldron:
   # Example with all possible entries
@@ -232,7 +259,7 @@ cauldron:
 
   grass:
     name: Boiled herbs
-    ingredients: Short_Grass
+    ingredients: Grass
     color: '99ff66' # bright green
     cookParticles:
       - 'GREEN/2'
@@ -382,7 +409,7 @@ cauldron:
   poi_grass:
     name: Boiled acidy herbs
     ingredients:
-      - Short_Grass
+      - Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
     cookParticles:
@@ -422,34 +449,69 @@ cauldron:
 
 # -- Recipes for Potions --
 
-# name: Different names for bad/normal/good (Formatting codes possible: such as &6)
+# Proper guide for this section can be found in our wiki here - https://brewery.lumamc.net/guide/recipies/
+
+# name: Different names for bad/normal/good (Formatting codes possible: such as &6 or hex as &#123123)
+#   name: "Worst drink/Good Drink/Best drink i had in my entire life!"
+#
 # ingredients: List of 'material/amount'
 #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
-#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Plugin items with 'plugin:id' (Currently supporting Brewery, Oraxen, ItemsAdder)
 #   Or a custom item defined above
+#
 # cookingtime: Time in real minutes ingredients have to boil
+#
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
+#
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
-# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak 7=Crimson 8=Warped 9=Mangrove 10=Cherry 11=Bamboo
+#
+# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak 7=Crimson 8=Warped 9=Mangrove 10=Cherry 11=Bamboo (12=Cut Copper)
 #   The Minecraft barrel is made of oak
+#
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
+#
 # color: Color of the potion after distilling/aging.
 #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
 #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+#
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
+#
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
+#
 # lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+#   - +++ This is the best drink!
+#   - ++ This is decent drink.
+#   - + This is the worst drink
+#
 # servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
+#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+#   - +++ op %player%
+#   - ++ money give %player% 10
+#   - + kill %player% 
+#  Command execution can be delayed by adding "/ <amount>s" to the end, like this:
+#  - op Jsinco / 3s
+#
 # playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
 #   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+#   - +++ spawn
+#   - ++ home
+#   - + suicide
+#  Command execution can be delayed by adding "/ <amount>s" to the end, like this:
+#  - op Jsinco / 3s
+#
 # drinkmessage: Chat-message to the Player when drinking the Brew
+#
 # drinktitle: Title on Screen to the Player when drinking the Brew
+#
 # glint: Boolean if the item should have a glint (enchant glint)
+#
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 #   Can specify one for all, or one for each quality, separated by /
+#   customModelData: 1
+#   customModelData: 1/2/3
+#
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
@@ -717,7 +779,7 @@ recipes:
   absinthe:
     name: Poor Absinthe/Absinthe/Strong Absinthe
     ingredients:
-      - Short_Grass/15
+      - Grass/15
     cookingtime: 3
     distillruns: 6
     distilltime: 80
@@ -731,7 +793,7 @@ recipes:
   gr_absinthe:
     name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
     ingredients:
-      - Short_Grass/17
+      - Grass/17
       - Poisonous_Potato/2
     cookingtime: 5
     distillruns: 6
@@ -749,7 +811,7 @@ recipes:
     name: Potato soup
     ingredients:
       - Potato/5
-      - Short_Grass/3
+      - Grass/3
     cookingtime: 3
     color: ORANGE
     difficulty: 1
@@ -889,22 +951,6 @@ useVirtualChestPerms: false
 useLogBlock: true
 
 
-# -- MultiServer/BungeeCord --
-# If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkenness and to be able to use encoded brews between them.
-
-multiServerDB:
-  # If using the Database is enabled
-  enabled: false
-  # If the drunkenness of players should be synchronised between Servers
-  syncDrunkeness: true
-  host: localhost
-  port: '3306'
-  user: minec
-  password: xyz
-  database: base
-
-
 # -- Various Other Settings --
 
 # If items in Offhand should be added to the cauldron as well [false]
@@ -977,7 +1023,6 @@ distortBypass:
 # alcohol: 1-100 minimum drunkenness after which this word ist replaced
 # percentage: Probability of replacing a Word in percent
 
-words:
 words:
 -  replace: s
    to: sh
