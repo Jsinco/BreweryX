@@ -10,6 +10,9 @@
 # vim
 .*.sw[a-breweryPlugin]
 
+# vscode
+/.vscode
+
 # IntelliJ
 /.idea
 /*.iml

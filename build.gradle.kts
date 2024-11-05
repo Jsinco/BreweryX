@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.3.4"
+version = "3.3.5"
 
 repositories {
     mavenCentral()
@@ -115,7 +115,7 @@ tasks {
         dependsOn("kotlinReducedResources")
         from(sourceSets.main.get().output)
         from("$buildDir/kt-reduced")
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         archiveClassifier.set("KtReduced")
     }
 
