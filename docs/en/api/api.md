@@ -1,7 +1,7 @@
 
 # API
 
-For Java developers, use any release jar locally or get any release from [Jitpack](https://jitpack.io/#Jsinco/BreweryX)
+For Java developers, use any release jar locally or preferably, use JitPack:
 
 ## Maven
 
@@ -14,19 +14,56 @@ For Java developers, use any release jar locally or get any release from [Jitpac
 <dependency>
    <groupId>com.github.Jsinco</groupId>
    <artifactId>BreweryX</artifactId>
-   <version>3.3.3</version>
+   <version>VERSION</version>
    <scope>provided</scope>
 </dependency>
 ```
 
 ## Gradle
 
-```groovy
-repositories {
-    maven { url 'https://jitpack.io' }
-}
+=== "Gradle (Groovy)"
 
-dependencies {
-    implementation 'com.github.Jsinco:BreweryX:3.3.3'
-}
-```
+    ``` groovy
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        implementation 'com.github.Jsinco:BreweryX:VERSION'
+    }
+    ```
+
+=== "Gradle (KTS)"
+
+    ``` kotlin
+    repositories {
+        maven("https://jitpack.io")
+    }
+
+    dependencies {
+        implementation("com.github.Jsinco:BreweryX:VERSION")
+    }
+    ```
+
+!!! warning
+
+    Don't forget to replace `VERSION` with a version [available on JitPack](https://jitpack.io/#Jsinco/BreweryX#releasesLink).
+
+You also need to add a dependency in the `plugin.yml` or `paper-plugin.yml` file. This ensures BreweryX loads before your plugin.
+
+=== "plugin.yml"
+
+    ``` yaml
+    depend: [BreweryX]
+    ```
+
+=== "paper-plugin.yml"
+
+    ``` yaml
+    dependencies:
+        server:
+            BreweryX:
+                load: BEFORE
+                required: true
+                join-classpath: true
+    ```

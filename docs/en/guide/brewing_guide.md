@@ -27,9 +27,9 @@ Step one consists of Fermenting the fresh Ingredients.
 
 6. ???
 
-7. You're awesome!
+7. Profit
 
-![Fermetting](https://camo.githubusercontent.com/c5cb7d3fe6ada1cd5fb1bec17d35774ed16ddee4bb39fbc473ef7b062bf34119/687474703a2f2f692e696d6775722e636f6d2f3144636c6e31392e706e67)
+![Fermetting](../../assets/brewing_guide/brewing.png)
 
 ## Distilling
 
@@ -43,9 +43,9 @@ Some recipes need distilling and it's very easy process!
 
 4. ???
 
-5. You're awesome!
+5. Profit
 
-![Distilling](https://camo.githubusercontent.com/ade33c5b2f1ebf5d7d8d9167cd51e10e7d5edead8f2cd1b7b48a70b8b21941a5/687474703a2f2f692e696d6775722e636f6d2f524a4b563958732e706e67)
+![Distilling](../../assets/brewing_guide/distilling.png)
 
 ## Aging
 
@@ -53,6 +53,6 @@ Most of drinks need **to age** from base potion to drink or to get better qualit
 
 For that you need a **Barrel**. You can use default Minecraft barrel as **Oak barrel** that can contain up to 6 drinks or build multiblock structure if drink has to age in different type of wood. Structure barrels also can store more brews than default barrel!
 
-![Barrels used in BreweryX](../../assets/barrels.png)
+![Barrels used in BreweryX](../../assets/brewing_guide/barrels.png)
 
 After you put your drinks in barrels, you need to just wait! 1 "year" is equals 1 in-game day. If you overdo the drink or use the wrong type of wood, the drink is likely to spoil.

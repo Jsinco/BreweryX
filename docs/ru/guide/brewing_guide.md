@@ -26,7 +26,7 @@ description: Гайд по созданию напитков в BreweryX
 
 7. ПРОФИТ!
 
-![Fermetting](https://camo.githubusercontent.com/c5cb7d3fe6ada1cd5fb1bec17d35774ed16ddee4bb39fbc473ef7b062bf34119/687474703a2f2f692e696d6775722e636f6d2f3144636c6e31392e706e67)
+![Fermetting](../../assets/brewing_guide/brewing.png)
 
 ## Дистилляция
 
@@ -42,7 +42,7 @@ description: Гайд по созданию напитков в BreweryX
 
 5. ПРОФИТ!
 
-![Distilling](https://camo.githubusercontent.com/ade33c5b2f1ebf5d7d8d9167cd51e10e7d5edead8f2cd1b7b48a70b8b21941a5/687474703a2f2f692e696d6775722e636f6d2f524a4b563958732e706e67)
+![Distilling](../../assets/brewing_guide/distilling.png)
 
 ## Брожение
 
@@ -50,6 +50,6 @@ description: Гайд по созданию напитков в BreweryX
 
 Для этого тебе нужна **Бочка**. Ты можешь использовать обычную бочку из Майнкрафта, она будет работать как бочка **из дуба** и вмещает в себя 6 напитков. Но также ты можешь построить структуру - среднюю или большую бочку. Они нужны, если в рецепте необходимо определенное дерево или просто для увеличения слотов!
 
-![Бочки в BreweryX](../../assets/barrels_ru.png)
+![Бочки в BreweryX](../../assets/brewing_guide/barrels_ru.png)
 
 После того, как ты положил напитки в бочки, тебе достаточно просто ждать! 1 "год" в BreweryX равняется 1 внутриигровому дню.
