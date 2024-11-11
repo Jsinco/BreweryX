@@ -50,7 +50,11 @@ public class BUtil {
 	}
 
 	public static List<String> color(List<String> list, String prefix) {
-		return list.stream().map(it -> color(prefix + it)).toList();
+		List<String> strs = new ArrayList<>();
+		for (String str : list) {
+			strs.add(color(prefix + str));
+		}
+		return strs;
 	}
 
 	/**

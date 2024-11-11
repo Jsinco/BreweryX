@@ -18,14 +18,14 @@ public enum MinecraftVersion {
     V1_14("1.14"),
     V1_15("1.15"),
     V1_16("1.16"),
-    V1_17("1.17"),
+    V1_17("1.17"), // If we're being honest, probably no versions below this one will be used since we're compiling to Java 17. So they'll need to get some server software for Java 17 *if* they want to use BreweryX.
     V1_18("1.18"),
     V1_19("1.19"),
     V1_20("1.20"),
     V1_21("1.21"),
     UNKNOWN("Unknown");
 
-    final String version;
+    private final String version;
 
     MinecraftVersion(String version) {
         this.version = version;

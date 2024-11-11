@@ -70,6 +70,7 @@ permissions:
       brewery.cmd.reload: true
       brewery.cmd.itemname: true
       brewery.cmd.reloadaddons: true
+      brewery.cmd.datamanager: true
   # *
   brewery.*:
     description: Gives Access to every Permission, including bypasses and overrides
@@ -119,6 +120,8 @@ permissions:
     description: Reload all Addons
   brewery.cmd.version:
     description: See misc info about BreweryX
+  brewery.cmd.datamanager:
+    description: DataManager stuff
 
 # -- Barrel --
   brewery.createbarrel:
