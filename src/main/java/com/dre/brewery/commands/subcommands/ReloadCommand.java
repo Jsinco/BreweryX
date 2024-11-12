@@ -3,7 +3,6 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.filedata.BConfig;
@@ -16,12 +15,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.List;
 
 public class ReloadCommand implements SubCommand {
-
-    private final BreweryPlugin breweryPlugin;
-
-    public ReloadCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
 
     @Override
     public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
@@ -67,14 +60,6 @@ public class ReloadCommand implements SubCommand {
 				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Reload"));
 			}
 		}
-
-		BreweryPlugin.getDataManager().exit(true, true, () -> {
-			try {
-				BreweryPlugin.setDataManager(DataManager.createDataManager(BConfig.configuredDataManager));
-			} catch (StorageInitException e) {
-				breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
-			}
-		});
 
 		BreweryPlugin.getAddonManager().reloadAddons();
 		BConfig.reloader = null;
