@@ -29,11 +29,7 @@ public class BrewLore {
 	public BrewLore(Brew brew, PotionMeta meta) {
 		this.brew = brew;
 		this.meta = meta;
-		if (meta.hasLore()) {
-			lore = meta.getLore();
-		} else {
-			lore = new ArrayList<>();
-		}
+		this.lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
 	}
 
 	/**
@@ -44,7 +40,8 @@ public class BrewLore {
 		if (lineAddedOrRem) {
 			updateSpacer();
 		}
-		meta.setLore(BUtil.color(lore, "&9"));
+
+		meta.setLore(lore);
 		return meta;
 	}
 
