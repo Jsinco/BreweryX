@@ -49,14 +49,6 @@ public class BUtil {
 		return block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4);
 	}
 
-	public static List<String> color(List<String> list, String prefix) {
-		List<String> strs = new ArrayList<>();
-		for (String str : list) {
-			strs.add(color(prefix + str));
-		}
-		return strs;
-	}
-
 	/**
 	 * Color code a message. Supports HEX colors and default minecraft colors!
 	 * @param msg The message to color
