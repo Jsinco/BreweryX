@@ -100,24 +100,25 @@ tasks {
 
 
     // Kotlin Reduced Jars
-    register<Copy>("kotlinReducedResources") {
-        from("src/main/resources")
-        into("$buildDir/kt-reduced")
-        doLast {
-            val pluginFile = file("$buildDir/kt-reduced/plugin.yml")
-            var content = pluginFile.readText()
-            content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
-            pluginFile.writeText(content)
-        }
-    }
+	register<Copy>("prepareKotlinReducedJar") {
+		dependsOn(shadowJar)
+		from(zipTree(shadowJar.get().archiveFile))
+		into("$buildDir/kt-reduced")
+		doLast {
+			val pluginFile = file("$buildDir/kt-reduced/plugin.yml")
+			var content = pluginFile.readText()
+			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
+			pluginFile.writeText(content)
+		}
+	}
 
-    register<Jar>("kotlinReducedJar") {
-        dependsOn("kotlinReducedResources")
-        from(sourceSets.main.get().output)
-        from("$buildDir/kt-reduced")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        archiveClassifier.set("KtReduced")
-    }
+	register<Jar>("kotlinReducedJar") {
+		dependsOn("prepareKotlinReducedJar")
+		from("$buildDir/kt-reduced")
+		include("**/*")
+		duplicatesStrategy = DuplicatesStrategy.INHERIT
+		archiveClassifier.set("KtReduced")
+	}
 
 
 }
