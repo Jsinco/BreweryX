@@ -1,9 +1,11 @@
 package com.dre.brewery.listeners;
 
+import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -58,6 +60,11 @@ public class EntityListener implements Listener {
 		Block block;
 		blocks: while (iter.hasNext()) {
 			block = iter.next();
+			BCauldron cauldron = BCauldron.get(block);
+			if (cauldron != null) {
+				BUtil.blockDestroy(block, null, BarrelDestroyEvent.Reason.EXPLODED);
+				continue;
+			}
 			if (!breakEvents.isEmpty()) {
 				for (BarrelDestroyEvent breakEvent : breakEvents) {
 					if (breakEvent.getBarrel().hasBlock(block)) {
