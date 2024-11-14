@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id("java")
     id("maven-publish")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 val langVersion: Int = 17
@@ -98,7 +98,6 @@ tasks {
         archiveClassifier.set("")
     }
 
-
     // Kotlin Reduced Jars
 	register<Copy>("prepareKotlinReducedJar") {
 		dependsOn(shadowJar)
@@ -119,11 +118,7 @@ tasks {
 		duplicatesStrategy = DuplicatesStrategy.INHERIT
 		archiveClassifier.set("KtReduced")
 	}
-
-
 }
-
-
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(langVersion)
@@ -136,6 +131,3 @@ publishing {
         }
     }
 }
-
-
-
