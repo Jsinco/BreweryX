@@ -65,7 +65,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (VERSION.isOrEarlier(MinecraftVersion.V1_14) || event.getBlock().getType() != Material.SMOKER) return;
+		if (VERSION.isOrEarlier(MinecraftVersion.V1_14) || event.getBlock().getType() != BConfig.sealingTableMaterial) return;
 		BSealer.blockPlace(event.getItemInHand(), event.getBlock());
 	}
 
