@@ -147,7 +147,7 @@ public class BConfig {
 		final File configs = new File(breweryPlugin.getDataFolder(), "configs");
 		final File languages = new File(breweryPlugin.getDataFolder(), "languages");
 
-		final List<String> configTypes =  new ArrayList<>(List.of("de", "en", "es", "fr", "it", "zh"));
+		final List<String> configTypes =  new ArrayList<>(List.of("de", "en", "es", "fr", "it", "ru", "zh"));
 		final List<String> langTypes = new ArrayList<>(List.of("de", "en", "es", "fr", "it", "ru", "tw", "zh"));
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) { // not available for some versions according to original author, haven't looked. - Jsinco : 4/1
 			configTypes.removeAll(List.of("es", "it", "zh"));
