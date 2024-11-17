@@ -111,7 +111,7 @@ public class BConfig {
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
 	public static boolean enableSealingTable; // Allow Usage of Sealing Table
-	public static Material sealingTableMaterial;
+	public static Material sealingTableBlock;
 	public static String pluginPrefix = "&2[BreweryX]&f ";
 
 	//Item
@@ -258,7 +258,7 @@ public class BConfig {
 		enableWake = config.getBoolean("enableWake", false);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);
-		sealingTableMaterial = Material.matchMaterial(config.getString("sealingTableMaterial", "SMOKER"));
+		sealingTableBlock = Material.matchMaterial(config.getString("sealingTableBlock", "SMOKER"));
 		pluginPrefix = config.getString("pluginPrefix", "&2[Brewery]&f ");
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);

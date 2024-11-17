@@ -107,7 +107,7 @@ public class BSealer implements InventoryHolder {
 	}
 
 	public static boolean isBSealer(Block block) {
-		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == BConfig.sealingTableMaterial) {
+		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == BConfig.sealingTableBlock) {
 			Container container = (Container) block.getState();
 			if (container.getCustomName() != null) {
 				if (container.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {
@@ -121,7 +121,7 @@ public class BSealer implements InventoryHolder {
 	}
 
 	public static void blockPlace(ItemStack item, Block block) {
-		if (item.getType() == BConfig.sealingTableMaterial && item.hasItemMeta()) {
+		if (item.getType() == BConfig.sealingTableBlock && item.hasItemMeta()) {
 			ItemMeta itemMeta = item.getItemMeta();
 			assert itemMeta != null;
 			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) ||
@@ -140,8 +140,8 @@ public class BSealer implements InventoryHolder {
 
 	public static void registerRecipe() {
 		recipeRegistered = true;
-		ItemStack sealingTableItem = new ItemStack(BConfig.sealingTableMaterial);
-		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(BConfig.sealingTableMaterial);
+		ItemStack sealingTableItem = new ItemStack(BConfig.sealingTableBlock);
+		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(BConfig.sealingTableBlock);
 		if (meta == null) return;
 		meta.setDisplayName("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 		meta.getPersistentDataContainer().set(TAG_KEY, PersistentDataType.BYTE, (byte)1);
