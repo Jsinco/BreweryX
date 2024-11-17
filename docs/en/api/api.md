@@ -12,7 +12,7 @@ For Java developers, use any release jar locally or preferably, use JitPack:
 </repository>
 
 <dependency>
-   <groupId>com.github.Jsinco</groupId>
+   <groupId>com.github.BreweryTeam</groupId>
    <artifactId>BreweryX</artifactId>
    <version>VERSION</version>
    <scope>provided</scope>
@@ -29,7 +29,7 @@ For Java developers, use any release jar locally or preferably, use JitPack:
     }
 
     dependencies {
-        implementation 'com.github.Jsinco:BreweryX:VERSION'
+        implementation 'com.github.BreweryTeam:BreweryX:VERSION'
     }
     ```
 
@@ -41,13 +41,13 @@ For Java developers, use any release jar locally or preferably, use JitPack:
     }
 
     dependencies {
-        implementation("com.github.Jsinco:BreweryX:VERSION")
+        implementation("com.github.BreweryTeam:BreweryX:VERSION")
     }
     ```
 
 !!! warning
 
-    Don't forget to replace `VERSION` with a version [available on JitPack](https://jitpack.io/#Jsinco/BreweryX#releasesLink).
+    Don't forget to replace `VERSION` with a version [available on JitPack](https://jitpack.io/#BreweryTeam/BreweryX#releasesLink).
 
 You also need to add a dependency in the `plugin.yml` or `paper-plugin.yml` file. This ensures BreweryX loads before your plugin.
 

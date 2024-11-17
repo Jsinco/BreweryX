@@ -1,4 +1,4 @@
-# BreweryX ![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue) [![Releases](https://img.shields.io/github/v/release/Jsinco/BreweryX)](https://github.com/Jsinco/BreweryX/releases/latest)
+# BreweryX ![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue) [![Releases](https://img.shields.io/github/v/release/BreweryTeam/BreweryX)](https://github.com/BreweryTeam/BreweryX/releases/latest)
 
 #### BreweryX is an actively maintained fork of Brewery which includes many new features and gives support to the inactive plugin. Find more info below.
 
@@ -47,7 +47,7 @@ The somewhat difficult brewing process rewards you with a diversity of Potions, 
 
 ### **Find more info on the [Spigot page](https://www.spigotmc.org/resources/breweryx.114777/) for this plugin.**
 
-#### Also see  [Legacy Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases](https://github.com/Jsinco/BreweryX/releases)
+#### Also see  [Legacy Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases](https://github.com/BreweryTeam/BreweryX/releases)
 
 ---
 
@@ -57,35 +57,10 @@ The somewhat difficult brewing process rewards you with a diversity of Potions, 
 
 - [Depenizen support](https://github.com/DenizenScript/Depenizen/pull/430) for Denizen Scripters
 
-### For Java developers, use any release jar locally or get any release from [Jitpack](https://jitpack.io/#Jsinco/BreweryX)
+### For Java developers, use any release jar locally or get any release from [Jitpack](https://jitpack.io/#BreweryTeam/BreweryX)
 
-## Maven
+Check [the documentation](https://brewery.lumamc.net/api/api/) for more information.
 
-```XML
-<repository>
-   <id>jitpack.io</id>
-   <url>https://jitpack.io</url>
-</repository>
-
-<dependency>
-   <groupId>com.github.Jsinco</groupId>
-   <artifactId>BreweryX</artifactId>
-   <version>3.2.5</version>
-   <scope>provided</scope>
-</dependency>
-```
-
-## Gradle
-
-```groovy
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    implementation 'com.github.Jsinco:BreweryX:3.2.1'
-}
-```
 ### License
 
 This Project is licensed under GPLv3
