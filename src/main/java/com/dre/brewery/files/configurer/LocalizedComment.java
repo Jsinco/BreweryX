@@ -7,10 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BXComment {
-    /**
-     * An array of all different versions of the comment to include.
-     * @return the comment value
-     */
-    String[] value();
+public @interface LocalizedComment {
+	String[] value();
 }
