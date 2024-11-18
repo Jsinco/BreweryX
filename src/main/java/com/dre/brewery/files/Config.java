@@ -1,5 +1,6 @@
 package com.dre.brewery.files;
 
+import com.dre.brewery.files.configurer.Translation;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
@@ -24,8 +25,10 @@ public class Config extends AbstractOkaeriConfigFile {
     private static final Config instance = createConfig(Config.class, "config.yml");
 
 
-    @Comment("The language file to be used (found in plugins/Brewery/languages)")
-    private String language = "en";
+    @Comment("""
+			The translation to be used [ENGLISH]
+			Available types: ENGLISH, GERMAN, SPANISH, FRENCH, ITALIAN, RUSSIAN, CHINESE""")
+    private Translation language = Translation.ENGLISH;
 
     @Comment("""
             Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
