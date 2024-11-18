@@ -56,4 +56,19 @@ public class Config extends AbstractOkaeriConfigFile {
 
     // Maybe condense more of this into configuration sections
 
+    @Comment("If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]")
+    private boolean enableHome = true;
+
+    @Comment("""
+            Type of the home-teleport: ['cmd: home']
+            bed = Player will be teleported to his spawn bed
+            'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!
+            'cmd: spawn' = /spawn will be executed by the player.
+            'cmd: whatever' = /whatever will be executed by the player.""")
+    private String homeType = "cmd: home";
+
+    @Comment("""
+            If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)
+            The Player wakes at the nearest of two random places of his world [true]""")
+    private boolean enableWake = true;
 }
