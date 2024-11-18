@@ -70,5 +70,5 @@ public class Config extends AbstractOkaeriConfigFile {
     @Comment("""
             If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)
             The Player wakes at the nearest of two random places of his world [true]""")
-    private boolean enableWake = true;
+    private boolean enableWake = true; //
 }
