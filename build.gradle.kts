@@ -26,7 +26,6 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
     maven("https://repo.oraxen.com/releases") // Oraxen
-    maven("https://storehouse.okaeri.eu/repository/maven-public/") // Okaeri Config
 }
 
 dependencies {
@@ -57,16 +56,7 @@ dependencies {
 	implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
-    // I just implemented this manually
     //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
-
-    // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-
-    // Okaeri configuration
-    implementation("eu.okaeri:okaeri-configs-yaml-snakeyaml:5.0.5")
-
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -103,7 +93,6 @@ tasks {
     shadowJar {
 		relocate("com.google", "com.dre.brewery.depend.google")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
-        relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
 		//relocate("org.bstats", "com.dre.brewery.integration.bstats")
 
         archiveClassifier.set("")
@@ -113,9 +102,9 @@ tasks {
 	register<Copy>("prepareKotlinReducedJar") {
 		dependsOn(shadowJar)
 		from(zipTree(shadowJar.get().archiveFile))
-		into("${layout.buildDirectory}/kt-reduced")
+		into("$buildDir/kt-reduced")
 		doLast {
-			val pluginFile = file("${layout.buildDirectory}/kt-reduced/plugin.yml")
+			val pluginFile = file("$buildDir/kt-reduced/plugin.yml")
 			var content = pluginFile.readText()
 			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
 			pluginFile.writeText(content)
@@ -124,7 +113,7 @@ tasks {
 
 	register<Jar>("kotlinReducedJar") {
 		dependsOn("prepareKotlinReducedJar")
-		from("${layout.buildDirectory}/kt-reduced")
+		from("$buildDir/kt-reduced")
 		include("**/*")
 		duplicatesStrategy = DuplicatesStrategy.INHERIT
 		archiveClassifier.set("KtReduced")
