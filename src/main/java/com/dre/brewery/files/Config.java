@@ -220,4 +220,5 @@ public class Config extends AbstractOkaeriConfigFile {
 	private List<String> distortBypass = List.of("*,*", "[,]");
 
 	// Skipping words section
+	//no idea how to add a footer
 }
