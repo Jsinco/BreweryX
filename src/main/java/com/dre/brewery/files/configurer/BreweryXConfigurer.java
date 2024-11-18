@@ -171,7 +171,6 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
                 .write(outputStream);
     }
 
-    @Nullable
     public String[] getBXComment(FieldDeclaration fieldDeclaration) {
         BXComment bxComment = fieldDeclaration.getField().getAnnotation(BXComment.class);
         if (bxComment != null) {
