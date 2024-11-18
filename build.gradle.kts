@@ -7,9 +7,10 @@ plugins {
 }
 
 val langVersion: Int = 17
+val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.3.5"
+version = "3.3.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -64,7 +65,12 @@ dependencies {
 
 
 
+
 tasks {
+    withType<JavaCompile>().configureEach {
+        options.encoding = encoding
+    }
+
     build {
         dependsOn(shadowJar)
         finalizedBy("kotlinReducedJar")
@@ -74,9 +80,7 @@ tasks {
 		archiveClassifier.set("original")
         //enabled = false // Shadow produces our jar files
     }
-    withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
-    }
+
     test {
         useJUnitPlatform()
     }
@@ -87,7 +91,7 @@ tasks {
             "tokens" to mapOf("version" to project.version.toString()),
             "beginToken" to "\${",
             "endToken" to "}"
-        ))
+        )).filteringCharset = encoding
     }
 
     shadowJar {
