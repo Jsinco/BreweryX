@@ -17,6 +17,8 @@ import java.util.List;
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
 
+	// How do we do translations on this? - Jsinco
+
     @Getter @Exclude
     private static final Config instance = createConfig(Config.class, "config.yml");
 
