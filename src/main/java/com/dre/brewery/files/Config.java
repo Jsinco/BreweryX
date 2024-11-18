@@ -7,6 +7,7 @@ import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Material;
 
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("""
 		By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it
 		IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE).""")
-	private String sealingTableBlock = "SMOKER";
+	private Material sealingTableBlock = Material.SMOKER;
 
 	@Comment("Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]")
 	private boolean alwaysShowQuality = true;
