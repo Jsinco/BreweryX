@@ -12,7 +12,7 @@
 </repository>
 
 <dependency>
-   <groupId>com.github.Jsinco</groupId>
+   <groupId>com.github.BreweryTeam</groupId>
    <artifactId>BreweryX</artifactId>
    <version>VERSION</version>
    <scope>provided</scope>
@@ -29,7 +29,7 @@
     }
 
     dependencies {
-        implementation 'com.github.Jsinco:BreweryX:VERSION'
+        implementation 'com.github.BreweryTeam:BreweryX:VERSION'
     }
     ```
 
@@ -41,13 +41,13 @@
     }
 
     dependencies {
-        implementation("com.github.Jsinco:BreweryX:VERSION")
+        implementation("com.github.BreweryTeam:BreweryX:VERSION")
     }
     ```
 
 !!! warning
 
-    Не забудьте заменить VERSION на версию [доступную на JitPack](https://jitpack.io/#Jsinco/BreweryX#releasesLink).
+    Не забудьте заменить VERSION на версию [доступную на JitPack](https://jitpack.io/#BreweryTeam/BreweryX#releasesLink).
 
 Вам также нужно добавить зависимость в файл `plugin.yml` или `paper-plugin.yml`. Это гарантирует, что BreweryX загрузится перед вашим плагином.
 

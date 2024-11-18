@@ -1,7 +1,7 @@
 site_name: BreweryX
 site_author: Jsinco, szarkan
 
-repo_url: https://github.com/Jsinco/BreweryX
+repo_url: https://github.com/BreweryTeam/BreweryX
 
 theme:
   language: en
@@ -102,7 +102,7 @@ extra:
       link: https://discord.gg/3FkNaNDnta
       name: Discord
     - icon: simple/github
-      link: https://github.com/Jsinco/BreweryX
+      link: https://github.com/BreweryTeam/BreweryX
       name: Github
 nav:
   - '': index.md

@@ -62,6 +62,10 @@ minimalParticles: false
 craftSealingTable: true
 enableSealingTable: true
 
+# By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it
+# IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE).
+sealingTableBlock: SMOKER
+
 # Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]
 alwaysShowQuality: true
 

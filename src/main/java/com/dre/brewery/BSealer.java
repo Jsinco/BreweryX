@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Material;
@@ -106,13 +107,13 @@ public class BSealer implements InventoryHolder {
 	}
 
 	public static boolean isBSealer(Block block) {
-		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == Material.SMOKER) {
-			Container smoker = (Container) block.getState();
-			if (smoker.getCustomName() != null) {
-				if (smoker.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {
+		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == BConfig.sealingTableBlock) {
+			Container container = (Container) block.getState();
+			if (container.getCustomName() != null) {
+				if (container.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {
 					return true;
 				} else {
-					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE) || smoker.getPersistentDataContainer().has(LEGACY_TAG_KEY, PersistentDataType.BYTE);
+					return container.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE) || container.getPersistentDataContainer().has(LEGACY_TAG_KEY, PersistentDataType.BYTE);
 				}
 			}
 		}
@@ -120,26 +121,27 @@ public class BSealer implements InventoryHolder {
 	}
 
 	public static void blockPlace(ItemStack item, Block block) {
-		if (item.getType() == Material.SMOKER && item.hasItemMeta()) {
+		if (item.getType() == BConfig.sealingTableBlock && item.hasItemMeta()) {
 			ItemMeta itemMeta = item.getItemMeta();
 			assert itemMeta != null;
 			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) ||
 				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
-				Container smoker = (Container) block.getState();
-				// Rotate the Block 180° so it doesn't look like a Smoker
-				Directional dir = (Directional) smoker.getBlockData();
-				dir.setFacing(dir.getFacing().getOppositeFace());
-				smoker.setBlockData(dir);
-				smoker.getPersistentDataContainer().set(BSealer.TAG_KEY, PersistentDataType.BYTE, (byte)1);
-				smoker.update();
+				Container container = (Container) block.getState();
+				// Rotate the Block 180° so it looks different
+				if (container.getBlockData() instanceof Directional dir) {
+					dir.setFacing(dir.getFacing().getOppositeFace());
+					container.setBlockData(dir);
+				}				
+				container.getPersistentDataContainer().set(BSealer.TAG_KEY, PersistentDataType.BYTE, (byte)1);
+				container.update();
 			}
 		}
 	}
 
 	public static void registerRecipe() {
 		recipeRegistered = true;
-		ItemStack sealingTableItem = new ItemStack(Material.SMOKER);
-		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(Material.SMOKER);
+		ItemStack sealingTableItem = new ItemStack(BConfig.sealingTableBlock);
+		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(BConfig.sealingTableBlock);
 		if (meta == null) return;
 		meta.setDisplayName("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 		meta.getPersistentDataContainer().set(TAG_KEY, PersistentDataType.BYTE, (byte)1);
