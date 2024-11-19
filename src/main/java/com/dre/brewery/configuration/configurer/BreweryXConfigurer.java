@@ -153,6 +153,8 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 						.flatMap(Arrays::stream)
 						.toArray(String[]::new);
 
+					if (finalComment.length == 0)
+						return line;
 
 					String comment = ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment);
 					return ConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
