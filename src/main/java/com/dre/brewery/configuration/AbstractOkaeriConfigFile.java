@@ -18,6 +18,9 @@ import java.util.function.Supplier;
 
 public abstract class AbstractOkaeriConfigFile extends OkaeriConfig {
 
+    // TODO: Gonna have to convert this class into a manager, only way to reload configurations is through this.
+    // Additionally, going to have to make some kind of re-instantiation for the TranslationManager
+
     protected static final Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
 
 

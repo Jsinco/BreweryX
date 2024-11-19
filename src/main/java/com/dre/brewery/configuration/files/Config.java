@@ -25,7 +25,7 @@ public class Config extends AbstractOkaeriConfigFile {
 
 	// How do we do translations on this? - Jsinco
 	@Exclude
-	public static final String FILE_NAME = "new-config.yml"; // Change this eventually
+	public static final String FILE_NAME = "new-config.yml"; // TODO: Change this eventually
     @Getter @Exclude
     private static final Config instance = createConfig(Config.class, FILE_NAME, new BreweryXConfigurer());
 
