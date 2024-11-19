@@ -12,8 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Translation {
-	ENGLISH("english", "english.yml"),
-	GERMAN("german", "german.yml");
+	EN("en", "en.yml"),
+	DE("de", "de.yml");
 
 	private final String key;
 	private final String filename;

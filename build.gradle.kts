@@ -9,7 +9,7 @@ plugins {
 val langVersion: Int = 17
 
 group = "com.dre.brewery"
-version = "3.3.5"
+version = "3.3.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -113,9 +113,9 @@ tasks {
 	register<Copy>("prepareKotlinReducedJar") {
 		dependsOn(shadowJar)
 		from(zipTree(shadowJar.get().archiveFile))
-		into("${layout.buildDirectory}/kt-reduced")
+		into("$buildDir/kt-reduced")
 		doLast {
-			val pluginFile = file("${layout.buildDirectory}/kt-reduced/plugin.yml")
+			val pluginFile = file("$buildDir/kt-reduced/plugin.yml")
 			var content = pluginFile.readText()
 			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
 			pluginFile.writeText(content)
@@ -124,7 +124,7 @@ tasks {
 
 	register<Jar>("kotlinReducedJar") {
 		dependsOn("prepareKotlinReducedJar")
-		from("${layout.buildDirectory}/kt-reduced")
+		from("$buildDir/kt-reduced")
 		include("**/*")
 		duplicatesStrategy = DuplicatesStrategy.INHERIT
 		archiveClassifier.set("KtReduced")

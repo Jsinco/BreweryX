@@ -374,6 +374,15 @@ public class BUtil {
 		}
 	}
 
+	@Nullable
+	public static <E extends Enum<E>> E getEnumByName(Class<E> enumClass, String name) {
+		try {
+			return Enum.valueOf(enumClass, name.toUpperCase());
+		} catch (IllegalArgumentException | NullPointerException e) {
+			return null;
+		}
+	}
+
 
 	/**
 	 * gets the Name of a DXL World

@@ -9,7 +9,6 @@ import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.SerdesContext;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import lombok.NonNull;
-import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -49,6 +48,9 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 
 		DumperOptions dumperOptions = new DumperOptions();
 		dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		dumperOptions.setIndent(2);
+		dumperOptions.setWidth(80);
+		dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
 
 		Representer representer = new Representer(dumperOptions);
 		representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -151,6 +153,7 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 						.flatMap(Arrays::stream)
 						.toArray(String[]::new);
 
+
 					String comment = ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment);
 					return ConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
 				}
@@ -168,19 +171,18 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 	}
 
 	/**
-	 * Processes the {{@link TranslationHelper}} annotation
+	 * Processes the {{@link TranslationManager}} annotation
 	 * Doesn't throw when there is no translation!
 	 */
-	@Nullable
 	public String[] getFieldComments(FieldDeclaration fieldDeclaration) {
 		LocalizedComment localizedComment = fieldDeclaration.getField().getAnnotation(LocalizedComment.class);
 		if (localizedComment == null || localizedComment.value().length == 0)
 			return null;
 
-		TranslationHelper translationHelper = new TranslationHelper();
+		TranslationManager translationManager = new TranslationManager();
 
 		return Arrays.stream(localizedComment.value())
-			.map(translationHelper::getTranslationWithFallback)
+			.map(translationManager::getTranslationWithFallback)
 			.filter(Objects::nonNull) // Remove null translations
 			.flatMap(translation -> Arrays.stream(translation.split("\n"))) // Split translations by lines
 			.toArray(String[]::new);

@@ -1,0 +1,7 @@
+example:
+  exampleString: 'Hello, Comment (in German)!2'
+
+config:
+  language: |
+    The translation to be used [ENGLISH] (in German)
+    Available types: ENGLISH, GERMAN, SPANISH, FRENCH, ITALIAN, RUSSIAN, CHINESE

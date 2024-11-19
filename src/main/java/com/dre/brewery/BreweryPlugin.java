@@ -27,6 +27,7 @@ import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.files.Config;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -124,6 +125,10 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// load the Config
+		// TODO: cleanup with configs here
+		Config.getInstance().load();
+		Config.getInstance().save();
+
         FileConfiguration cfg = BConfig.loadConfigFile();
         if (cfg != null) {
 			BConfig.readConfig(cfg);

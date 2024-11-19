@@ -1,5 +1,7 @@
 package com.dre.brewery.files;
 
+import com.dre.brewery.files.configurer.BreweryXConfigurer;
+import com.dre.brewery.files.configurer.LocalizedComment;
 import com.dre.brewery.files.configurer.Translation;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
@@ -12,27 +14,23 @@ import org.bukkit.Material;
 
 import java.util.List;
 
-@Header("""
-        Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/
-        Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45
-        """)
+@Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
+		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
 
 	// How do we do translations on this? - Jsinco
-
+	@Exclude
+	public static final String FILE_NAME = "new-config.yml"; // Change this eventually
     @Getter @Exclude
-    private static final Config instance = createConfig(Config.class, "config.yml");
+    private static final Config instance = createConfig(Config.class, FILE_NAME, new BreweryXConfigurer());
 
 
-    @Comment("""
-			The translation to be used [ENGLISH]
-			Available types: ENGLISH, GERMAN, SPANISH, FRENCH, ITALIAN, RUSSIAN, CHINESE""")
-    private Translation language = Translation.ENGLISH;
+    @LocalizedComment("config.language")
+    private Translation language = Translation.EN;
 
-    @Comment("""
-            Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-            If an Update is found a Message is logged on Server-start and displayed to OPs joining the game""")
+    @Comment({"Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]",
+            "If an Update is found a Message is logged on Server-start and displayed to OPs joining the game"})
     private boolean updateCheck = true;
 
     @Comment("Autosave interval in minutes [10]")
@@ -49,9 +47,9 @@ public class Config extends AbstractOkaeriConfigFile {
     private Storage storage = new Storage();
     @Getter @Setter
     public static class Storage extends OkaeriConfig {
-        @Comment("""
-                What type of storage to use [FLATFILE]
-                Available types: FlatFile, MySQL, SQLite""")
+        @Comment({
+                "What type of storage to use [FLATFILE]",
+                "Available types: FlatFile, MySQL, SQLite"})
         private DataManagerType type = DataManagerType.FLATFILE;
         @Comment("The name of the database. When the database is a file, this will be the name of the file. [brewery-data]")
         private String database = "brewery-data";
@@ -67,17 +65,17 @@ public class Config extends AbstractOkaeriConfigFile {
     @Comment("If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]")
     private boolean enableHome = true;
 
-    @Comment("""
-            Type of the home-teleport: ['cmd: home']
-            bed = Player will be teleported to his spawn bed
-            'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!
-            'cmd: spawn' = /spawn will be executed by the player.
-            'cmd: whatever' = /whatever will be executed by the player.""")
+    @Comment({
+            "Type of the home-teleport: ['cmd: home']",
+            "bed = Player will be teleported to his spawn bed",
+            "'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!",
+            "'cmd: spawn' = /spawn will be executed by the player.",
+            "'cmd: whatever' = /whatever will be executed by the player."})
     private String homeType = "cmd: home";
 
-    @Comment("""
-            If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)
-            The Player wakes at the nearest of two random places of his world [true]""")
+    @Comment({
+            "If the player \"wakes up\" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)",
+            "The Player wakes at the nearest of two random places of his world [true]"})
     private boolean enableWake = true; //
 
 	@Comment("If the Player may have to try multiple times when logging in while extremely drunk [true]")
@@ -86,19 +84,19 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]")
 	private boolean enableKickOnOverdrink = false;
 
-	@Comment("""
-		If the Player vomits on high drunkenness (drops item defined below) [true]
-		The item can not be collected and stays on the ground until it despawns.""")
+	@Comment({
+		"If the Player vomits on high drunkenness (drops item defined below) [true]",
+		"The item can not be collected and stays on the ground until it despawns."})
 	private boolean enablePuke = true;
 
-	@Comment("""
-		Items that is dropped multiple times uncollectable when puking [Soul_Sand]
-		Can be list of items such as [Sould_sand, Slime_block, Dirt]""")
+	@Comment({
+		"Items that is dropped multiple times uncollectable when puking [Soul_Sand]",
+		"Can be list of items such as [Sould_sand, Slime_block, Dirt]"})
 	private List<String> pukeItem = List.of("Soul_Sand");
 
-	@Comment("""
-		Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
-		If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.""")
+	@Comment({
+		"Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]",
+		"If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well."})
 	private int pukeDespawnTime = 60;
 
 	@Comment("How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]")
@@ -110,9 +108,9 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)")
 	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
 
-	@Comment("""
-		Show Particles over Cauldrons when they have ingredients and a heat source. [true]
-		The changing color of the particles can help with timing some recipes""")
+	@Comment({
+		"Show Particles over Cauldrons when they have ingredients and a heat source. [true]",
+		"The changing color of the particles can help with timing some recipes"})
 	private boolean enableCauldronParticles = true;
 
 	@Comment("If Cauldron Particles should be reduced to the bare minimum [false]")
@@ -122,9 +120,9 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean craftSealingTable = true;
 	private boolean enableSealingTable = true;
 
-	@Comment("""
-		By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it
-		IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE).""")
+	@Comment({
+		"By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it",
+		"IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE)."})
 	private Material sealingTableBlock = Material.SMOKER;
 
 	@Comment("Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]")
@@ -146,15 +144,15 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("Duration (in minutes) of a \"year\" when aging drinks [20]")
 	private int agingYearDuration = 20;
 
-	@Comment("""
-		The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
-		hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
-		This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
-
-		Only drawback: brew items can only be used on another server with the same encodeKey.
-		When using Brews on multiple (BungeeCord) Servers, define a MYSQL database in the 'storage' settings.
-
-		So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]""")
+	@Comment({
+		"The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent",
+		"hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.",
+		"This is a fast process to stop players from hacking out recipes, once they get hold of a brew.",
+		" ",
+		"Only drawback: brew items can only be used on another server with the same encodeKey.",
+		"When using Brews on multiple (BungeeCord) Servers, define a MYSQL database in the 'storage' settings.",
+		" ",
+		"So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]"})
 	private boolean enableEncode = false;
 	private int encodeKey = 0;
 
@@ -164,9 +162,9 @@ public class Config extends AbstractOkaeriConfigFile {
 
 	// Skipping recipes section.
 
-	@Comment("""
-		Enable checking of other Plugins (if installed) for Barrel Permissions [true]
-		Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.""")
+	@Comment({
+		"Enable checking of other Plugins (if installed) for Barrel Permissions [true]",
+		"Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported."})
 	private boolean useWorldGuard = true;
 	private boolean useLWC = true;
 	private boolean useGriefPrevention = true;
@@ -174,10 +172,10 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean useBlockLocker = true;
 	private boolean useGMInventories = true;
 
-	@Comment("""
-		Use a virtual chest when opening a Barrel to check with all other protection plugins
-		This could confuse Anti-Cheat plugins, but is otherwise good to use
-		use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent""")
+	@Comment({
+		"Use a virtual chest when opening a Barrel to check with all other protection plugins",
+		"This could confuse Anti-Cheat plugins, but is otherwise good to use",
+		"use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent"})
 	private boolean useVirtualChestPerms = false;
 
 	@Comment("Enable the Logging of Barrel Inventories to LogBlock [true]")
@@ -202,10 +200,10 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]")
 	private boolean brewHopperDump = true;
 
-	@Comment("""
-		If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing
-		How much the chat is distorted depends on how drunk the Player is
-		Below are settings for what and how changes in chat occur""")
+	@Comment({
+		"If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing",
+		"How much the chat is distorted depends on how drunk the Player is",
+		"Below are settings for what and how changes in chat occur"})
 	private boolean enableChatDistortion = true;
 
 	@Comment("Log to the Serverlog what the player actually wrote, before his words were altered [false]")
@@ -218,9 +216,9 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Comment("Distort the Text written on a Sign while drunk [false]")
 	private boolean distortSignText = false;
 
-	@Comment("""
-		Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
-		Chat Example: Hello i am drunk *I am testing Brewery*""")
+	@Comment({
+		"Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']",
+		"Chat Example: Hello i am drunk *I am testing Brewery*"})
 	private List<String> distortBypass = List.of("*,*", "[,]");
 
 	// Skipping words section
