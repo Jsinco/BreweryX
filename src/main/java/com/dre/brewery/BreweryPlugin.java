@@ -25,6 +25,8 @@ import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.configurer.TranslationManager;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
@@ -60,6 +62,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -101,6 +104,9 @@ public class BreweryPlugin extends JavaPlugin {
 		breweryPlugin = this;
 		minecraftVersion = MinecraftVersion.getIt();
 		scheduler = UniversalScheduler.getScheduler(this);
+
+		// Needs to be here otherwise BreweryX can't get the right language before Okaeri starts loading.
+		TranslationManager.newInstance(this.getDataFolder());
 	}
 
 	@Override
@@ -127,9 +133,15 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// load the Config
 		// TODO: cleanup with configs here
+
+
 		Config config = ConfigManager.getConfig(Config.class);
 		config.load();
 		config.save();
+
+		Lang lang = ConfigManager.getConfig(Lang.class);
+		lang.load();
+		System.out.println("testing lang: " + lang.getBrewOneYear());
 
         FileConfiguration cfg = BConfig.loadConfigFile();
         if (cfg != null) {

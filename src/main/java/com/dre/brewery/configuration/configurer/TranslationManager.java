@@ -5,6 +5,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.utility.BUtil;
 import lombok.Getter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
@@ -20,15 +21,16 @@ public class TranslationManager {
 
 	@Getter
 	private static final Translation fallbackTranslation = Translation.EN;
-	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 	private static TranslationManager singleton;
 
 
+
 	private Translation activeTranslation;
+	private final File dataFolder;
     private final ConfigTranslations translations;
 	private final ConfigTranslations fallbackTranslations;
 
-	private TranslationManager() {
+	private TranslationManager(File dataFolder) {
 		Yaml yaml = new Yaml();
 
 		// Ok so,
@@ -37,21 +39,22 @@ public class TranslationManager {
 		// in order to preserve the configurability of the language using the 'config.yml' instead of a separate file,
 		// we have to grab the language from the config.yml before Okaeri loads it, so that's what we're doing right here.
 		// Annoying race condition, but so be it.
+		this.dataFolder = dataFolder;
 		this.activeTranslation = Translation.EN;
 
-		try (InputStream inputStream =
-					 Files.newInputStream(plugin.getDataFolder().toPath().resolve(ConfigManager.getFileName(Config.class)))) {
+		File file = new File(dataFolder, ConfigManager.getFileName(Config.class));
 
-            Map<String, String> data = yaml.load(inputStream);
+		try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+			Map<String, String> data = yaml.loadAs(inputStream, Map.class);
 			if (data != null) {
 				Translation trans = BUtil.getEnumByName(Translation.class, data.get("language"));
+
 				if (trans != null) {
 					this.activeTranslation = trans;
 				}
 			}
-		} catch (IOException ignored) {
-			// file probably doesn't exist yet
-			plugin.debugLog("No config file found, using default translation");
+		} catch (IOException e) {
+			BreweryPlugin.getInstance().debugLog("Error reading YAML file: " + e.getMessage());
 		}
 
 		this.translations = new ConfigTranslations(activeTranslation, yaml);
@@ -83,7 +86,7 @@ public class TranslationManager {
 	}
 
 	public void createLanguageFile(Translation translation) {
-		Path targetPath = plugin.getDataFolder().toPath().resolve("langs").resolve(translation.getFilename());
+		Path targetPath = dataFolder.toPath().resolve("langs").resolve(translation.getFilename());
 		Path targetDir = targetPath.getParent();
 
 		try {
@@ -102,7 +105,7 @@ public class TranslationManager {
 						// Copy the input stream content to the target file
 						Files.copy(inputStream, targetPath);
 					} else {
-						plugin.warningLog("Could not find language file for " + translation.getFilename());
+						BreweryPlugin.getInstance().warningLog("Could not find language file for " + translation.getFilename());
 					}
 				}
 			}
@@ -111,9 +114,14 @@ public class TranslationManager {
 		}
 	}
 
+
+	public static void newInstance(File dataFolder) {
+		singleton = new TranslationManager(dataFolder);
+	}
+
 	public static TranslationManager getInstance() {
 		if (singleton == null) {
-			singleton = new TranslationManager();
+			throw new IllegalStateException("TranslationManager has not been initialized yet");
 		}
 		return singleton;
 	}

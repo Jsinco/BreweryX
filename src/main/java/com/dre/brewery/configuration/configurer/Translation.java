@@ -12,8 +12,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Translation {
+
+	// Languages added should have a config and a lang translation (resources/configlangs/, resources/languages/)
+
 	EN("en.yml"),
-	DE("de.yml");
+	DE("de.yml"),
+	ES("es.yml"),
+	FR("fr.yml"),
+	IT("it.yml"),
+	RU("ru.yml"),
+	ZH("zh.yml");
 
 	private final String filename;
 }

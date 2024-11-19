@@ -72,7 +72,7 @@ public class ConfigManager {
         if (!fileInfo.useLangFileName()) {
             return fileInfo.value();
         } else {
-            return TranslationManager.getInstance().getActiveTranslation().getFilename();
+            return "langs/" + TranslationManager.getInstance().getActiveTranslation().getFilename();
         }
     }
 
