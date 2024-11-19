@@ -1,23 +1,18 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
-import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
-import com.dre.brewery.configuration.configurer.TranslationManager;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
-import eu.okaeri.configs.annotation.Exclude;
 import lombok.Getter;
 import lombok.Setter;
 
+// Our bind file for this class should vary based on what language the user has set in the config.
+@OkaeriConfigFileInfo(useLangFileName = true)
 @Getter @Setter
 public class Lang extends AbstractOkaeriConfigFile {
 
-    @Getter @Exclude
-    private static final Lang instance = createConfig(Lang.class,
-            TranslationManager.getInstance().getActiveTranslation().getFilename(),
-            new BreweryXConfigurer());
-
-    // I shouldn't have to set any declarations here since they'll all be pulled from the translation files.
+    // I shouldn't have to set any declarations here since they'll all be pulled from the bound translation files.
 
     @Comment("Brew")
     @CustomKey("Brew_-times")

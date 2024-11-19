@@ -1,6 +1,7 @@
 package com.dre.brewery.configuration.configurer;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.utility.BUtil;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 @Getter
@@ -37,7 +39,8 @@ public class TranslationManager {
 		// Annoying race condition, but so be it.
 		this.activeTranslation = Translation.EN;
 
-		try (InputStream inputStream = Files.newInputStream(plugin.getDataFolder().toPath().resolve(Config.FILE_NAME))) {
+		try (InputStream inputStream =
+					 Files.newInputStream(plugin.getDataFolder().toPath().resolve(ConfigManager.getFileName(Config.class)))) {
 
             Map<String, String> data = yaml.load(inputStream);
 			if (data != null) {
@@ -80,17 +83,31 @@ public class TranslationManager {
 	}
 
 	public void createLanguageFile(Translation translation) {
-		try (InputStream inputStream = this.getClass()
-				.getClassLoader()
-				.getResourceAsStream("languages" + File.separator + translation.getFilename())) {
+		Path targetPath = plugin.getDataFolder().toPath().resolve("langs").resolve(translation.getFilename());
+		Path targetDir = targetPath.getParent();
 
-			if (inputStream != null) {
-				Files.copy(inputStream, plugin.getDataFolder().toPath().resolve("langs").resolve(translation.getFilename()));
-			} else {
-				plugin.warningLog("Could not find language file for " + translation.getFilename());
+		try {
+			// Ensure the directory exists, create it if necessary
+			if (!Files.exists(targetDir)) {
+				Files.createDirectories(targetDir);  // Creates the directory and any missing parent directories
+			}
+
+			// Check if the file exists
+			if (!Files.exists(targetPath)) {
+				try (InputStream inputStream = this.getClass()
+						.getClassLoader()
+						.getResourceAsStream("languages" + File.separator + translation.getFilename())) {
+
+					if (inputStream != null) {
+						// Copy the input stream content to the target file
+						Files.copy(inputStream, targetPath);
+					} else {
+						plugin.warningLog("Could not find language file for " + translation.getFilename());
+					}
+				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error creating or copying language file", e);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.dre.brewery.configuration.configurer;
 
+import com.dre.brewery.configuration.annotation.LocalizedComment;
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
 import eu.okaeri.configs.postprocessor.ConfigPostprocessor;
 import eu.okaeri.configs.postprocessor.format.YamlSectionWalker;

@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ConfigCauldronIngredient extends OkaeriConfig {
 
-    private String name = "";
-    private List<String> ingredients = List.of();
+    private String name;
+    private List<String> ingredients;
 
     private String color;
     private List<String> cookParticles;

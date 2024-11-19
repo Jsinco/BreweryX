@@ -1,6 +1,7 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
 import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.sector.RecipesSector;
 import eu.okaeri.configs.annotation.Exclude;
@@ -79,10 +80,11 @@ import lombok.Setter;
         "  Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.",
         "  Highest possible Duration: 1638 sec. Instant Effects dont need any duration specified."
 })
+@OkaeriConfigFileInfo("recipes.yml")
 @Getter @Setter
 public class RecipesFile extends AbstractOkaeriConfigFile {
-    @Getter @Exclude
-    private static final RecipesFile instance = createConfig(RecipesFile.class, "recipes.yml", new BreweryXConfigurer());
+
+
 
     // TODO: Replace the header with a localized comment here so all of that text above can be translated
     private RecipesSector recipes = new RecipesSector();

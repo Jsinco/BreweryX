@@ -15,8 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ConfigRecipe extends OkaeriConfig {
 
-    private String name = "";
-    private List<String> ingredients = List.of();
+    private String name;
+    private List<String> ingredients;
 
     @CustomKey("cookingtime")
     private Integer cookingTime;

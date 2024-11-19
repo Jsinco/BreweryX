@@ -1,9 +1,8 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
-import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
 import com.dre.brewery.configuration.sector.CauldronSector;
-import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,10 +33,10 @@ import lombok.Setter;
         "",
         "customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item."
 })
+@OkaeriConfigFileInfo("cauldron.yml")
 @Getter @Setter
 public class CauldronFile extends AbstractOkaeriConfigFile {
-    @Getter @Exclude
-    private static final CauldronFile instance = createConfig(CauldronFile.class, "cauldron.yml", new BreweryXConfigurer());
+
 
     // TODO: See RecipesFile comment here.
     private CauldronSector cauldron = new CauldronSector();

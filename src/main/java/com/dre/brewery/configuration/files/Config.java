@@ -1,8 +1,8 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
-import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
-import com.dre.brewery.configuration.configurer.LocalizedComment;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
+import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.configuration.configurer.Translation;
 import com.dre.brewery.configuration.sector.CauldronSector;
 import com.dre.brewery.configuration.sector.CustomItemsSector;
@@ -10,7 +10,6 @@ import com.dre.brewery.configuration.sector.RecipesSector;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
-import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,17 +17,13 @@ import org.bukkit.Material;
 
 import java.util.List;
 
+
+@OkaeriConfigFileInfo("new-config.yml") // TODO: Change this eventually
+
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
-
-	// How do we do translations on this? - Jsinco
-	@Exclude
-	public static final String FILE_NAME = "new-config.yml"; // TODO: Change this eventually
-    @Getter @Exclude
-    private static final Config instance = createConfig(Config.class, FILE_NAME, new BreweryXConfigurer());
-
 
     @LocalizedComment("config.language")
     private Translation language = Translation.EN;

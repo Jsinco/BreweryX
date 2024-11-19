@@ -24,6 +24,7 @@ package com.dre.brewery;
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.CommandUtil;
+import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
@@ -126,8 +127,9 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// load the Config
 		// TODO: cleanup with configs here
-		Config.getInstance().load();
-		Config.getInstance().save();
+		Config config = ConfigManager.getConfig(Config.class);
+		config.load();
+		config.save();
 
         FileConfiguration cfg = BConfig.loadConfigFile();
         if (cfg != null) {
