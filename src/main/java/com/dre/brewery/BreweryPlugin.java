@@ -27,7 +27,7 @@ import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
-import com.dre.brewery.files.Config;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;

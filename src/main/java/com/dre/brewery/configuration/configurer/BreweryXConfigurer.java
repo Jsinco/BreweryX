@@ -1,4 +1,4 @@
-package com.dre.brewery.files.configurer;
+package com.dre.brewery.configuration.configurer;
 
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
 import eu.okaeri.configs.postprocessor.ConfigPostprocessor;
@@ -179,7 +179,7 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 		if (localizedComment == null || localizedComment.value().length == 0)
 			return null;
 
-		TranslationManager translationManager = new TranslationManager();
+		TranslationManager translationManager = TranslationManager.getInstance();
 
 		return Arrays.stream(localizedComment.value())
 			.map(translationManager::getTranslationWithFallback)

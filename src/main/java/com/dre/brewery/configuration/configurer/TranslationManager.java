@@ -1,24 +1,32 @@
-package com.dre.brewery.files.configurer;
+package com.dre.brewery.configuration.configurer;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.files.Config;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.utility.BUtil;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
+@Getter
 public class TranslationManager {
 
+	@Getter
+	private static final Translation fallbackTranslation = Translation.EN;
 	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+	private static TranslationManager singleton;
 
+
+	private Translation activeTranslation;
     private final ConfigTranslations translations;
 	private final ConfigTranslations fallbackTranslations;
 
-	public TranslationManager() {
+	private TranslationManager() {
 		Yaml yaml = new Yaml();
 
 		// Ok so,
@@ -27,7 +35,7 @@ public class TranslationManager {
 		// in order to preserve the configurability of the language using the 'config.yml' instead of a separate file,
 		// we have to grab the language from the config.yml before Okaeri loads it, so that's what we're doing right here.
 		// Annoying race condition, but so be it.
-		Translation activeTranslation = Translation.EN;
+		this.activeTranslation = Translation.EN;
 
 		try (InputStream inputStream = Files.newInputStream(plugin.getDataFolder().toPath().resolve(Config.FILE_NAME))) {
 
@@ -35,7 +43,7 @@ public class TranslationManager {
 			if (data != null) {
 				Translation trans = BUtil.getEnumByName(Translation.class, data.get("language"));
 				if (trans != null) {
-					activeTranslation = trans;
+					this.activeTranslation = trans;
 				}
 			}
 		} catch (IOException ignored) {
@@ -44,7 +52,12 @@ public class TranslationManager {
 		}
 
 		this.translations = new ConfigTranslations(activeTranslation, yaml);
-		this.fallbackTranslations = new ConfigTranslations(Translation.EN, yaml);
+		this.fallbackTranslations = new ConfigTranslations(fallbackTranslation, yaml);
+
+		// Create lang files from /resources/languages
+		for (Translation translation : Translation.values()) {
+			createLanguageFile(translation);
+		}
 	}
 
 	/**
@@ -52,17 +65,39 @@ public class TranslationManager {
 	 */
 	@Nullable
 	public String getTranslationWithFallback(String key) {
-		String activeTranslation = translations.getTranslation(key);
-		if (activeTranslation != null) {
-			return activeTranslation;
+		String activeTranslationString = translations.getTranslation(key);
+		if (activeTranslationString != null) {
+			return activeTranslationString;
 		}
 
 		// Fallback to the english translation
-		String fallbackTranslation = fallbackTranslations.getTranslation(key);
-		if (fallbackTranslation == null) {
+		String fallbackTranslationString = fallbackTranslations.getTranslation(key);
+		if (fallbackTranslationString == null) {
 			BreweryPlugin.getInstance().warningLog("No translation found for key: " + key);
 		}
 
-		return fallbackTranslation;
+		return fallbackTranslationString;
+	}
+
+	public void createLanguageFile(Translation translation) {
+		try (InputStream inputStream = this.getClass()
+				.getClassLoader()
+				.getResourceAsStream("languages" + File.separator + translation.getFilename())) {
+
+			if (inputStream != null) {
+				Files.copy(inputStream, plugin.getDataFolder().toPath().resolve("langs").resolve(translation.getFilename()));
+			} else {
+				plugin.warningLog("Could not find language file for " + translation.getFilename());
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static TranslationManager getInstance() {
+		if (singleton == null) {
+			singleton = new TranslationManager();
+		}
+		return singleton;
 	}
 }

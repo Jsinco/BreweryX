@@ -1,8 +1,12 @@
-package com.dre.brewery.files;
+package com.dre.brewery.configuration.files;
 
-import com.dre.brewery.files.configurer.BreweryXConfigurer;
-import com.dre.brewery.files.configurer.LocalizedComment;
-import com.dre.brewery.files.configurer.Translation;
+import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
+import com.dre.brewery.configuration.configurer.LocalizedComment;
+import com.dre.brewery.configuration.configurer.Translation;
+import com.dre.brewery.configuration.sector.CauldronSector;
+import com.dre.brewery.configuration.sector.CustomItemsSector;
+import com.dre.brewery.configuration.sector.RecipesSector;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
@@ -29,29 +33,26 @@ public class Config extends AbstractOkaeriConfigFile {
     @LocalizedComment("config.language")
     private Translation language = Translation.EN;
 
-    @Comment({"Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]",
-            "If an Update is found a Message is logged on Server-start and displayed to OPs joining the game"})
+	@LocalizedComment("config.updateCheck")
     private boolean updateCheck = true;
 
-    @Comment("Autosave interval in minutes [10]")
+    @LocalizedComment("config.autosave")
     private int autosave = 10;
 
-    @Comment("Prefix used on messages")
+    @LocalizedComment("config.pluginPrefix")
     private String pluginPrefix = "&2[BreweryX]&f ";
 
-    @Comment("Show debug messages in logs [false]")
+    @LocalizedComment("config.debug")
     private boolean debug = false;
 
 
-    @Comment("-- Storage Settings --")
+    @LocalizedComment("config.storage.header")
     private Storage storage = new Storage();
     @Getter @Setter
     public static class Storage extends OkaeriConfig {
-        @Comment({
-                "What type of storage to use [FLATFILE]",
-                "Available types: FlatFile, MySQL, SQLite"})
+        @LocalizedComment("config.storage.type")
         private DataManagerType type = DataManagerType.FLATFILE;
-        @Comment("The name of the database. When the database is a file, this will be the name of the file. [brewery-data]")
+        @LocalizedComment("config.storage.database")
         private String database = "brewery-data";
         private String tablePrefix = "brewery_";
         private String address = "localhost";
@@ -62,23 +63,16 @@ public class Config extends AbstractOkaeriConfigFile {
 
     // Maybe condense more of this into configuration sections
 
-    @Comment("If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]")
+    @LocalizedComment("config.enableHome")
     private boolean enableHome = true;
 
-    @Comment({
-            "Type of the home-teleport: ['cmd: home']",
-            "bed = Player will be teleported to his spawn bed",
-            "'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!",
-            "'cmd: spawn' = /spawn will be executed by the player.",
-            "'cmd: whatever' = /whatever will be executed by the player."})
+    @LocalizedComment("config.homeType")
     private String homeType = "cmd: home";
 
-    @Comment({
-            "If the player \"wakes up\" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)",
-            "The Player wakes at the nearest of two random places of his world [true]"})
-    private boolean enableWake = true; //
+    @LocalizedComment("config.enableWake")
+    private boolean enableWake = true;
 
-	@Comment("If the Player may have to try multiple times when logging in while extremely drunk [true]")
+	@LocalizedComment("config.enableLoginDisallow")
 	private boolean enableLoginDisallow = true;
 
 	@Comment("If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]")
@@ -221,6 +215,13 @@ public class Config extends AbstractOkaeriConfigFile {
 		"Chat Example: Hello i am drunk *I am testing Brewery*"})
 	private List<String> distortBypass = List.of("*,*", "[,]");
 
-	// Skipping words section
-	//no idea how to add a footer
+
+	// TODO: Skipping words section
+
+	@Comment("You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.")
+	private CustomItemsSector customItems;
+	private CauldronSector cauldron;
+	private RecipesSector recipes;
+
+	// TODO: Footer comment?
 }

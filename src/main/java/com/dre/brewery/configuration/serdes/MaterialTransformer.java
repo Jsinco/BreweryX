@@ -1,4 +1,4 @@
-package com.dre.brewery.files.serdes;
+package com.dre.brewery.configuration.serdes;
 
 import com.dre.brewery.utility.BUtil;
 import eu.okaeri.configs.schema.GenericsPair;

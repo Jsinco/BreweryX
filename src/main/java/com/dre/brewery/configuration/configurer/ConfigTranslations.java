@@ -1,4 +1,4 @@
-package com.dre.brewery.files.configurer;
+package com.dre.brewery.configuration.configurer;
 
 import com.dre.brewery.BreweryPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ public class ConfigTranslations {
 	public ConfigTranslations(Translation activeTranslation, Yaml yamlInstance) {
 		try (InputStream inputStream = this.getClass()
 			.getClassLoader()
-			.getResourceAsStream("langs" + File.separator + activeTranslation.getFilename())) {
+			.getResourceAsStream("configlangs" + File.separator + activeTranslation.getFilename())) {
 
 			translations = yamlInstance.load(inputStream);
 		} catch (IOException e) {

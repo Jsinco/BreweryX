@@ -1,7 +1,7 @@
-package com.dre.brewery.files;
+package com.dre.brewery.configuration;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.files.serdes.MaterialTransformer;
+import com.dre.brewery.configuration.serdes.MaterialTransformer;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.configurer.Configurer;

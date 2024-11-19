@@ -1,4 +1,0 @@
-config:
-  language: |
-    The translation to be used [ENGLISH]
-    Available types: ENGLISH, GERMAN, SPANISH, FRENCH, ITALIAN, RUSSIAN, CHINESE
