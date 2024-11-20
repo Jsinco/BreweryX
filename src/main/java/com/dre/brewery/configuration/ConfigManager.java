@@ -80,8 +80,7 @@ public class ConfigManager {
                         configClass.getBindFile().getFileName().toString(),
                         configClass.getConfigurer(),
                         new StandardSerdes(),
-                        getOkaeriConfigFileOptions(configClass.getClass()).update(),
-                        true));
+                        getOkaeriConfigFileOptions(configClass.getClass()).update()));
     }
 
 
@@ -112,19 +111,18 @@ public class ConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update, boolean bind) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
             it.withRemoveOrphans(false); // Just leaving this off for now
-            if (bind) {
-                it.withBindFile(DATA_FOLDER.resolve(fileName));
-                it.saveDefaults();
-            }
+            it.withBindFile(DATA_FOLDER.resolve(fileName));
+            it.saveDefaults();
+
 
             for (Supplier<BidirectionalTransformer<?, ?>> packSupplier : TRANSFORMERS) {
                 it.withSerdesPack(registry -> registry.register(packSupplier.get()));
             }
-            it.load(update && bind);
+            it.load(update);
         });
         LOADED_CONFIGS.put(configClass ,instance);
         return instance;
@@ -139,7 +137,7 @@ public class ConfigManager {
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), true);
+        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
     }
 
 
