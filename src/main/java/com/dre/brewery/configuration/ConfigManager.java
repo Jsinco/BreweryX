@@ -9,7 +9,6 @@ import com.dre.brewery.configuration.files.CauldronFile;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.RecipesFile;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
-import com.dre.brewery.configuration.serdes.DrainItemsTransformer;
 import com.dre.brewery.configuration.serdes.MaterialTransformer;
 import com.dre.brewery.integration.item.BreweryPluginItem;
 import com.dre.brewery.integration.item.ItemsAdderPluginItem;
@@ -45,8 +44,7 @@ public class ConfigManager {
             YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
     );
     protected static final List<Supplier<BidirectionalTransformer<?, ?>>> TRANSFORMERS = List.of(
-            MaterialTransformer::new,
-            DrainItemsTransformer::new
+            MaterialTransformer::new
     );
 
 

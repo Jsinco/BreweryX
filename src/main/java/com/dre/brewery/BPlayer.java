@@ -369,7 +369,7 @@ public class BPlayer {
 
 	// Eat something to drain the drunkenness
 	public void drainByItem(Player player, Material mat) {
-		int strength = config.getDrainItem().get(mat);
+		int strength = BUtil.getMaterialMap(config.getDrainItem()).get(mat);
 		if (drain(player, strength)) {
 			remove(player);
 		}

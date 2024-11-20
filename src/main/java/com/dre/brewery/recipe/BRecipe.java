@@ -165,7 +165,7 @@ public class BRecipe implements Cloneable {
 			recipe.cmData = cmData;
 		}
 
-		List<String> effectStringList = configRecipe.getEffects();
+		List<String> effectStringList = configRecipe.getEffects() != null ? configRecipe.getEffects() : Collections.emptyList();
         for (String effectString : effectStringList) {
             BEffect effect = new BEffect(effectString);
             if (effect.isValid()) {
@@ -309,6 +309,9 @@ public class BRecipe implements Cloneable {
 
 	public static List<Tuple<Integer, String>> loadQualityStringList(List<String> stringList, StringParser.ParseType parseType) {
 		List<Tuple<Integer, String>> result = new ArrayList<>();
+		if (stringList == null) {
+			return result;
+		}
 		for (String line : stringList) {
 			result.add(StringParser.parseQuality(line, parseType));
 		}

@@ -88,7 +88,7 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean showStatusOnDrink = true;
 
 	@LocalizedComment("config.drainItem")
-	private Map<Material, Integer> drainItem = Map.of(Material.BREAD, 4, Material.MILK_BUCKET, 2);
+	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
 
 	@LocalizedComment("config.enableCauldronParticles")
 	private boolean enableCauldronParticles = true;

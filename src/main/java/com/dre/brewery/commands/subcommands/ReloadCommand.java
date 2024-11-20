@@ -37,6 +37,9 @@ public class ReloadCommand implements SubCommand {
 				AbstractOkaeriConfigFile file = entry.getValue();
 				try {
 					file.reload();
+					if (file instanceof Lang lgFile) {
+						lgFile.mapStrings();
+					}
 				} catch (Throwable e) {
 					breweryPlugin.errorLog("Something went wrong trying to load " + file.getBindFile().getFileName() + "!", e);
 				}

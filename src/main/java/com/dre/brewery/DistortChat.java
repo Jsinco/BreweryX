@@ -72,7 +72,13 @@ public class DistortChat {
 	public DistortChat(ConfigDistortWord configDistortWord) {
 		this.from = configDistortWord.getReplace();
 		this.to = configDistortWord.getTo();
-		this.pre = configDistortWord.getPre().split(",");
+
+		String pre = configDistortWord.getPre();
+		if (pre != null && !pre.isEmpty()) {
+			this.pre = pre.split(",");
+		} else {
+			this.pre = null;
+		}
 		this.match = configDistortWord.isMatch();
 		this.alcohol = configDistortWord.getAlcohol();
 		this.percentage = configDistortWord.getPercentage();

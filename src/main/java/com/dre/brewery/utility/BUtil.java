@@ -1,5 +1,6 @@
 package com.dre.brewery.utility;
 
+import com.Acrobot.ChestShop.Libs.ORMlite.stmt.query.In;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
@@ -29,8 +30,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.UUID;
 
 public class BUtil {
@@ -43,7 +46,6 @@ public class BUtil {
 
 	private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
-	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	/**
 	 * Check if the Chunk of a Block is loaded !without loading it in the process!
@@ -354,7 +356,7 @@ public class BUtil {
 			page = 1;
 		}
 
-		sender.sendMessage(color("&7-------------- &f" + lang.getEntry("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
+		sender.sendMessage(color("&7-------------- &f" + ConfigManager.getConfig(Lang.class).getEntry("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 
@@ -365,6 +367,32 @@ public class BUtil {
 				break;
 			}
 		}
+	}
+
+	public static Map<Material, Integer> getMaterialMap(List<String> stringList) {
+		Map<Material, Integer> map = new HashMap<>();
+		for (String materialString : stringList) {
+			String[] drainSplit = materialString.split("/");
+			if (drainSplit.length > 1) {
+				Material mat = BUtil.getMaterialSafely(drainSplit[0]);
+				int strength = BreweryPlugin.getInstance().parseInt(drainSplit[1]);
+//                if (mat == null && hasVault && strength > 0) {
+//                    try {
+//                        net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
+//                        if (vaultItem != null) {
+//                            mat = vaultItem.getType();
+//                        }
+//                    } catch (Exception e) {
+//                        BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+//                        e.printStackTrace();
+//                    }
+//                }
+				if (mat != null && strength > 0) {
+					map.put(mat, strength);
+				}
+			}
+		}
+		return map;
 	}
 
 

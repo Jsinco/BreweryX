@@ -213,7 +213,7 @@ public class PlayerListener implements Listener {
 						}
 					}
 				}
-			} else if (config.getDrainItem().containsKey(item.getType())) {
+			} else if (BUtil.getMaterialMap(config.getDrainItem()).containsKey(item.getType())) {
 				BPlayer bplayer = BPlayer.get(player);
 				if (bplayer != null) {
 					bplayer.drainByItem(player, item.getType());

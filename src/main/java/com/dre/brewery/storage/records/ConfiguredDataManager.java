@@ -17,11 +17,11 @@ import lombok.ToString;
 public class ConfiguredDataManager extends OkaeriConfig {
 
     @LocalizedComment("config.storage.type")
-    private final DataManagerType type;
+    private DataManagerType type;
     @LocalizedComment("config.storage.database")
-    private final String database;
-    private final String tablePrefix;
-    private final String address;
-    private final String username;
-    private final String password;
+    private String database;
+    private String tablePrefix;
+    private String address;
+    private String username;
+    private String password;
 }

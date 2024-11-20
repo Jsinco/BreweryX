@@ -82,7 +82,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	public PlayerListener playerListener; // Public Listeners
 	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
-	public Stats stats = new Stats(); // Metrics
+	public Stats stats; // Metrics
 
 
 	@Override
@@ -137,7 +137,7 @@ public class BreweryPlugin extends JavaPlugin {
 		ConfigManager.loadCauldronIngredients();
 		ConfigManager.loadDistortWords();
 		ConfigManager.registerDefaultPluginItems(); // Register plugin items
-
+		this.stats = new Stats(); // Load metrics
 
         // Load Addons
 		addonManager = new AddonManager(this);
