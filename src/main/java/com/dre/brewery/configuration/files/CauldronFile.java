@@ -14,7 +14,7 @@ import java.util.Map;
 @OkaeriConfigFileOptions(value = "cauldron.yml", update = false)
 public class CauldronFile extends AbstractOkaeriConfigFile {
 
-    @LocalizedComment("cauldronfile.header")
+    @LocalizedComment("cauldronFile.header")
     private Map<String, ConfigCauldronIngredient> cauldron = new CauldronSector().getCapsules();
 
     // Backwards compatibility, merges cauldron ingredients from the default config

@@ -147,6 +147,7 @@ public class BreweryPlugin extends JavaPlugin {
 		// quickly test recipes file
 		RecipesFile recipesFile = ConfigManager.getConfig(RecipesFile.class);
 		recipesFile.load();
+		System.out.println(recipesFile.getRecipes().values());
 
         FileConfiguration cfg = BConfig.loadConfigFile();
         if (cfg != null) {

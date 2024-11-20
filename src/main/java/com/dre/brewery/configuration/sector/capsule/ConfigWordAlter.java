@@ -7,18 +7,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @ToString
 @AllArgsConstructor
-public class ConfigCustomItem extends OkaeriConfig {
+public class ConfigWordAlter extends OkaeriConfig {
 
-    private Boolean matchAny;
-    private List<String> material;
-    private String name;
-    private List<String> lore;
-    private List<Integer> customModelData;
+    private String replace;
+    private String to;
+    private String pre;
+    private Boolean match;
+    private Integer alcohol;
+    private Integer percentage;
 }

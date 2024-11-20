@@ -1,18 +1,16 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.annotation.Footer;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
-import com.dre.brewery.configuration.configurer.Translation;
-import com.dre.brewery.configuration.sector.CauldronSector;
-import com.dre.brewery.configuration.sector.CustomItemsSector;
-import com.dre.brewery.configuration.sector.RecipesSector;
+import com.dre.brewery.configuration.sector.WordsSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
+import com.dre.brewery.configuration.sector.capsule.ConfigWordAlter;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
-import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,17 +18,20 @@ import org.bukkit.Material;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 @OkaeriConfigFileOptions("new-config.yml") // TODO: Change this eventually
 
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
+@Footer("Yep, that's it! The end of config.yml! I had so much fun! And you?...")
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
 
+	// This doesn't need to be an enumerator, we're reading this value back to an enum from TranslationManager which doesn't rely on this class.
     @LocalizedComment("config.language")
-    private Translation language = Translation.EN;
+    private String language = "en";
 
 	@LocalizedComment("config.updateCheck")
     private boolean updateCheck = true;
@@ -60,8 +61,6 @@ public class Config extends AbstractOkaeriConfigFile {
     }
 
 
-    // Maybe condense more of this into configuration sections
-
     @LocalizedComment("config.enableHome")
     private boolean enableHome = true;
 
@@ -74,90 +73,65 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.enableLoginDisallow")
 	private boolean enableLoginDisallow = true;
 
-	@Comment("If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]")
+	@LocalizedComment("config.enableKickOnOverdrink")
 	private boolean enableKickOnOverdrink = false;
 
-	@Comment({
-		"If the Player vomits on high drunkenness (drops item defined below) [true]",
-		"The item can not be collected and stays on the ground until it despawns."})
+	@LocalizedComment("config.enablePuke")
 	private boolean enablePuke = true;
 
-	@Comment({
-		"Items that is dropped multiple times uncollectable when puking [Soul_Sand]",
-		"Can be list of items such as [Sould_sand, Slime_block, Dirt]"})
+	@LocalizedComment("config.pukeItem")
 	private List<String> pukeItem = List.of("Soul_Sand");
 
-	@Comment({
-		"Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]",
-		"If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well."})
+	@LocalizedComment("config.pukeDespawnTime")
 	private int pukeDespawnTime = 60;
 
-	@Comment("How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]")
+	@LocalizedComment("config.stumblePercent")
 	private int stumblePercent = 100;
 
-	@Comment("Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]")
+	@LocalizedComment("config.showStatusOnDrink")
 	private boolean showStatusOnDrink = true;
 
-	@Comment("Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)")
+	@LocalizedComment("config.drainItem")
 	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
 
-	@Comment({
-		"Show Particles over Cauldrons when they have ingredients and a heat source. [true]",
-		"The changing color of the particles can help with timing some recipes"})
+	@LocalizedComment("config.enableCauldronParticles")
 	private boolean enableCauldronParticles = true;
 
-	@Comment("If Cauldron Particles should be reduced to the bare minimum [false]")
+	@LocalizedComment("config.minimalParticles")
 	private boolean minimalParticles = false;
 
-	@Comment("If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]")
+	@LocalizedComment("config.craft-enableSealingTable")
 	private boolean craftSealingTable = true;
 	private boolean enableSealingTable = true;
 
-	@Comment({
-		"By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it",
-		"IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE)."})
+	@LocalizedComment("config.sealingTableBlock")
 	private Material sealingTableBlock = Material.SMOKER;
 
-	@Comment("Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]")
+	@LocalizedComment("config.alwaysShowQuality")
 	private boolean alwaysShowQuality = true;
 
-	@Comment("Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]")
+	@LocalizedComment("config.alwaysShowAlc")
 	private boolean alwaysShowAlc = false;
 
-	@Comment("If we should show who brewed the drink [false]")
+	@LocalizedComment("config.showBrewer")
 	private boolean showBrewer = false;
 
-	@Comment("If barrels are only created when the sign placed contains the word \"barrel\" (or a translation when using another language) [true]")
+	@LocalizedComment("config.requireKeywordOnSigns")
 	private boolean requireKeywordOnSigns = true;
 
-	@Comment("If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]")
+	@LocalizedComment("config.ageInMCBarrels")
 	private boolean ageInMCBarrels = true;
 	private int maxBrewsInMCBarrels = 6;
 
-	@Comment("Duration (in minutes) of a \"year\" when aging drinks [20]")
+	@LocalizedComment("config.agingYearDuration")
 	private int agingYearDuration = 20;
 
-	@Comment({
-		"The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent",
-		"hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.",
-		"This is a fast process to stop players from hacking out recipes, once they get hold of a brew.",
-		" ",
-		"Only drawback: brew items can only be used on another server with the same encodeKey.",
-		"When using Brews on multiple (BungeeCord) Servers, define a MYSQL database in the 'storage' settings.",
-		" ",
-		"So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]"})
+	@LocalizedComment("config.enableEncode")
 	private boolean enableEncode = false;
-	private int encodeKey = 0;
+	private long encodeKey = new Random().nextLong(); // Generate a random key
 
-	// Skipping customItems section.
 
-	// Skipping cauldron section.
-
-	// Skipping recipes section.
-
-	@Comment({
-		"Enable checking of other Plugins (if installed) for Barrel Permissions [true]",
-		"Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported."})
+	@LocalizedComment("config.useOtherPlugins")
 	private boolean useWorldGuard = true;
 	private boolean useLWC = true;
 	private boolean useGriefPrevention = true;
@@ -165,62 +139,55 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean useBlockLocker = true;
 	private boolean useGMInventories = true;
 
-	@Comment({
-		"Use a virtual chest when opening a Barrel to check with all other protection plugins",
-		"This could confuse Anti-Cheat plugins, but is otherwise good to use",
-		"use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent"})
+	@LocalizedComment("config.useVirtualChestPerms")
 	private boolean useVirtualChestPerms = false;
 
-	@Comment("Enable the Logging of Barrel Inventories to LogBlock [true]")
+	@LocalizedComment("config.useLogBlock")
 	private boolean useLogBlock = true;
 
-	@Comment("If items in Offhand should be added to the cauldron as well [false]")
+	@LocalizedComment("config.useOffhandForCauldron")
 	private boolean useOffhandForCauldron = false;
 
-	@Comment("If Barrel and Cauldron data can be loaded Async/in the Background [true]")
-	private boolean loadDataAsync = true;
+	@LocalizedComment("config.loadDataAsync")
+	private boolean loadDataAsync = true; // Unused? Pretty sure I don't remember implementing this when swapping out BreweryX's data storage system
 
-	@Comment("Time (in days) that drunkenness-data stays in memory after a player goes offline, to apply hangover etc. [7]")
+	@LocalizedComment("config.hangoverDays")
 	private int hangoverDays = 7;
 
-	@Comment("Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]")
+	@LocalizedComment("config.colorInBarrels-Brewer")
 	private boolean colorInBarrels = true;
 	private boolean colorInBrewer = true;
 
-	@Comment("If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]")
+	@LocalizedComment("config.openLargeBarrelEverywhere")
 	private boolean openLargeBarrelEverywhere = true;
 
-	@Comment("Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]")
+	@LocalizedComment("config.brewHopperDump")
 	private boolean brewHopperDump = true;
 
-	@Comment({
-		"If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing",
-		"How much the chat is distorted depends on how drunk the Player is",
-		"Below are settings for what and how changes in chat occur"})
+	@LocalizedComment("config.enableChatDistortion")
 	private boolean enableChatDistortion = true;
 
-	@Comment("Log to the Serverlog what the player actually wrote, before his words were altered [false]")
+	@LocalizedComment("config.logRealChat")
 	private boolean logRealChat = false;
 
-	@Comment("Text after specified commands will be distored when drunk (list) [- /gl]")
+	@LocalizedComment("config.distortCommands")
 	private List<String> distortCommands = List.of("/gl", "/global", "/fl", "/s", "/letter", "/g", "/l", "/lokal",
 		"/local", "/mail send", "/m", "/msg", "/w", "/whisper", "/reply", "/r", "/t", "/tell");
 
-	@Comment("Distort the Text written on a Sign while drunk [false]")
+	@LocalizedComment("config.distortSignText")
 	private boolean distortSignText = false;
 
-	@Comment({
-		"Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']",
-		"Chat Example: Hello i am drunk *I am testing Brewery*"})
+	@LocalizedComment("config.distortBypass")
 	private List<String> distortBypass = List.of("*,*", "[,]");
 
 
-	// TODO: Skipping words section
+	@LocalizedComment("config.words")
+	private List<ConfigWordAlter> words = new WordsSector().getCapsules().values().stream().toList();
 
-	@Comment("You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.")
+
+	@LocalizedComment("config.useOtherFiles")
 	private Map<String, ConfigCustomItem> customItems = Map.of();
 	private Map<String, ConfigCauldronIngredient> cauldron = Map.of();
 	private Map<String, ConfigRecipe> recipes = Map.of();
 
-	// TODO: Footer comment?
 }

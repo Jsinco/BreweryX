@@ -16,7 +16,7 @@ import java.util.Map;
 public class RecipesFile extends AbstractOkaeriConfigFile {
 
 
-    @LocalizedComment("recipesfile.header")
+    @LocalizedComment("recipesFile.header")
     private Map<String, ConfigRecipe> recipes = new RecipesSector().getCapsules();
 
     // Backwards compatibility, merges recipes from the default config

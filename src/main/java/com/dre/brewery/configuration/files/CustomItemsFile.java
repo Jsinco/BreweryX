@@ -15,7 +15,7 @@ import java.util.Map;
 @Setter
 public class CustomItemsFile extends AbstractOkaeriConfigFile {
 
-    @LocalizedComment("customitemsfile.header")
+    @LocalizedComment("customItemsFile.header")
     private Map<String, ConfigCustomItem> customItems = new CustomItemsSector().getCapsules();
 
     // Backwards compatibility, merges custom items from the default config

@@ -1,5 +1,6 @@
 package com.dre.brewery.configuration.configurer;
 
+import com.dre.brewery.configuration.annotation.Footer;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
 import eu.okaeri.configs.postprocessor.ConfigPostprocessor;
@@ -19,7 +20,16 @@ import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -120,6 +130,8 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 		// render to string
 		String contents = this.yaml.dump(mapCopy);
 
+		Footer footer = declaration.getType().getAnnotation(Footer.class);
+		String[] footerLines = footer != null ? footer.value() : new String[0];
 		// postprocess
 		ConfigPostprocessor.of(contents)
 			// remove all current top-level comments
@@ -167,6 +179,8 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 			})
 			// add header if available
 			.prependContextComment(this.commentPrefix, declaration.getHeader())
+			// add footer if available
+			.appendContextComment(this.commentPrefix, footerLines)
 			// save
 			.write(outputStream);
 	}
@@ -195,6 +209,9 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 			.toArray(String[]::new);
 	}
 
+
+	// Probably could rewrite this null removal to be more efficient...
+
 	public void removeNullValues(Map<String, Object> map) {
 		if (map == null) {
 			return;
@@ -212,6 +229,45 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 				// If the value is a map, recursively remove null values inside it
 				removeNullValues((Map<String, Object>) value);
 				if (((Map<String, Object>) value).isEmpty()) {
+					iterator.remove(); // Remove the map if it becomes empty after cleaning
+				}
+			} else if (value instanceof Collection) {
+				// If the value is a collection, remove null values from it
+				removeNullValuesFromCollection((Collection<?>) value);
+				if (((Collection<?>) value).isEmpty()) {
+					iterator.remove(); // Remove the collection if it becomes empty after cleaning
+				}
+
+				// If the collection is a List, check if it's a list of maps and clean the maps
+				if (value instanceof List) {
+					removeNullValuesFromListOfMaps((List<?>) value);
+				}
+			}
+		}
+	}
+
+	private void removeNullValuesFromCollection(Collection<?> collection) {
+		if (collection == null) {
+			return;
+		}
+
+		// Remove null values from the collection (List, Set, etc.)
+		collection.removeIf(Objects::isNull);
+	}
+
+	private void removeNullValuesFromListOfMaps(List<?> list) {
+		if (list == null) {
+			return;
+		}
+
+		// Iterate over the list and clean each map
+		Iterator<?> iterator = list.iterator();
+		while (iterator.hasNext()) {
+			Object element = iterator.next();
+			if (element instanceof Map) {
+				// Recursively clean the map inside the list
+				removeNullValues((Map<String, Object>) element);
+				if (((Map<String, Object>) element).isEmpty()) {
 					iterator.remove(); // Remove the map if it becomes empty after cleaning
 				}
 			}
