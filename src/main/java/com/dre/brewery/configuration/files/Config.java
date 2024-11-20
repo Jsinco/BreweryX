@@ -1,12 +1,15 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
-import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.configuration.configurer.Translation;
 import com.dre.brewery.configuration.sector.CauldronSector;
 import com.dre.brewery.configuration.sector.CustomItemsSector;
 import com.dre.brewery.configuration.sector.RecipesSector;
+import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
+import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
+import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
@@ -16,9 +19,10 @@ import lombok.Setter;
 import org.bukkit.Material;
 
 import java.util.List;
+import java.util.Map;
 
 
-@OkaeriConfigFileInfo("new-config.yml") // TODO: Change this eventually
+@OkaeriConfigFileOptions("new-config.yml") // TODO: Change this eventually
 
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
@@ -214,9 +218,9 @@ public class Config extends AbstractOkaeriConfigFile {
 	// TODO: Skipping words section
 
 	@Comment("You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.")
-	private CustomItemsSector customItems;
-	private CauldronSector cauldron;
-	private RecipesSector recipes;
+	private Map<String, ConfigCustomItem> customItems = Map.of();
+	private Map<String, ConfigCauldronIngredient> cauldron = Map.of();
+	private Map<String, ConfigRecipe> recipes = Map.of();
 
 	// TODO: Footer comment?
 }

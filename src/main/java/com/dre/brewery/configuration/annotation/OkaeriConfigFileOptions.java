@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OkaeriConfigFileInfo {
+public @interface OkaeriConfigFileOptions {
 
     /**
      * The name of the file to be created
@@ -25,6 +25,12 @@ public @interface OkaeriConfigFileInfo {
      * @return true if the lang file name should be used
      */
     boolean useLangFileName() default false;
+
+    /**
+     * Should the file be updated by Okaeri or read-only
+     * @return true if the file should be updated
+     */
+    boolean update() default true;
 
     /**
      * The configurer to be used for the file

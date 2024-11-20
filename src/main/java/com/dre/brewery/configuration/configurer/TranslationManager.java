@@ -86,32 +86,7 @@ public class TranslationManager {
 	}
 
 	public void createLanguageFile(Translation translation) {
-		Path targetPath = dataFolder.toPath().resolve("langs").resolve(translation.getFilename());
-		Path targetDir = targetPath.getParent();
-
-		try {
-			// Ensure the directory exists, create it if necessary
-			if (!Files.exists(targetDir)) {
-				Files.createDirectories(targetDir);  // Creates the directory and any missing parent directories
-			}
-
-			// Check if the file exists
-			if (!Files.exists(targetPath)) {
-				try (InputStream inputStream = this.getClass()
-						.getClassLoader()
-						.getResourceAsStream("languages" + File.separator + translation.getFilename())) {
-
-					if (inputStream != null) {
-						// Copy the input stream content to the target file
-						Files.copy(inputStream, targetPath);
-					} else {
-						BreweryPlugin.getInstance().warningLog("Could not find language file for " + translation.getFilename());
-					}
-				}
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Error creating or copying language file", e);
-		}
+		ConfigManager.createFileFromResources("languages/" + translation.getFilename(), dataFolder.toPath().resolve("langs").resolve(translation.getFilename()));
 	}
 
 

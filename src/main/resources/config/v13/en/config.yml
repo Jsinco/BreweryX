@@ -510,7 +510,7 @@ cauldron:
 #   customModelData: 1
 #   customModelData: 1/2/3
 #
-# effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
+# effects: List of effect/level/duration  Special potion-effect when drinking, duration in seconds.
 #   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
 #   Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.

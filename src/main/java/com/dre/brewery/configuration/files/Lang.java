@@ -1,14 +1,14 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
-import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
 import lombok.Getter;
 import lombok.Setter;
 
 // Our bind file for this class should vary based on what language the user has set in the config.
-@OkaeriConfigFileInfo(useLangFileName = true)
+@OkaeriConfigFileOptions(useLangFileName = true)
 @Getter @Setter
 public class Lang extends AbstractOkaeriConfigFile {
 

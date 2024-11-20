@@ -1,7 +1,7 @@
 package com.dre.brewery.configuration;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.configuration.annotation.OkaeriConfigFileInfo;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.serdes.MaterialTransformer;
@@ -10,7 +10,12 @@ import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
+import lombok.Getter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +24,7 @@ import java.util.function.Supplier;
 
 public class ConfigManager {
 
+    @Getter
     private static final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
 
     private static final Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
@@ -53,7 +59,11 @@ public class ConfigManager {
      */
     public static <T extends AbstractOkaeriConfigFile> void newInstance(T configClass) {
         LOADED_CONFIGS.put(configClass.getClass(),
-                createConfig(configClass.getClass(), configClass.getBindFile().getFileName().toString(), configClass.getConfigurer(), new StandardSerdes()));
+                createConfig(configClass.getClass(),
+                        configClass.getBindFile().getFileName().toString(),
+                        configClass.getConfigurer(),
+                        new StandardSerdes(),
+                        getOkaeriConfigFileOptions(configClass.getClass()).update()));
     }
 
 
@@ -64,17 +74,16 @@ public class ConfigManager {
      * @param <T> The type of the config
      */
     public static <T extends AbstractOkaeriConfigFile> String getFileName(Class<T> configClass) {
-        OkaeriConfigFileInfo fileInfo = configClass.getAnnotation(OkaeriConfigFileInfo.class);
-        if (fileInfo == null) {
-            return configClass.getSimpleName().toLowerCase() + ".yml";
-        }
+        OkaeriConfigFileOptions options = getOkaeriConfigFileOptions(configClass);
 
-        if (!fileInfo.useLangFileName()) {
-            return fileInfo.value();
+        if (!options.useLangFileName()) {
+            return options.value();
         } else {
             return "langs/" + TranslationManager.getInstance().getActiveTranslation().getFilename();
         }
     }
+
+
 
     /**
      * Create a new config instance with a custom file name, configurer, serdes pack, and puts it in the LOADED_CONFIGS map
@@ -85,7 +94,7 @@ public class ConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
             it.withBindFile(DATA_FOLDER.resolve(fileName));
@@ -95,7 +104,7 @@ public class ConfigManager {
             for (Supplier<BidirectionalTransformer<?, ?>> packSupplier : TRANSFORMERS) {
                 it.withSerdesPack(registry -> registry.register(packSupplier.get()));
             }
-            it.load(true);
+            it.load(update);
         });
         LOADED_CONFIGS.put(configClass ,instance);
         return instance;
@@ -108,12 +117,71 @@ public class ConfigManager {
      * @param <T> The type of the config
      */
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
-        OkaeriConfigFileInfo fileInfo = configClass.getAnnotation(OkaeriConfigFileInfo.class);
-        if (fileInfo == null) {
-            return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(BreweryXConfigurer.class).get(), new StandardSerdes());
-        }
+        OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(fileInfo.configurer()).get(), new StandardSerdes());
+        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
     }
 
+
+    // Util
+
+    public static void createFileFromResources(String resourcesPath, Path destination) {
+        Path targetDir = destination.getParent();
+
+        try {
+            // Ensure the directory exists, create it if necessary
+            if (!Files.exists(targetDir)) {
+                Files.createDirectories(targetDir);
+            }
+
+
+            if (!Files.exists(destination)) {
+                try (InputStream inputStream = BreweryPlugin.class.getClassLoader().getResourceAsStream(resourcesPath)) {
+
+                    if (inputStream != null) {
+                        // Copy the input stream content to the target file
+                        Files.copy(inputStream, destination);
+                    } else {
+                        BreweryPlugin.getInstance().warningLog("Could not find resource file for " + resourcesPath);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating or copying file", e);
+        }
+    }
+
+
+    private static OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AbstractOkaeriConfigFile> configClass) {
+        OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
+        if (options == null) {
+            options = new OkaeriConfigFileOptions() {
+                @Override
+                public Class<? extends Annotation> annotationType() {
+                    return OkaeriConfigFileOptions.class;
+                }
+
+                @Override
+                public Class<? extends Configurer> configurer() {
+                    return BreweryXConfigurer.class;
+                }
+
+                @Override
+                public boolean useLangFileName() {
+                    return false;
+                }
+
+                @Override
+                public boolean update() {
+                    return false;
+                }
+
+                @Override
+                public String value() {
+                    return configClass.getSimpleName().toLowerCase() + ".yml";
+                }
+            };
+        }
+        return options;
+    }
 }

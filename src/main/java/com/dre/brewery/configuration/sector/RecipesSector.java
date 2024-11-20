@@ -1,20 +1,15 @@
 package com.dre.brewery.configuration.sector;
 
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
-import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-// TODO: Configuration sections for recipes
-@Getter
-@Setter
-public class RecipesSector extends OkaeriConfig {
+@Getter @Setter
+public class RecipesSector extends AbstractOkaeriConfigSector<ConfigRecipe> {
 
-    // TODO: There might actually be no point in manually declaring default recipes/cauldron items/custom items programmatically,
-    // Just generating the file from /resources/ and reading it using Okaeri should be fine?
 
     @Comment("Example Recipe with every possible entry first:")
     ConfigRecipe ex = ConfigRecipe.builder()
