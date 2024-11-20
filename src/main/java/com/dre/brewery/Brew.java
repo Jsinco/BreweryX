@@ -1,8 +1,9 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.ConfigUpdater;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.lore.*;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
@@ -25,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +37,8 @@ import java.util.Objects;
  */
 public class Brew implements Cloneable {
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	public static final byte SAVE_VER = 1;
 	private static long saveSeed;
@@ -373,7 +375,7 @@ public class Brew implements Cloneable {
 				alc *= 1 - ((float) (10 - quality) * 0.04f);
 				// distillable Potions should have half alc after one and full alc after all needed distills
 				alc /= 2;
-				alc *= 1.0F + ((float) distillRuns / currentRecipe.getDistillRuns());
+				alc *= 1.0F + ((float) distillRuns / currentRecipe.getDistillruns());
 			} else {
 				// quality decides 10% - 100%
 				alc *= ((float) quality / 10.0f);
@@ -406,7 +408,7 @@ public class Brew implements Cloneable {
 	public boolean canDistill() {
 		if (immutable) return false;
 		if (currentRecipe != null) {
-			return currentRecipe.getDistillRuns() > distillRuns;
+			return currentRecipe.getDistillruns() > distillRuns;
 		} else {
 			return distillRuns < 6;
 		}
@@ -645,19 +647,19 @@ public class Brew implements Cloneable {
 		} else {
 			quality = 0;
 			lore.removeEffects();
-			potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + BreweryPlugin.getInstance().languageReader.get("Brew_DistillUndefined")));
+			potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + lang.getEntry("Brew_DistillUndefined")));
 			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
 		alc = calcAlcohol();
 		updateCustomModelData(potionMeta);
 
 		// Distill Lore
-		if (currentRecipe != null && BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
-			lore.convertLore(BConfig.colorInBrewer);
+		if (currentRecipe != null && config.isColorInBrewer() != BrewLore.hasColorLore(potionMeta)) {
+			lore.convertLore(config.isColorInBrewer());
 		} else {
-			lore.updateQualityStars(BConfig.colorInBrewer);
+			lore.updateQualityStars(config.isColorInBrewer());
 			lore.updateCustomLore();
-			lore.updateDistillLore(BConfig.colorInBrewer);
+			lore.updateDistillLore(config.isColorInBrewer());
 		}
 		lore.updateAlc(true);
 		lore.write();
@@ -715,7 +717,7 @@ public class Brew implements Cloneable {
 				potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + recipe.getName(quality)));
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 
-				if (recipe.hasGlint()) {
+				if (recipe.isGlint()) {
 					potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 					potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				}
@@ -724,7 +726,7 @@ public class Brew implements Cloneable {
 				lore.convertLore(false);
 				lore.removeEffects();
 				currentRecipe = null;
-				potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + BreweryPlugin.getInstance().languageReader.get("Brew_BadPotion")));
+				potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + lang.getEntry("Brew_BadPotion")));
 				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 			}
 		}
@@ -732,19 +734,19 @@ public class Brew implements Cloneable {
 		updateCustomModelData(potionMeta);
 
 		// Lore
-		if (currentRecipe != null && BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
-			lore.convertLore(BConfig.colorInBarrels);
+		if (currentRecipe != null && config.isColorInBarrels() != BrewLore.hasColorLore(potionMeta)) {
+			lore.convertLore(config.isColorInBarrels());
 		} else {
 			if (ageTime >= 1) {
-				lore.updateAgeLore(BConfig.colorInBarrels);
+				lore.updateAgeLore(config.isColorInBarrels());
 			}
 			if (ageTime > 0.5) {
-				if (BConfig.colorInBarrels) {
+				if (config.isColorInBarrels()) {
 					lore.updateWoodLore(true);
 					lore.updateIngredientLore(true);
 					lore.updateCookLore(true);
 				}
-				lore.updateQualityStars(BConfig.colorInBarrels);
+				lore.updateQualityStars(config.isColorInBarrels());
 				lore.updateCustomLore();
 				lore.updateAlc(false);
 			}
@@ -819,7 +821,7 @@ public class Brew implements Cloneable {
 		updateCustomModelData(potionMeta);
 
 
-		if (recipe.hasGlint()) {
+		if (recipe.isGlint()) {
 			potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
@@ -928,7 +930,7 @@ public class Brew implements Cloneable {
 			if (successType == XORUnscrambleStream.SuccessType.PREV_SEED) {
 				BreweryPlugin.getInstance().debugLog("Converting Brew from previous Seed");
 				brew.setNeedsSave(true);
-			} else if ((BConfig.enableEncode && !brew.isStripped()) != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
+			} else if ((config.isEnableEncode() && !brew.isStripped()) != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
 				// We have either enabled encode and the data was not encoded or the other way round
 				BreweryPlugin.getInstance().debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
@@ -991,7 +993,7 @@ public class Brew implements Cloneable {
 			out.writeByte(86); // Parity/sanity
 			out.writeByte(SAVE_VER); // Version
 			// If Stripped of data, we can save everything unscrambled
-			if (BConfig.enableEncode && !isStripped()) {
+			if (config.isEnableEncode() && !isStripped()) {
 				scrambler.start();
 			} else {
 				scrambler.startUnscrambled();
@@ -1083,20 +1085,7 @@ public class Brew implements Cloneable {
 	}
 
 
-	public static void loadSeed(ConfigurationSection config, File file) {
-		saveSeed = config.getLong("encodeKey", 0);
-		if (saveSeed == 0) {
-			while (saveSeed == 0) {
-				saveSeed = new SecureRandom().nextLong();
-			}
-			ConfigUpdater updater = new ConfigUpdater(file);
-			updater.setEncodeKey(saveSeed);
-			updater.saveConfig();
-		}
-		if (!prevSaveSeeds.contains(saveSeed)) {
-			prevSaveSeeds.add(saveSeed);
-		}
-	}
+
 
 	public static boolean noLegacy() {
 		return legacyPotions.isEmpty();

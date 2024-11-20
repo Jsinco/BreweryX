@@ -4,6 +4,7 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
@@ -16,14 +17,9 @@ import java.util.List;
 
 public class DebugInfoCommand implements SubCommand {
 
-    private final BreweryPlugin breweryPlugin;
-
-    public DebugInfoCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
 
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         debugInfo(sender, args.length > 1 ? args[1] : null);
     }
 

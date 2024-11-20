@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class UnLabelCommand implements SubCommand {
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand.getType() != Material.AIR) {
@@ -34,15 +35,15 @@ public class UnLabelCommand implements SubCommand {
                     }
                     brew.save(meta);
                     hand.setItemMeta(meta);
-                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_UnLabel"));
+                    breweryPlugin.msg(sender, lang.getEntry("CMD_UnLabel"));
                     return;
                 } else {
-                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_AlreadyUnlabeled"));
+                    breweryPlugin.msg(sender, lang.getEntry("Error_AlreadyUnlabeled"));
                     return;
                 }
             }
         }
-        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ItemNotPotion"));
+        breweryPlugin.msg(sender, lang.getEntry("Error_ItemNotPotion"));
     }
 
     @Override

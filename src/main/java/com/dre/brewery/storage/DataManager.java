@@ -7,7 +7,8 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
@@ -63,7 +64,7 @@ public abstract class DataManager {
 
 
     public void tryAutoSave() {
-        long interval = BConfig.autoSaveInterval * 60000L;
+        long interval = ConfigManager.getConfig(Config.class).getAutosave() * 60000L;
 
         if (System.currentTimeMillis() - lastAutoSave > interval) {
             saveAll(true);

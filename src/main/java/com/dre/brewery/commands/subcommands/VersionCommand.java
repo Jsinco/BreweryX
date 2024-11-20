@@ -4,14 +4,15 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.api.addons.BreweryAddon;
 import com.dre.brewery.commands.SubCommand;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.UpdateChecker;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 public class VersionCommand implements SubCommand {
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         List<BreweryAddon> addons = new AddonManager(breweryPlugin).getAddons();
         StringBuilder addonString = new StringBuilder();
 

@@ -2,7 +2,8 @@ package com.dre.brewery.api;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BPlayer;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
@@ -104,7 +105,7 @@ public class BreweryApi {
 			if (player != null) {
 				bPlayer.drinkCap(player);
 			} else {
-				if (!BConfig.overdrinkKick) {
+				if (!ConfigManager.getConfig(Config.class).isEnableKickOnOverdrink()) {
 					bPlayer.setData(100, 0);
 				}
 			}
@@ -459,8 +460,8 @@ public class BreweryApi {
 	 * @param name The name of the new Cauldron Recipe
 	 * @return A Cauldron Recipe Builder
 	 */
-	public static BCauldronRecipe.Builder cauldronRecipeBuilder(String name) {
-		return new BCauldronRecipe.Builder(name);
+	public static BCauldronRecipe.BCauldronRecipeBuilder cauldronRecipeBuilder(String name) {
+		return BCauldronRecipe.builder().name(name);
 	}
 
 

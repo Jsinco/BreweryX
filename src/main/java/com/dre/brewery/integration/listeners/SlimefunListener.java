@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.listeners;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.item.SlimefunPluginItem;

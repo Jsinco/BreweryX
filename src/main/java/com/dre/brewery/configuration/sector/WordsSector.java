@@ -1,19 +1,20 @@
 package com.dre.brewery.configuration.sector;
 
-import com.dre.brewery.configuration.sector.capsule.ConfigWordAlter;
+import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 
-public class WordsSector extends AbstractOkaeriConfigSector<ConfigWordAlter> {
+public class WordsSector extends AbstractOkaeriConfigSector<ConfigDistortWord> {
 
+    // TODO: add defaults
     // Doesn't matter what the fields are named in this sector
 
-    ConfigWordAlter a = ConfigWordAlter.builder()
+    ConfigDistortWord a = ConfigDistortWord.builder()
             .replace("s")
             .to("sh")
             .percentage(90)
             .alcohol(30)
             .build();
 
-    ConfigWordAlter b = ConfigWordAlter.builder()
+    ConfigDistortWord b = ConfigDistortWord.builder()
             .replace("ch")
             .to("sh")
             .pre("u,s,o,a")
@@ -22,7 +23,7 @@ public class WordsSector extends AbstractOkaeriConfigSector<ConfigWordAlter> {
             .percentage(70)
             .build();
 
-    ConfigWordAlter c = ConfigWordAlter.builder()
+    ConfigDistortWord c = ConfigDistortWord.builder()
             .replace("h")
             .to("hh")
             .pre("sch,h,t")

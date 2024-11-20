@@ -12,12 +12,12 @@ import lombok.ToString;
 @Builder
 @ToString
 @AllArgsConstructor
-public class ConfigWordAlter extends OkaeriConfig {
+public class ConfigDistortWord extends OkaeriConfig {
 
     private String replace;
     private String to;
     private String pre;
-    private Boolean match;
-    private Integer alcohol;
-    private Integer percentage;
+    private boolean match;
+    private int alcohol;
+    private int percentage;
 }

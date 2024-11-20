@@ -8,7 +8,6 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.SimpleItem;
@@ -299,7 +298,7 @@ public class BData {
             e.printStackTrace();
         } finally {
             releaseDataLoadMutex();
-            if (BConfig.loadDataAsync && BData.dataMutex.get() == 0) {
+            if (BData.dataMutex.get() == 0) {
                 BreweryPlugin.getInstance().log("Background data loading complete.");
             }
         }
@@ -467,7 +466,7 @@ public class BData {
         // Increment the Data Mutex if it is not -1
         while (BData.dataMutex.updateAndGet(i -> i >= 0 ? i + 1 : i) <= 0) {
             wait++;
-            if (!BConfig.loadDataAsync || wait > 60) {
+            if (wait > 60) {
                 BreweryPlugin.getInstance().errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
                 return false;
             }

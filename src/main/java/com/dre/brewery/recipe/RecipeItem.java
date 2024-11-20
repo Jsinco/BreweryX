@@ -1,11 +1,11 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.Hook;
+import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Item that can be used in a Recipe.
@@ -178,9 +177,9 @@ public abstract class RecipeItem implements Cloneable {
 	}
 
 	@Nullable
-	public static RecipeItem fromConfigCustom(ConfigurationSection cfg, String id) {
+	public static RecipeItem fromConfigCustom(String id, ConfigCustomItem configCustomItem) {
 		RecipeItem rItem;
-		if (cfg.getBoolean(id + ".matchAny", false)) {
+		if (configCustomItem.getMatchAny()) {
 			rItem = new CustomMatchAnyItem();
 		} else {
 			rItem = new CustomItem();
@@ -189,45 +188,10 @@ public abstract class RecipeItem implements Cloneable {
 		rItem.cfgId = id;
 		rItem.immutable = true;
 
-		List<Material> materials;
-		List<String> names;
-		List<String> lore;
-		List<Integer> customModelDatas;
-
-		List<String> load = BUtil.loadCfgStringList(cfg, id + ".material");
-		if (load != null && !load.isEmpty()) {
-			if ((materials = loadMaterials(load)) == null) {
-				return null;
-			}
-		} else {
-			materials = new ArrayList<>(0);
-		}
-
-		load = BUtil.loadCfgStringList(cfg, id + ".name");
-		if (load != null && !load.isEmpty()) {
-			names = load.stream().map(l -> BreweryPlugin.getInstance().color(l)).collect(Collectors.toList());
-			if (VERSION.isOrLater(MinecraftVersion.V1_13)) {
-				// In 1.13 trailing Color white is removed from display names
-				names = names.stream().map(l -> l.startsWith("§f") ? l.substring(2) : l).collect(Collectors.toList());
-			}
-		} else {
-			names = new ArrayList<>(0);
-		}
-
-		load = BUtil.loadCfgStringList(cfg, id + ".lore");
-		if (load != null && !load.isEmpty()) {
-			lore = load.stream().map(l -> BreweryPlugin.getInstance().color(l)).collect(Collectors.toList());
-		} else {
-			lore = new ArrayList<>(0);
-		}
-
-
-		load = BUtil.loadCfgStringList(cfg, id + ".customModelData");
-		if (load != null && !load.isEmpty()) {
-			customModelDatas = load.stream().map(it -> BreweryPlugin.getInstance().parseInt(it)).toList();
-		} else {
-			customModelDatas = new ArrayList<>(0);
-		}
+		List<Material> materials = configCustomItem.getMaterial();
+		List<String> names = configCustomItem.getName();
+		List<String> lore = configCustomItem.getLore();
+		List<Integer> customModelDatas = configCustomItem.getCustomModelData();
 
 		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
 			BreweryPlugin.getInstance().errorLog("No Config Entries found for Custom Item");
@@ -273,7 +237,7 @@ public abstract class RecipeItem implements Cloneable {
 				continue;
 			}
 
-			if (mat == null && BConfig.hasVault) {
+			if (mat == null && Hook.VAULT.isEnabled()) {
 				try {
 					net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(ingredParts[0]);
 					if (vaultItem != null) {

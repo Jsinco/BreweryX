@@ -1,11 +1,13 @@
 package com.dre.brewery.lore;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Brew;
-import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -21,6 +23,10 @@ import java.util.List;
  * <p>Can efficiently replace certain lines of lore, to update brew information on an item.
  */
 public class BrewLore {
+
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
+
 	private final Brew brew;
 	private final PotionMeta meta;
 	private final List<String> lore;
@@ -74,18 +80,6 @@ public class BrewLore {
 		}
 	}
 
-	/*private void addSpacer() {
-		if (!P.useNBT) return;
-
-		for (int i = 0; i < lore.size(); i++) {
-			if (Type.get(lore.get(i)) != null) {
-				if (i == 0 || !lore.get(i - 1).equals("")) {
-					lore.add(i, "");
-				}
-				break;
-			}
-		}
-	}*/
 
 	/**
 	 * Add the list of strings as custom lore for the base potion coming out of the cauldron
@@ -113,9 +107,9 @@ public class BrewLore {
 			int quality = brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe());
 			String prefix = getQualityColor(quality);
 			char icon = getQualityIcon(quality);
-			addOrReplaceLore(Type.INGR, prefix, BreweryPlugin.getInstance().languageReader.get("Brew_Ingredients"), " " + icon);
+			addOrReplaceLore(Type.INGR, prefix,lang.getEntry("Brew_Ingredients"), " " + icon);
 		} else {
-			removeLore(Type.INGR, BreweryPlugin.getInstance().languageReader.get("Brew_Ingredients"));
+			removeLore(Type.INGR,lang.getEntry("Brew_Ingredients"));
 		}
 	}
 
@@ -128,13 +122,13 @@ public class BrewLore {
 		if (qualityColor && brew.hasRecipe() && brew.getDistillRuns() > 0 == brew.getCurrentRecipe().needsDistilling() && !brew.isStripped()) {
 			BIngredients ingredients = brew.getIngredients();
 			int quality = ingredients.getCookingQuality(brew.getCurrentRecipe(), brew.getDistillRuns() > 0);
-			String prefix = getQualityColor(quality) + ingredients.getCookedTime() + " " + BreweryPlugin.getInstance().languageReader.get("Brew_minute");
+			String prefix = getQualityColor(quality) + ingredients.getCookedTime() + " " +lang.getEntry("Brew_minute");
 			if (ingredients.getCookedTime() > 1) {
-				prefix = prefix + BreweryPlugin.getInstance().languageReader.get("Brew_MinutePluralPostfix");
+				prefix = prefix +lang.getEntry("Brew_MinutePluralPostfix");
 			}
-			addOrReplaceLore(Type.COOK, prefix, " " + BreweryPlugin.getInstance().languageReader.get("Brew_fermented"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.COOK, prefix, " " +lang.getEntry("Brew_fermented"), " " + getQualityIcon(quality));
 		} else {
-			removeLore(Type.COOK, BreweryPlugin.getInstance().languageReader.get("Brew_fermented"));
+			removeLore(Type.COOK,lang.getEntry("Brew_fermented"));
 		}
 	}
 
@@ -157,13 +151,13 @@ public class BrewLore {
 		}
 		if (!brew.isUnlabeled()) {
 			if (distillRuns > 1) {
-				prefix = prefix + distillRuns + BreweryPlugin.getInstance().languageReader.get("Brew_-times") + " ";
+				prefix = prefix + distillRuns +lang.getEntry("Brew_-times") + " ";
 			}
 		}
 		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
-			addOrReplaceLore(Type.DISTILL, prefix, BreweryPlugin.getInstance().languageReader.get("Brew_LessDistilled"), suffix);
+			addOrReplaceLore(Type.DISTILL, prefix,lang.getEntry("Brew_LessDistilled"), suffix);
 		} else {
-			addOrReplaceLore(Type.DISTILL, prefix, BreweryPlugin.getInstance().languageReader.get("Brew_Distilled"), suffix);
+			addOrReplaceLore(Type.DISTILL, prefix,lang.getEntry("Brew_Distilled"), suffix);
 		}
 	}
 
@@ -186,14 +180,14 @@ public class BrewLore {
 		}
 		if (!brew.isUnlabeled()) {
 			if (age >= 1 && age < 2) {
-				prefix = prefix + BreweryPlugin.getInstance().languageReader.get("Brew_OneYear") + " ";
+				prefix = prefix +lang.getEntry("Brew_OneYear") + " ";
 			} else if (age < 201) {
-				prefix = prefix + (int) Math.floor(age) + " " + BreweryPlugin.getInstance().languageReader.get("Brew_Years") + " ";
+				prefix = prefix + (int) Math.floor(age) + " " +lang.getEntry("Brew_Years") + " ";
 			} else {
-				prefix = prefix + BreweryPlugin.getInstance().languageReader.get("Brew_HundredsOfYears") + " ";
+				prefix = prefix +lang.getEntry("Brew_HundredsOfYears") + " ";
 			}
 		}
-		addOrReplaceLore(Type.AGE, prefix, BreweryPlugin.getInstance().languageReader.get("Brew_BarrelRiped"), suffix);
+		addOrReplaceLore(Type.AGE, prefix,lang.getEntry("Brew_BarrelRiped"), suffix);
 	}
 
 	/**
@@ -204,9 +198,9 @@ public class BrewLore {
 	public void updateWoodLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe() && !brew.isUnlabeled()) {
 			int quality = brew.getIngredients().getWoodQuality(brew.getCurrentRecipe(), brew.getWood());
-			addOrReplaceLore(Type.WOOD, getQualityColor(quality), BreweryPlugin.getInstance().languageReader.get("Brew_Woodtype"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.WOOD, getQualityColor(quality),lang.getEntry("Brew_Woodtype"), " " + getQualityIcon(quality));
 		} else {
-			removeLore(Type.WOOD, BreweryPlugin.getInstance().languageReader.get("Brew_Woodtype"));
+			removeLore(Type.WOOD,lang.getEntry("Brew_Woodtype"));
 		}
 	}
 
@@ -222,12 +216,11 @@ public class BrewLore {
 			for (String line : recipe.getLoreForQuality(brew.getQuality())) {
 				if (index == -1) {
 					index = addLore(Type.CUSTOM, "", line);
-					index++;
-				} else {
+                } else {
 					lore.add(index, Type.CUSTOM.id + line);
-					index++;
-				}
-			}
+                }
+                index++;
+            }
 		}
 	}
 
@@ -242,7 +235,7 @@ public class BrewLore {
 			return;
 		}
 		int quality = brew.getQuality();
-		if (quality > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
+		if (quality > 0 && (qualityColor || config.isAlwaysShowQuality())) {
 			int stars = quality / 2;
 			boolean half = quality % 2 > 0;
 			int noStars = 5 - stars - (half ? 1 : 0);
@@ -281,17 +274,17 @@ public class BrewLore {
 	}
 
 	public void updateAlc(boolean inDistiller) {
-		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() != 0)) {
+		if (!brew.isUnlabeled() && (inDistiller || config.isAlwaysShowAlc()) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() != 0)) {
 			int alc = brew.getOrCalcAlc();
-			addOrReplaceLore(Type.ALC, "§8", BreweryPlugin.getInstance().languageReader.get("Brew_Alc", alc + ""));
+			addOrReplaceLore(Type.ALC, "§8",lang.getEntry("Brew_Alc", alc + ""));
 		} else {
 			removeLore(Type.ALC);
 		}
 	}
 
 	public void updateBrewer(String name) {
-		if (name != null && BConfig.showBrewer) {
-			addOrReplaceLore(Type.BREWER, "§8", BreweryPlugin.getInstance().languageReader.get("Brew_Brewer", name));
+		if (name != null && config.isShowBrewer()) {
+			addOrReplaceLore(Type.BREWER, "§8",lang.getEntry("Brew_Brewer", name));
 		} else {
 			removeLore(Type.BREWER);
 		}

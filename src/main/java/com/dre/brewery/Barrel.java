@@ -4,13 +4,19 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.integration.LogBlockHook;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,9 +43,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A Multi Block Barrel with Inventory
  */
+@Getter
+@Setter
 public class Barrel implements InventoryHolder {
 
+	@Getter
 	public static volatile List<Barrel> barrels = new ArrayList<>();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 	private static int check = 0; // Which Barrel was last checked
 
 	private final Block spigot;
@@ -54,13 +65,9 @@ public class Barrel implements InventoryHolder {
 	 */
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
-		if (isLarge()) {
-			inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		} else {
-			inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		}
-		body = new BarrelBody(this, signoffset);
-		id = UUID.randomUUID();
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
+		this.body = new BarrelBody(this, signoffset);
+		this.id = UUID.randomUUID();
 	}
 
 	/**
@@ -70,11 +77,7 @@ public class Barrel implements InventoryHolder {
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, @Nullable Map<String, Object> items, float time, UUID id) {
 		this.spigot = spigot;
-		if (isLarge()) {
-			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		} else {
-			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		}
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
 		if (items != null) {
 			for (String slot : items.keySet()) {
 				if (items.get(slot) instanceof ItemStack) {
@@ -84,16 +87,12 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 		this.id = id;
-		body = new BarrelBody(this, sign, bounds);
+		this.body = new BarrelBody(this, sign, bounds);
 	}
 
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, UUID id) {
 		this.spigot = spigot;
-		if (isLarge()) {
-			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		} else {
-			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-		}
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
 		if (items != null) {
 			for (int slot = 0; slot < items.length; slot++) {
 				if (items[slot] != null) {
@@ -103,14 +102,14 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 		this.id = id;
-		body = new BarrelBody(this, sign, bounds);
+		this.body = new BarrelBody(this, sign, bounds);
 	}
 
 	public static void onUpdate() {
 		for (Barrel barrel : barrels) {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			if (barrel != null) {
-				barrel.time += (float) (1.0 / BConfig.agingYearDuration);
+				barrel.time += (float) (1.0 / config.getAgingYearDuration());
 			}
 		}
 		int numBarrels = barrels.size();
@@ -135,12 +134,12 @@ public class Barrel implements InventoryHolder {
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
 		if (isLarge()) {
 			if (!player.hasPermission("brewery.openbarrel.big")) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+				BreweryPlugin.getInstance().msg(player, lang.getErrorNoBarrelAccess());
 				return false;
 			}
 		} else {
 			if (!player.hasPermission("brewery.openbarrel.small")) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+				BreweryPlugin.getInstance().msg(player, lang.getErrorNoBarrelAccess());
 				return false;
 			}
 		}
@@ -167,11 +166,7 @@ public class Barrel implements InventoryHolder {
 	 */
 	public void open(Player player) {
 		if (inventory == null) {
-			if (isLarge()) {
-				inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-			} else {
-				inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
-			}
+			this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
 		} else {
 			if (time > 0) {
 				// if nobody has the inventory opened
@@ -198,7 +193,7 @@ public class Barrel implements InventoryHolder {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (BConfig.useLB) {
+		if (config.isUseLogBlock()) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
@@ -237,28 +232,6 @@ public class Barrel implements InventoryHolder {
 	@NotNull
 	public Inventory getInventory() {
 		return inventory;
-	}
-
-	@NotNull
-	public Block getSpigot() {
-		return spigot;
-	}
-
-	@NotNull
-	public BarrelBody getBody() {
-		return body;
-	}
-
-	public float getTime() {
-		return time;
-	}
-
-	public static List<Barrel> getBarrels() {
-		return barrels;
-	}
-
-	public UUID getId() {
-		return id;
 	}
 
 	/**
@@ -377,12 +350,12 @@ public class Barrel implements InventoryHolder {
 			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
-						BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoSmallBarrelCreate"));
+						BreweryPlugin.getInstance().msg(player, lang.getPermsNoBarrelCreate());
 						return false;
 					}
 				} else {
 					if (!player.hasPermission("brewery.createbarrel.big")) {
-						BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBigBarrelCreate"));
+						BreweryPlugin.getInstance().msg(player, lang.getPermsNoBigBarrelCreate());
 						return false;
 					}
 				}
@@ -422,13 +395,11 @@ public class Barrel implements InventoryHolder {
 			}
 			ItemStack[] items = inventory.getContents();
 			inventory.clear();
-			if (BConfig.useLB && breaker != null) {
+			if (LogBlockHook.LOGBLOCK.isEnabled() && breaker != null) {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
-					BreweryPlugin.getInstance().errorLog("Failed to Log Barrel-break to LogBlock!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.94 of LogBlock!");
-					e.printStackTrace();
+					BreweryPlugin.getInstance().errorLog("Failed to Log Barrel-break to LogBlock!", e);
 				}
 			}
 			if (event.willDropItems()) {

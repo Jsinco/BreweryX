@@ -8,8 +8,10 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.UpdateChecker;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -42,6 +44,8 @@ import org.bukkit.inventory.PlayerInventory;
 public class PlayerListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private final Config config = ConfigManager.getConfig(Config.class);
+	private final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -55,7 +59,7 @@ public class PlayerListener implements Listener {
 
 		// -- Clicking an Hopper --
 		if (type == Material.HOPPER) {
-			if (BConfig.brewHopperDump && event.getPlayer().isSneaking()) {
+			if (config.isBrewHopperDump() && event.getPlayer().isSneaking()) {
 				if (VERSION.isOrEarlier(MinecraftVersion.V1_9) || event.getHand() == EquipmentSlot.HAND) {
 					ItemStack item = event.getItem();
 					if (Brew.isBrew(item)) {
@@ -77,11 +81,11 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			event.setCancelled(true);
-			if (BConfig.enableSealingTable) {
+			if (config.isEnableSealingTable()) {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
 			} else {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_SealingTableDisabled"));
+				BreweryPlugin.getInstance().msg(player,lang.getEntry("Error_SealingTableDisabled"));
 			}
 			return;
 		}
@@ -100,7 +104,7 @@ public class PlayerListener implements Listener {
 		if (VERSION.isOrLater(MinecraftVersion.V1_14) && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
+				BreweryPlugin.getInstance().msg(player,lang.getEntry("Error_NoPermissions"));
 			}
 			return;
 		}
@@ -113,13 +117,13 @@ public class PlayerListener implements Listener {
 		// -- Access a Barrel --
 		Barrel barrel = null;
 		if (LegacyUtil.isWoodPlanks(type)) {
-			if (BConfig.openEverywhere) {
+			if (config.isOpenLargeBarrelEverywhere()) {
 				barrel = Barrel.getByWood(clickedBlock);
 			}
 		} else if (LegacyUtil.isWoodStairs(type)) {
 			barrel = Barrel.getByWood(clickedBlock);
 			if (barrel != null) {
-				if (!BConfig.openEverywhere && barrel.isLarge()) {
+				if (!config.isOpenLargeBarrelEverywhere() && barrel.isLarge()) {
 					barrel = null;
 				}
 			}
@@ -209,11 +213,11 @@ public class PlayerListener implements Listener {
 						}
 					}
 				}
-			} else if (BConfig.drainItems.containsKey(item.getType())) {
+			} else if (config.getDrainItem().containsKey(item.getType())) {
 				BPlayer bplayer = BPlayer.get(player);
 				if (bplayer != null) {
 					bplayer.drainByItem(player, item.getType());
-					if (BConfig.showStatusOnDrink) {
+					if (config.isShowStatusOnDrink()) {
 						bplayer.showDrunkeness(player);
 					}
 				}
@@ -273,10 +277,10 @@ public class PlayerListener implements Listener {
 						bplayer.join(player);
 						return;
 					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDeny"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER,lang.getEntry("Player_LoginDeny"));
 						return;
 					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDenyLong"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER,lang.getEntry("Player_LoginDenyLong"));
 				}
 			}
 		}

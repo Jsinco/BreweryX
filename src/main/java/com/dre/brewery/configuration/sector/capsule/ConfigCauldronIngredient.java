@@ -22,5 +22,5 @@ public class ConfigCauldronIngredient extends OkaeriConfig {
     private String color;
     private List<String> cookParticles;
     private List<String> lore;
-    private Integer customModelData;
+    private int customModelData;
 }

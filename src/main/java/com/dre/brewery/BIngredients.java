@@ -1,6 +1,8 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
@@ -33,6 +35,7 @@ import java.util.List;
 public class BIngredients {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 	private static int lastId = 0; // Legacy
 
 	private int id; // Legacy
@@ -140,7 +143,7 @@ public class BIngredients {
 			cookRecipe.getColor().colorBrew(potionMeta, potion, false);
 			brew.updateCustomModelData(potionMeta);
 
-			if (cookRecipe.hasGlint()) {
+			if (cookRecipe.isGlint()) {
 				potionMeta.addEnchant(Enchantment.MENDING, 1, true);
 				potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			}
@@ -149,7 +152,7 @@ public class BIngredients {
 			brew = new Brew(this);
 
 			if (state <= 0) {
-				cookedName = BreweryPlugin.getInstance().languageReader.get("Brew_ThickBrew");
+				cookedName = lang.getEntry("Brew_ThickBrew");
 				PotionColor.BLUE.colorBrew(potionMeta, potion, false);
 			} else {
 				BCauldronRecipe cauldronRecipe = getCauldronRecipe();
@@ -170,7 +173,7 @@ public class BIngredients {
 		}
 		if (cookedName == null) {
 			// if no name could be found
-			cookedName = BreweryPlugin.getInstance().languageReader.get("Brew_Undefined");
+			cookedName = lang.getEntry("Brew_Undefined");
 			PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
 
@@ -388,7 +391,7 @@ public class BIngredients {
 		if (recipe.needsDistilling() != distillRuns > 0) {
 			return 0;
 		}
-		return 10 - Math.abs(recipe.getDistillRuns() - distillRuns);
+		return 10 - Math.abs(recipe.getDistillruns() - distillRuns);
 	}
 
 	/**

@@ -2,6 +2,8 @@ package com.dre.brewery.commands;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.subcommands.*;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,6 +19,7 @@ import java.util.Map;
 public class CommandManager implements TabExecutor {
 
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+    private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
     private static final Map<String, SubCommand> subCommands = new HashMap<>();
 
@@ -25,15 +28,15 @@ public class CommandManager implements TabExecutor {
         subCommands.put("reload", new ReloadCommand());
         subCommands.put("wakeup", new WakeupCommand());
         subCommands.put("itemName", new ItemName());
-        subCommands.put("create", new CreateCommand(plugin));
+        subCommands.put("create", new CreateCommand());
         subCommands.put("info", new InfoCommand(plugin));
         subCommands.put("seal", new SealCommand());
         subCommands.put("copy", new CopyCommand(plugin));
-        subCommands.put("delete", new DeleteCommand(plugin));
+        subCommands.put("delete", new DeleteCommand());
         subCommands.put("static", new StaticCommand());
 		subCommands.put("set", new SetCommand());
         subCommands.put("unLabel", new UnLabelCommand());
-        subCommands.put("debuginfo", new DebugInfoCommand(plugin));
+        subCommands.put("debuginfo", new DebugInfoCommand());
         subCommands.put("showstats", new ShowStatsCommand());
         subCommands.put("puke", new PukeCommand());
         subCommands.put("drink", new DrinkCommand());
@@ -49,7 +52,7 @@ public class CommandManager implements TabExecutor {
             return true;
         }
 
-        SubCommand subCommand = subCommands.get(args[0]); //
+        SubCommand subCommand = subCommands.get(args[0]);
         if (subCommand == null) {
             CommandUtil.cmdHelp(sender, args);
             return true;
@@ -58,14 +61,14 @@ public class CommandManager implements TabExecutor {
         String permission = subCommand.permission();
 
         if (playerOnly && !(sender instanceof Player)) {
-            plugin.msg(sender, plugin.languageReader.get("Error_NotPlayer"));
+            plugin.msg(sender, lang.getEntry("Error_NotPlayer"));
             return true;
         } else if (permission != null && !sender.hasPermission(permission)) {
-            plugin.msg(sender, plugin.languageReader.get("Error_NoPermission"));
+            plugin.msg(sender, lang.getEntry("Error_NoPermission"));
             return true;
         }
 
-        subCommand.execute(plugin, sender, s, args);
+        subCommand.execute(plugin, lang, sender, s, args);
         return false;
     }
 

@@ -8,9 +8,9 @@ import com.dre.brewery.configuration.sector.WordsSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
-import com.dre.brewery.configuration.sector.capsule.ConfigWordAlter;
+import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.storage.DataManagerType;
-import eu.okaeri.configs.OkaeriConfig;
+import com.dre.brewery.storage.records.ConfiguredDataManager;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,18 +47,14 @@ public class Config extends AbstractOkaeriConfigFile {
 
 
     @LocalizedComment("config.storage.header")
-    private Storage storage = new Storage();
-    @Getter @Setter
-    public static class Storage extends OkaeriConfig {
-        @LocalizedComment("config.storage.type")
-        private DataManagerType type = DataManagerType.FLATFILE;
-        @LocalizedComment("config.storage.database")
-        private String database = "brewery-data";
-        private String tablePrefix = "brewery_";
-        private String address = "localhost";
-        private String username = "root";
-        private String password = "";
-    }
+    private ConfiguredDataManager storage = ConfiguredDataManager.builder()
+			.type(DataManagerType.FLATFILE)
+			.database("brewery-data")
+			.tablePrefix("brewery_")
+			.address("localhost")
+			.username("root")
+			.password("password")
+			.build();
 
 
     @LocalizedComment("config.enableHome")
@@ -80,7 +76,7 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean enablePuke = true;
 
 	@LocalizedComment("config.pukeItem")
-	private List<String> pukeItem = List.of("Soul_Sand");
+	private List<Material> pukeItem = List.of(Material.SOUL_SAND);
 
 	@LocalizedComment("config.pukeDespawnTime")
 	private int pukeDespawnTime = 60;
@@ -92,7 +88,7 @@ public class Config extends AbstractOkaeriConfigFile {
 	private boolean showStatusOnDrink = true;
 
 	@LocalizedComment("config.drainItem")
-	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
+	private Map<Material, Integer> drainItem = Map.of(Material.BREAD, 4, Material.MILK_BUCKET, 2);
 
 	@LocalizedComment("config.enableCauldronParticles")
 	private boolean enableCauldronParticles = true;
@@ -182,7 +178,7 @@ public class Config extends AbstractOkaeriConfigFile {
 
 
 	@LocalizedComment("config.words")
-	private List<ConfigWordAlter> words = new WordsSector().getCapsules().values().stream().toList();
+	private List<ConfigDistortWord> words = new WordsSector().getCapsules().values().stream().toList();
 
 
 	@LocalizedComment("config.useOtherFiles")

@@ -1,14 +1,14 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -17,8 +17,13 @@ import java.util.stream.Collectors;
 /**
  * A Recipe for the Base Potion coming out of the Cauldron.
  */
+@Getter
+@Setter
+@Builder
 public class BCauldronRecipe {
+	@Getter
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
+	@Getter @Setter
 	public static int numConfigRecipes;
 	public static List<RecipeItem> acceptedCustom = new ArrayList<>(); // All accepted custom and other items
 	public static Set<Material> acceptedSimple = new HashSet<>(); // All accepted simple items
@@ -45,9 +50,9 @@ public class BCauldronRecipe {
 	}
 
 	@Nullable
-	public static BCauldronRecipe fromConfig(ConfigurationSection cfg, String id) {
+	public static BCauldronRecipe fromConfig(String id, ConfigCauldronIngredient cfgCauldronIngredient) {
 
-		String name = cfg.getString(id + ".name");
+		String name = cfgCauldronIngredient.getName();
 		if (name != null) {
 			name = BreweryPlugin.getInstance().color(name);
 		} else {
@@ -57,13 +62,13 @@ public class BCauldronRecipe {
 
 		BCauldronRecipe recipe = new BCauldronRecipe(name);
 
-		recipe.ingredients = BRecipe.loadIngredients(cfg, id);
+		recipe.ingredients = BRecipe.loadIngredients(cfgCauldronIngredient.getIngredients(), id);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
 			BreweryPlugin.getInstance().errorLog("No ingredients for Cauldron-Recipe: " + recipe.name);
 			return null;
 		}
 
-		String col = cfg.getString(id + ".color");
+		String col = cfgCauldronIngredient.getColor();
 		if (col != null) {
 			recipe.color = PotionColor.fromString(col);
 		} else {
@@ -76,7 +81,7 @@ public class BCauldronRecipe {
 			//return null;
 		}
 
-		for (String entry : cfg.getStringList(id + ".cookParticles")) {
+		for (String entry : cfgCauldronIngredient.getCookParticles()) {
 			String[] split = entry.split("/");
 			int minute;
 			if (split.length == 1) {
@@ -104,76 +109,16 @@ public class BCauldronRecipe {
 		}
 
 
-		List<Tuple<Integer, String>> lore = BRecipe.loadQualityStringList(cfg, id + ".lore", StringParser.ParseType.LORE);
+		List<Tuple<Integer, String>> lore = BRecipe.loadQualityStringList(cfgCauldronIngredient.getLore(), StringParser.ParseType.LORE);
 		if (lore != null && !lore.isEmpty()) {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}
 
-		recipe.cmData = cfg.getInt(id + ".customModelData", 0);
+		recipe.cmData = cfgCauldronIngredient.getCustomModelData();
 
 		return recipe;
 	}
 
-
-	// Getter
-
-	@NotNull
-	public String getName() {
-		return name;
-	}
-
-	@NotNull
-	public List<RecipeItem> getIngredients() {
-		return ingredients;
-	}
-
-	@NotNull
-	public PotionColor getColor() {
-		return color;
-	}
-
-	@NotNull
-	public List<Tuple<Integer, Color>> getParticleColor() {
-		return particleColor;
-	}
-
-	@Nullable
-	public List<String> getLore() {
-		return lore;
-	}
-
-	public boolean isSaveInData() {
-		return saveInData;
-	}
-
-
-	// Setter
-
-	/**
-	 * When Changing ingredients, Accepted Lists have to be updated in BCauldronRecipe
-	 */
-	public void setIngredients(@NotNull List<RecipeItem> ingredients) {
-		this.ingredients = ingredients;
-	}
-
-	public void setColor(@NotNull PotionColor color) {
-		this.color = color;
-	}
-
-	public void setLore(List<String> lore) {
-		this.lore = lore;
-	}
-
-	/**
-	 * Get the Custom Model Data
-	 */
-	public int getCmData() {
-		return cmData;
-	}
-
-	public void setSaveInData(boolean saveInData) {
-		this.saveInData = saveInData;
-	}
 
 	/**
 	 * Find how much these ingredients match the given ones from 0-10.
@@ -287,117 +232,4 @@ public class BCauldronRecipe {
 		return recipes;
 	}
 
-	/*public static boolean acceptItem(ItemStack item) {
-		if (acceptedMaterials.contains(item.getType())) {
-			// Extremely fast way to check for most items
-			return true;
-		}
-		if (!item.hasItemMeta()) {
-			return false;
-		}
-		// If the Item is not on the list, but customized, we have to do more checks
-		ItemMeta meta = item.getItemMeta();
-		assert meta != null;
-		if (meta.hasDisplayName() || meta.hasLore()) {
-			for (BItem bItem : acceptedCustom) {
-				if (bItem.matches(item)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Nullable
-	public static RecipeItem acceptItem(ItemStack item) {
-		if (!acceptedMaterials.contains(item.getType()) && !item.hasItemMeta()) {
-			// Extremely fast way to check for most items
-			return null;
-		}
-		// If the Item is on the list, or customized, we have to do more checks
-		for (RecipeItem rItem : acceptedItems) {
-			if (rItem.matches(item)) {
-				return rItem;
-			}
-		}
-		return null;
-	}*/
-
-	/**
-	 * Builder to easily create BCauldron recipes.
-	 */
-	public static class Builder {
-		private BCauldronRecipe recipe;
-
-		public Builder(String name) {
-			recipe = new BCauldronRecipe(name);
-		}
-
-
-		public Builder addIngredient(RecipeItem... item) {
-			if (recipe.ingredients == null) {
-				recipe.ingredients = new ArrayList<>();
-			}
-			Collections.addAll(recipe.ingredients, item);
-			return this;
-		}
-
-		public Builder addIngredient(ItemStack... item) {
-			if (recipe.ingredients == null) {
-				recipe.ingredients = new ArrayList<>();
-			}
-			for (ItemStack i : item) {
-				recipe.ingredients.add(new CustomItem(i));
-			}
-			return this;
-		}
-
-		public Builder color(String colorString) {
-			recipe.color = PotionColor.fromString(colorString);
-			return this;
-		}
-
-		public Builder color(PotionColor color) {
-			recipe.color = color;
-			return this;
-		}
-
-		public Builder color(Color color) {
-			recipe.color = PotionColor.fromColor(color);
-			return this;
-		}
-
-		public Builder addParticleColor(int atMinute, Color color) {
-			recipe.particleColor.add(new Tuple<>(atMinute, color));
-			return this;
-		}
-
-		public Builder addLore(String line) {
-			if (recipe.lore == null) {
-				recipe.lore = new ArrayList<>();
-			}
-			recipe.lore.add(line);
-			return this;
-		}
-
-		public BCauldronRecipe get() {
-			if (recipe.name == null) {
-				throw new IllegalArgumentException("CauldronRecipe name is null");
-			}
-			if (BCauldronRecipe.get(recipe.getName()) != null) {
-				throw new IllegalArgumentException("CauldronRecipe with name " + recipe.getName() + " already exists");
-			}
-			if (recipe.color == null) {
-				throw new IllegalArgumentException("CauldronRecipe has no color");
-			}
-			if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
-				throw new IllegalArgumentException("CauldronRecipe has no ingredients");
-			}
-			if (!recipe.particleColor.isEmpty()) {
-				// Sort particleColor by minute
-				recipe.particleColor.sort(Comparator.comparing(Tuple::first));
-			}
-			return recipe;
-		}
-	}
 }

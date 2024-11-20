@@ -1,6 +1,10 @@
-package com.dre.brewery.filedata;
+package com.dre.brewery.utility;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -14,12 +18,19 @@ import java.util.logging.Level;
 /**
  * Update Checker modified for BreweryX
  */
+
 public class UpdateChecker {
 
 	private final static BreweryPlugin plugin = BreweryPlugin.getInstance();
-	private final int resourceID;
+
+	@Getter
+	@Setter
 	private static String latestVersion = plugin.getDescription().getVersion();
+	@Getter
+	@Setter
 	private static boolean updateAvailable = false;
+
+	private final int resourceID;
 
 	public UpdateChecker(int resourceID) {
 		this.resourceID = resourceID;
@@ -29,7 +40,8 @@ public class UpdateChecker {
 		if (!updateAvailable || !player.hasPermission("brewery.update")) {
 			return;
 		}
-		plugin.msg(player, plugin.languageReader.get("Etc_UpdateAvailable", "v"+plugin.getDescription().getVersion(), "v"+latestVersion));
+		Lang lang = ConfigManager.getConfig(Lang.class);
+		plugin.msg(player, lang.getEntry("Etc_UpdateAvailable", "v"+plugin.getDescription().getVersion(), "v"+latestVersion));
 	}
 
 	/**
@@ -45,18 +57,6 @@ public class UpdateChecker {
 				plugin.getLogger().log(Level.WARNING, "Cannot look for updates: " + e);
 			}
 		});
-	}
-
-	public static void setLatestVersion(String version) {
-		latestVersion = version;
-	}
-
-	public static String getLatestVersion() {
-		return latestVersion;
-	}
-
-	public static void setUpdateAvailable(boolean available) {
-		updateAvailable = available;
 	}
 
 	public static int parseVersion(String version) {

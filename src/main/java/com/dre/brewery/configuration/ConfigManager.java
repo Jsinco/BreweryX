@@ -1,16 +1,29 @@
 package com.dre.brewery.configuration;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.DistortChat;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
+import com.dre.brewery.configuration.files.CauldronFile;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.RecipesFile;
+import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
+import com.dre.brewery.configuration.serdes.DrainItemsTransformer;
 import com.dre.brewery.configuration.serdes.MaterialTransformer;
+import com.dre.brewery.integration.item.BreweryPluginItem;
+import com.dre.brewery.integration.item.ItemsAdderPluginItem;
+import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.integration.item.OraxenPluginItem;
+import com.dre.brewery.integration.item.SlimefunPluginItem;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.PluginItem;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +37,7 @@ import java.util.function.Supplier;
 
 public class ConfigManager {
 
-    @Getter
-    private static final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
+    public static final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
 
     private static final Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
     private static final Map<Class<? extends Configurer>, Supplier<Configurer>> CONFIGURERS = Map.of(
@@ -33,7 +45,8 @@ public class ConfigManager {
             YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
     );
     protected static final List<Supplier<BidirectionalTransformer<?, ?>>> TRANSFORMERS = List.of(
-            MaterialTransformer::new
+            MaterialTransformer::new,
+            DrainItemsTransformer::new
     );
 
 
@@ -156,32 +169,79 @@ public class ConfigManager {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
         if (options == null) {
             options = new OkaeriConfigFileOptions() {
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return OkaeriConfigFileOptions.class;
-                }
-
-                @Override
-                public Class<? extends Configurer> configurer() {
-                    return BreweryXConfigurer.class;
-                }
-
-                @Override
-                public boolean useLangFileName() {
-                    return false;
-                }
-
-                @Override
-                public boolean update() {
-                    return false;
-                }
-
-                @Override
-                public String value() {
-                    return configClass.getSimpleName().toLowerCase() + ".yml";
-                }
+                @Override public Class<? extends Annotation> annotationType() { return OkaeriConfigFileOptions.class; }
+                @Override public Class<? extends Configurer> configurer() { return BreweryXConfigurer.class; }
+                @Override public boolean useLangFileName() { return false; }
+                @Override public boolean update() { return false; }
+                @Override public String value() { return configClass.getSimpleName().toLowerCase() + ".yml"; }
             };
         }
         return options;
+    }
+
+
+    // Not really what I want to do, but I have to move these from BConfig right now
+
+    public static void loadRecipes() {
+        // loading recipes
+        List<BRecipe> configRecipes = BRecipe.getConfigRecipes();
+        for (var recipeEntry : getConfig(RecipesFile.class).getRecipes().entrySet()) {
+            BRecipe recipe = BRecipe.fromConfig(recipeEntry.getKey(), recipeEntry.getValue());
+            if (recipe != null && recipe.isValid()) {
+                configRecipes.add(recipe);
+            } else {
+                BreweryPlugin.getInstance().errorLog("Loading the Recipe with id: '" + recipeEntry.getKey() + "' failed!");
+            }
+
+            BRecipe.setNumConfigRecipes(configRecipes.size());
+        }
+    }
+
+
+    public static void loadCauldronIngredients() {
+        // Loading Cauldron Recipes
+
+        List<BCauldronRecipe> configRecipes = BCauldronRecipe.getConfigRecipes();
+        for (var cauldronEntry : getConfig(CauldronFile.class).getCauldronIngredients().entrySet()) {
+            BCauldronRecipe recipe = BCauldronRecipe.fromConfig(cauldronEntry.getKey(), cauldronEntry.getValue());
+            if (recipe != null) {
+                configRecipes.add(recipe);
+            } else {
+                BreweryPlugin.getInstance().errorLog("Loading the Cauldron-Recipe with id: '" + cauldronEntry.getKey() + "' failed!");
+            }
+        }
+        BCauldronRecipe.setNumConfigRecipes(configRecipes.size());
+
+        // Recalculating Cauldron-Accepted Items for non-config recipes
+        for (BRecipe recipe : BRecipe.getAddedRecipes()) {
+            recipe.updateAcceptedLists();
+        }
+        for (BCauldronRecipe recipe : BCauldronRecipe.getAddedRecipes()) {
+            recipe.updateAcceptedLists();
+        }
+    }
+
+    public static void loadDistortWords() {
+        // Loading Words
+        Config config = getConfig(Config.class);
+
+        if (config.isEnableChatDistortion()) {
+            for (ConfigDistortWord distortWord : config.getWords()) {
+                new DistortChat(distortWord);
+            }
+            for (String bypass : config.getDistortBypass()) {
+                DistortChat.getIgnoreText().add(bypass.split(","));
+            }
+            DistortChat.getCommands().addAll(config.getDistortCommands());
+        }
+    }
+
+    public static void registerDefaultPluginItems() {
+        PluginItem.registerForConfig("brewery", BreweryPluginItem::new);
+        PluginItem.registerForConfig("mmoitems", MMOItemsPluginItem::new);
+        PluginItem.registerForConfig("slimefun", SlimefunPluginItem::new);
+        PluginItem.registerForConfig("exoticgarden", SlimefunPluginItem::new);
+        PluginItem.registerForConfig("oraxen", OraxenPluginItem::new);
+        PluginItem.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
     }
 }

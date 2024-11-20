@@ -4,7 +4,7 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.BarrelBody;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.Hook;
 import com.dre.brewery.utility.LegacyUtil;
 import nl.rutgerkok.blocklocker.BlockLockerAPIv2;
 import nl.rutgerkok.blocklocker.ProtectableBlocksSettings;
@@ -30,7 +30,7 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 	}
 
 	public boolean isOrWillCreateBarrel(Block block) {
-		if (!BreweryPlugin.getInstance().isEnabled() || !BConfig.useBlocklocker) {
+		if (!BreweryPlugin.getInstance().isEnabled() || !Hook.BLOCKLOCKER.isEnabled()) {
 			return false;
 		}
 		if (!LegacyUtil.isWoodPlanks(block.getType()) && !LegacyUtil.isWoodStairs(block.getType())) {

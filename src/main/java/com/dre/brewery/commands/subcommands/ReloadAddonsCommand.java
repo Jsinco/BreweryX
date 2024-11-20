@@ -3,13 +3,14 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 public class ReloadAddonsCommand implements SubCommand {
 	@Override
-	public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+	public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
 		if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
 			AddonManager addonManager = new AddonManager(breweryPlugin);
 			addonManager.unloadAddons();

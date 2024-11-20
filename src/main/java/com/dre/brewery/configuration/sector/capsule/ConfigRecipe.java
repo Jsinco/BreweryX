@@ -21,16 +21,16 @@ public class ConfigRecipe extends OkaeriConfig {
     private List<String> ingredients;
 
     @CustomKey("cookingtime")
-    private Integer cookingTime;
+    private int cookingTime;
     @CustomKey("distillruns")
-    private Integer distillRuns;
+    private int distillRuns;
     @CustomKey("distilltime")
-    private Integer distillTime;
-    private Integer wood;
-    private Integer age;
+    private int distillTime;
+    private byte wood;
+    private int age;
     private String color;
-    private Integer difficulty;
-    private Integer alcohol;
+    private int difficulty;
+    private int alcohol;
     private List<String> lore;
     @CustomKey("servercommands")
     private List<String> serverCommands;
@@ -40,7 +40,7 @@ public class ConfigRecipe extends OkaeriConfig {
     private String drinkMessage;
     @CustomKey("drinktitle")
     private String drinkTitle;
-    private Boolean glint;
+    private boolean glint;
     private String customModelData;
     private List<String> effects;
 }

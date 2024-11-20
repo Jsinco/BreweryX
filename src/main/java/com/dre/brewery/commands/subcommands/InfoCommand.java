@@ -3,6 +3,7 @@ package com.dre.brewery.commands.subcommands;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,18 +18,18 @@ public class InfoCommand implements SubCommand {
     }
 
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
             if (sender.hasPermission("brewery.cmd.infoOther")) {
-                cmdInfo(sender, args[1]);
+                cmdInfo(sender, args[1], lang);
             } else {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_NoPermissions"));
+                breweryPlugin.msg(sender, lang.getEntry("Error_NoPermissions"));
             }
         } else {
             if (sender.hasPermission("brewery.cmd.info")) {
-                cmdInfo(sender, null);
+                cmdInfo(sender, null, lang);
             } else {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_NoPermissions"));
+                breweryPlugin.msg(sender, lang.getEntry("Error_NoPermissions"));
             }
         }
     }
@@ -48,7 +49,7 @@ public class InfoCommand implements SubCommand {
         return false;
     }
 
-    public void cmdInfo(CommandSender sender, String playerName) {
+    public void cmdInfo(CommandSender sender, String playerName, Lang lang) {
 
         boolean selfInfo = playerName == null;
         if (selfInfo) {
@@ -56,7 +57,7 @@ public class InfoCommand implements SubCommand {
                 Player player = (Player) sender;
                 playerName = player.getName();
             } else {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
+                breweryPlugin.msg(sender, lang.getEntry("Error_PlayerCommand"));
                 return;
             }
         }
@@ -69,12 +70,12 @@ public class InfoCommand implements SubCommand {
             bPlayer = BPlayer.get(player);
         }
         if (bPlayer == null) {
-            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Info_NotDrunk", playerName));
+            breweryPlugin.msg(sender, lang.getEntry("CMD_Info_NotDrunk", playerName));
         } else {
             if (selfInfo) {
                 bPlayer.showDrunkeness(player);
             } else {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
+                breweryPlugin.msg(sender, lang.getEntry("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
             }
         }
 

@@ -1,11 +1,16 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.listeners;
 
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.integration.Hook;
+import com.dre.brewery.integration.LogBlockHook;
+import com.dre.brewery.integration.WorldGuarkHook;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
 import com.dre.brewery.integration.barrel.LWCBarrel;
@@ -34,15 +39,19 @@ import org.bukkit.plugin.Plugin;
 
 public class IntegrationListener implements Listener {
 
+	private final Config config = ConfigManager.getConfig(Config.class);
+	private final Lang lang = ConfigManager.getConfig(Lang.class);
+
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBarrelAccessLowest(BarrelAccessEvent event) {
-		if (BConfig.useWG) {
-			Plugin plugin = BreweryPlugin.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
+		WorldGuarkHook hook = WorldGuarkHook.WORLDGUARD;
+		if (hook.isEnabled()) {
+			Plugin plugin = hook.getPlugin();
 			if (plugin != null) {
 				try {
-					if (!BConfig.wg.checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
+					if (!hook.getWgBarrel().checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
 						event.setCancelled(true);
-						BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
@@ -64,8 +73,9 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBarrelAccess(BarrelAccessEvent event) {
-		if (BConfig.useGMInventories) {
-			Plugin pl = BreweryPlugin.getInstance().getServer().getPluginManager().getPlugin("GameModeInventories");
+		Hook hook = Hook.GAMEMODEINVENTORIES;
+		if (hook.isEnabled()) {
+			Plugin pl = hook.getPlugin();
 			if (pl != null && pl.isEnabled()) {
 				try {
 					if (pl.getConfig().getBoolean("restrict_creative")) {
@@ -74,7 +84,7 @@ public class IntegrationListener implements Listener {
 							if (!pl.getConfig().getBoolean("bypass.inventories") || (!player.hasPermission("gamemodeinventories.bypass") && !player.isOp())) {
 								event.setCancelled(true);
 								if (!pl.getConfig().getBoolean("dont_spam_chat")) {
-									BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+									BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 								}
 								return;
 							}
@@ -84,17 +94,17 @@ public class IntegrationListener implements Listener {
 					BreweryPlugin.getInstance().errorLog("Failed to Check GameModeInventories for Barrel Open Permissions!");
 					BreweryPlugin.getInstance().errorLog("Players will be able to open Barrel with GameMode Creative");
 					e.printStackTrace();
-					BConfig.useGMInventories = false;
+					hook.setEnabled(false);
 				}
 			} else {
-				BConfig.useGMInventories = false;
+				hook.setEnabled(false);
 			}
 		}
-		if (BConfig.useGP) {
+		if (Hook.GRIEFPREVENTION.isEnabled()) {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
 				try {
 					if (!GriefPreventionBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 						event.setCancelled(true);
 						return;
 					}
@@ -116,7 +126,7 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
-		if (BConfig.useLWC) {
+		if (Hook.LWC.isEnabled()) {
 			Plugin plugin = BreweryPlugin.getInstance().getServer().getPluginManager().getPlugin("LWC");
 			if (plugin != null) {
 
@@ -128,7 +138,7 @@ public class IntegrationListener implements Listener {
 						Player player = event.getPlayer();
 						try {
 							if (!LWCBarrel.checkAccess(player, sign, plugin)) {
-								BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+								BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 								event.setCancelled(true);
 								return;
 							}
@@ -151,11 +161,11 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
-		if (BConfig.useTowny) {
+		if (Hook.TOWNY.isEnabled()) {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("Towny")) {
 				try {
 					if (!TownyBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 						event.setCancelled(true);
 						return;
 					}
@@ -177,11 +187,11 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
-		if (BConfig.useBlocklocker) {
+		if (Hook.BLOCKLOCKER.isEnabled()) {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("BlockLocker")) {
 				try {
 					if (!BlocklockerBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 						event.setCancelled(true);
 						return;
 					}
@@ -203,7 +213,7 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
-		if (BConfig.virtualChestPerms) {
+		if (config.isUseVirtualChestPerms()) {
 			Player player = event.getPlayer();
 			BlockState originalBlockState = event.getClickedBlock().getState();
 
@@ -235,7 +245,7 @@ public class IntegrationListener implements Listener {
 
 			if (simulatedEvent.useInteractedBlock() == Event.Result.DENY) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(event.getPlayer(), BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
+				BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
 				//return;
 			}
 		}
@@ -243,7 +253,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void onBarrelDestroy(BarrelDestroyEvent event) {
-		if (!BConfig.useLWC) return;
+		if (!Hook.LWC.isEnabled()) return;
 
 		if (event.hasPlayer()) {
 			Player player = event.getPlayerOptional();
@@ -288,7 +298,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onBarrelRemove(BarrelRemoveEvent event) {
-		if (!BConfig.useLWC) return;
+		if (!Hook.LWC.isEnabled()) return;
 
 		try {
 			LWCBarrel.remove(event.getBarrel());
@@ -301,7 +311,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (BConfig.useLB) {
+		if (LogBlockHook.LOGBLOCK.isEnabled()) {
 			if (event.getInventory().getHolder() instanceof Barrel) {
 				try {
 					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
@@ -318,11 +328,7 @@ public class IntegrationListener implements Listener {
 	public void onInteract(PlayerInteractEvent event) {
 		// Catch the Interact Event early, so MMOItems does not act before us and cancel the event while we try to add it to the Cauldron
 		if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_9)) return;
-		if (BConfig.hasMMOItems == null) {
-			BConfig.hasMMOItems = BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MMOItems")
-				&& BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MythicLib");
-		}
-		if (!BConfig.hasMMOItems) return;
+		if (!Hook.MMOITEMS.isEnabled()) return;
 		try {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
 				if (event.getClickedBlock() != null && LegacyUtil.isWaterCauldron(event.getClickedBlock().getType())) {
@@ -342,9 +348,8 @@ public class IntegrationListener implements Listener {
 				}
 			}
 		} catch (Throwable e) {
-			BreweryPlugin.getInstance().errorLog("Could not check MMOItems for Item");
-			e.printStackTrace();
-			BConfig.hasMMOItems = false;
+			BreweryPlugin.getInstance().errorLog("Could not check MMOItems for Item" ,e);
+			Hook.MMOITEMS.setEnabled(false);
 		}
 	}
 }

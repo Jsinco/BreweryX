@@ -2,6 +2,7 @@ package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.*;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BRecipe;
 import org.bukkit.command.CommandSender;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class ShowStatsCommand implements SubCommand {
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         //if (sender instanceof ConsoleCommandSender && !sender.isOp()) return;
 
         BreweryPlugin.getInstance().msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());

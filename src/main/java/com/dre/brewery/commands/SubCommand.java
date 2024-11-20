@@ -1,6 +1,7 @@
 package com.dre.brewery.commands;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface SubCommand {
      * @param label The command label (alias)
      * @param args The command arguments
      */
-    void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args);
+    void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args);
 
     /**
      * Returns a list of possible tab completions for the subcommand

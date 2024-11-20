@@ -1,8 +1,10 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.listeners;
 
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.integration.Hook;
 import com.nisovin.shopkeepers.api.events.PlayerOpenUIEvent;
 import com.nisovin.shopkeepers.api.ui.DefaultUITypes;
 import org.bukkit.Material;
@@ -20,7 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ShopKeepersListener implements Listener {
-	Set<HumanEntity> openedEditors = new HashSet<>();
+	private final Set<HumanEntity> openedEditors = new HashSet<>();
+	private final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onShopkeeperOpen(PlayerOpenUIEvent event) {
@@ -45,7 +48,7 @@ public class ShopKeepersListener implements Listener {
 		if (item != null && item.getType() == Material.POTION && event.getClickedInventory() == event.getView().getTopInventory()) {
 			Brew brew = Brew.get(item);
 			if (brew != null && !brew.isSealed()) {
-				BreweryPlugin.getInstance().msg(event.getWhoClicked(), BreweryPlugin.getInstance().languageReader.get("Player_ShopSealBrew"));
+				BreweryPlugin.getInstance().msg(event.getWhoClicked(), lang.getEntry("Player_ShopSealBrew"));
 			}
 		}
 	}
@@ -58,9 +61,8 @@ public class ShopKeepersListener implements Listener {
 
 	private void failed(Throwable e) {
 		HandlerList.unregisterAll(this);
-		BConfig.hasShopKeepers = false;
-		e.printStackTrace();
-		BreweryPlugin.getInstance().errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support");
+		Hook.SHOPKEEPERS.setEnabled(false);
+		BreweryPlugin.getInstance().errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support", e);
 		openedEditors.clear();
 	}
 

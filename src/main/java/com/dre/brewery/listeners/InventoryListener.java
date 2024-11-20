@@ -1,7 +1,8 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.*;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
@@ -25,6 +26,8 @@ import java.util.UUID;
 public class InventoryListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+
+	private final Config config = ConfigManager.getConfig(Config.class);
 
 	/* === Recreating manually the prior BrewEvent behavior. === */
 	private HashSet<UUID> trackedBrewmen = new HashSet<>();
@@ -155,7 +158,7 @@ public class InventoryListener implements Listener {
 				if (BrewLore.hasColorLore(meta)) {
 					lore = new BrewLore(brew, meta);
 					lore.convertLore(false);
-				} else if (!BConfig.alwaysShowAlc && event.getInventory().getType() == InventoryType.BREWING) {
+				} else if (!config.isAlwaysShowAlc() && event.getInventory().getType() == InventoryType.BREWING) {
 					lore = new BrewLore(brew, meta);
 					lore.updateAlc(false);
 				}
@@ -180,7 +183,7 @@ public class InventoryListener implements Listener {
 	public void onInventoryClickMCBarrel(InventoryClickEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
 		if (event.getInventory().getType() != InventoryType.BARREL) return;
-		if (!MCBarrel.enableAging) return;
+		if (!config.isAgeInMCBarrels()) return;
 
 		Inventory inv = event.getInventory();
 		for (MCBarrel barrel : MCBarrel.openBarrels) {
@@ -231,7 +234,7 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
-		if (!MCBarrel.enableAging) return;
+		if (!config.isAgeInMCBarrels()) return;
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {
@@ -251,7 +254,7 @@ public class InventoryListener implements Listener {
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
 	public void onHopperPickupPuke(InventoryPickupItemEvent event){
-		if (event.getItem().getPickupDelay() > 1000 && BConfig.pukeItem.contains(event.getItem().getItemStack().getType())) {
+		if (event.getItem().getPickupDelay() > 1000 && config.getPukeItem().contains(event.getItem().getItemStack().getType())) {
 			event.setCancelled(true);
 		}
 	}
@@ -305,7 +308,7 @@ public class InventoryListener implements Listener {
 		}
 
 		// Check for MC Barrel
-		if (MCBarrel.enableAging && event.getInventory().getType() == InventoryType.BARREL) {
+		if (config.isAgeInMCBarrels() && event.getInventory().getType() == InventoryType.BARREL) {
 			Inventory inv = event.getInventory();
 			for (Iterator<MCBarrel> iter = MCBarrel.openBarrels.iterator(); iter.hasNext(); ) {
 				MCBarrel barrel = iter.next();

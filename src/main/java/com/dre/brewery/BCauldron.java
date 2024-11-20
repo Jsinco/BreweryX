@@ -1,7 +1,9 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.IngedientAddEvent;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
@@ -41,6 +43,8 @@ import static com.dre.brewery.utility.MinecraftVersion.V1_9;
 public class BCauldron {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
@@ -120,7 +124,7 @@ public class BCauldron {
 		if (state > 0) {
 			state--;
 		}
-		if (BConfig.enableCauldronParticles && !BConfig.minimalParticles) {
+		if (config.isEnableCauldronParticles() && !config.isMinimalParticles()) {
 			// Few little sparks and lots of water splashes. Offset by 0.2 in x and z
 			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,2, 0.2, 0, 0.2);
 			block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 10, 0.2, 0, 0.2);
@@ -198,7 +202,7 @@ public class BCauldron {
 	// fills players bottle with cooked brew
 	public boolean fill(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.fill")) {
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronFill"));
+			BreweryPlugin.getInstance().msg(player, lang.getPermsNoCauldronFill());
 			return true;
 		}
 		ItemStack potion = ingredients.cook(state, player.getName());
@@ -269,15 +273,15 @@ public class BCauldron {
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.time")) {
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
+			BreweryPlugin.getInstance().msg(player, lang.getErrorNoPermissions());
 			return;
 		}
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CauldronInfo1", "" + bcauldron.state));
+				BreweryPlugin.getInstance().msg(player, lang.getEntry("Player_CauldronInfo1", "" + bcauldron.state));
 			} else {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CauldronInfo2"));
+				BreweryPlugin.getInstance().msg(player, lang.getEntry("Player_CauldronInfo2"));
 			}
 		}
 	}
@@ -299,7 +303,7 @@ public class BCauldron {
 						1025.0);
 			}
 
-			if (BConfig.minimalParticles) {
+			if (config.isMinimalParticles()) {
 				return;
 			}
 
@@ -403,7 +407,7 @@ public class BCauldron {
 	}
 
 	public static void processCookEffects() {
-		if (!BConfig.enableCauldronParticles) return;
+		if (!config.isEnableCauldronParticles()) return;
 		if (bcauldrons.isEmpty()) {
 			return;
 		}
@@ -488,7 +492,7 @@ public class BCauldron {
 							materialInHand = item.getType();
 							handSwap = true;
 						} else {
-							item = BConfig.useOffhandForCauldron ? event.getItem() : null;
+							item = config.isUseOffhandForCauldron() ? event.getItem() : null;
 						}
 					}
 				}
@@ -496,7 +500,7 @@ public class BCauldron {
 			if (item == null) return;
 
 			if (!player.hasPermission("brewery.cauldron.insert")) {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronInsert"));
+				BreweryPlugin.getInstance().msg(player, lang.getEntry("Perms_NoCauldronInsert"));
 				return;
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {
@@ -530,7 +534,7 @@ public class BCauldron {
 		for (BCauldron cauldron : bcauldrons.values()) {
 			cauldron.particleRecipe = null;
 			cauldron.particleColor = null;
-			if (BConfig.enableCauldronParticles) {
+			if (config.isEnableCauldronParticles()) {
 				if (BUtil.isChunkLoaded(cauldron.block) && LegacyUtil.isCauldronHeatsource(cauldron.block.getRelative(BlockFace.DOWN))) {
 					cauldron.getParticleColor();
 				}

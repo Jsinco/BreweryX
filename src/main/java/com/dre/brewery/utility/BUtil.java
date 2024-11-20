@@ -4,6 +4,8 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -41,6 +43,7 @@ public class BUtil {
 
 	private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	/**
 	 * Check if the Chunk of a Block is loaded !without loading it in the process!
@@ -351,7 +354,7 @@ public class BUtil {
 			page = 1;
 		}
 
-		sender.sendMessage(color("&7-------------- &f" + BreweryPlugin.getInstance().languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
+		sender.sendMessage(color("&7-------------- &f" + lang.getEntry("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 
