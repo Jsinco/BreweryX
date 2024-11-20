@@ -135,7 +135,7 @@ public abstract class DataManager {
     }
 
     public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {
-        DataManager dataManager = switch (record.type()) {
+        DataManager dataManager = switch (record.getType()) {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> new MySQLStorage(record);
             case SQLITE -> new SQLiteStorage(record);
@@ -156,7 +156,7 @@ public abstract class DataManager {
         }
 
 
-        plugin.log("DataManager created&7:&a " + record.type().getFormattedName());
+        plugin.log("DataManager created&7:&a " + record.getType().getFormattedName());
         return dataManager;
     }
 

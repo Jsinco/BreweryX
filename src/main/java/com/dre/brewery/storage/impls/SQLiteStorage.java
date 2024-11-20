@@ -44,7 +44,7 @@ public class SQLiteStorage extends DataManager {
     private final SQLDataSerializer serializer;
 
     public SQLiteStorage(ConfiguredDataManager record) throws StorageInitException {
-        String fileName = record.database() + ".db";
+        String fileName = record.getDatabase() + ".db";
         File rawFile = new File(plugin.getDataFolder(), fileName);
 
         if (!rawFile.exists()) {
@@ -57,7 +57,7 @@ public class SQLiteStorage extends DataManager {
 
         try {
             this.connection = DriverManager.getConnection(URL + rawFile.getAbsolutePath());
-            this.tablePrefix = record.tablePrefix();
+            this.tablePrefix = record.getTablePrefix();
             this.serializer = new SQLDataSerializer();
 
             for (String table : TABLES) {

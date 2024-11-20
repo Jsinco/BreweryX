@@ -154,7 +154,7 @@ public class BrewLore {
 				prefix = prefix + distillRuns +lang.getEntry("Brew_-times") + " ";
 			}
 		}
-		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
+		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillruns()) {
 			addOrReplaceLore(Type.DISTILL, prefix,lang.getEntry("Brew_LessDistilled"), suffix);
 		} else {
 			addOrReplaceLore(Type.DISTILL, prefix,lang.getEntry("Brew_Distilled"), suffix);

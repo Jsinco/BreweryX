@@ -4,7 +4,6 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Color;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-@Builder
 public class BCauldronRecipe {
 	@Getter
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
@@ -110,7 +108,7 @@ public class BCauldronRecipe {
 
 
 		List<Tuple<Integer, String>> lore = BRecipe.loadQualityStringList(cfgCauldronIngredient.getLore(), StringParser.ParseType.LORE);
-		if (lore != null && !lore.isEmpty()) {
+		if (!lore.isEmpty()) {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}
 
@@ -232,4 +230,70 @@ public class BCauldronRecipe {
 		return recipes;
 	}
 
+
+	public static class Builder {
+		private final String name;
+		private final List<RecipeItem> ingredients = new ArrayList<>();
+		private PotionColor color = PotionColor.CYAN;
+		private final List<Tuple<Integer, Color>> particleColor = new ArrayList<>();
+		private final List<String> lore = new ArrayList<>();
+		private int cmData = 0;
+		private boolean saveInData = false;
+
+
+		public Builder(String name) {
+			this.name = name;
+		}
+
+		public Builder ingredient(RecipeItem ingredient) {
+			this.ingredients.add(ingredient);
+			return this;
+		}
+
+		public Builder ingredients(List<RecipeItem> ingredients) {
+			this.ingredients.addAll(ingredients);
+			return this;
+		}
+
+		public Builder color(PotionColor color) {
+			this.color = color;
+			return this;
+		}
+
+		public Builder particleColor(int minute, Color color) {
+			this.particleColor.add(new Tuple<>(minute, color));
+			return this;
+		}
+
+		public Builder lore(String lore) {
+			this.lore.add(lore);
+			return this;
+		}
+
+		public Builder lore(List<String> lore) {
+			this.lore.addAll(lore);
+			return this;
+		}
+
+		public Builder cmData(int cmData) {
+			this.cmData = cmData;
+			return this;
+		}
+
+		public Builder saveInData(boolean saveInData) {
+			this.saveInData = saveInData;
+			return this;
+		}
+
+		public BCauldronRecipe build() {
+			BCauldronRecipe recipe = new BCauldronRecipe(name);
+			recipe.ingredients = ingredients;
+			recipe.color = color;
+			recipe.particleColor = particleColor;
+			recipe.lore = lore;
+			recipe.cmData = cmData;
+			recipe.saveInData = saveInData;
+			return recipe;
+		}
+	}
 }

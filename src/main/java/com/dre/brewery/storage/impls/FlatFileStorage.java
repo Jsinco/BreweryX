@@ -33,7 +33,7 @@ public class FlatFileStorage extends DataManager {
     private final YamlConfiguration dataFile;
 
     public FlatFileStorage(ConfiguredDataManager record) throws StorageInitException {
-        String fileName = record.database() + ".yml";
+        String fileName = record.getDatabase() + ".yml";
         this.rawFile = new File(plugin.getDataFolder(), fileName);
 
         if (!rawFile.exists()) {

@@ -460,8 +460,8 @@ public class BreweryApi {
 	 * @param name The name of the new Cauldron Recipe
 	 * @return A Cauldron Recipe Builder
 	 */
-	public static BCauldronRecipe.BCauldronRecipeBuilder cauldronRecipeBuilder(String name) {
-		return BCauldronRecipe.builder().name(name);
+	public static BCauldronRecipe.Builder cauldronRecipeBuilder(String name) {
+		return new BCauldronRecipe.Builder(name);
 	}
 
 

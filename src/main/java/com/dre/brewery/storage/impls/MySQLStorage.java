@@ -44,15 +44,15 @@ public class MySQLStorage extends DataManager {
 
     public MySQLStorage(ConfiguredDataManager record) throws StorageInitException {
         try {
-            this.connection = DriverManager.getConnection(URL + record.address(), record.username(), record.password());
-            this.tablePrefix = record.tablePrefix();
+            this.connection = DriverManager.getConnection(URL + record.getAddress(), record.getUsername(), record.getPassword());
+            this.tablePrefix = record.getTablePrefix();
             this.serializer = new SQLDataSerializer();
         } catch (SQLException e) {
             throw new StorageInitException("Failed to connect to MySQL database! (Did you configure it correctly?)", e);
         }
 
         try {
-            try (PreparedStatement statement = connection.prepareStatement("USE " + record.database())) {
+            try (PreparedStatement statement = connection.prepareStatement("USE " + record.getDatabase())) {
                 statement.execute();
             }
 

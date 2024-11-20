@@ -179,7 +179,7 @@ public abstract class RecipeItem implements Cloneable {
 	@Nullable
 	public static RecipeItem fromConfigCustom(String id, ConfigCustomItem configCustomItem) {
 		RecipeItem rItem;
-		if (configCustomItem.getMatchAny()) {
+		if (configCustomItem.isMatchAny()) {
 			rItem = new CustomMatchAnyItem();
 		} else {
 			rItem = new CustomItem();
