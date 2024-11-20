@@ -25,7 +25,9 @@ public class BCauldronRecipe {
 	@Getter @Setter
 	public static int numConfigRecipes;
 	public static List<RecipeItem> acceptedCustom = new ArrayList<>(); // All accepted custom and other items
+	@Getter
 	public static Set<Material> acceptedSimple = new HashSet<>(); // All accepted simple items
+	@Getter
 	public static Set<Material> acceptedMaterials = new HashSet<>(); // Fast cache for all accepted Materials
 
 	private String name;

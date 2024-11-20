@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Random;
 
 
-@OkaeriConfigFileOptions("config.yml")
+@OkaeriConfigFileOptions("new-config.yml")
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Footer("Yep, that's it! The end of config.yml! I had so much fun! And you?...")

@@ -190,7 +190,7 @@ public class BRecipe implements Cloneable {
 
 	public static List<RecipeItem> loadIngredients(List<String> stringList, String recipeId) {
 		if (stringList == null) {
-			return new ArrayList<>();
+			stringList = Collections.emptyList();
 		}
         List<RecipeItem> ingredients = new ArrayList<>(stringList.size());
 
