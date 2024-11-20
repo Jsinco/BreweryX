@@ -55,12 +55,18 @@ public class ConfigManager {
      * @param <T> The type of the config
      */
     public static <T extends AbstractOkaeriConfigFile> T getConfig(Class<T> configClass) {
-        for (var mapEntry : LOADED_CONFIGS.entrySet()) {
-            if (mapEntry.getKey().equals(configClass)) {
-                return (T) mapEntry.getValue();
+        try {
+            for (var mapEntry : LOADED_CONFIGS.entrySet()) {
+                if (mapEntry.getKey().equals(configClass)) {
+                    return (T) mapEntry.getValue();
+                }
             }
+            return createConfig(configClass);
+        } catch (Throwable e) {
+            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file... " + configClass.getSimpleName(), e);
+            BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run /brew reload");
+            return null;
         }
-        return createConfig(configClass);
     }
 
     /**
@@ -74,7 +80,8 @@ public class ConfigManager {
                         configClass.getBindFile().getFileName().toString(),
                         configClass.getConfigurer(),
                         new StandardSerdes(),
-                        getOkaeriConfigFileOptions(configClass.getClass()).update()));
+                        getOkaeriConfigFileOptions(configClass.getClass()).update(),
+                        true));
     }
 
 
@@ -105,17 +112,19 @@ public class ConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update, boolean bind) {
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
-            it.withBindFile(DATA_FOLDER.resolve(fileName));
             it.withRemoveOrphans(false); // Just leaving this off for now
-            it.saveDefaults();
+            if (bind) {
+                it.withBindFile(DATA_FOLDER.resolve(fileName));
+                it.saveDefaults();
+            }
 
             for (Supplier<BidirectionalTransformer<?, ?>> packSupplier : TRANSFORMERS) {
                 it.withSerdesPack(registry -> registry.register(packSupplier.get()));
             }
-            it.load(update);
+            it.load(update && bind);
         });
         LOADED_CONFIGS.put(configClass ,instance);
         return instance;
@@ -130,7 +139,7 @@ public class ConfigManager {
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
+        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), true);
     }
 
 

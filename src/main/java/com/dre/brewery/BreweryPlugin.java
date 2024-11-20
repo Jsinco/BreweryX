@@ -351,11 +351,11 @@ public class BreweryPlugin extends JavaPlugin {
 	}
 
 	public void warningLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(color(ConfigManager.getConfig(Config.class).getPluginPrefix() + "&eWARNING: " + msg));
+		Bukkit.getConsoleSender().sendMessage(color("&e[BreweryX] WARNING: " + msg));
 	}
 
 	public void errorLog(String msg) {
-		String str = color(ConfigManager.getConfig(Config.class).getPluginPrefix() + "&cERROR: " + msg);
+		String str = color("&c[BreweryX] ERROR: " + msg);
 		Bukkit.getConsoleSender().sendMessage(str);
 		if (ReloadCommand.getReloader() != null) { // I hate this, but I'm too lazy to go change all of it - Jsinco
 			ReloadCommand.getReloader().sendMessage(str);
