@@ -168,16 +168,17 @@ public class ConfigManager {
                 Files.createDirectories(targetDir);
             }
 
+            if (Files.exists(destination)) {
+                return;
+            }
 
-            if (!Files.exists(destination)) {
-                try (InputStream inputStream = BreweryPlugin.class.getClassLoader().getResourceAsStream(resourcesPath)) {
+            try (InputStream inputStream = BreweryPlugin.class.getClassLoader().getResourceAsStream(resourcesPath)) {
 
-                    if (inputStream != null) {
-                        // Copy the input stream content to the target file
-                        Files.copy(inputStream, destination);
-                    } else {
-                        BreweryPlugin.getInstance().warningLog("Could not find resource file for " + resourcesPath);
-                    }
+                if (inputStream != null) {
+                    // Copy the input stream content to the target file
+                    Files.copy(inputStream, destination);
+                } else {
+                    BreweryPlugin.getInstance().warningLog("Could not find resource file for " + resourcesPath);
                 }
             }
         } catch (IOException e) {
