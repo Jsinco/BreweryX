@@ -113,8 +113,12 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 	@Override
 	public void write(@NonNull OutputStream outputStream, @NonNull ConfigDeclaration declaration) throws Exception {
 
+
+		Map<String, Object> mapCopy = new LinkedHashMap<>(this.map); // Not sure if I should copy or do this on the main map
+		// Remove null values
+		removeNullValues(mapCopy);
 		// render to string
-		String contents = this.yaml.dump(this.map);
+		String contents = this.yaml.dump(mapCopy);
 
 		// postprocess
 		ConfigPostprocessor.of(contents)
@@ -189,5 +193,28 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 			.filter(Objects::nonNull) // Remove null translations
 			.flatMap(translation -> Arrays.stream(translation.split("\n"))) // Split translations by lines
 			.toArray(String[]::new);
+	}
+
+	public void removeNullValues(Map<String, Object> map) {
+		if (map == null) {
+			return;
+		}
+
+		// Iterate over the map and remove null values
+		Iterator<Map.Entry<String, Object>> iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, Object> entry = iterator.next();
+			Object value = entry.getValue();
+
+			if (value == null) {
+				iterator.remove(); // Remove entry if value is null
+			} else if (value instanceof Map) {
+				// If the value is a map, recursively remove null values inside it
+				removeNullValues((Map<String, Object>) value);
+				if (((Map<String, Object>) value).isEmpty()) {
+					iterator.remove(); // Remove the map if it becomes empty after cleaning
+				}
+			}
+		}
 	}
 }

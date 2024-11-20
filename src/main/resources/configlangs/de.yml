@@ -1,7 +1,38 @@
-example:
-  exampleString: 'Hello, Comment (in German)!2'
+# German translation for BreweryX
 
 config:
   language: |
-    The translation to be used [ENGLISH] (in German)
-    Available types: ENGLISH, GERMAN, SPANISH, FRENCH, ITALIAN, RUSSIAN, CHINESE
+    Sprachedatei die genutzt werden sollte [en]
+    Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
+
+  updateCheck: |
+    Aktiviert das Suchen nach Updates für Brewery mit der spigot api [true]
+    Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
+
+  autosave: "Autosave Intervall in Minuten [10]"
+
+  pluginPrefix: "Prefix used on messages"
+
+  debug: "Debug Nachrichten im Log anzeigen [false]"
+
+  storage:
+    header: "-- Storage Settings --"
+    type: |
+      What type of storage to use [FLATFILE]
+      Available types: FlatFile, MySQL, SQLite
+    database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
+
+  enableHome: "IOb der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause 'aufwacht' (Ein home Plugin muss installiert sein!) [true]"
+
+  homeType: |
+    Art des Nachhause-teleports: ['cmd: home']
+    bed = Spieler wird zu seinem Spawn Bett teleportiert
+    'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
+    'cmd: spawn' = /spawn wird vom Spieler ausgelöst
+    'cmd: whatever' = /whatever wird vom Spieler ausgelöst
+
+  enableWake: |
+    Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/brew Wakeup add' von einem Admin festgelegt werden)
+    Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
+
+  enableLoginDisallow: "Ob der Spieler bei großer Trunkenheit mehrmals probieren muss sich einzuloggen, da sein Charakter kurz nicht reagiert [true]"

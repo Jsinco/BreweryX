@@ -10,6 +10,7 @@ import java.util.List;
 @Getter @Setter
 public class RecipesSector extends AbstractOkaeriConfigSector<ConfigRecipe> {
 
+    // Comments not supported here anyway :(
 
     @Comment("Example Recipe with every possible entry first:")
     ConfigRecipe ex = ConfigRecipe.builder()

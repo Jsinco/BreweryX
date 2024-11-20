@@ -27,6 +27,7 @@ import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.configuration.files.RecipesFile;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
@@ -142,6 +143,10 @@ public class BreweryPlugin extends JavaPlugin {
 		Lang lang = ConfigManager.getConfig(Lang.class);
 		lang.load();
 		System.out.println("testing lang: " + lang.getBrewOneYear());
+
+		// quickly test recipes file
+		RecipesFile recipesFile = ConfigManager.getConfig(RecipesFile.class);
+		recipesFile.load();
 
         FileConfiguration cfg = BConfig.loadConfigFile();
         if (cfg != null) {

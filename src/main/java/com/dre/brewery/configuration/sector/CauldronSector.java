@@ -10,6 +10,7 @@ import java.util.List;
 @Getter @Setter
 public class CauldronSector extends AbstractOkaeriConfigSector<ConfigCauldronIngredient> {
 
+    // Comments not supported here anyway :(
 
     @Comment("Example Cauldron Ingredient with every possible entry first:")
     ConfigCauldronIngredient ex = ConfigCauldronIngredient.builder()

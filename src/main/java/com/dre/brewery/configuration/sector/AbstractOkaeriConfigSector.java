@@ -5,7 +5,7 @@ import eu.okaeri.configs.OkaeriConfig;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -13,10 +13,10 @@ import java.util.Objects;
  * Abstract class to aid in the creation of OkaeriConfig sectors
  * @param <T> The type of the capsule
  */
-public abstract class AbstractOkaeriConfigSector<T> extends OkaeriConfig {
+public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> {
 
     public Map<String, T> getCapsules() {
-        Map<String, T> map = new HashMap<>();
+        Map<String, T> map = new LinkedHashMap<>();
 
         // Get the actual class of the generic type T
         Class<?> typeOfT = getTypeOfT();
