@@ -131,7 +131,7 @@ public class BRecipe implements Cloneable {
 			recipe.distillruns = (byte) dis;
 		}
 		recipe.distillTime = configRecipe.getDistillTime() * 20;
-		recipe.wood = configRecipe.getWood();
+		recipe.wood = (byte) configRecipe.getWood();
 		recipe.age = configRecipe.getAge();
 		recipe.difficulty = configRecipe.getDifficulty();
 		recipe.alcohol = configRecipe.getAlcohol();
