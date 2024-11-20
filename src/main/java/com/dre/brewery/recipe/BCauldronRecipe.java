@@ -2,6 +2,7 @@ package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import lombok.Getter;
@@ -60,7 +61,7 @@ public class BCauldronRecipe {
 
 		BCauldronRecipe recipe = new BCauldronRecipe(name);
 
-		recipe.ingredients = BRecipe.loadIngredients(cfgCauldronIngredient.getIngredients(), id);
+		recipe.ingredients = BRecipe.loadIngredients(BUtil.getListSafely(cfgCauldronIngredient.getIngredients()), id);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
 			BreweryPlugin.getInstance().errorLog("No ingredients for Cauldron-Recipe: " + recipe.name);
 			return null;
@@ -79,7 +80,8 @@ public class BCauldronRecipe {
 			//return null;
 		}
 
-		for (String entry : cfgCauldronIngredient.getCookParticles()) {
+		List<String> cookParticles = cfgCauldronIngredient.getCookParticles() != null ? cfgCauldronIngredient.getCookParticles() : new ArrayList<>();
+		for (String entry : cookParticles) {
 			String[] split = entry.split("/");
 			int minute;
 			if (split.length == 1) {

@@ -18,8 +18,8 @@ import java.util.List;
 public class ConfigCustomItem extends OkaeriConfig {
 
     private boolean matchAny;
-    private List<Material> material;
-    private List<String> name;
-    private List<String> lore;
-    private List<Integer> customModelData;
+    private Object material; // List<Material> or Material
+    private Object name; // String or List<String>
+    private Object lore; // List<String> or String
+    private Object customModelData; // List<Integer> or Integer
 }

@@ -23,6 +23,7 @@ import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,9 +64,9 @@ public class ConfigManager {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file... " + configClass.getSimpleName(), e);
+            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ")", e);
             BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run /brew reload");
-            return null;
+            return createBlankConfigInstance(configClass);
         }
     }
 
@@ -141,6 +142,18 @@ public class ConfigManager {
 
         return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), true);
     }
+
+	@Nullable
+	private static <T extends AbstractOkaeriConfigFile> T createBlankConfigInstance(Class<T> configClass) {
+		try {
+			T inst = configClass.getDeclaredConstructor().newInstance();
+			LOADED_CONFIGS.put(configClass, inst);
+			return inst;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 
     // Util

@@ -17,7 +17,7 @@ import java.util.List;
 public class ConfigCauldronIngredient extends OkaeriConfig {
 
     private String name;
-    private List<String> ingredients;
+    private Object ingredients; // List<String> or String
 
     private String color;
     private List<String> cookParticles;

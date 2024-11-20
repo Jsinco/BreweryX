@@ -143,7 +143,7 @@ public class BRecipe implements Cloneable {
 			return null;
 		}
 
-		recipe.lore = loadQualityStringList(configRecipe.getLore(), StringParser.ParseType.LORE);
+		recipe.lore = loadQualityStringList(BUtil.getListSafely(configRecipe.getLore()), StringParser.ParseType.LORE);
 
 		recipe.servercmds = loadQualityStringList(configRecipe.getServerCommands(), StringParser.ParseType.CMD);
 		recipe.playercmds = loadQualityStringList(configRecipe.getPlayerCommands(), StringParser.ParseType.CMD);
@@ -189,6 +189,9 @@ public class BRecipe implements Cloneable {
 	}
 
 	public static List<RecipeItem> loadIngredients(List<String> stringList, String recipeId) {
+		if (stringList == null) {
+			return new ArrayList<>();
+		}
         List<RecipeItem> ingredients = new ArrayList<>(stringList.size());
 
 		listLoop: for (String item : stringList) {

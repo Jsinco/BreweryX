@@ -31,7 +31,7 @@ public class ConfigRecipe extends OkaeriConfig {
     private String color;
     private int difficulty;
     private int alcohol;
-    private List<String> lore;
+    private Object lore; // List<String> or String
     @CustomKey("servercommands")
     private List<String> serverCommands;
     @CustomKey("playercommands")

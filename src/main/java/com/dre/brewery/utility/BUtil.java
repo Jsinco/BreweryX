@@ -196,6 +196,27 @@ public class BUtil {
 		return null;
 	}
 
+
+	public static <T> List<T> getListSafely(Object object) {
+		if (object == null) {
+			return new ArrayList<>();
+		}
+		if (object instanceof List) {
+			return (List<T>) object;
+		} else if (object != null) {
+			List<T> list = new ArrayList<>(1);
+			list.add((T) object);
+			return list;
+		}
+		return null;
+
+	}
+
+
+	public static <E extends Enum<E>> List<E> getListSafely(Object object, Class<E> mapToEnum) {
+		return getListSafely(object).stream().map(it -> getEnumByName(mapToEnum, it.toString())).toList();
+	}
+
 	/**
 	 * Load a String from config, if found a List, will return the first String
 	 */
