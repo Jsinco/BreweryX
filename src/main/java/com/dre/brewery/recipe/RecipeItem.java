@@ -188,10 +188,10 @@ public abstract class RecipeItem implements Cloneable {
 		rItem.cfgId = id;
 		rItem.immutable = true;
 
-		List<Material> materials = configCustomItem.getMaterial();
-		List<String> names = configCustomItem.getName();
-		List<String> lore = configCustomItem.getLore();
-		List<Integer> customModelDatas = configCustomItem.getCustomModelData();
+		List<Material> materials = BUtil.getListSafely(configCustomItem.getMaterial(), Material.class);
+		List<String> names = BUtil.getListSafely(configCustomItem.getName());
+		List<String> lore = BUtil.getListSafely(configCustomItem.getLore());
+		List<Integer> customModelDatas = BUtil.getListSafely(configCustomItem.getCustomModelData());
 
 		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
 			BreweryPlugin.getInstance().errorLog("No Config Entries found for Custom Item");

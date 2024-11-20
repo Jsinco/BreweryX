@@ -128,15 +128,12 @@ public class BreweryPlugin extends JavaPlugin {
 		// Load config and lang
 		Config config = ConfigManager.getConfig(Config.class);
 		Lang lang = ConfigManager.getConfig(Lang.class);
-		config.load();
-		config.save();
-
 
 		BSealer.registerRecipe(); // Sealing table recipe
-		ConfigManager.loadRecipes();
-		ConfigManager.loadCauldronIngredients();
-		ConfigManager.loadDistortWords();
 		ConfigManager.registerDefaultPluginItems(); // Register plugin items
+		ConfigManager.loadCauldronIngredients();
+		ConfigManager.loadRecipes();
+		ConfigManager.loadDistortWords();
 		this.stats = new Stats(); // Load metrics
 
         // Load Addons
@@ -222,12 +219,13 @@ public class BreweryPlugin extends JavaPlugin {
 		log(this.getDescription().getName() + " enabled!");
 
 		if (config.isUpdateCheck()) {
+			Lang finalLang = lang;
 			new UpdateChecker(RESOURCE_ID).query(latestVersion -> {
 				String currentVersion = getDescription().getVersion();
 
 				if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
 					UpdateChecker.setUpdateAvailable(true);
-					log(lang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
+					log(finalLang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
 				}
 				UpdateChecker.setLatestVersion(latestVersion);
 			});
@@ -362,11 +360,28 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 	}
 
+	// TODO: cleanup
 	public void errorLog(String msg, Throwable throwable) {
 		errorLog(msg);
 		errorLog("&6" + throwable.toString());
 		for (StackTraceElement ste : throwable.getStackTrace()) {
-			errorLog(ste.toString());
+			String str = ste.toString();
+			if (str.contains(".jar//")) {
+				str = str.substring(str.indexOf(".jar//") + 6);
+			}
+			errorLog(str);
+		}
+		Throwable cause = throwable.getCause();
+		while (cause != null) {
+			Bukkit.getConsoleSender().sendMessage(color("&c[BreweryX]&6 Caused by: " + cause));
+			for (StackTraceElement ste : cause.getStackTrace()) {
+				String str = ste.toString();
+				if (str.contains(".jar//")) {
+					str = str.substring(str.indexOf(".jar//") + 6);
+				}
+				Bukkit.getConsoleSender().sendMessage(color("&c[BreweryX]&6      " + str));
+			}
+			cause = cause.getCause();
 		}
 	}
 

@@ -96,7 +96,7 @@ public class TranslationManager {
 
 	public static TranslationManager getInstance() {
 		if (singleton == null) {
-			throw new IllegalStateException("TranslationManager has not been initialized yet");
+			singleton = new TranslationManager(BreweryPlugin.getInstance().getDataFolder());
 		}
 		return singleton;
 	}

@@ -2,6 +2,7 @@ package com.dre.brewery.configuration.sector;
 
 import com.dre.brewery.BreweryPlugin;
 import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.CustomKey;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -26,7 +27,11 @@ public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> {
             if (Objects.equals(field.getType(), typeOfT)) {
                 try {
                     T obj = (T) field.get(this);
-                    map.put(field.getName(), obj);
+					if (field.isAnnotationPresent(CustomKey.class)) {
+						map.put(field.getAnnotation(CustomKey.class).value(), obj);
+					} else {
+						map.put(field.getName(), obj);
+					}
                 } catch (IllegalAccessException e) {
                     BreweryPlugin.getInstance().errorLog("Failed to access field: " + field.getName(), e);
                 }

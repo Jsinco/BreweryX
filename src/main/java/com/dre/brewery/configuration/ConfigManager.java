@@ -7,7 +7,9 @@ import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.CauldronFile;
 import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.CustomItemsFile;
 import com.dre.brewery.configuration.files.RecipesFile;
+import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.configuration.serdes.MaterialTransformer;
 import com.dre.brewery.integration.item.BreweryPluginItem;
@@ -18,11 +20,13 @@ import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.recipe.RecipeItem;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,9 +67,9 @@ public class ConfigManager {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file... " + configClass.getSimpleName(), e);
+            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ")", e);
             BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run /brew reload");
-            return null;
+            return createBlankConfigInstance(configClass);
         }
     }
 
@@ -139,6 +143,18 @@ public class ConfigManager {
 
         return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
     }
+
+	@Nullable
+	private static <T extends AbstractOkaeriConfigFile> T createBlankConfigInstance(Class<T> configClass) {
+		try {
+			T inst = configClass.getDeclaredConstructor().newInstance();
+			LOADED_CONFIGS.put(configClass, inst);
+			return inst;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 
     // Util
