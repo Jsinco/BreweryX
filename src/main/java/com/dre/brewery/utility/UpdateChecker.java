@@ -41,7 +41,7 @@ public class UpdateChecker {
 			return;
 		}
 		Lang lang = ConfigManager.getConfig(Lang.class);
-		plugin.msg(player, lang.getEntry("Etc_UpdateAvailable", "v"+plugin.getDescription().getVersion(), "v"+latestVersion));
+		player.sendMessage(lang.getEntry("Etc_UpdateAvailable", "v"+plugin.getDescription().getVersion(), "v"+latestVersion));
 	}
 
 	/**

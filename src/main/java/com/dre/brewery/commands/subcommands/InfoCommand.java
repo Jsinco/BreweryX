@@ -23,13 +23,13 @@ public class InfoCommand implements SubCommand {
             if (sender.hasPermission("brewery.cmd.infoOther")) {
                 cmdInfo(sender, args[1], lang);
             } else {
-                breweryPlugin.msg(sender, lang.getEntry("Error_NoPermissions"));
+                sender.sendMessage(lang.getEntry("Error_NoPermissions"));
             }
         } else {
             if (sender.hasPermission("brewery.cmd.info")) {
                 cmdInfo(sender, null, lang);
             } else {
-                breweryPlugin.msg(sender, lang.getEntry("Error_NoPermissions"));
+                sender.sendMessage(lang.getEntry("Error_NoPermissions"));
             }
         }
     }
@@ -57,7 +57,7 @@ public class InfoCommand implements SubCommand {
                 Player player = (Player) sender;
                 playerName = player.getName();
             } else {
-                breweryPlugin.msg(sender, lang.getEntry("Error_PlayerCommand"));
+                sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
                 return;
             }
         }
@@ -70,12 +70,12 @@ public class InfoCommand implements SubCommand {
             bPlayer = BPlayer.get(player);
         }
         if (bPlayer == null) {
-            breweryPlugin.msg(sender, lang.getEntry("CMD_Info_NotDrunk", playerName));
+            sender.sendMessage(lang.getEntry("CMD_Info_NotDrunk", playerName));
         } else {
             if (selfInfo) {
                 bPlayer.showDrunkeness(player);
             } else {
-                breweryPlugin.msg(sender, lang.getEntry("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
+                sender.sendMessage(lang.getEntry("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
             }
         }
 

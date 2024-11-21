@@ -65,7 +65,7 @@ public class Barrel implements InventoryHolder {
 	 */
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
-		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEntry("Etc_Barrel"));
 		this.body = new BarrelBody(this, signoffset);
 		this.id = UUID.randomUUID();
 	}
@@ -77,7 +77,7 @@ public class Barrel implements InventoryHolder {
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, @Nullable Map<String, Object> items, float time, UUID id) {
 		this.spigot = spigot;
-		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEntry("Etc_Barrel"));
 		if (items != null) {
 			for (String slot : items.keySet()) {
 				if (items.get(slot) instanceof ItemStack) {
@@ -92,7 +92,7 @@ public class Barrel implements InventoryHolder {
 
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, ItemStack[] items, float time, UUID id) {
 		this.spigot = spigot;
-		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
+		this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEntry("Etc_Barrel"));
 		if (items != null) {
 			for (int slot = 0; slot < items.length; slot++) {
 				if (items[slot] != null) {
@@ -134,12 +134,12 @@ public class Barrel implements InventoryHolder {
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
 		if (isLarge()) {
 			if (!player.hasPermission("brewery.openbarrel.big")) {
-				BreweryPlugin.getInstance().msg(player, lang.getErrorNoBarrelAccess());
+				player.sendMessage(lang.getEntry("Error_NoBarrelAccess"));
 				return false;
 			}
 		} else {
 			if (!player.hasPermission("brewery.openbarrel.small")) {
-				BreweryPlugin.getInstance().msg(player, lang.getErrorNoBarrelAccess());
+				player.sendMessage(lang.getEntry("Error_NoBarrelAccess"));
 				return false;
 			}
 		}
@@ -166,7 +166,7 @@ public class Barrel implements InventoryHolder {
 	 */
 	public void open(Player player) {
 		if (inventory == null) {
-			this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEtcBarrel());
+			this.inventory = Bukkit.createInventory(this, isLarge() ? 27 : 9, lang.getEntry("Etc_Barrel"));
 		} else {
 			if (time > 0) {
 				// if nobody has the inventory opened
@@ -350,12 +350,12 @@ public class Barrel implements InventoryHolder {
 			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
-						BreweryPlugin.getInstance().msg(player, lang.getPermsNoBarrelCreate());
+						player.sendMessage(lang.getEntry("Perms_NoBarrelCreate"));
 						return false;
 					}
 				} else {
 					if (!player.hasPermission("brewery.createbarrel.big")) {
-						BreweryPlugin.getInstance().msg(player, lang.getPermsNoBigBarrelCreate());
+						player.sendMessage(lang.getEntry("Perms_NoBigBarrelCreate"));
 						return false;
 					}
 				}

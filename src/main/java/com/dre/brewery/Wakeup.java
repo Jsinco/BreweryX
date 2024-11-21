@@ -114,16 +114,16 @@ public class Wakeup {
 
 			Player player = (Player) sender;
 			wakeups.add(new Wakeup(player.getLocation()));
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeCreated", "" + (wakeups.size() - 1)));
+			sender.sendMessage(lang.getEntry("Player_WakeCreated", "" + (wakeups.size() - 1)));
 
 		} else {
-			breweryPlugin.msg(sender, lang.getEntry("Error_PlayerCommand"));
+			sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
 		}
 	}
 
 	public static void remove(CommandSender sender, int id) {
 		if (wakeups.isEmpty() || id < 0 || id >= wakeups.size()) {
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
+			sender.sendMessage(lang.getEntry("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
 			return;
 		}
 
@@ -131,16 +131,16 @@ public class Wakeup {
 
 		if (wakeup.active) {
 			wakeup.active = false;
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeDeleted", "" + id));
+			sender.sendMessage(lang.getEntry("Player_WakeDeleted", "" + id));
 
 		} else {
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeAlreadyDeleted", "" + id));
+			sender.sendMessage(lang.getEntry("Player_WakeAlreadyDeleted", "" + id));
 		}
 	}
 
 	public static void list(CommandSender sender, int page, String worldOnly) {
 		if (wakeups.isEmpty()) {
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeNoPoints"));
+			sender.sendMessage(lang.getEntry("Player_WakeNoPoints"));
 			return;
 		}
 
@@ -173,7 +173,7 @@ public class Wakeup {
 
 			if (!all) {
 				if (wakeups.isEmpty() || id >= wakeups.size()) {
-					breweryPlugin.msg(sender, lang.getEntry("Player_WakeNotExist", "" + id));
+					sender.sendMessage(lang.getEntry("Player_WakeNotExist", "" + id));
 					return;
 				}
 
@@ -185,12 +185,12 @@ public class Wakeup {
 					int x = (int) wakeup.loc.getX();
 					int y = (int) wakeup.loc.getY();
 					int z = (int) wakeup.loc.getZ();
-					breweryPlugin.msg(sender, lang.getEntry("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
+					sender.sendMessage(lang.getEntry("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
 				}
 
 			} else {
 				if (wakeups.isEmpty()) {
-					breweryPlugin.msg(sender, lang.getEntry("Player_WakeNoPoints"));
+					sender.sendMessage(lang.getEntry("Player_WakeNoPoints"));
 					return;
 				}
 				if (checkPlayer != null && checkPlayer != player) {
@@ -202,7 +202,7 @@ public class Wakeup {
 
 
 		} else {
-			breweryPlugin.msg(sender, lang.getEntry("Error_PlayerCommand"));
+			sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
 		}
 	}
 
@@ -244,10 +244,10 @@ public class Wakeup {
 		if (checkPlayer != null) {
 			checkPlayer = null;
 			checkId = -1;
-			breweryPlugin.msg(sender, lang.getEntry("Player_WakeCancel"));
+			sender.sendMessage(lang.getEntry("Player_WakeCancel"));
 			return;
 		}
-		breweryPlugin.msg(sender, lang.getEntry("Player_WakeNoCheck"));
+		sender.sendMessage(lang.getEntry("Player_WakeNoCheck"));
 	}
 
 

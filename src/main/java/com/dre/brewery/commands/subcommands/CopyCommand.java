@@ -45,8 +45,8 @@ public class CopyCommand implements SubCommand {
     //@Deprecated but still used?
     public void cmdCopy(CommandSender sender, int count, Lang lang) {
         if (count < 1 || count > 36) {
-            breweryPlugin.msg(sender, lang.getEntry("Etc_Usage"));
-            breweryPlugin.msg(sender, lang.getEntry("Help_Copy"));
+            sender.sendMessage(lang.getEntry("Etc_Usage"));
+            sender.sendMessage(lang.getEntry("Help_Copy"));
             return;
         }
         Player player = (Player) sender;
@@ -56,7 +56,7 @@ public class CopyCommand implements SubCommand {
                 while (count > 0) {
                     ItemStack item = hand.clone();
                     if (!(player.getInventory().addItem(item)).isEmpty()) {
-                        breweryPlugin.msg(sender, lang.getEntry("CMD_Copy_Error", "" + count));
+                        sender.sendMessage(lang.getEntry("CMD_Copy_Error", "" + count));
                         return;
                     }
                     count--;
@@ -65,7 +65,7 @@ public class CopyCommand implements SubCommand {
             }
         }
 
-        breweryPlugin.msg(sender, lang.getEntry("Error_ItemNotPotion"));
+        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
 
     }
 }

@@ -10,8 +10,6 @@ import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
-import com.dre.brewery.recipe.BCauldronRecipe;
-import com.dre.brewery.recipe.BRecipe;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -39,9 +37,6 @@ public class ReloadCommand implements SubCommand {
 				AbstractOkaeriConfigFile file = entry.getValue();
 				try {
 					file.reload();
-					if (file instanceof Lang lgFile) {
-						lgFile.mapStrings();
-					}
 				} catch (Throwable e) {
 					breweryPlugin.errorLog("Something went wrong trying to load " + file.getBindFile().getFileName() + "!", e);
 				}
@@ -73,9 +68,9 @@ public class ReloadCommand implements SubCommand {
 			}
 
 			if (!successful) {
-				breweryPlugin.msg(sender, lang.getEntry("Error_Recipeload"));
+				sender.sendMessage(lang.getEntry("Error_Recipeload"));
 			} else {
-				breweryPlugin.msg(sender, lang.getEntry("CMD_Reload"));
+				sender.sendMessage(lang.getEntry("CMD_Reload"));
 			}
 
 

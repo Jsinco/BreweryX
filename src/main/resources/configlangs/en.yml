@@ -6,7 +6,7 @@ config:
     The translation to be used [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+    Enable checking for Updates, Checks the Spigot api for updates to BreweryX [true]
     If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
   autosave: "Autosave interval in minutes [10]"
   pluginPrefix: "Prefix used on messages"
@@ -74,8 +74,8 @@ config:
   useLogBlock: "Enable the Logging of Barrel Inventories to LogBlock [true]"
   useOffhandForCauldron: "If items in Offhand should be added to the cauldron as well [false]"
   loadDataAsync: |
-    This option no longer does anything anymore and will be removed in future releases of BreweryX
-    BreweryX will load data asynchronously always with the exception of server startup and shutdown.
+    This option no longer does anything anymore, and will be removed in future releases of BreweryX.
+    BreweryX will load data asynchronously always, with the exception of server startup and shutdown.
   hangoverDays: "Time (in days) that drunkenness-data stays in memory after a player goes offline, to apply hangover etc. [7]"
   colorInBarrels-Brewer: "Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]"
   openLargeBarrelEverywhere: "If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]"
@@ -105,7 +105,9 @@ config:
     alcohol: 1-100 minimum drunkenness after which this word is replaced
         
     percentage: Probability of replacing a Word in percent
-  useOtherFiles: "You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended."
+  useOtherFiles: |
+    You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.
+    IMPORTANT: custom items, recipes, and cauldron ingredients declared in their proper files will take priority over those declared here! (e.g. 2 recipes with the same name)
 
 
 

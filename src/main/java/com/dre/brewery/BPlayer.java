@@ -355,7 +355,7 @@ public class BPlayer {
 			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
-			BreweryPlugin.getInstance().msg(player, lang.getEntry("Player_CantDrink"));
+			player.sendMessage(lang.getEntry("Player_CantDrink"));
 		}
 	}
 
@@ -522,7 +522,7 @@ public class BPlayer {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
 					player.teleport(randomLoc);
-					BreweryPlugin.getInstance().msg(player, lang.getEntry("Player_Wake"));
+					player.sendMessage(lang.getEntry("Player_Wake"));
 				}
 			}
 			offlineDrunk = 0;

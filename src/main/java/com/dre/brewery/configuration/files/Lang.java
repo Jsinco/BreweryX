@@ -1,10 +1,11 @@
 package com.dre.brewery.configuration.files;
 
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
+import com.dre.brewery.utility.BUtil;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
-import lombok.Getter;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import java.util.Map;
 // Our bind file for this class should vary based on what language the user has set in the config.
 @OkaeriConfigFileOptions(useLangFileName = true)
 @SuppressWarnings("unused")
-@Getter
 public class Lang extends AbstractOkaeriConfigFile {
 
     // I shouldn't have to set any declarations here since they'll all be pulled from the bound translation files.
@@ -23,22 +23,28 @@ public class Lang extends AbstractOkaeriConfigFile {
     public void mapStrings() {
         this.mappedEntries = new HashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(CustomKey.class)) {
-                CustomKey customKey = field.getAnnotation(CustomKey.class);
-                try {
-                    if (customKey != null) {
-                        this.mappedEntries.put(customKey.value(), (String) field.get(this));
-                    } else {
-                        this.mappedEntries.put(field.getName(), (String) field.get(this));
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+            if (field.getType() != String.class) {
+                continue;
+            }
+
+            CustomKey customKey = field.getAnnotation(CustomKey.class);
+            try {
+                if (customKey != null) {
+                    this.mappedEntries.put(customKey.value(), (String) field.get(this));
+                } else {
+                    this.mappedEntries.put(field.getName(), (String) field.get(this));
                 }
+            } catch (IllegalAccessException e) {
+                BreweryPlugin.getInstance().errorLog("Lang failed to get a field value! &6(" + field.getName() + ")", e);
             }
         }
     }
 
     public String getEntry(String key, String... args) {
+        return this.getEntry(key, true, args);
+    }
+
+    public String getEntry(String key, boolean color, String... args) {
         if (mappedEntries == null) {
             mapStrings();
         }
@@ -53,11 +59,19 @@ public class Lang extends AbstractOkaeriConfigFile {
                 }
             }
         } else {
-            entry = "§c[LanguageReader] Failed to retrieve a config entry for key '" + key + "'!";
+            entry = (color ? "&c" : "") + "[LanguageReader] Failed to retrieve a config entry for key '" + key + "'!";
         }
 
-        return entry;
+        return color ? BUtil.color(entry) : entry;
     }
+
+    @Override // Should override because we need to remap our strings after a reload of this file.
+    public void reload() {
+        super.reload();
+        this.mapStrings();
+    }
+
+
 
     @Comment("Brew")
     @CustomKey("Brew_-times")

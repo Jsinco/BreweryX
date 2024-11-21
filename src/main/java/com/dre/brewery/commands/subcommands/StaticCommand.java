@@ -24,14 +24,14 @@ public class StaticCommand implements SubCommand {
                 if (brew.isStatic()) {
                     if (!brew.isStripped()) {
                         brew.setStatic(false, hand);
-                        breweryPlugin.msg(sender, lang.getEntry("CMD_NonStatic"));
+                        sender.sendMessage(lang.getEntry("CMD_NonStatic"));
                     } else {
-                        breweryPlugin.msg(sender, lang.getEntry("Error_SealedAlwaysStatic"));
+                        sender.sendMessage(lang.getEntry("Error_SealedAlwaysStatic"));
                         return;
                     }
                 } else {
                     brew.setStatic(true, hand);
-                    breweryPlugin.msg(sender, lang.getEntry("CMD_Static"));
+                    sender.sendMessage(lang.getEntry("CMD_Static"));
                 }
                 brew.touch();
                 ItemMeta meta = hand.getItemMeta();
@@ -47,7 +47,7 @@ public class StaticCommand implements SubCommand {
                 return;
             }
         }
-        breweryPlugin.msg(sender, lang.getEntry("Error_ItemNotPotion"));
+        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
     }
 
     @Override

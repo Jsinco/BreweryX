@@ -13,10 +13,28 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.dre.brewery.utility.PermissionUtil.BPermission.*;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.COPY;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.CREATE;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.DELETE;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.DRINK;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.DRINK_OTHER;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.INFO;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.INFO_OTHER;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.PUKE;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.PUKE_OTHER;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.RELOAD;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.SEAL;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.SET;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.STATIC;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.UNLABEL;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.WAKEUP;
 
 public class CommandUtil {
 
@@ -77,7 +95,7 @@ public class CommandUtil {
         }
 
         if (!(sender instanceof Player) && player == null) {
-            plugin.msg(sender, lang.getEntry("Error_PlayerCommand"));
+            sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
             return null;
         }
 
@@ -110,7 +128,7 @@ public class CommandUtil {
         if (recipe != null) {
             return new Tuple<>(recipe.createBrew(quality), player);
         } else {
-            plugin.msg(sender, lang.getEntry("Error_NoBrewName", name));
+            sender.sendMessage(lang.getEntry("Error_NoBrewName", name));
         }
         return null;
     }

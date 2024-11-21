@@ -2,13 +2,13 @@ package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.annotation.Footer;
-import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
+import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.sector.WordsSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
-import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
+import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.storage.records.ConfiguredDataManager;
 import eu.okaeri.configs.annotation.Header;
@@ -16,13 +16,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 
-@OkaeriConfigFileOptions("new-config.yml") // TODO: changeme
+@OkaeriConfigFileOptions("config.yml")
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Footer("Yep, that's it! The end of config.yml! I had so much fun! And you?...")
@@ -182,8 +181,10 @@ public class Config extends AbstractOkaeriConfigFile {
 
 
 	@LocalizedComment("config.useOtherFiles")
-	private Map<String, ConfigCustomItem> customItems = Map.of("useOtherFiles", new ConfigCustomItem());
-	private Map<String, ConfigCauldronIngredient> cauldron = new HashMap<>();
+	private Map<String, ConfigCustomItem> customItems = Map.of();
+	@LocalizedComment("config.useOtherFiles")
+	private Map<String, ConfigCauldronIngredient> cauldron = Map.of();
+	@LocalizedComment("config.useOtherFiles")
 	private Map<String, ConfigRecipe> recipes = Map.of();
 
 }

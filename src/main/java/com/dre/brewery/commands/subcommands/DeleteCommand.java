@@ -22,7 +22,7 @@ public class DeleteCommand implements SubCommand {
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             return;
         }
-        breweryPlugin.msg(sender, lang.getEntry("Error_ItemNotPotion"));
+        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
 
     }
 

@@ -39,8 +39,8 @@ public class WakeupCommand implements SubCommand {
                 int id = breweryPlugin.parseInt(args[2]);
                 Wakeup.remove(sender, id);
             } else {
-                breweryPlugin.msg(sender, lang.getEntry("Etc_Usage"));
-                breweryPlugin.msg(sender, lang.getEntry("Help_WakeupRemove"));
+                sender.sendMessage(lang.getEntry("Etc_Usage"));
+                sender.sendMessage(lang.getEntry("Help_WakeupRemove"));
             }
 
         } else if (args[1].equalsIgnoreCase("check")){
@@ -60,8 +60,8 @@ public class WakeupCommand implements SubCommand {
 
         } else {
 
-            breweryPlugin.msg(sender, lang.getEntry("Error_UnknownCommand"));
-            breweryPlugin.msg(sender, lang.getEntry("Error_ShowHelp"));
+            sender.sendMessage(lang.getEntry("Error_UnknownCommand"));
+            sender.sendMessage(lang.getEntry("Error_ShowHelp"));
 
         }
     }

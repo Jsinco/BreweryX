@@ -17,14 +17,14 @@ public class SetCommand implements SubCommand {
 	public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
 
 		if (args.length < 3) {
-			breweryPlugin.msg(sender, lang.getEntry("Etc_Usage"));
-			breweryPlugin.msg(sender, lang.getEntry("Help_Set"));
+			sender.sendMessage(lang.getEntry("Etc_Usage"));
+			sender.sendMessage(lang.getEntry("Help_Set"));
 			return;
 		}
 
 		Player target = Bukkit.getPlayer(args[1]);
 		if (target == null) {
-			breweryPlugin.msg(sender, lang.getEntry("Error_NoPlayer", args[1]));
+			sender.sendMessage(lang.getEntry("Error_NoPlayer", args[1]));
 		} else {
 
 			int drunkenness = 0;
@@ -33,7 +33,7 @@ public class SetCommand implements SubCommand {
 				if (drunkenness > 100) drunkenness = 100;
 				if (drunkenness < 0) drunkenness = 0;
 			} catch (NumberFormatException e) {
-				//breweryPlugin.msg(sender, lang.getEntry("Error_InvalidDrunkenness"));
+				//sender.sendMessage(lang.getEntry("Error_InvalidDrunkenness"));
 			}
 
 			int quality = 10;
@@ -43,7 +43,7 @@ public class SetCommand implements SubCommand {
 					if (quality > 10) quality = 10;
 					if (quality < 0) quality = 0;
 				} catch (NumberFormatException e) {
-					//breweryPlugin.msg(sender, lang.getEntry("Error_InvalidQuality"));
+					//sender.sendMessage(lang.getEntry("Error_InvalidQuality"));
 				}
 			}
 
@@ -53,7 +53,7 @@ public class SetCommand implements SubCommand {
 			bPlayer.setDrunkeness(drunkenness);
 			bPlayer.setQuality(quality * drunkenness);
 
-			breweryPlugin.msg(sender, lang.getEntry("CMD_Set", args[1], String.valueOf(drunkenness), String.valueOf(quality)));
+			sender.sendMessage(lang.getEntry("CMD_Set", args[1], String.valueOf(drunkenness), String.valueOf(quality)));
 
 			// Stop long nausea effects when drunkenness is 0
 			if (drunkenness == 0) target.removePotionEffect(PotionEffectType.CONFUSION);
