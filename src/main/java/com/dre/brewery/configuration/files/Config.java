@@ -1,5 +1,6 @@
 package com.dre.brewery.configuration.files;
 
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.Footer;
@@ -29,6 +30,13 @@ import java.util.Random;
 @Footer({"", "Yep, that's it! The end of config.yml! I had so much fun! And you?..."})
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
+
+	@Override
+	public void onFirstCreation() {
+		BreweryPlugin plugin = BreweryPlugin.getInstance();
+		plugin.log("&9Creating a new &6config.yml&9!");
+		plugin.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
+	}
 
 	// This doesn't need to be an enumerator, we're reading this value back to an enum from TranslationManager which doesn't rely on this class.
     @LocalizedComment("config.language")

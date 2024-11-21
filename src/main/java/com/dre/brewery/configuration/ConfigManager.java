@@ -7,9 +7,7 @@ import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.CauldronFile;
 import com.dre.brewery.configuration.files.Config;
-import com.dre.brewery.configuration.files.CustomItemsFile;
 import com.dre.brewery.configuration.files.RecipesFile;
-import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.configuration.serdes.MaterialTransformer;
 import com.dre.brewery.integration.item.BreweryPluginItem;
@@ -20,7 +18,6 @@ import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
-import com.dre.brewery.recipe.RecipeItem;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
@@ -67,8 +64,8 @@ public class ConfigManager {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ")", e);
-            BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run /brew reload");
+            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ".yml)", e);
+            BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run &6/brewery reload");
             return createBlankConfigInstance(configClass);
         }
     }
@@ -79,9 +76,8 @@ public class ConfigManager {
      * @param <T> The type of the config
      */
     public static <T extends AbstractOkaeriConfigFile> void newInstance(T configClass) {
-        LOADED_CONFIGS.put(configClass.getClass(),
-                createConfig(configClass.getClass(),
-                        configClass.getBindFile().getFileName().toString(),
+        LOADED_CONFIGS.put(configClass.getClass(), createConfig(configClass.getClass(),
+                        getFilePath(configClass.getClass()),
                         configClass.getConfigurer(),
                         new StandardSerdes(),
                         getOkaeriConfigFileOptions(configClass.getClass()).update()));
@@ -89,37 +85,40 @@ public class ConfigManager {
 
 
     /**
-     * Get the file name of a config class
+     * Get the file path of a config class
      * @param configClass The class of the config to get the file name of
      * @return The file name
      * @param <T> The type of the config
      */
-    public static <T extends AbstractOkaeriConfigFile> String getFileName(Class<T> configClass) {
+    public static <T extends AbstractOkaeriConfigFile> Path getFilePath(Class<T> configClass) {
         OkaeriConfigFileOptions options = getOkaeriConfigFileOptions(configClass);
 
         if (!options.useLangFileName()) {
-            return options.value();
+            return DATA_FOLDER.resolve(options.value());
         } else {
-            return "langs/" + TranslationManager.getInstance().getActiveTranslation().getFilename();
+            return DATA_FOLDER.resolve("languages/" + TranslationManager.getInstance().getActiveTranslation().getFilename());
         }
     }
+
 
 
 
     /**
      * Create a new config instance with a custom file name, configurer, serdes pack, and puts it in the LOADED_CONFIGS map
      * @param configClass The class of the config to create
-     * @param fileName The name of the file to bind the config to
+     * @param file The file to use
      * @param configurer The configurer to use
      * @param serdesPack The serdes pack to use
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, String fileName, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
+        boolean firstCreation = !Files.exists(file);
+
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
             it.withRemoveOrphans(false); // Just leaving this off for now
-            it.withBindFile(DATA_FOLDER.resolve(fileName));
+            it.withBindFile(file);
             it.saveDefaults();
 
 
@@ -128,7 +127,10 @@ public class ConfigManager {
             }
             it.load(update);
         });
-        LOADED_CONFIGS.put(configClass ,instance);
+
+        instance.setUpdate(update);
+        instance.setFirstCreation(firstCreation);
+        LOADED_CONFIGS.put(configClass, instance);
         return instance;
     }
 
@@ -141,7 +143,7 @@ public class ConfigManager {
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFileName(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
+        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
     }
 
 	@Nullable
@@ -151,7 +153,7 @@ public class ConfigManager {
 			LOADED_CONFIGS.put(configClass, inst);
 			return inst;
 		} catch (Exception e) {
-			e.printStackTrace();
+            BreweryPlugin.getInstance().errorLog("Failed to create a blank config instance for " + configClass.getSimpleName(), e);
 			return null;
 		}
 	}

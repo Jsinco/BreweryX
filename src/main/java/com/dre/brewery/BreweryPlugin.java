@@ -68,12 +68,14 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
 	// TODO: Should we do file backups? - Jsinco
 	// TODO: Change the addon API FileManager to use Okaeri
+	// TODO: Add localized header so recipes, cauldron, and custom-items file can be updated w/o removing comments
 
 	private static final int RESOURCE_ID = 114777;
 
@@ -132,6 +134,10 @@ public class BreweryPlugin extends JavaPlugin {
 		Config config = ConfigManager.getConfig(Config.class);
 		Lang lang = ConfigManager.getConfig(Lang.class);
 
+		if (config.isFirstCreation()) {
+			config.onFirstCreation();
+		}
+
 		BSealer.registerRecipe(); // Sealing table recipe
 		ConfigManager.registerDefaultPluginItems(); // Register plugin items
 		ConfigManager.loadCauldronIngredients();
@@ -161,25 +167,13 @@ public class BreweryPlugin extends JavaPlugin {
 
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
 		Barrel.getBarrels().addAll(dataManager.getAllBarrels());
-		// Stream error? - https://gist.github.com/TomLewis/413212bd3df6cb745412475128e01e92w
-		// Apparently there's 2 CraftBlocks trying to be put under the same identifier in the map and it's throwing an err
-		// I'll fix the stream issues in the next version but I have to release this fix ASAP so I'm leaving it like this for now. - Jsinco
-
-		/*
 		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
 		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-		 */
-		for (BCauldron cauldron : dataManager.getAllCauldrons()) {
-			BCauldron.getBcauldrons().put(cauldron.getBlock(), cauldron);
-		}
-		for (BPlayer player : dataManager.getAllPlayers()) {
-			BPlayer.getPlayers().put(player.getUuid(), player);
-		}
 		Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
 
 
 		// Setup Metrics
-		stats.setupBStats();
+		this.stats.setupBStats();
 
 
 		getCommand("breweryx").setExecutor(new CommandManager());
@@ -223,7 +217,7 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
-		log(this.getDescription().getName() + " enabled!");
+		log("BreweryX enabled!");
 	}
 
 	@Override
@@ -250,7 +244,7 @@ public class BreweryPlugin extends JavaPlugin {
 			placeholderAPIHook.getInstance().unregister();
 		}
 
-		this.log(this.getDescription().getName() + " disabled!");
+		this.log("BreweryX disabled!");
 	}
 
 	private void migrateBreweryDataFolder() {

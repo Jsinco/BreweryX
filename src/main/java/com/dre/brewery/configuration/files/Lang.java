@@ -8,6 +8,8 @@ import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.utility.BUtil;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
+import eu.okaeri.configs.annotation.Exclude;
+import eu.okaeri.configs.annotation.Header;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
@@ -16,21 +18,25 @@ import java.util.Map;
 
 // Our bind file for this class should vary based on what language the user has set in the config.
 @OkaeriConfigFileOptions(useLangFileName = true)
+@Header("Translations for BreweryX")
 @DefaultCommentSpace(1)
 @SuppressWarnings("unused")
 public class Lang extends AbstractOkaeriConfigFile {
 
-    private final Config config = ConfigManager.getConfig(Config.class);
-    private Map<String, String> mappedEntries;
+    @Exclude
+    private transient final Config config = ConfigManager.getConfig(Config.class);
+    @Exclude
+    private transient Map<String, String> mappedEntries;
 
     @Override // Should override because we need to remap our strings after a reload of this file.
     public void reload() {
-        super.reload();
+        this.setBindFile(ConfigManager.getFilePath(Lang.class));
+        this.load(this.update);
         this.mapStrings();
     }
 
     public void mapStrings() {
-        this.mappedEntries = new HashMap<>();
+        mappedEntries = new HashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             if (field.getType() != String.class) {
                 continue;
@@ -39,9 +45,9 @@ public class Lang extends AbstractOkaeriConfigFile {
             try {
                 CustomKey customKey = field.getAnnotation(CustomKey.class);
                 if (customKey != null) {
-                    this.mappedEntries.put(customKey.value(), (String) field.get(this));
+                    mappedEntries.put(customKey.value(), (String) field.get(this));
                 } else {
-                    this.mappedEntries.put(field.getName(), (String) field.get(this));
+                    mappedEntries.put(field.getName(), (String) field.get(this));
                 }
             } catch (IllegalAccessException e) {
                 BreweryPlugin.getInstance().errorLog("Lang failed to get a field value! &6(" + field.getName() + ")", e);

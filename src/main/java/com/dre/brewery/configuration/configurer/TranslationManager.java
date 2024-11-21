@@ -5,7 +5,6 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.utility.BUtil;
 import lombok.Getter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
@@ -13,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 
 @Getter
@@ -42,9 +40,7 @@ public class TranslationManager {
 		this.dataFolder = dataFolder;
 		this.activeTranslation = Translation.EN;
 
-		File file = new File(dataFolder, ConfigManager.getFileName(Config.class));
-
-		try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+		try (InputStream inputStream = Files.newInputStream(ConfigManager.getFilePath(Config.class))) {
 			Map<String, String> data = yaml.loadAs(inputStream, Map.class);
 			if (data != null) {
 				Translation trans = BUtil.getEnumByName(Translation.class, data.get("language"));
@@ -86,7 +82,7 @@ public class TranslationManager {
 	}
 
 	public void createLanguageFile(Translation translation) {
-		ConfigManager.createFileFromResources("languages/" + translation.getFilename(), dataFolder.toPath().resolve("langs").resolve(translation.getFilename()));
+		ConfigManager.createFileFromResources("languages/" + translation.getFilename(), dataFolder.toPath().resolve("languages").resolve(translation.getFilename()));
 	}
 
 
