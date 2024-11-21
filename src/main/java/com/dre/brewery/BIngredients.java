@@ -10,8 +10,8 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
-import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.recipe.PotionColor;
+import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,6 +35,7 @@ import java.util.List;
 public class BIngredients {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 	private static int lastId = 0; // Legacy
 
@@ -129,7 +130,7 @@ public class BIngredients {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			int alc = (int) Math.round(cookRecipe.getAlcohol() * ((float) quality / 10.0f));
-			BreweryPlugin.getInstance().debugLog("cooked potion has Quality: " + quality + ", Alc: " + alc);
+			plugin.debugLog("cooked potion has Quality: " + quality + ", Alc: " + alc);
 			brew = new Brew(quality, alc, cookRecipe, this);
 			BrewLore lore = new BrewLore(brew, potionMeta);
 			lore.updateQualityStars(false);
@@ -157,7 +158,7 @@ public class BIngredients {
 			} else {
 				BCauldronRecipe cauldronRecipe = getCauldronRecipe();
 				if (cauldronRecipe != null) {
-					BreweryPlugin.getInstance().debugLog("Found Cauldron Recipe: " + cauldronRecipe.getName());
+					plugin.debugLog("Found Cauldron Recipe: " + cauldronRecipe.getName());
 					cookedName = cauldronRecipe.getName();
 					if (cauldronRecipe.getLore() != null) {
 						BrewLore lore = new BrewLore(brew, potionMeta);
@@ -177,7 +178,7 @@ public class BIngredients {
 			PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
 
-		potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + cookedName));
+		potionMeta.setDisplayName(plugin.color("&f" + cookedName));
 		//if (!P.use1_14) {
 			// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
 			// This is due to the Duration Modifier, that is removed in 1.14
@@ -188,13 +189,13 @@ public class BIngredients {
 
 		brew.touch();
 		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, potionMeta, BrewModifyEvent.Type.FILL);
-		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(modifyEvent);
+		plugin.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) {
 			return null;
 		}
 		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
-		BreweryPlugin.getInstance().stats.metricsForCreate(false);
+		plugin.getStats().metricsForCreate(false);
 
 		return potion;
 	}
@@ -237,7 +238,7 @@ public class BIngredients {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
 					woodQuality = getWoodQuality(recipe, wood);
-					BreweryPlugin.getInstance().debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality +
+					plugin.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality +
 						" Wood Quality: " + woodQuality + " age Quality: " + ageQuality + " for " + recipe.getName(5));
 
 					// is this recipe better than the previous best?
@@ -246,7 +247,7 @@ public class BIngredients {
 						bestRecipe = recipe;
 					}
 				} else {
-					BreweryPlugin.getInstance().debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
+					plugin.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
 					// calculate quality without age and barrel
 					if ((((float) ingredientQuality + cookingQuality) / 2) > quality) {
 						quality = ((float) ingredientQuality + cookingQuality) / 2;
@@ -256,7 +257,7 @@ public class BIngredients {
 			}
 		}
 		if (bestRecipe != null) {
-			BreweryPlugin.getInstance().debugLog("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
+			plugin.debugLog("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
 		}
 		return bestRecipe;
 	}
@@ -486,11 +487,11 @@ public class BIngredients {
 		List<Ingredient> ing = new ArrayList<>(size);
 		for (; size > 0; size--) {
 			ItemLoader itemLoader = new ItemLoader(dataVersion, in, in.readUTF());
-			if (!BreweryPlugin.getInstance().ingredientLoaders.containsKey(itemLoader.getSaveID())) {
-				BreweryPlugin.getInstance().errorLog("Ingredient Loader not found: " + itemLoader.getSaveID());
+			if (!plugin.getIngredientLoaders().containsKey(itemLoader.getSaveID())) {
+				plugin.errorLog("Ingredient Loader not found: " + itemLoader.getSaveID());
 				break;
 			}
-			Ingredient loaded = BreweryPlugin.getInstance().ingredientLoaders.get(itemLoader.getSaveID()).apply(itemLoader);
+			Ingredient loaded = plugin.getIngredientLoaders().get(itemLoader.getSaveID()).apply(itemLoader);
 			int amount = in.readShort();
 			if (loaded != null) {
 				loaded.setAmount(amount);
@@ -519,7 +520,7 @@ public class BIngredients {
 			out.writeByte(Brew.SAVE_VER);
 			save(out);
 		} catch (IOException e) {
-			BreweryPlugin.getInstance().errorLog("Failed to serialize Ingredients", e);
+			plugin.errorLog("Failed to serialize Ingredients", e);
 			return "";
 		}
 		return byteStream.toString();
@@ -531,7 +532,7 @@ public class BIngredients {
 			byte ver = in.readByte();
 			return BIngredients.load(in, ver);
 		} catch (IOException e) {
-			BreweryPlugin.getInstance().errorLog("Failed to deserialize Ingredients", e);
+			plugin.errorLog("Failed to deserialize Ingredients", e);
 			return new BIngredients();
 		}
 	}

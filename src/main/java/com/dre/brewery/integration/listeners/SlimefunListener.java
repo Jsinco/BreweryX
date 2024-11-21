@@ -2,6 +2,7 @@ package com.dre.brewery.integration.listeners;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.item.SlimefunPluginItem;
+import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
@@ -31,7 +32,7 @@ public class SlimefunListener implements Listener {
 							if (rItem instanceof SlimefunPluginItem) {
 								if (slimefunItem.get().getId().equalsIgnoreCase(((SlimefunPluginItem) rItem).getItemId())) {
 									event.cancel();
-									BreweryPlugin.getInstance().playerListener.onPlayerInteract(event.getInteractEvent());
+									PlayerListener.handlePlayerInteract(event.getInteractEvent());
 									return;
 								}
 							}

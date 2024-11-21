@@ -8,7 +8,6 @@ import com.dre.brewery.configuration.sector.CustomItemsSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.recipe.RecipeItem;
 import lombok.Setter;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.HashMap;

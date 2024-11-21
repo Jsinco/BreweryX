@@ -21,13 +21,12 @@ import java.util.logging.Level;
 
 public class UpdateChecker {
 
-	private final static BreweryPlugin plugin = BreweryPlugin.getInstance();
+	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
-	@Getter
-	@Setter
+	@Getter @Setter
 	private static String latestVersion = plugin.getDescription().getVersion();
-	@Getter
-	@Setter
+	@Getter @Setter
 	private static boolean updateAvailable = false;
 
 	private final int resourceID;
@@ -40,8 +39,8 @@ public class UpdateChecker {
 		if (!updateAvailable || !player.hasPermission("brewery.update")) {
 			return;
 		}
-		Lang lang = ConfigManager.getConfig(Lang.class);
-		player.sendMessage(lang.getEntry("Etc_UpdateAvailable", "v"+plugin.getDescription().getVersion(), "v"+latestVersion));
+
+		player.sendMessage(lang.getEntry("Etc_UpdateAvailable", "v" + plugin.getDescription().getVersion(), "v" + latestVersion));
 	}
 
 	/**
@@ -67,5 +66,17 @@ public class UpdateChecker {
 			}
 		}
 		return Integer.parseInt(sb.toString());
+	}
+
+	public static void run(int resourceID) {
+		new UpdateChecker(resourceID).query(latestVersion -> {
+			String currentVersion = plugin.getDescription().getVersion();
+
+			if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
+				UpdateChecker.setUpdateAvailable(true);
+				plugin.log(lang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
+			}
+			UpdateChecker.setLatestVersion(latestVersion);
+		});
 	}
 }

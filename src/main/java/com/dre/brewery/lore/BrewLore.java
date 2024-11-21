@@ -1,13 +1,13 @@
 package com.dre.brewery.lore;
 
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BEffect;
-import com.dre.brewery.BIngredients;
 import com.dre.brewery.recipe.BRecipe;
-import com.dre.brewery.Brew;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -66,7 +66,7 @@ public class BrewLore {
 			} else if (t != null && t.isAfter(Type.SPACE)) {
 				if (hasSpace) return;
 
-				if (hasCustom || BreweryPlugin.useNBT) {
+				if (hasCustom || BreweryPlugin.isUseNBT()) {
 					// We want to add the spacer if we have Custom Lore, to have a space between custom and brew lore.
 					// Also add a space if there is no Custom Lore but we don't already have a invisible data line
 					lore.add(i, Type.SPACE.id);
@@ -481,7 +481,7 @@ public class BrewLore {
 	 * Remove the Old Spacer from the legacy potion data system
 	 */
 	public void removeLegacySpacing() {
-		if (BreweryPlugin.useNBT) {
+		if (BreweryPlugin.isUseNBT()) {
 			// Using NBT we don't get the invisible line, so we keep our spacing
 			return;
 		}

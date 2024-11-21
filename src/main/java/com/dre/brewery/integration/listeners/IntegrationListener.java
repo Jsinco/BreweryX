@@ -6,17 +6,18 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.LogBlockHook;
 import com.dre.brewery.integration.WorldGuarkHook;
-import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
 import com.dre.brewery.integration.barrel.LWCBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.integration.barrel.TownyBarrel;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
@@ -339,7 +340,7 @@ public class IntegrationListener implements Listener {
 								MMOItemsPluginItem mmo = ((MMOItemsPluginItem) rItem);
 								if (mmo.matches(event.getItem())) {
 									event.setCancelled(true);
-									BreweryPlugin.getInstance().playerListener.onPlayerInteract(event);
+									PlayerListener.handlePlayerInteract(event);
 									return;
 								}
 							}

@@ -4,7 +4,15 @@ import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
-import com.dre.brewery.lore.*;
+import com.dre.brewery.lore.Base91DecoderStream;
+import com.dre.brewery.lore.Base91EncoderStream;
+import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.lore.LoreLoadStream;
+import com.dre.brewery.lore.LoreSaveStream;
+import com.dre.brewery.lore.NBTLoadStream;
+import com.dre.brewery.lore.NBTSaveStream;
+import com.dre.brewery.lore.XORScrambleStream;
+import com.dre.brewery.lore.XORUnscrambleStream;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PotionColor;
@@ -24,7 +32,11 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,7 +120,7 @@ public class Brew implements Cloneable {
 	 */
 	@Nullable
 	public static Brew get(ItemMeta meta) {
-		if (!BreweryPlugin.useNBT && !meta.hasLore()) return null;
+		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -132,7 +144,7 @@ public class Brew implements Cloneable {
 
 		ItemMeta meta = item.getItemMeta();
 		assert meta != null;
-		if (!BreweryPlugin.useNBT && !meta.hasLore()) return null;
+		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -145,7 +157,7 @@ public class Brew implements Cloneable {
 			item.setItemMeta(meta);
 		} else if (brew != null && brew.needsSave) {
 			// Brew needs saving from a previous format
-			if (BreweryPlugin.useNBT) {
+			if (BreweryPlugin.isUseNBT()) {
 				new BrewLore(brew, (PotionMeta) meta).removeLoreData();
 				BreweryPlugin.getInstance().debugLog("removed Data from Lore");
 			}
@@ -849,7 +861,7 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		potion.setItemMeta(potionMeta);
-		BreweryPlugin.getInstance().stats.metricsForCreate(true);
+		BreweryPlugin.getInstance().getStats().metricsForCreate(true);
 		return potion;
 	}
 
@@ -866,9 +878,9 @@ public class Brew implements Cloneable {
 
 		ItemMeta meta = item.getItemMeta();
 		assert meta != null;
-		if (!BreweryPlugin.useNBT && !meta.hasLore()) return false;
+		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return false;
 
-		if (BreweryPlugin.useNBT) {
+		if (BreweryPlugin.isUseNBT()) {
 			// Check for Data on PersistentDataContainer
 			if (NBTLoadStream.hasDataInMeta(meta)) {
 				return true;
@@ -884,7 +896,7 @@ public class Brew implements Cloneable {
 
 	private static Brew load(ItemMeta meta) {
 		InputStream itemLoadStream = null;
-		if (BreweryPlugin.useNBT) {
+		if (BreweryPlugin.isUseNBT()) {
 			// Try loading the Item Data from PersistentDataContainer
 			NBTLoadStream nbtStream = new NBTLoadStream(meta);
 			if (nbtStream.hasData()) {
@@ -934,7 +946,7 @@ public class Brew implements Cloneable {
 				// We have either enabled encode and the data was not encoded or the other way round
 				BreweryPlugin.getInstance().debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
-			} else if (BreweryPlugin.useNBT && itemLoadStream instanceof Base91DecoderStream) {
+			} else if (BreweryPlugin.isUseNBT() && itemLoadStream instanceof Base91DecoderStream) {
 				// We are on a version that supports nbt but the data is still in the lore of the item
 				// Just save it again so that it gets saved to nbt
 				BreweryPlugin.getInstance().debugLog("Converting Brew to NBT");
@@ -983,7 +995,7 @@ public class Brew implements Cloneable {
 	 */
 	public void save(ItemMeta meta) {
 		OutputStream itemSaveStream;
-		if (BreweryPlugin.useNBT) {
+		if (BreweryPlugin.isUseNBT()) {
 			itemSaveStream = new NBTSaveStream(meta);
 		} else {
 			itemSaveStream = new Base91EncoderStream(new LoreSaveStream(meta, 0));

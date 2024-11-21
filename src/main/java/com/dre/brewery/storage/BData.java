@@ -82,8 +82,8 @@ public class BData {
 
     // load all Data
     public static void readData() {
-        File file = new File(BreweryPlugin.getInstance().getDataFolder(), "data.yml");
-        File worldDataFile = new File(BreweryPlugin.getInstance().getDataFolder(), "worlddata.yml");
+        File file = new File(plugin.getDataFolder(), "data.yml");
+        File worldDataFile = new File(plugin.getDataFolder(), "worlddata.yml");
         if (file.exists()) {
 
             FileConfiguration data = YamlConfiguration.loadConfiguration(file);
@@ -99,13 +99,13 @@ public class BData {
                 int hash = data.getInt("brewsCreatedH");
                 // Check the hash to prevent tampering with statistics
                 if (brewsCreated.hashCode() == hash) {
-                    BreweryPlugin.getInstance().stats.brewsCreated = brewsCreated.get(0);
-                    BreweryPlugin.getInstance().stats.brewsCreatedCmd = brewsCreated.get(1);
-                    BreweryPlugin.getInstance().stats.exc = brewsCreated.get(2);
-                    BreweryPlugin.getInstance().stats.good = brewsCreated.get(3);
-                    BreweryPlugin.getInstance().stats.norm = brewsCreated.get(4);
-                    BreweryPlugin.getInstance().stats.bad = brewsCreated.get(5);
-                    BreweryPlugin.getInstance().stats.terr = brewsCreated.get(6);
+                    plugin.getStats().brewsCreated = brewsCreated.get(0);
+                    plugin.getStats().brewsCreatedCmd = brewsCreated.get(1);
+                    plugin.getStats().exc = brewsCreated.get(2);
+                    plugin.getStats().good = brewsCreated.get(3);
+                    plugin.getStats().norm = brewsCreated.get(4);
+                    plugin.getStats().bad = brewsCreated.get(5);
+                    plugin.getStats().terr = brewsCreated.get(6);
                 }
             }
         }
@@ -127,7 +127,7 @@ public class BData {
                             List<Ingredient> ingredients = oldDeserializeIngredients(matSection);
                             ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0), true));
                         } else {
-                            BreweryPlugin.getInstance().errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
+                            plugin.errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
                         }
                     } else {
                         // New way of saving ingredients
@@ -153,22 +153,22 @@ public class BData {
                     boolean stat = section.getBoolean(uid + ".stat", false);
                     int lastUpdate = section.getInt(uid + ".lastUpdate", 0);
 
-                    Brew.loadLegacy(ingredients, BreweryPlugin.getInstance().parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+                    Brew.loadLegacy(ingredients, plugin.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
                 }
             }
 
             // Store how many legacy brews were created
-            if (BreweryPlugin.getInstance().stats.brewsCreated <= 0) {
-                BreweryPlugin.getInstance().stats.brewsCreated = 0;
-                BreweryPlugin.getInstance().stats.brewsCreatedCmd = 0;
-                BreweryPlugin.getInstance().stats.exc = 0;
-                BreweryPlugin.getInstance().stats.good = 0;
-                BreweryPlugin.getInstance().stats.norm = 0;
-                BreweryPlugin.getInstance().stats.bad = 0;
-                BreweryPlugin.getInstance().stats.terr = 0;
+            if (plugin.getStats().brewsCreated <= 0) {
+                plugin.getStats().brewsCreated = 0;
+                plugin.getStats().brewsCreatedCmd = 0;
+                plugin.getStats().exc = 0;
+                plugin.getStats().good = 0;
+                plugin.getStats().norm = 0;
+                plugin.getStats().bad = 0;
+                plugin.getStats().terr = 0;
                 if (!Brew.noLegacy()) {
                     for (int i = Brew.legacyPotions.size(); i > 0; i--) {
-                        BreweryPlugin.getInstance().stats.metricsForCreate(false);
+                        plugin.getStats().metricsForCreate(false);
                     }
                 }
             }
@@ -187,7 +187,7 @@ public class BData {
                         }
                     }
                     if (removed > 0) {
-                        BreweryPlugin.getInstance().log("Removed " + removed + " Legacy Brews older than 3 months");
+                        plugin.log("Removed " + removed + " Legacy Brews older than 3 months");
                     }
                 }
             }
@@ -210,7 +210,7 @@ public class BData {
             BPlayer.getPlayers().putAll(players.stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
 
 
-            final List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
+            final List<World> worlds = plugin.getServer().getWorlds();
             for (World world : worlds) {
                 loadWorldData(world.getUID().toString(), world);
             }
@@ -239,12 +239,12 @@ public class BData {
                 } else {
                     m = Material.matchMaterial(matSplit[0], true);
                 }
-                BreweryPlugin.getInstance().debugLog("converting Data Material from " + matSplit[0] + " to " + m);
+                plugin.debugLog("converting Data Material from " + matSplit[0] + " to " + m);
             }
             if (m == null) continue;
             SimpleItem item;
             if (matSplit.length == 2) {
-                item = new SimpleItem(m, (short) BreweryPlugin.getInstance().parseInt(matSplit[1]));
+                item = new SimpleItem(m, (short) plugin.parseInt(matSplit[1]));
             } else {
                 item = new SimpleItem(m);
             }
@@ -261,7 +261,7 @@ public class BData {
                 return ingMap.get(id);
             }
         }
-        BreweryPlugin.getInstance().errorLog("Ingredient id: '" + id + "' not found in data.yml");
+        plugin.errorLog("Ingredient id: '" + id + "' not found in data.yml");
         return new BIngredients();
     }
 
@@ -274,7 +274,7 @@ public class BData {
                 // matSection has all the materials + amount as Integers
                 return new BIngredients(oldDeserializeIngredients(section), 0);
             } else {
-                BreweryPlugin.getInstance().errorLog("Cauldron is missing Ingredient Section");
+                plugin.errorLog("Cauldron is missing Ingredient Section");
                 return new BIngredients();
             }
         } else {
@@ -299,7 +299,7 @@ public class BData {
         } finally {
             releaseDataLoadMutex();
             if (BData.dataMutex.get() == 0) {
-                BreweryPlugin.getInstance().log("Background data loading complete.");
+                plugin.log("Background data loading complete.");
             }
         }
     }
@@ -308,7 +308,7 @@ public class BData {
     // can be run async
     public static void loadWorldData(String uuid, World world) {
         if (BData.worldData == null) {
-            File file = new File(BreweryPlugin.getInstance().getDataFolder(), "worlddata.yml");
+            File file = new File(plugin.getDataFolder(), "worlddata.yml");
             if (file.exists()) {
                 long t1 = System.currentTimeMillis();
                 BData.worldData = YamlConfiguration.loadConfiguration(file);
@@ -316,10 +316,10 @@ public class BData {
                 if (t2 - t1 > 15000) {
                     // Spigot is _very_ slow at loading inventories from yml. Paper is way faster.
                     // Notify Admin that loading Data took long (its async so not much of a problem)
-                    BreweryPlugin.getInstance().log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load Inventories from the World-Data File (in the Background),");
-                    BreweryPlugin.getInstance().log("consider switching to Paper, or have less items in Barrels if it takes a long time for Barrels to become available");
+                    plugin.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load Inventories from the World-Data File (in the Background),");
+                    plugin.log("consider switching to Paper, or have less items in Barrels if it takes a long time for Barrels to become available");
                 } else {
-                    BreweryPlugin.getInstance().debugLog("Loading worlddata.yml: " + (t2 - t1) + "ms");
+                    plugin.debugLog("Loading worlddata.yml: " + (t2 - t1) + "ms");
                 }
             } else {
                 return;
@@ -337,16 +337,16 @@ public class BData {
                     String[] splitted = block.split("/");
                     if (splitted.length == 3) {
 
-                        Block worldBlock = world.getBlockAt(BreweryPlugin.getInstance().parseInt(splitted[0]), BreweryPlugin.getInstance().parseInt(splitted[1]), BreweryPlugin.getInstance().parseInt(splitted[2]));
+                        Block worldBlock = world.getBlockAt(plugin.parseInt(splitted[0]), plugin.parseInt(splitted[1]), plugin.parseInt(splitted[2]));
                         BIngredients ingredients = loadCauldronIng(section, cauldron + ".ingredients");
                         int state = section.getInt(cauldron + ".state", 0);
 
                         initCauldrons.put(worldBlock, new BCauldron(worldBlock, ingredients, state, UUID.randomUUID()));
                     } else {
-                        BreweryPlugin.getInstance().errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+                        plugin.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
                     }
                 } else {
-                    BreweryPlugin.getInstance().errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+                    plugin.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
                 }
             }
         }
@@ -364,7 +364,7 @@ public class BData {
 
                         // load itemStacks from invSection
                         ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
-                        Block block = world.getBlockAt(BreweryPlugin.getInstance().parseInt(splitted[0]), BreweryPlugin.getInstance().parseInt(splitted[1]), BreweryPlugin.getInstance().parseInt(splitted[2]));
+                        Block block = world.getBlockAt(plugin.parseInt(splitted[0]), plugin.parseInt(splitted[1]), plugin.parseInt(splitted[2]));
                         float time = (float) section.getDouble(barrel + ".time", 0.0);
                         byte sign = (byte) section.getInt(barrel + ".sign", 0);
 
@@ -372,7 +372,7 @@ public class BData {
                         if (section.contains(barrel + ".bounds")) {
                             String[] bds = section.getString(barrel + ".bounds", "").split(",");
                             if (bds.length == 6) {
-                                box = new BoundingBox(BreweryPlugin.getInstance().parseInt(bds[0]), BreweryPlugin.getInstance().parseInt(bds[1]), BreweryPlugin.getInstance().parseInt(bds[2]), BreweryPlugin.getInstance().parseInt(bds[3]), BreweryPlugin.getInstance().parseInt(bds[4]), BreweryPlugin.getInstance().parseInt(bds[5]));
+                                box = new BoundingBox(plugin.parseInt(bds[0]), plugin.parseInt(bds[1]), plugin.parseInt(bds[2]), plugin.parseInt(bds[3]), plugin.parseInt(bds[4]), plugin.parseInt(bds[5]));
                             }
                         } else if (section.contains(barrel + ".st")) {
                             // Convert from Stair and Wood Locations to BoundingBox
@@ -387,7 +387,7 @@ public class BData {
                             if (woLength > 1) {
                                 System.arraycopy(wo, 0, points, st.length, woLength);
                             }
-                            int[] locs = Arrays.stream(points).mapToInt(s -> BreweryPlugin.getInstance().parseInt(s)).toArray();
+                            int[] locs = Arrays.stream(points).mapToInt(s -> plugin.parseInt(s)).toArray();
                             try {
                                 box = BoundingBox.fromPoints(locs);
                             } catch (Exception e) {
@@ -408,10 +408,10 @@ public class BData {
                         initBarrels.add(b);
 
                     } else {
-                        BreweryPlugin.getInstance().errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+                        plugin.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
                     }
                 } else {
-                    BreweryPlugin.getInstance().errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+                    plugin.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
                 }
             }
         }
@@ -427,17 +427,17 @@ public class BData {
                     String[] splitted = loc.split("/");
                     if (splitted.length == 5) {
 
-                        double x = BreweryPlugin.getInstance().parseDouble(splitted[0]);
-                        double y = BreweryPlugin.getInstance().parseDouble(splitted[1]);
-                        double z = BreweryPlugin.getInstance().parseDouble(splitted[2]);
-                        float pitch = BreweryPlugin.getInstance().parseFloat(splitted[3]);
-                        float yaw = BreweryPlugin.getInstance().parseFloat(splitted[4]);
+                        double x = plugin.parseDouble(splitted[0]);
+                        double y = plugin.parseDouble(splitted[1]);
+                        double z = plugin.parseDouble(splitted[2]);
+                        float pitch = plugin.parseFloat(splitted[3]);
+                        float yaw = plugin.parseFloat(splitted[4]);
                         Location location = new Location(world, x, y, z, yaw, pitch);
 
                         initWakeups.add(new Wakeup(location));
 
                     } else {
-                        BreweryPlugin.getInstance().errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
+                        plugin.errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
                     }
                 }
             }
@@ -445,7 +445,7 @@ public class BData {
 
         // Merge Loaded Data in Main Thread
 
-        if (BreweryPlugin.getInstance().getServer().getWorld(world.getUID()) == null) {
+        if (plugin.getServer().getWorld(world.getUID()) == null) {
             return;
         }
         if (!initCauldrons.isEmpty()) {
@@ -467,7 +467,7 @@ public class BData {
         while (BData.dataMutex.updateAndGet(i -> i >= 0 ? i + 1 : i) <= 0) {
             wait++;
             if (wait > 60) {
-                BreweryPlugin.getInstance().errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
+                plugin.errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
                 return false;
             }
             try {

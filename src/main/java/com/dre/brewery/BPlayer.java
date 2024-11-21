@@ -182,7 +182,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player, brew.getQuality());
 		}
-		BreweryPlugin.getInstance().stats.forDrink(brew);
+		BreweryPlugin.getInstance().getStats().forDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();

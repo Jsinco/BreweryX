@@ -2,7 +2,6 @@ package com.dre.brewery.integration;
 
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -10,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class Hook {
 
     protected static final Config config = ConfigManager.getConfig(Config.class);
@@ -27,6 +25,7 @@ public class Hook {
     public static final Hook SLIMEFUN = new Hook("Slimefun");
     public static final Hook ORAXEN = new Hook("Oraxen");
     public static final Hook ITEMSADDER = new Hook("ItemsAdder");
+
 
     protected final String name;
     protected boolean enabled;

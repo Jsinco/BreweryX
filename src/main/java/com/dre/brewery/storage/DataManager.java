@@ -170,7 +170,7 @@ public abstract class DataManager {
         Brew.loadPrevSeeds(miscData.prevSaveSeeds());
 
 
-        Stats stats = plugin.stats;
+        Stats stats = plugin.getStats();
         // Check the hash to prevent tampering with statistics - Note by original author
         if (miscData.brewsCreated().size() == 7 && miscData.brewsCreatedHash() == miscData.brewsCreated().hashCode()) {
             stats.brewsCreated = miscData.brewsCreated().get(0);
@@ -185,7 +185,7 @@ public abstract class DataManager {
 
     public static BreweryMiscData getLoadedMiscData() {
         List<Integer> brewsCreated = new ArrayList<>(7);
-        Stats stats = plugin.stats;
+        Stats stats = plugin.getStats();
         brewsCreated.addAll(List.of(stats.brewsCreated, stats.brewsCreatedCmd, stats.exc, stats.good, stats.norm, stats.bad, stats.terr));
 
 

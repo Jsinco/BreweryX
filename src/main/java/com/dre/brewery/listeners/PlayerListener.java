@@ -11,11 +11,11 @@ import com.dre.brewery.Wakeup;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
-import com.dre.brewery.utility.UpdateChecker;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
+import com.dre.brewery.utility.UpdateChecker;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -44,11 +44,15 @@ import org.bukkit.inventory.PlayerInventory;
 public class PlayerListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
-	private final Config config = ConfigManager.getConfig(Config.class);
-	private final Lang lang = ConfigManager.getConfig(Lang.class);
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		handlePlayerInteract(event);
+	}
+
+	public static void handlePlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock == null) return;
 

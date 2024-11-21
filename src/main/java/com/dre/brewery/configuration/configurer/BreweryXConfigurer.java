@@ -173,7 +173,13 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 					if (finalComment.length == 0)
 						return line;
 
+
 					String comment = ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment);
+					// append blank line to final comment
+					if (!line.isBlank() && !comment.isBlank()) {
+						comment += "\n";
+					}
+
 					return ConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
 				}
 			})

@@ -16,9 +16,13 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class Lang extends AbstractOkaeriConfigFile {
 
-    // I shouldn't have to set any declarations here since they'll all be pulled from the bound translation files.
-
     private Map<String, String> mappedEntries;
+
+    @Override // Should override because we need to remap our strings after a reload of this file.
+    public void reload() {
+        super.reload();
+        this.mapStrings();
+    }
 
     public void mapStrings() {
         this.mappedEntries = new HashMap<>();
@@ -27,8 +31,8 @@ public class Lang extends AbstractOkaeriConfigFile {
                 continue;
             }
 
-            CustomKey customKey = field.getAnnotation(CustomKey.class);
             try {
+                CustomKey customKey = field.getAnnotation(CustomKey.class);
                 if (customKey != null) {
                     this.mappedEntries.put(customKey.value(), (String) field.get(this));
                 } else {
@@ -65,13 +69,8 @@ public class Lang extends AbstractOkaeriConfigFile {
         return color ? BUtil.color(entry) : entry;
     }
 
-    @Override // Should override because we need to remap our strings after a reload of this file.
-    public void reload() {
-        super.reload();
-        this.mapStrings();
-    }
 
-
+    // I shouldn't have to set any declarations here since they'll all be pulled from the bound translation files.
 
     @Comment("Brew")
     @CustomKey("Brew_-times")

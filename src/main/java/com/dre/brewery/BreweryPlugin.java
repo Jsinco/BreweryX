@@ -25,17 +25,17 @@ import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.subcommands.ReloadCommand;
 import com.dre.brewery.configuration.ConfigManager;
-import com.dre.brewery.integration.Hook;
 import com.dre.brewery.configuration.configurer.TranslationManager;
-import com.dre.brewery.configuration.files.Lang;
-import com.dre.brewery.utility.UpdateChecker;
 import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.integration.Hook;
+import com.dre.brewery.integration.PlaceholderAPIHook;
+import com.dre.brewery.integration.barrel.BlocklockerBarrel;
+import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.integration.listeners.ChestShopListener;
 import com.dre.brewery.integration.listeners.IntegrationListener;
 import com.dre.brewery.integration.listeners.ShopKeepersListener;
 import com.dre.brewery.integration.listeners.SlimefunListener;
-import com.dre.brewery.integration.barrel.BlocklockerBarrel;
-import com.dre.brewery.integration.papi.PlaceholderAPI;
 import com.dre.brewery.listeners.BlockListener;
 import com.dre.brewery.listeners.CauldronListener;
 import com.dre.brewery.listeners.EntityListener;
@@ -51,9 +51,11 @@ import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.integration.bstats.Stats;
+import com.dre.brewery.utility.UpdateChecker;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -67,28 +69,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Getter
 public class BreweryPlugin extends JavaPlugin {
 
 	private static final int RESOURCE_ID = 114777;
 
-	private static AddonManager addonManager;
-	private static TaskScheduler scheduler;
-	private static BreweryPlugin breweryPlugin;
-	private static MinecraftVersion minecraftVersion;
-	private static DataManager dataManager;
-	private static boolean isFolia = false;
-	public static boolean useNBT;
+	private @Getter static AddonManager addonManager;
+	private @Getter static TaskScheduler scheduler;
+	private @Getter static BreweryPlugin instance;
+	private @Getter static MinecraftVersion MCVersion;
+	private @Getter @Setter static DataManager dataManager;
+	private @Getter static boolean isFolia = false;
+	private @Getter static boolean useNBT = false;
 
+	// TODO: File backups
 
-	public PlayerListener playerListener; // Public Listeners
-	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
-	public Stats stats; // Metrics
+	private final Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
+	private Stats stats; // Metrics
 
 
 	@Override
 	public void onLoad() {
-		breweryPlugin = this;
-		minecraftVersion = MinecraftVersion.getIt();
+		instance = this;
+		MCVersion = MinecraftVersion.getIt();
 		scheduler = UniversalScheduler.getScheduler(this);
 
 		// Needs to be here otherwise BreweryX can't get the right language before Okaeri starts loading.
@@ -142,8 +145,8 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 
-		log("Minecraft version&7:&a " + minecraftVersion.getVersion());
-		if (minecraftVersion == MinecraftVersion.UNKNOWN) {
+		log("Minecraft version&7:&a " + MCVersion.getVersion());
+		if (MCVersion == MinecraftVersion.UNKNOWN) {
 			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
 
@@ -180,11 +183,10 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		getCommand("breweryx").setExecutor(new CommandManager());
-		// Listeners
-		playerListener = new PlayerListener();
 
+		// Register Listeners
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
-		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
@@ -211,25 +213,17 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		// Register PlaceholderAPI Placeholders
-		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new PlaceholderAPI().register();
+		PlaceholderAPIHook placeholderAPIHook = PlaceholderAPIHook.PLACEHOLDERAPI;
+		if (placeholderAPIHook.isEnabled()) {
+			placeholderAPIHook.getInstance().register();
+		}
+
+		if (config.isUpdateCheck()) {
+			UpdateChecker.run(RESOURCE_ID);
 		}
 
 		log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		log(this.getDescription().getName() + " enabled!");
-
-		if (config.isUpdateCheck()) {
-			Lang finalLang = lang;
-			new UpdateChecker(RESOURCE_ID).query(latestVersion -> {
-				String currentVersion = getDescription().getVersion();
-
-				if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
-					UpdateChecker.setUpdateAvailable(true);
-					log(finalLang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
-				}
-				UpdateChecker.setLatestVersion(latestVersion);
-			});
-		}
 	}
 
 	@Override
@@ -242,7 +236,7 @@ public class BreweryPlugin extends JavaPlugin {
 		// Stop schedulers
 		BreweryPlugin.getScheduler().cancelTasks(this);
 
-		if (breweryPlugin == null) {
+		if (instance == null) {
 			return;
 		}
 
@@ -250,6 +244,11 @@ public class BreweryPlugin extends JavaPlugin {
 		if (dataManager != null) dataManager.exit(true, false);
 
 		BSealer.unregisterRecipe();
+
+		PlaceholderAPIHook placeholderAPIHook = PlaceholderAPIHook.PLACEHOLDERAPI;
+		if (placeholderAPIHook.isEnabled()) {
+			placeholderAPIHook.getInstance().unregister();
+		}
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
@@ -304,33 +303,6 @@ public class BreweryPlugin extends JavaPlugin {
 		ingredientLoaders.remove(saveID);
 	}
 
-	public static BreweryPlugin getInstance() {
-		return breweryPlugin;
-	}
-
-	public static TaskScheduler getScheduler() {
-		return scheduler;
-	}
-
-	public static MinecraftVersion getMCVersion() {
-		return minecraftVersion;
-	}
-
-	public static AddonManager getAddonManager() {
-		return addonManager;
-	}
-
-	public static void setDataManager(DataManager dataManager) {
-		BreweryPlugin.dataManager = dataManager;
-	}
-
-	public static DataManager getDataManager() {
-		return dataManager;
-	}
-
-	public static boolean isFolia() {
-		return isFolia;
-	}
 
 	// Utility
 
