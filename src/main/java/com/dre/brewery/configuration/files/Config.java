@@ -16,12 +16,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 
-@OkaeriConfigFileOptions("new-config.yml")
+@OkaeriConfigFileOptions("new-config.yml") // TODO: changeme
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Footer("Yep, that's it! The end of config.yml! I had so much fun! And you?...")
@@ -143,8 +144,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.useOffhandForCauldron")
 	private boolean useOffhandForCauldron = false;
 
-	@LocalizedComment("config.loadDataAsync")
-	private boolean loadDataAsync = true; // Unused? Pretty sure I don't remember implementing this when swapping out BreweryX's data storage system
+	@LocalizedComment("config.loadDataAsync") // Unused, see configlangs/en.yml#config.loadDataAsync comment
+	private boolean loadDataAsync = true;
 
 	@LocalizedComment("config.hangoverDays")
 	private int hangoverDays = 7;
@@ -181,8 +182,8 @@ public class Config extends AbstractOkaeriConfigFile {
 
 
 	@LocalizedComment("config.useOtherFiles")
-	private Map<String, ConfigCustomItem> customItems = Map.of();
-	private Map<String, ConfigCauldronIngredient> cauldron = Map.of();
+	private Map<String, ConfigCustomItem> customItems = Map.of("useOtherFiles", new ConfigCustomItem());
+	private Map<String, ConfigCauldronIngredient> cauldron = new HashMap<>();
 	private Map<String, ConfigRecipe> recipes = Map.of();
 
 }

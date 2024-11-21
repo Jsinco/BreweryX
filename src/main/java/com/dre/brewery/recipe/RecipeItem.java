@@ -194,7 +194,8 @@ public abstract class RecipeItem implements Cloneable {
 		List<Integer> customModelDatas = BUtil.getListSafely(configCustomItem.getCustomModelData());
 
 		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No Config Entries found for Custom Item");
+			// Spammy, just quietly fail
+			//BreweryPlugin.getInstance().errorLog("No Config Entries found for Custom Item");
 			return null;
 		}
 

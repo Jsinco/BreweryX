@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
@@ -237,7 +238,7 @@ public class BRecipe implements Cloneable {
 			}
 
 			// Try to find this Ingredient as Custom Item
-			for (RecipeItem custom : ConfigManager.getConfig(CustomItemsFile.class).getRecipeItems()) {
+			for (RecipeItem custom : ConfigManager.getConfig(CustomItemsFile.class).getRecipeItems().stream().filter(Objects::nonNull).toList()) {
 				if (custom.getConfigId().equalsIgnoreCase(matParts[0])) {
 					custom = custom.getMutableCopy();
 					custom.setAmount(amount);

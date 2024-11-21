@@ -207,6 +207,8 @@ public class ConfigManager {
     public static void loadRecipes() {
         // loading recipes
         List<BRecipe> configRecipes = BRecipe.getConfigRecipes();
+        configRecipes.clear();
+
         for (var recipeEntry : getConfig(RecipesFile.class).getRecipes().entrySet()) {
             BRecipe recipe = BRecipe.fromConfig(recipeEntry.getKey(), recipeEntry.getValue());
             if (recipe != null && recipe.isValid()) {
@@ -224,6 +226,8 @@ public class ConfigManager {
         // Loading Cauldron Recipes
 
         List<BCauldronRecipe> configRecipes = BCauldronRecipe.getConfigRecipes();
+        configRecipes.clear();
+
         for (var cauldronEntry : getConfig(CauldronFile.class).getCauldronIngredients().entrySet()) {
             BCauldronRecipe recipe = BCauldronRecipe.fromConfig(cauldronEntry.getKey(), cauldronEntry.getValue());
             if (recipe != null) {

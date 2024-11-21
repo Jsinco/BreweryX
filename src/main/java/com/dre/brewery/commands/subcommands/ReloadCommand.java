@@ -10,6 +10,8 @@ import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -45,6 +47,11 @@ public class ReloadCommand implements SubCommand {
 				}
 			}
 
+			// Reload Recipes
+			ConfigManager.loadRecipes();
+			// Reload Cauldron Ingredients
+			ConfigManager.loadCauldronIngredients();
+
 			// Reload Cauldron Particle Recipes
 			BCauldron.reload();
 
@@ -54,7 +61,10 @@ public class ReloadCommand implements SubCommand {
 			// Sealing table recipe
 			BSealer.registerRecipe();
 
-			// Reload Recipes
+			// Let addons know this command was executed
+			BreweryPlugin.getAddonManager().reloadAddons();
+
+			// Reload Recipes <-- TODO: Not really sure what this is doing...? - Jsinco
 			boolean successful = true;
 			for (Brew brew : Brew.legacyPotions.values()) {
 				if (!brew.reloadRecipe()) {
@@ -68,7 +78,7 @@ public class ReloadCommand implements SubCommand {
 				breweryPlugin.msg(sender, lang.getEntry("CMD_Reload"));
 			}
 
-			BreweryPlugin.getAddonManager().reloadAddons();
+
 		} catch (Throwable e) {
 			breweryPlugin.errorLog("Something went wrong trying to reload Brewery!", e);
 		}

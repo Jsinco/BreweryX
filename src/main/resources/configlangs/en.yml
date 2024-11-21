@@ -1,4 +1,5 @@
 # English config translation for BreweryX
+# Author: Jsinco, DieReicheEtherons
 
 config:
   language: |
@@ -72,7 +73,9 @@ config:
     use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
   useLogBlock: "Enable the Logging of Barrel Inventories to LogBlock [true]"
   useOffhandForCauldron: "If items in Offhand should be added to the cauldron as well [false]"
-  loadDataAsync: "If Barrel and Cauldron data can be loaded Async/in the Background [true]"
+  loadDataAsync: |
+    This option no longer does anything anymore and will be removed in future releases of BreweryX
+    BreweryX will load data asynchronously always with the exception of server startup and shutdown.
   hangoverDays: "Time (in days) that drunkenness-data stays in memory after a player goes offline, to apply hangover etc. [7]"
   colorInBarrels-Brewer: "Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]"
   openLargeBarrelEverywhere: "If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]"

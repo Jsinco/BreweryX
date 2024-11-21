@@ -16,7 +16,6 @@ public abstract class AbstractOkaeriConfigFile extends OkaeriConfig {
 
     @SneakyThrows
     public void reload() {
-        this.save();
-        ConfigManager.newInstance(this);
+        this.load();
     }
 }
