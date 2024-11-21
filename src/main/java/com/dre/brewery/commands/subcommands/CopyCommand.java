@@ -12,12 +12,6 @@ import java.util.List;
 
 public class CopyCommand implements SubCommand {
 
-    private final BreweryPlugin breweryPlugin;
-
-    public CopyCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
-
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
@@ -45,8 +39,8 @@ public class CopyCommand implements SubCommand {
     //@Deprecated but still used?
     public void cmdCopy(CommandSender sender, int count, Lang lang) {
         if (count < 1 || count > 36) {
-            sender.sendMessage(lang.getEntry("Etc_Usage"));
-            sender.sendMessage(lang.getEntry("Help_Copy"));
+            lang.sendEntry(sender, "Etc_Usage");
+            lang.sendEntry(sender, "Help_Copy");
             return;
         }
         Player player = (Player) sender;
@@ -56,7 +50,7 @@ public class CopyCommand implements SubCommand {
                 while (count > 0) {
                     ItemStack item = hand.clone();
                     if (!(player.getInventory().addItem(item)).isEmpty()) {
-                        sender.sendMessage(lang.getEntry("CMD_Copy_Error", "" + count));
+                        lang.sendEntry(sender, "CMD_Copy_Error", "" + count);
                         return;
                     }
                     count--;
@@ -65,7 +59,7 @@ public class CopyCommand implements SubCommand {
             }
         }
 
-        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
+        lang.sendEntry(sender, "Error_ItemNotPotion");
 
     }
 }

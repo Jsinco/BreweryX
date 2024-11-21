@@ -202,7 +202,7 @@ public class BCauldron {
 	// fills players bottle with cooked brew
 	public boolean fill(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.fill")) {
-			player.sendMessage(lang.getEntry("Perms_NoCauldronFill"));
+			lang.sendEntry(player, "Perms_NoCauldronFill");
 			return true;
 		}
 		ItemStack potion = ingredients.cook(state, player.getName());
@@ -273,15 +273,15 @@ public class BCauldron {
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.time")) {
-			player.sendMessage(lang.getEntry("Error_NoPermissions"));
+			lang.sendEntry(player, "Error_NoPermissions");
 			return;
 		}
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {
-				player.sendMessage(lang.getEntry("Player_CauldronInfo1", "" + bcauldron.state));
+				lang.sendEntry(player, "Player_CauldronInfo1", "" + bcauldron.state);
 			} else {
-				player.sendMessage(lang.getEntry("Player_CauldronInfo2"));
+				lang.sendEntry(player, "Player_CauldronInfo2");
 			}
 		}
 	}
@@ -500,7 +500,7 @@ public class BCauldron {
 			if (item == null) return;
 
 			if (!player.hasPermission("brewery.cauldron.insert")) {
-				player.sendMessage(lang.getEntry("Perms_NoCauldronInsert"));
+				lang.sendEntry(player, "Perms_NoCauldronInsert");
 				return;
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {

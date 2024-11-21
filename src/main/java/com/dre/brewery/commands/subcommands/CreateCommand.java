@@ -17,8 +17,8 @@ public class CreateCommand implements SubCommand {
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(lang.getEntry("Etc_Usage"));
-            sender.sendMessage(lang.getEntry("Help_Create"));
+            lang.sendEntry(sender, "Etc_Usage");
+            lang.sendEntry(sender, "Help_Create");
             return;
         }
 
@@ -26,14 +26,14 @@ public class CreateCommand implements SubCommand {
 
         if (brewForPlayer != null) {
             if (brewForPlayer.b().getInventory().firstEmpty() == -1) {
-                sender.sendMessage(lang.getEntry("CMD_Copy_Error", "1"));
+                lang.sendEntry(sender, "CMD_Copy_Error", "1");
                 return;
             }
 
             ItemStack item = brewForPlayer.a().createItem(null);
             if (item != null) {
                 brewForPlayer.b().getInventory().addItem(item);
-                sender.sendMessage(lang.getEntry("CMD_Created"));
+                lang.sendEntry(sender, "CMD_Created");
             }
         }
     }

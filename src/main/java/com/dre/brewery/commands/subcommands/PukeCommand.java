@@ -16,20 +16,20 @@ public class PukeCommand implements SubCommand {
         if (args.length > 1) {
             player = breweryPlugin.getServer().getPlayer(args[1]);
             if (player == null) {
-                sender.sendMessage(lang.getEntry("Error_NoPlayer", args[1]));
+                lang.sendEntry(sender, "Error_NoPlayer", args[1]);
                 return;
             }
         }
 
         if (!(sender instanceof Player) && player == null) {
-            sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
+            lang.sendEntry(sender, "Error_PlayerCommand");
             return;
         }
         if (player == null) {
             player = ((Player) sender);
         } else {
             if (!sender.hasPermission("brewery.cmd.pukeOther") && !player.equals(sender)) {
-                sender.sendMessage(lang.getEntry("Error_NoPermissions"));
+                lang.sendEntry(sender, "Error_NoPermissions");
                 return;
             }
         }

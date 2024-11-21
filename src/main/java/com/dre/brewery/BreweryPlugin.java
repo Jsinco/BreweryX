@@ -72,6 +72,9 @@ import java.util.function.Function;
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
+	// TODO: Should we do file backups? - Jsinco
+	// TODO: Change the addon API FileManager to use Okaeri
+
 	private static final int RESOURCE_ID = 114777;
 
 	private @Getter static AddonManager addonManager;
@@ -82,7 +85,6 @@ public class BreweryPlugin extends JavaPlugin {
 	private @Getter static boolean isFolia = false;
 	private @Getter static boolean useNBT = false;
 
-	// TODO: File backups
 
 	private final Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
 	private Stats stats; // Metrics
@@ -120,8 +122,6 @@ public class BreweryPlugin extends JavaPlugin {
 			getServer().createBlockData(Material.CAMPFIRE);
 		}
 
-
-		// TODO: cleanup with configs here
 
 		// Register Item Loaders
 		CustomItem.registerItemLoader(this);

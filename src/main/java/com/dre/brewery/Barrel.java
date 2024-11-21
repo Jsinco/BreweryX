@@ -134,12 +134,12 @@ public class Barrel implements InventoryHolder {
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
 		if (isLarge()) {
 			if (!player.hasPermission("brewery.openbarrel.big")) {
-				player.sendMessage(lang.getEntry("Error_NoBarrelAccess"));
+				lang.sendEntry(player, "Error_NoBarrelAccess");
 				return false;
 			}
 		} else {
 			if (!player.hasPermission("brewery.openbarrel.small")) {
-				player.sendMessage(lang.getEntry("Error_NoBarrelAccess"));
+				lang.sendEntry(player, "Error_NoBarrelAccess");
 				return false;
 			}
 		}
@@ -350,12 +350,12 @@ public class Barrel implements InventoryHolder {
 			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
-						player.sendMessage(lang.getEntry("Perms_NoBarrelCreate"));
+						lang.sendEntry(player, "Perms_NoBarrelCreate");
 						return false;
 					}
 				} else {
 					if (!player.hasPermission("brewery.createbarrel.big")) {
-						player.sendMessage(lang.getEntry("Perms_NoBigBarrelCreate"));
+						lang.sendEntry(player, "Perms_NoBigBarrelCreate");
 						return false;
 					}
 				}

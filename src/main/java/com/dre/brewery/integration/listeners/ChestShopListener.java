@@ -26,7 +26,7 @@ public class ChestShopListener implements Listener {
 					if (item != null && item.getType() == Material.POTION) {
 						Brew brew = Brew.get(item);
 						if (brew != null && !brew.isSealed()) {
-							event.getPlayer().sendTitle("", BreweryPlugin.getInstance().color(lang.getEntry("Player_ShopSealBrew")), 10, 70, 20);
+							event.getPlayer().sendTitle("", lang.getEntry("Player_ShopSealBrew"), 10, 70, 20);
 							return;
 						}
 					}

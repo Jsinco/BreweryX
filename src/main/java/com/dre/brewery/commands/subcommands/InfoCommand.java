@@ -11,11 +11,6 @@ import java.util.List;
 
 public class InfoCommand implements SubCommand {
 
-    private final BreweryPlugin breweryPlugin;
-
-    public InfoCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
 
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
@@ -23,13 +18,13 @@ public class InfoCommand implements SubCommand {
             if (sender.hasPermission("brewery.cmd.infoOther")) {
                 cmdInfo(sender, args[1], lang);
             } else {
-                sender.sendMessage(lang.getEntry("Error_NoPermissions"));
+                lang.sendEntry(sender, "Error_NoPermissions");
             }
         } else {
             if (sender.hasPermission("brewery.cmd.info")) {
                 cmdInfo(sender, null, lang);
             } else {
-                sender.sendMessage(lang.getEntry("Error_NoPermissions"));
+                lang.sendEntry(sender, "Error_NoPermissions");
             }
         }
     }
@@ -57,7 +52,7 @@ public class InfoCommand implements SubCommand {
                 Player player = (Player) sender;
                 playerName = player.getName();
             } else {
-                sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
+                lang.sendEntry(sender, "Error_PlayerCommand");
                 return;
             }
         }
@@ -70,12 +65,12 @@ public class InfoCommand implements SubCommand {
             bPlayer = BPlayer.get(player);
         }
         if (bPlayer == null) {
-            sender.sendMessage(lang.getEntry("CMD_Info_NotDrunk", playerName));
+            lang.sendEntry(sender, "CMD_Info_NotDrunk", playerName);
         } else {
             if (selfInfo) {
                 bPlayer.showDrunkeness(player);
             } else {
-                sender.sendMessage(lang.getEntry("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
+                lang.sendEntry(sender, "CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality());
             }
         }
 

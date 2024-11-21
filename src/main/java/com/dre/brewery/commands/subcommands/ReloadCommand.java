@@ -68,9 +68,9 @@ public class ReloadCommand implements SubCommand {
 			}
 
 			if (!successful) {
-				sender.sendMessage(lang.getEntry("Error_Recipeload"));
+				lang.sendEntry(sender, "Error_Recipeload");
 			} else {
-				sender.sendMessage(lang.getEntry("CMD_Reload"));
+				lang.sendEntry(sender, "CMD_Reload");
 			}
 
 

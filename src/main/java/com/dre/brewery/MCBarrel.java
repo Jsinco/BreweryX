@@ -206,7 +206,7 @@ public class MCBarrel {
 			}
 			if (brews >= config.getMaxBrewsInMCBarrels()) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(event.getWhoClicked(), lang.getEntry("Player_BarrelFull"));
+				lang.sendEntry(event.getWhoClicked(), "Player_BarrelFull");
 			} else {
 				brews++;
 			}

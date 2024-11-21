@@ -22,7 +22,7 @@ public class DeleteCommand implements SubCommand {
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             return;
         }
-        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
+        lang.sendEntry(sender, "Error_ItemNotPotion");
 
     }
 

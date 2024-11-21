@@ -1,5 +1,7 @@
 package com.dre.brewery.configuration.configurer;
 
+import com.dre.brewery.configuration.annotation.CommentSpace;
+import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.Footer;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
@@ -123,7 +125,6 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 	@Override
 	public void write(@NonNull OutputStream outputStream, @NonNull ConfigDeclaration declaration) throws Exception {
 
-
 		Map<String, Object> mapCopy = new LinkedHashMap<>(this.map); // Not sure if I should copy or do this on the main map
 		// Remove null values
 		removeNullValues(mapCopy);
@@ -174,13 +175,21 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 						return line;
 
 
-					String comment = ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment);
-					// append blank line to final comment
-					if (!line.isBlank() && !comment.isBlank()) {
-						comment += "\n";
+					StringBuilder comment = new StringBuilder();
+
+					int space = declaration.getType().isAnnotationPresent(DefaultCommentSpace.class) ? declaration.getType().getAnnotation(DefaultCommentSpace.class).value() : 0;
+					if (lineDeclaration.get().getField().isAnnotationPresent(CommentSpace.class)) {
+						space = lineDeclaration.get().getField().getAnnotation(CommentSpace.class).value();
 					}
 
-					return ConfigPostprocessor.addIndent(comment, lineInfo.getIndent()) + line;
+					if (space > 0) {
+                        comment.append("\n".repeat(space));
+					}
+
+					comment.append(ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment));
+					// append blank line to final comment
+
+					return ConfigPostprocessor.addIndent(comment.toString(), lineInfo.getIndent()) + line;
 				}
 			})
 			// add header if available

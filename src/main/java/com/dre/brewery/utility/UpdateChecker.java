@@ -40,7 +40,7 @@ public class UpdateChecker {
 			return;
 		}
 
-		player.sendMessage(lang.getEntry("Etc_UpdateAvailable", "v" + plugin.getDescription().getVersion(), "v" + latestVersion));
+		lang.sendEntry(player, "Etc_UpdateAvailable", "v" + plugin.getDescription().getVersion(), "v" + latestVersion);
 	}
 
 	/**

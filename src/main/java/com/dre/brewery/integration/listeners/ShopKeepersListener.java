@@ -48,7 +48,7 @@ public class ShopKeepersListener implements Listener {
 		if (item != null && item.getType() == Material.POTION && event.getClickedInventory() == event.getView().getTopInventory()) {
 			Brew brew = Brew.get(item);
 			if (brew != null && !brew.isSealed()) {
-				BreweryPlugin.getInstance().msg(event.getWhoClicked(), lang.getEntry("Player_ShopSealBrew"));
+				lang.sendEntry(event.getWhoClicked(), "Player_ShopSealBrew");
 			}
 		}
 	}

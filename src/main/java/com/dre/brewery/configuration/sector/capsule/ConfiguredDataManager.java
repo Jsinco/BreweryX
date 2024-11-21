@@ -1,5 +1,6 @@
-package com.dre.brewery.storage.records;
+package com.dre.brewery.configuration.sector.capsule;
 
+import com.dre.brewery.configuration.annotation.CommentSpace;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.storage.DataManagerType;
 import eu.okaeri.configs.OkaeriConfig;
@@ -16,8 +17,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ConfiguredDataManager extends OkaeriConfig {
 
+    @CommentSpace(0)
     @LocalizedComment("config.storage.type")
     private DataManagerType type;
+    @CommentSpace(0)
     @LocalizedComment("config.storage.database")
     private String database;
     private String tablePrefix;

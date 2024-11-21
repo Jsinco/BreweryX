@@ -18,9 +18,9 @@ public class ItemName implements SubCommand {
         @SuppressWarnings("deprecation")
         ItemStack hand = BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_9) ? player.getInventory().getItemInMainHand() : player.getItemInHand();
         if (hand != null) {
-            sender.sendMessage(lang.getEntry("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
+            lang.sendEntry(sender, "CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH));
         } else {
-            sender.sendMessage(lang.getEntry("CMD_Configname_Error"));
+            lang.sendEntry(sender, "CMD_Configname_Error");
         }
     }
 

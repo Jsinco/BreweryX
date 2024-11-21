@@ -89,7 +89,7 @@ public class PlayerListener implements Listener {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
 			} else {
-				BreweryPlugin.getInstance().msg(player,lang.getEntry("Error_SealingTableDisabled"));
+				lang.sendEntry(player, "Error_SealingTableDisabled");
 			}
 			return;
 		}
@@ -108,7 +108,7 @@ public class PlayerListener implements Listener {
 		if (VERSION.isOrLater(MinecraftVersion.V1_14) && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(player,lang.getEntry("Error_NoPermissions"));
+				lang.sendEntry(player, "Error_NoPermissions");
 			}
 			return;
 		}
@@ -281,10 +281,10 @@ public class PlayerListener implements Listener {
 						bplayer.join(player);
 						return;
 					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER,lang.getEntry("Player_LoginDeny"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDeny"));
 						return;
 					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER,lang.getEntry("Player_LoginDenyLong"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDenyLong"));
 				}
 			}
 		}

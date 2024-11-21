@@ -65,6 +65,8 @@ config:
     
     So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
   useOtherPlugins: |
+    -- Plugin Compatibility --
+    
     Enable checking of other Plugins (if installed) for Barrel Permissions [true]
     Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
   useVirtualChestPerms: |
@@ -94,16 +96,11 @@ config:
     Words and letters that will be altered when chatting while being drunk.
     Will be processed from first to last and a written sentence is altered in that order.
         
-    replace: Word or letter to be replaced. (Special: "-space": replaces space, "-random": insert into random position, "-all": everything, "-start": At Beginning, "-end": At the End.)
-        
+    replace: Word or letter to be replaced. (Special: "-space": replaces space, "-random": insert into random position, "-all": everything, "-start": At Beginning, "-end": At the End.)  
     to: What to replace it with.
-        
     pre: Words and Letters before the wanted word (split with ",")
-        
     match: true = one of the "pre"-Words has to be before the wanted Word, false = none of the "pre" Words is allowed before the wanted Word
-        
     alcohol: 1-100 minimum drunkenness after which this word is replaced
-        
     percentage: Probability of replacing a Word in percent
   useOtherFiles: |
     You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.

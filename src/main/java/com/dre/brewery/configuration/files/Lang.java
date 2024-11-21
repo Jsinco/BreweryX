@@ -2,10 +2,13 @@ package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.utility.BUtil;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
+import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -13,9 +16,11 @@ import java.util.Map;
 
 // Our bind file for this class should vary based on what language the user has set in the config.
 @OkaeriConfigFileOptions(useLangFileName = true)
+@DefaultCommentSpace(1)
 @SuppressWarnings("unused")
 public class Lang extends AbstractOkaeriConfigFile {
 
+    private final Config config = ConfigManager.getConfig(Config.class);
     private Map<String, String> mappedEntries;
 
     @Override // Should override because we need to remap our strings after a reload of this file.
@@ -44,11 +49,15 @@ public class Lang extends AbstractOkaeriConfigFile {
         }
     }
 
-    public String getEntry(String key, String... args) {
+    public void sendEntry(CommandSender recipient, String key, Object... args) {
+        recipient.sendMessage(BUtil.color(config.getPluginPrefix() + this.getEntry(key, false, args)));
+    }
+
+    public String getEntry(String key, Object... args) {
         return this.getEntry(key, true, args);
     }
 
-    public String getEntry(String key, boolean color, String... args) {
+    public String getEntry(String key, boolean color, Object... args) {
         if (mappedEntries == null) {
             mapStrings();
         }
@@ -56,14 +65,14 @@ public class Lang extends AbstractOkaeriConfigFile {
 
         if (entry != null) {
             int i = 0;
-            for (String arg : args) {
+            for (Object arg : args) {
                 if (arg != null) {
                     i++;
-                    entry = entry.replace("&v" + i, arg);
+                    entry = entry.replace("&v" + i, arg.toString());
                 }
             }
         } else {
-            entry = (color ? "&c" : "") + "[LanguageReader] Failed to retrieve a config entry for key '" + key + "'!";
+            entry = "&c[LanguageReader] Failed to retrieve a config entry for key '" + key + "'!";
         }
 
         return color ? BUtil.color(entry) : entry;

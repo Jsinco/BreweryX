@@ -1,6 +1,7 @@
 package com.dre.brewery.configuration.files;
 
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.Footer;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
@@ -9,8 +10,8 @@ import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
+import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
-import com.dre.brewery.storage.records.ConfiguredDataManager;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,9 +23,10 @@ import java.util.Random;
 
 
 @OkaeriConfigFileOptions("config.yml")
+@DefaultCommentSpace(1)
 @Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
-@Footer("Yep, that's it! The end of config.yml! I had so much fun! And you?...")
+@Footer({"", "Yep, that's it! The end of config.yml! I had so much fun! And you?..."})
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
 

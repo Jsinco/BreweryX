@@ -95,7 +95,7 @@ public class CommandUtil {
         }
 
         if (!(sender instanceof Player) && player == null) {
-            sender.sendMessage(lang.getEntry("Error_PlayerCommand"));
+            lang.sendEntry(sender, "Error_PlayerCommand");
             return null;
         }
 
@@ -128,7 +128,7 @@ public class CommandUtil {
         if (recipe != null) {
             return new Tuple<>(recipe.createBrew(quality), player);
         } else {
-            sender.sendMessage(lang.getEntry("Error_NoBrewName", name));
+            lang.sendEntry(sender, "Error_NoBrewName", name);
         }
         return null;
     }
@@ -138,12 +138,6 @@ public class CommandUtil {
         ArrayList<String> cmds = new ArrayList<>();
         cmds.add(lang.getEntry("Help_Help"));
         PermissionUtil.evaluateExtendedPermissions(sender);
-
-		/*
-        if (PLAYER.checkCached(sender)) {
-            cmds.add (lang.getEntry("Help_Player"));
-        }
-        */
 
         if (INFO.checkCached(sender)) {
             cmds.add (lang.getEntry("Help_Info"));

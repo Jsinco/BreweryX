@@ -35,15 +35,13 @@ public class UnLabelCommand implements SubCommand {
                     }
                     brew.save(meta);
                     hand.setItemMeta(meta);
-                    sender.sendMessage(lang.getEntry("CMD_UnLabel"));
-                    return;
+                    lang.sendEntry(sender, "CMD_UnLabel");
                 } else {
-                    sender.sendMessage(lang.getEntry("Error_AlreadyUnlabeled"));
-                    return;
-                }
+                    lang.sendEntry(sender, "Error_AlreadyUnlabeled");
+                } return;
             }
         }
-        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
+        lang.sendEntry(sender, "Error_ItemNotPotion");
     }
 
     @Override

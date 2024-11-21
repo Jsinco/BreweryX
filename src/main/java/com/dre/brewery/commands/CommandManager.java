@@ -47,9 +47,9 @@ public class CommandManager implements TabExecutor {
         subCommands.put("wakeup", new WakeupCommand());
         subCommands.put("itemName", new ItemName());
         subCommands.put("create", new CreateCommand());
-        subCommands.put("info", new InfoCommand(plugin));
+        subCommands.put("info", new InfoCommand());
         subCommands.put("seal", new SealCommand());
-        subCommands.put("copy", new CopyCommand(plugin));
+        subCommands.put("copy", new CopyCommand());
         subCommands.put("delete", new DeleteCommand());
         subCommands.put("static", new StaticCommand());
 		subCommands.put("set", new SetCommand());
@@ -79,10 +79,10 @@ public class CommandManager implements TabExecutor {
         String permission = subCommand.permission();
 
         if (playerOnly && !(sender instanceof Player)) {
-            sender.sendMessage(lang.getEntry("Error_NotPlayer"));
+            lang.sendEntry(sender, "Error_NotPlayer");
             return true;
         } else if (permission != null && !sender.hasPermission(permission)) {
-            sender.sendMessage(lang.getEntry("Error_NoPermission"));
+            lang.sendEntry(sender, "Error_NoPermission");
             return true;
         }
 

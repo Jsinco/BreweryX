@@ -52,7 +52,7 @@ public class IntegrationListener implements Listener {
 				try {
 					if (!hook.getWgBarrel().checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
 						event.setCancelled(true);
-						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
@@ -85,7 +85,7 @@ public class IntegrationListener implements Listener {
 							if (!pl.getConfig().getBoolean("bypass.inventories") || (!player.hasPermission("gamemodeinventories.bypass") && !player.isOp())) {
 								event.setCancelled(true);
 								if (!pl.getConfig().getBoolean("dont_spam_chat")) {
-									BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+									lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 								}
 								return;
 							}
@@ -105,7 +105,7 @@ public class IntegrationListener implements Listener {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
 				try {
 					if (!GriefPreventionBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 						event.setCancelled(true);
 						return;
 					}
@@ -139,7 +139,7 @@ public class IntegrationListener implements Listener {
 						Player player = event.getPlayer();
 						try {
 							if (!LWCBarrel.checkAccess(player, sign, plugin)) {
-								BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+								lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 								event.setCancelled(true);
 								return;
 							}
@@ -166,7 +166,7 @@ public class IntegrationListener implements Listener {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("Towny")) {
 				try {
 					if (!TownyBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 						event.setCancelled(true);
 						return;
 					}
@@ -192,7 +192,7 @@ public class IntegrationListener implements Listener {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("BlockLocker")) {
 				try {
 					if (!BlocklockerBarrel.checkAccess(event)) {
-						BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 						event.setCancelled(true);
 						return;
 					}
@@ -246,7 +246,7 @@ public class IntegrationListener implements Listener {
 
 			if (simulatedEvent.useInteractedBlock() == Event.Result.DENY) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(event.getPlayer(),lang.getEntry("Error_NoBarrelAccess"));
+				lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 				//return;
 			}
 		}

@@ -24,14 +24,14 @@ public class StaticCommand implements SubCommand {
                 if (brew.isStatic()) {
                     if (!brew.isStripped()) {
                         brew.setStatic(false, hand);
-                        sender.sendMessage(lang.getEntry("CMD_NonStatic"));
+                        lang.sendEntry(sender, "CMD_NonStatic");
                     } else {
-                        sender.sendMessage(lang.getEntry("Error_SealedAlwaysStatic"));
+                        lang.sendEntry(sender, "Error_SealedAlwaysStatic");
                         return;
                     }
                 } else {
                     brew.setStatic(true, hand);
-                    sender.sendMessage(lang.getEntry("CMD_Static"));
+                    lang.sendEntry(sender, "CMD_Static");
                 }
                 brew.touch();
                 ItemMeta meta = hand.getItemMeta();
@@ -47,7 +47,7 @@ public class StaticCommand implements SubCommand {
                 return;
             }
         }
-        sender.sendMessage(lang.getEntry("Error_ItemNotPotion"));
+        lang.sendEntry(sender, "Error_ItemNotPotion");
     }
 
     @Override

@@ -16,8 +16,8 @@ public class DrinkCommand implements SubCommand {
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(lang.getEntry("Etc_Usage"));
-            sender.sendMessage(lang.getEntry("Help_Drink"));
+            lang.sendEntry(sender, "Etc_Usage");
+            lang.sendEntry(sender, "Help_Drink");
             return;
         }
 
@@ -28,9 +28,9 @@ public class DrinkCommand implements SubCommand {
             String brewName = brew.getCurrentRecipe().getName(brew.getQuality());
             BPlayer.drink(brew, null, player);
 
-            player.sendMessage(lang.getEntry("CMD_Drink", brewName));
+            lang.sendEntry(sender, "CMD_Drink", brewName);
             if (!sender.equals(player)) {
-                sender.sendMessage(lang.getEntry("CMD_DrinkOther", player.getDisplayName(), brewName));
+                lang.sendEntry(sender, "CMD_DrinkOther", player.getDisplayName(), brewName);
             }
         }
     }
