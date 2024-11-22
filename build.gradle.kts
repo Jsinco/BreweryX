@@ -116,9 +116,9 @@ tasks {
 	register<Copy>("prepareKotlinReducedJar") {
 		dependsOn(shadowJar)
 		from(zipTree(shadowJar.get().archiveFile))
-		into("$buildDir/kt-reduced")
+		into(layout.buildDirectory.dir("kt-reduced"))
 		doLast {
-			val pluginFile = file("$buildDir/kt-reduced/plugin.yml")
+			val pluginFile = layout.buildDirectory.file("kt-reduced/plugin.yml").get().asFile
 			var content = pluginFile.readText()
 			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
 			pluginFile.writeText(content)
@@ -127,7 +127,7 @@ tasks {
 
 	register<Jar>("kotlinReducedJar") {
 		dependsOn("prepareKotlinReducedJar")
-		from("$buildDir/kt-reduced")
+		from(layout.buildDirectory.dir("kt-reduced"))
 		include("**/*")
 		duplicatesStrategy = DuplicatesStrategy.INHERIT
 		archiveClassifier.set("KtReduced")
