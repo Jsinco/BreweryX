@@ -11,7 +11,7 @@ import eu.okaeri.configs.annotation.Header;
 import java.util.HashMap;
 import java.util.Map;
 
-@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!")
 @OkaeriConfigFileOptions("cauldron.yml")
 public class CauldronFile extends AbstractOkaeriConfigFile {
 

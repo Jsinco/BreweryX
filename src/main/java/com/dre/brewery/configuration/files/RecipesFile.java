@@ -13,8 +13,8 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
-@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
-@Footer({
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!")
+@Footer({"",
 	"More recipe ideas:",
 	"Dandelion Liquor",
 	"Beetroot Spirit",

@@ -47,6 +47,8 @@ public class TranslationManager {
 
 				if (trans != null) {
 					this.activeTranslation = trans;
+				} else {
+					BreweryPlugin.getInstance().warningLog("Invalid language in config.yml: &6" + data.get("language"));
 				}
 			}
 		} catch (IOException e) {

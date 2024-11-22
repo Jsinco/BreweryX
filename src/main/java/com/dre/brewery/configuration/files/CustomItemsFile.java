@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!")
 @OkaeriConfigFileOptions("custom-items.yml")
 @Setter
 public class CustomItemsFile extends AbstractOkaeriConfigFile {
