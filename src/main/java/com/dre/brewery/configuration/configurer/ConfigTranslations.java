@@ -4,7 +4,6 @@ import com.dre.brewery.BreweryPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class ConfigTranslations {
 	public ConfigTranslations(Translation activeTranslation, Yaml yamlInstance) {
 		try (InputStream inputStream = this.getClass()
 			.getClassLoader()
-			.getResourceAsStream("configlangs/" + activeTranslation.getFilename())) {
+			.getResourceAsStream("config-langs/" + activeTranslation.getFilename())) {
 
 			translations = yamlInstance.load(inputStream);
 		} catch (IOException e) {
@@ -36,7 +35,9 @@ public class ConfigTranslations {
 	@Nullable
 	public String getTranslation(String key) {
 		try {
-			if (!key.contains(".")) {
+			if (translations == null) {
+				return null;
+			} else if (!key.contains(".")) {
 				return (String) translations.get(key);
 			}
 

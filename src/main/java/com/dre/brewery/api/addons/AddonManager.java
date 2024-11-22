@@ -133,7 +133,7 @@ public class AddonManager extends ClassLoader {
 					managerField.set(addon, this);
 
 
-					if (addon.getAddonInfo() == null) {
+					if (addon.getAddonInfo() == null) { // This CAN be null for us. It's only annotated NotNull for addons.
 						plugin.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
 						continue;
 					}

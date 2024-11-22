@@ -1,4 +1,6 @@
+import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.ReplaceTokens
+import java.nio.charset.Charset
 
 plugins {
     id("java")
@@ -7,9 +9,10 @@ plugins {
 }
 
 val langVersion: Int = 17
+val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.3.5-SNAPSHOT"
+version = "3.3.6-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -75,17 +78,17 @@ dependencies {
 
 
 tasks {
+
     build {
         dependsOn(shadowJar)
         finalizedBy("kotlinReducedJar")
     }
 
     jar {
-		archiveClassifier.set("original")
-        //enabled = false // Shadow produces our jar files
+        enabled = false // Shadow produces our jar files
     }
     withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
+        options.encoding = encoding
     }
     test {
         useJUnitPlatform()
@@ -94,10 +97,10 @@ tasks {
     processResources {
         outputs.upToDateWhen { false }
         filter<ReplaceTokens>(mapOf(
-            "tokens" to mapOf("version" to project.version.toString()),
+            "tokens" to mapOf("version" to "${project.version};${getGitBranch()}"),
             "beginToken" to "\${",
             "endToken" to "}"
-        ))
+        )).filteringCharset = encoding
     }
 
     shadowJar {
@@ -129,6 +132,16 @@ tasks {
 		duplicatesStrategy = DuplicatesStrategy.INHERIT
 		archiveClassifier.set("KtReduced")
 	}
+}
+
+fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
+    var branch = "none"
+    project.exec {
+        commandLine = listOf("git", "rev-parse", "--abbrev-ref", "HEAD")
+        standardOutput = stream
+    }
+    if (stream.size() > 0) branch = stream.toString(Charset.defaultCharset().name()).trim()
+    return branch
 }
 
 java {

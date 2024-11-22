@@ -73,6 +73,28 @@ public abstract class DataManager {
         }
     }
 
+    public void exit(boolean save, boolean async) {
+        this.exit(save, async, null);
+    }
+
+    public void exit(boolean save, boolean async, Runnable callback) {
+        if (save) {
+            saveAll(async, () -> {
+                this.closeConnection();
+                plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
+                if (callback != null) {
+                    callback.run();
+                }
+            });
+        } else {
+            this.closeConnection(); // let databases close their connections
+            plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
+            if (callback != null) {
+                callback.run();
+            }
+        }
+    }
+
     public void saveAll(boolean async) {
         saveAll(async, null);
     }
@@ -109,29 +131,6 @@ public abstract class DataManager {
 
     protected void closeConnection() {
         // Implemented in subclasses that use database connections
-    }
-
-
-    public void exit(boolean save, boolean async) {
-        this.exit(save, async, null);
-    }
-
-    public void exit(boolean save, boolean async, Runnable callback) {
-        if (save) {
-            saveAll(async, () -> {
-                this.closeConnection();
-                plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
-                if (callback != null) {
-                    callback.run();
-                }
-            });
-        } else {
-            this.closeConnection(); // let databases close their connections
-            plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
-            if (callback != null) {
-                callback.run();
-            }
-        }
     }
 
     public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {

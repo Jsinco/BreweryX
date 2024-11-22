@@ -6,12 +6,13 @@ import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.sector.CauldronSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
+import eu.okaeri.configs.annotation.Header;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-@OkaeriConfigFileOptions(value = "cauldron.yml", update = false)
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
+@OkaeriConfigFileOptions("cauldron.yml")
 public class CauldronFile extends AbstractOkaeriConfigFile {
 
     @LocalizedComment("cauldronFile.header")

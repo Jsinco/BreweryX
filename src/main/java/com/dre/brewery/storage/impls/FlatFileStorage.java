@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-
+// TODO: Should we use Okaeri here?
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;

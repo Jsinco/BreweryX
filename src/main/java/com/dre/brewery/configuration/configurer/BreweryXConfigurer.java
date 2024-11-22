@@ -146,7 +146,7 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 					for (int i = 0; i < (path.size() - 1); i++) {
 						ConfigLineInfo pathElement = path.get(i);
 						Optional<FieldDeclaration> field = currentDeclaration.getField(pathElement.getName());
-						if (!field.isPresent()) {
+						if (field.isEmpty()) {
 							return line;
 						}
 						GenericsDeclaration fieldType = field.get().getType();
@@ -187,8 +187,6 @@ public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
 					}
 
 					comment.append(ConfigPostprocessor.createComment(BreweryXConfigurer.this.commentPrefix, finalComment));
-					// append blank line to final comment
-
 					return ConfigPostprocessor.addIndent(comment.toString(), lineInfo.getIndent()) + line;
 				}
 			})

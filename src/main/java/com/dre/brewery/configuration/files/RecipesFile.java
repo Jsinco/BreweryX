@@ -7,11 +7,13 @@ import com.dre.brewery.configuration.annotation.LocalizedComment;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.sector.RecipesSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
+import eu.okaeri.configs.annotation.Header;
 import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
 @Footer({
 	"More recipe ideas:",
 	"Dandelion Liquor",
@@ -32,7 +34,7 @@ import java.util.Map;
 	"",
 	"There are a lot of items in Minecraft like Vines, Milk and items added by plugins that would make great ingredients."
 })
-@OkaeriConfigFileOptions(value = "recipes.yml", update = false)
+@OkaeriConfigFileOptions("recipes.yml")
 @Setter
 public class RecipesFile extends AbstractOkaeriConfigFile {
 

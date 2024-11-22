@@ -44,7 +44,7 @@ public class ConfigManager {
             BreweryXConfigurer.class, BreweryXConfigurer::new,
             YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
     );
-    protected static final List<Supplier<BidirectionalTransformer<?, ?>>> TRANSFORMERS = List.of(
+    private static final List<Supplier<BidirectionalTransformer<?, ?>>> TRANSFORMERS = List.of(
             MaterialTransformer::new
     );
 
@@ -75,12 +75,11 @@ public class ConfigManager {
      * @param configClass The class of the config to replace
      * @param <T> The type of the config
      */
-    public static <T extends AbstractOkaeriConfigFile> void newInstance(T configClass) {
-        LOADED_CONFIGS.put(configClass.getClass(), createConfig(configClass.getClass(),
-                        getFilePath(configClass.getClass()),
-                        configClass.getConfigurer(),
-                        new StandardSerdes(),
-                        getOkaeriConfigFileOptions(configClass.getClass()).update()));
+    public static <T extends AbstractOkaeriConfigFile> void newInstance(Class<T> configClass, boolean overwrite) {
+        if (!overwrite && LOADED_CONFIGS.containsKey(configClass)) {
+            return;
+        }
+        LOADED_CONFIGS.put(configClass, createConfig(configClass));
     }
 
 

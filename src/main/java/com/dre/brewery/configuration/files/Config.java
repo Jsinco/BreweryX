@@ -24,10 +24,11 @@ import java.util.Random;
 
 
 @OkaeriConfigFileOptions("config.yml")
-@DefaultCommentSpace(1)
-@Header({"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
+@Header({"!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!",
+		"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
 @Footer({"", "Yep, that's it! The end of config.yml! I had so much fun! And you?..."})
+@DefaultCommentSpace(1)
 @Getter @Setter
 public class Config extends AbstractOkaeriConfigFile {
 
@@ -153,7 +154,7 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.useOffhandForCauldron")
 	private boolean useOffhandForCauldron = false;
 
-	@LocalizedComment("config.loadDataAsync") // Unused, see configlangs/en.yml#config.loadDataAsync comment
+	@LocalizedComment("config.loadDataAsync") // Unused, see config-langs/en.yml#config.loadDataAsync comment
 	private boolean loadDataAsync = true;
 
 	@LocalizedComment("config.hangoverDays")

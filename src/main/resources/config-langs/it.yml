@@ -1,0 +1,190 @@
+# Italian config translation for BreweryX
+# Author:
+
+config:
+  language: |
+    Lingua da usare [en]
+    Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
+  updateCheck: |
+    Abilita il controllo degli aggiornamenti, controlla l'API di Spigot per eventuali aggiornamenti di Brewery [true]
+    Se quando un aggiornamento viene trovato un messaggio è loggato e mostrato agli OPs quando entrano in gioco.
+  autosave: "Intervallo di autosalvataggio in minuti [10]"
+  pluginPrefix: "Prefix used on messages"
+  debug: "Show debug messages in logs [false]"
+  storage:
+    header: "-- Storage Settings --"
+    type: |
+      What type of storage to use [FLATFILE]
+      Available types: FlatFile, MySQL, SQLite
+    database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
+  enableHome: "Se il giocatore si sveglia nella sua /home dopo aver bevuto troppo(il plugin di /home deve essere installato!) [true]"
+  homeType: |
+    Tipo di teletrasporto alla home ['cmd: home']
+    bed = Il giocatore sarà teletrasportato al suo letto
+    'cmd: home' = /home sarà eseguito dal giocatore. Deve avere il permesso di farlo senza ritardi!
+    'cmd: spawn' = /spawn sarà eseguito dal giocatore
+    'cmd: faitu' = /faitu sarà eseguito dal giocatore.
+  enableWake: |
+    Se il giocatore si risveglia in un posto a caso dopo essere andato offline mentre beveva (questi posti devono essere definiti con '/brew Wakeup add' da un admin)
+    Il giocatore si risveglia al punto di risveglio più vicino [true]
+  enableLoginDisallow: "Se il giocatore debba provare più volte per loggare da molto ubriaco [true]"
+  enableKickOnOverdrink: "Se il giocatore viene espulso dal server se raggiunge la percentuale massima di alcol [false]"
+  enablePuke: |
+    Se il giocatore vomita se molto sbronzo [true]
+    L'oggetto non può essere raccolto e resta per terra finché non sparisce.
+  pukeItem: |
+    L'oggetto droppato in massa quando si vomita che dovrebbe rappresentare il vomito [Soul_Sand]
+    Can be list of items such as [Soul_sand, Slime_block, Dirt]
+  pukeDespawnTime: |
+    Tempo in secondi perché il vomito sparisca (il valore di minecraft di default è 300 = 5 min) [60]
+    Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
+  stumblePercent: "How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]"
+  showStatusOnDrink: "Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]"
+  drainItem: "Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della \"forza\" che avevi impsotato) (list)"
+  enableCauldronParticles: |
+    Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+    The changing color of the particles can help with timing some recipes
+  minimalParticles: "If Cauldron Particles should be reduced to the bare minimum [false]"
+  craft-enableSealingTable: "If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]"
+  sealingTableBlock: |
+    By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it
+    IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE).
+  alwaysShowQuality: "Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]"
+  alwaysShowAlc: "Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]"
+  showBrewer: "If we should show who brewed the drink [false]"
+  requireKeywordOnSigns: "Se i barili vengono creati solo quando il cartello posto contiene la parola \"barrel\" (o una traduzione) [true]"
+  ageInMCBarrels: "If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]"
+  agingYearDuration: "Durata (in minuti) di un \"anno\" durante l'invecchiamento delle bevande [20]"
+  enableEncode: |
+    The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+    hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+    This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+    
+    Only drawback: brew items can only be used on another server with the same encodeKey.
+    When using Brews on multiple (BungeeCord) Servers, define a MYSQL database in the 'storage' settings.
+    
+    So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+  useOtherPlugins: |
+    -- Compatibilità con altri plugin --
+  
+    Abilita il controllo della presenza di altri plugin per i permessi relativi ai barili[true]
+    Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
+  useVirtualChestPerms: |
+    Use a virtual chest when opening a Barrel to check with all other protection plugins
+    This could confuse Anti-Cheat plugins, but is otherwise good to use
+    use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
+  useLogBlock: "Enable the Logging of Barrel Inventories to LogBlock [true]"
+  useOffhandForCauldron: "If items in Offhand should be added to the cauldron as well [false]"
+  loadDataAsync: |
+    This option no longer does anything anymore, and will be removed in future releases of BreweryX.
+    BreweryX will load data asynchronously always, with the exception of server startup and shutdown.
+  hangoverDays: "Tempo in giorni che la sbronza resta in memoria dopo che il giocatore va offline, cioè il tempo per cui i postumi della sbornia durano. [7]"
+  colorInBarrels-Brewer: "Colora la descrizione dell'item in base alla qualità mentre è in un barile o in un alambicco [true, true]"
+  openLargeBarrelEverywhere: "Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]"
+  brewHopperDump: "Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]"
+  enableChatDistortion: |
+    If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing
+    How much the chat is distorted depends on how drunk the Player is
+    Below are settings for what and how changes in chat occur
+  logRealChat: "Salva nel log del server quello che il giocatore ha realmente scritto, prima che le sue parole venissero alterate [false]"
+  distortCommands: "Il testo seguente ad alcuni comandi definiti qui sotto sarà distorto da ubriachi [- /gl]"
+  distortSignText: "Distorci il testo sui cartelli quando sei ubriaco [false]"
+  distortBypass: |
+    Definisci dei caratteri fra cui inserire le parole per evitare la distorsione della chat (usa "," come separatore) (list) [- '[,]']
+    Chat Example: Hello i am drunk *I am testing Brewery*
+  words: |
+    words: Lettere e parole che saranno alterate chattando durante la sbronza.
+    Saranno elaborate dalla prima all'ultima e la frase scritta viene alterata in quell'ordine.
+
+    replace: Lettere o parole da sostituire. (Special: "-space": sostituisco spazio, "-random": lo mette in una posizione a caso, "-all": tutto, "-start": all'inizio, "-end": alla fine.)
+    to: Con cosa sostituirle.
+    pre: Lettere e parole prima della parola voluta (separa con ",").
+    match: true = una delle parole specificate in "pre" deve precedere la parola bersaglio,  false = nessuna delle parole in "pre" deve trovarsi prima della parola bersaglio.
+    alcohol: Ubriachezza minima da 1 a 100 perché la parola sia alterata.
+    percentage: Probabilità di sostituzione in perchentuale.
+  useOtherFiles: |
+    You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.
+    IMPORTANT: custom items, recipes, and cauldron ingredients declared in their proper files will take priority over those declared here! (e.g. 2 recipes with the same name)
+
+
+
+
+
+recipesFile:
+  header: |
+    -- Ricette per pozioni --
+
+    name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
+     ingredients: Lista degli ingredienti nel formato materiale/quantità
+       With an item in your hand, use /brew ItemName to get its material for use in a recipe
+       (Gli id invece dei materiali sono "disapprovati" da Bukkit)
+       Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+       Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+       Or a custom item defined above
+    cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
+    distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
+    distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
+    wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera 7=Crimson 8=Warped 9=Mangrove 10=Ciliegio 11=Bambù (12=Tagliare il rame)
+      The Minecraft barrel is made of oak
+    age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
+    color: Colore della pozione dopo essere stata distillata/invecchiata
+      Colori utilizzabili: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+      Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+    difficoltà: Precisione richiesta per avere la migliore qualità da 1 a 10(1 = spreciso/più facile, 10 = molto preciso/più difficile)
+    alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
+    lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+      Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+    servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
+    playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
+      Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+    drinkmessage: Chat-message to the Player when drinking the Brew
+    drinktitle: Title on Screen to the Player when drinking the Brew
+    glint: Boolean if the item should have a glint (enchant glint)
+    customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+      Can specify one for all, or one for each quality, separated by /
+    effects: Eventuali effetti come quelli delle pozioni nel formato di effetto/livello/durata.
+      Lista di effetti possibili: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+      Intervalli di livelli o durate possono essere specificati con un "-", per esempio 'SPEED/1-2/30-40'. Ciò significa nel peggior caso livello 1 e 30 secondi di durata e livello 2 e 40 secondi nel migliore.
+      Gli intervalli funzionano anche in ordine decrescente, per effetti più deboli a qualità maggiori. Esempio: 'POISON/3-1/20-5'.
+      La durata massima possibile è 1638 secondi. Gli effetti instantaner non hanno bisogno che la durata sia specificata.
+
+
+
+cauldronFile:
+  header: |
+    -- Ingredients in the Cauldron --
+    Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+    You only need to add something here if you want to specify a custom name or color for the base potion
+    
+    name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+    
+    ingredients: List of 'material/amount'
+      With an item in your hand, use /brew ItemName to get its material for use in a recipe
+      (Item-ids instead of material are not supported by bukkit anymore and will not work)
+      A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+    
+    color: Color of the base potion from a cauldron. Defaults to CYAN
+      Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+      Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+    
+    cookParticles:
+      Color of the Particles above the cauldron at different cooking-times
+      Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+      As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+      It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
+    
+    lore: List of additional text on the base potion. (Formatting codes possible: such as &6 or hex as #&<hex>)
+    
+    customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+
+
+customItemsFile:
+  header: |
+    -- Define custom items --
+    The defined id can then be used in recipes
+    
+    matchAny: true if it is already enough if one of the info matches     
+    material: Which type the item has to be 
+    name: Which name the item has to be (Formatting codes possible: such as &6 or hex as &#<hex>)  
+    lore: What has to be in the lore of the item   
+    customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format

@@ -73,9 +73,8 @@ import java.util.stream.Collectors;
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
-	// TODO: Should we do file backups? - Jsinco
+	// TODO: File backups
 	// TODO: Change the addon API FileManager to use Okaeri
-	// TODO: Add localized header so recipes, cauldron, and custom-items file can be updated w/o removing comments
 
 	private static final int RESOURCE_ID = 114777;
 
@@ -132,7 +131,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// Load config and lang
 		Config config = ConfigManager.getConfig(Config.class);
-		Lang lang = ConfigManager.getConfig(Lang.class);
+		ConfigManager.newInstance(Lang.class, false);
 
 		if (config.isFirstCreation()) {
 			config.onFirstCreation();

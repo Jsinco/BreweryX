@@ -7,6 +7,7 @@ import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.sector.CustomItemsSector;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.recipe.RecipeItem;
+import eu.okaeri.configs.annotation.Header;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@OkaeriConfigFileOptions(value = "custom-items.yml", update = false)
+@Header("!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten!!!")
+@OkaeriConfigFileOptions("custom-items.yml")
 @Setter
 public class CustomItemsFile extends AbstractOkaeriConfigFile {
 

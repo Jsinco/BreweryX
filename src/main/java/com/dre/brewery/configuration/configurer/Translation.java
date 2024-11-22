@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Translation {
 
-	// Languages added should have a config and a lang translation (resources/configlangs/, resources/languages/)
+	// Languages added should have a config and a lang translation (resources/config-langs/, resources/languages/)
 
 	EN("en.yml"),
 	DE("de.yml"),
