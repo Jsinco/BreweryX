@@ -2,7 +2,8 @@
 version: '3.1'
 
 
-# Quelques traductions en français ont été faites avec DeepL
+# Quelques traductions en français ont été faites avec DeepL ; autres ont été faites à la mains.
+# En tous cas, une possibilité d'erreurs lors de la traduction est toujours présent.
 # -- Paramètres --
 # Les paramètres par défaut sont entre []
 
@@ -78,7 +79,7 @@ drainItems:
   - Milk_Bucket/2
 
 # Visionner des particules au-dessus des chaudrons quand ils contiennent des ingrédients et sont placés sur une source de challeur. [true]
-# La transition des couleur de chauffage peuvent être utiles avec la coordination de certaines recettes
+# La transition des couleurs de chauffage peut être utile avec la coordination de certaines recettes.
 enableCauldronParticles: true
 # Si les particules de chaudron devraient être réduites à la valeur minimale [false]
 minimalParticles: false
