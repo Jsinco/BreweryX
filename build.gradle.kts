@@ -148,10 +148,13 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(langVersion)
 }
 
+
 publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
-    }
+	publications {
+		create<MavenPublication>("maven") {
+			artifact(tasks.shadowJar.get().archiveFile) {
+				builtBy(tasks.shadowJar)
+			}
+		}
+	}
 }
