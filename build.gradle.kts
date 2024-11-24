@@ -33,27 +33,40 @@ repositories {
 }
 
 dependencies {
-	constraints {
-		implementation("org.yaml:snakeyaml") {
-			version {
-				require("2.3")
-				reject("1.33")
-			}
-		}
-	}
-
+    // Spigot
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
-		exclude("com.google.code.gson", "gson")
-	}
+        exclude("com.google.code.gson", "gson") // Implemented manually
+    }
+    // Implemented manually mainly due to older server versions implementing versions of GSON
+    // Which don't support records.
+    implementation("com.google.code.gson:gson:2.11.0")
+    // For proper scheduling between Bukkit-Folia like servers, https://github.com/Anon8281/UniversalScheduler
+    implementation("com.github.Anon8281:UniversalScheduler:0.1.3")
+    // Nice annotations, I prefer these to Lombok's, https://www.jetbrains.com/help/idea/annotating-source-code.html
+    implementation("org.jetbrains:annotations:16.0.2")
+    // Lombok
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    // Okaeri configuration
+    implementation("eu.okaeri:okaeri-configs-yaml-snakeyaml:5.0.5") {
+        exclude("org.yaml", "snakeyaml")
+    }
+    constraints {
+        implementation("org.yaml:snakeyaml") {
+            version {
+                require("2.3")
+                reject("1.33")
+            }
+        }
+    }
 
+    // Plugin Compatability
     compileOnly("net.milkbowl.vault:VaultAPI:1.6")
     compileOnly("com.sk89q:worldguard:6.1") // https://dev.bukkit.org/projects/worldedit/files
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldedit/files
     compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldguard/files
-    compileOnly("com.griefcraft.lwc:LWCX:2.2.9-dev") {
-        exclude("org.bstats", "bstats-bukkit")
-    } // https://www.spigotmc.org/resources/lwc-extended.69551/history
+    compileOnly("com.griefcraft.lwc:LWCX:2.2.9-dev")// https://www.spigotmc.org/resources/lwc-extended.69551/history
     compileOnly("com.github.TechFortress:GriefPrevention:16.18") // https://www.spigotmc.org/resources/griefprevention.1884/history
     compileOnly("de.diddiz:logblock:1.16.5.1") // https://www.spigotmc.org/resources/logblock.67333/history
     compileOnly("com.github.Slimefun:Slimefun4:RC-35") // https://github.com/Slimefun/Slimefun4/releases
@@ -65,20 +78,6 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
     compileOnly("io.th0rgal:oraxen:1.163.0")
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
-
-	implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.jetbrains:annotations:16.0.2") // https://www.jetbrains.com/help/idea/annotating-source-code.html
-    implementation("com.github.Anon8281:UniversalScheduler:0.1.3") // https://github.com/Anon8281/UniversalScheduler
-    // I just implemented this manually
-    //implementation("org.bstats:bstats-bukkit:3.0.2") // https://bstats.org/getting-started/include-metrics
-
-    // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-
-    // Okaeri configuration
-    implementation("eu.okaeri:okaeri-configs-yaml-snakeyaml:5.0.5")
-
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
