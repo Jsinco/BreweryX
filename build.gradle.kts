@@ -12,7 +12,7 @@ val langVersion: Int = 17
 val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.3.6-SNAPSHOT"
+version = "3.3.7-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -120,7 +120,7 @@ tasks {
 		doLast {
 			val pluginFile = layout.buildDirectory.file("kt-reduced/plugin.yml").get().asFile
 			var content = pluginFile.readText()
-			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']", "")
+			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib:2.0.21']", "")
 			pluginFile.writeText(content)
 		}
 	}

@@ -48,8 +48,7 @@ public class InfoCommand implements SubCommand {
 
         boolean selfInfo = playerName == null;
         if (selfInfo) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
+            if (sender instanceof Player player) {
                 playerName = player.getName();
             } else {
                 lang.sendEntry(sender, "Error_PlayerCommand");

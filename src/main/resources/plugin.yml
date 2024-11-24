@@ -6,7 +6,7 @@ load: POSTWORLD
 folia-supported: true
 website: 'https://brewery.lumamc.net/'
 authors: [Jsinco, Mitality, Nadwey, Szarkans, Sn0wStorm, TTTheKing, Grafe]
-libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']
+libraries: ['org.jetbrains.kotlin:kotlin-stdlib:2.0.21']
 softdepend:
   - LWC
   - LogBlock
@@ -39,6 +39,7 @@ permissions:
       brewery.cauldron.insert: true
       brewery.cauldron.fill: true
       brewery.cmd.version: true
+      brewery.cmd.info: true
 # Mod
   brewery.mod:
     description: Allow to maintain Wakeup Points and to login even if overdrunken

@@ -503,6 +503,10 @@ public class BPlayer {
 
 	// he may be having a hangover
 	public void login(final Player player) {
+		if (offlineDrunk == 0) {
+			return;
+		}
+
 		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
 				if (config.isEnableHome() && !player.hasPermission("brewery.bypass.teleport")) {
@@ -525,7 +529,6 @@ public class BPlayer {
 					lang.sendEntry(player, "Player_Wake");
 				}
 			}
-			offlineDrunk = 0;
 		}
 		offlineDrunk = 0;
 	}

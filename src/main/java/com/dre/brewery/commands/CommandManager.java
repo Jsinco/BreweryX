@@ -42,25 +42,26 @@ public class CommandManager implements TabExecutor {
     private static final Map<String, SubCommand> subCommands = new HashMap<>();
 
     public CommandManager() {
-        subCommands.put("help" , new HelpCommand());
-        subCommands.put("reload", new ReloadCommand());
-        subCommands.put("wakeup", new WakeupCommand());
-        subCommands.put("itemName", new ItemName());
-        subCommands.put("create", new CreateCommand());
-        subCommands.put("info", new InfoCommand());
-        subCommands.put("seal", new SealCommand());
-        subCommands.put("copy", new CopyCommand());
-        subCommands.put("delete", new DeleteCommand());
-        subCommands.put("static", new StaticCommand());
-		subCommands.put("set", new SetCommand());
-        subCommands.put("unLabel", new UnLabelCommand());
-        subCommands.put("debuginfo", new DebugInfoCommand());
-        subCommands.put("showstats", new ShowStatsCommand());
-        subCommands.put("puke", new PukeCommand());
-        subCommands.put("drink", new DrinkCommand());
-		subCommands.put("reloadaddons", new ReloadAddonsCommand());
-        subCommands.put("version", new VersionCommand());
-        subCommands.put("data", new DataManagerCommand());
+        addSubCommand("help", new HelpCommand());
+        addSubCommand("reload", new ReloadCommand());
+        addSubCommand("wakeup", new WakeupCommand());
+        addSubCommand("itemName", new ItemName());
+        addSubCommand("info", new InfoCommand());
+        addSubCommand("seal", new SealCommand());
+        addSubCommand("copy", new CopyCommand());
+        addSubCommand("delete", new DeleteCommand());
+        addSubCommand("static", new StaticCommand());
+        addSubCommand("set", new SetCommand());
+        addSubCommand("unLabel", new UnLabelCommand());
+        addSubCommand("debuginfo", new DebugInfoCommand());
+        addSubCommand("showstats", new ShowStatsCommand());
+        addSubCommand("puke", new PukeCommand());
+        addSubCommand("drink", new DrinkCommand());
+        addSubCommand("reloadaddons", new ReloadAddonsCommand());
+        addSubCommand("version", new VersionCommand());
+        addSubCommand("data", new DataManagerCommand());
+
+        addSubCommand(new CreateCommand(), "create", "give");
     }
 
     @Override
@@ -82,7 +83,7 @@ public class CommandManager implements TabExecutor {
             lang.sendEntry(sender, "Error_NotPlayer");
             return true;
         } else if (permission != null && !sender.hasPermission(permission)) {
-            lang.sendEntry(sender, "Error_NoPermission");
+            lang.sendEntry(sender, "Error_NoPermissions");
             return true;
         }
 
@@ -115,7 +116,31 @@ public class CommandManager implements TabExecutor {
 		subCommands.put(name, subCommand);
 	}
 
+    public static void addSubCommand(SubCommand subCommand, String... names) {
+        for (String name : names) {
+            subCommands.put(name, subCommand);
+        }
+    }
+
 	public static void removeSubCommand(String name) {
 		subCommands.remove(name);
 	}
+
+    public static void removeSubCommand(String... names) {
+        for (String name : names) {
+            subCommands.remove(name);
+        }
+    }
+
+    public static void removeSubCommand(SubCommand subCommand) {
+        List<String> keys = new ArrayList<>();
+        for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
+            if (entry.getValue() == subCommand) {
+                keys.add(entry.getKey());
+            }
+        }
+        for (String key : keys) {
+            subCommands.remove(key);
+        }
+    }
 }

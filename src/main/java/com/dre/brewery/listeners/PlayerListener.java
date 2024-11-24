@@ -265,34 +265,35 @@ public class PlayerListener implements Listener {
 	// player joins while passed out
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-			final Player player = event.getPlayer();
-			BPlayer bplayer = BPlayer.get(player);
-			if (bplayer != null) {
-				if (player.hasPermission("brewery.bypass.logindeny")) {
-					if (bplayer.getDrunkeness() > 100) {
-						bplayer.setData(100, 0);
-					}
-					bplayer.join(player);
-					return;
-				}
-				switch (bplayer.canJoin()) {
-					case 0:
-						bplayer.join(player);
-						return;
-					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDeny"));
-						return;
-					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDenyLong"));
-				}
+		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+			return;
+		}
+		Player player = event.getPlayer();
+		BPlayer bplayer = BPlayer.get(player);
+		if (bplayer == null) {
+			return;
+		}
+		if (player.hasPermission("brewery.bypass.logindeny")) {
+			if (bplayer.getDrunkeness() > 100) {
+				bplayer.setData(100, 0);
 			}
+			return;
+		}
+		switch (bplayer.canJoin()) {
+			case 2 ->
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDeny"));
+			case 3 ->
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDenyLong"));
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		UpdateChecker.notify(event.getPlayer());
+		BPlayer bplayer = BPlayer.get(event.getPlayer());
+		if (bplayer != null) {
+			bplayer.login(event.getPlayer());
+		}
 	}
 
 	@EventHandler
