@@ -33,6 +33,15 @@ repositories {
 }
 
 dependencies {
+	constraints {
+		implementation("org.yaml:snakeyaml") {
+			version {
+				require("2.3")
+				reject("1.33")
+			}
+		}
+	}
+
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
 		exclude("com.google.code.gson", "gson")
 	}
