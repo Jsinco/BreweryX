@@ -265,13 +265,9 @@ public class PlayerListener implements Listener {
 					if (bplayer.getDrunkeness() > 100) {
 						bplayer.setData(100, 0);
 					}
-					bplayer.join(player);
 					return;
 				}
 				switch (bplayer.canJoin()) {
-					case 0:
-						bplayer.join(player);
-						return;
 					case 2:
 						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDeny"));
 						return;
@@ -282,9 +278,15 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		UpdateChecker.notify(event.getPlayer());
+
+		Player player = event.getPlayer();
+		BPlayer bplayer = BPlayer.get(player);
+
+		if (bplayer != null)
+			bplayer.join(player);
 	}
 
 	@EventHandler

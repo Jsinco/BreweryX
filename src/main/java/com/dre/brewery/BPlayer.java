@@ -455,10 +455,6 @@ public class BPlayer {
 
 	// #### Login ####
 
-	public boolean canJoinSimpleStatus() {
-        return canJoin() == 0;
-    }
-
 	// can the player login or is he too drunk
 	public int canJoin() {
 		if (drunkenness <= 70) {
@@ -488,17 +484,12 @@ public class BPlayer {
 		return 3;
 	}
 
-	// player joins
+	// he may be having a hangover
 	public void join(final Player player) {
 		if (offlineDrunk == 0) {
 			return;
 		}
-		// delayed login event as the player is not fully accessible pre login
-		BreweryPlugin.getScheduler().runTaskLater(() -> login(player), 1L);
-	}
 
-	// he may be having a hangover
-	public void login(final Player player) {
 		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
 				if (BConfig.enableHome && !player.hasPermission("brewery.bypass.teleport")) {
@@ -521,7 +512,6 @@ public class BPlayer {
 					BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_Wake"));
 				}
 			}
-			offlineDrunk = 0;
 		}
 		offlineDrunk = 0;
 	}
@@ -610,6 +600,7 @@ public class BPlayer {
 			int count = entry.getValue();
 			if (!player.isValid() || !player.isOnline()) {
 				iter.remove();
+				continue;
 			}
 			puke(player);
 			if (count <= 1) {
