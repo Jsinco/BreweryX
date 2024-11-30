@@ -3,6 +3,7 @@ package com.dre.brewery.integration.item;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.utility.Logging;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,7 +24,7 @@ public class SlimefunPluginItem extends PluginItem {
 				return sfItem.getId().equalsIgnoreCase(getItemId());
 			}
 		} catch (Exception | LinkageError e) {
-			BreweryPlugin.getInstance().errorLog("Could not check Slimefun for Item ID", e);
+			Logging.errorLog("Could not check Slimefun for Item ID", e);
 			Hook.SLIMEFUN.setEnabled(false);
 		}
 		return false;

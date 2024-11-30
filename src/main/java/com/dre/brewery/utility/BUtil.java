@@ -396,7 +396,7 @@ public class BUtil {
 			String[] drainSplit = materialString.split("/");
 			if (drainSplit.length > 1) {
 				Material mat = BUtil.getMaterialSafely(drainSplit[0]);
-				int strength = BreweryPlugin.getInstance().parseInt(drainSplit[1]);
+				int strength = BUtil.parseInt(drainSplit[1]);
 //                if (mat == null && hasVault && strength > 0) {
 //                    try {
 //                        net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
@@ -404,7 +404,7 @@ public class BUtil {
 //                            mat = vaultItem.getType();
 //                        }
 //                    } catch (Exception e) {
-//                        BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+//                        Logging.errorLog("Could not check vault for Item Name");
 //                        e.printStackTrace();
 //                    }
 //                }
@@ -421,7 +421,7 @@ public class BUtil {
 		try {
 			return UUID.fromString(uuid);
 		} catch (IllegalArgumentException e) {
-			BreweryPlugin.getInstance().errorLog("UUID is invalid! " + uuid, e);
+			Logging.errorLog("UUID is invalid! " + uuid, e);
 			return null;
 		}
 	}
@@ -479,6 +479,40 @@ public class BUtil {
 
 		in.close();
 		out.close();
+	}
+
+
+	public static int parseInt(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	public static double parseDouble(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Double.parseDouble(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	public static float parseFloat(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Float.parseFloat(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
 	}
 
 }

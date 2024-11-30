@@ -4,6 +4,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -195,7 +196,7 @@ public abstract class RecipeItem implements Cloneable {
 
 		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
 			// Spammy, just quietly fail
-			//BreweryPlugin.getInstance().errorLog("No Config Entries found for Custom Item");
+			//Logging.errorLog("No Config Entries found for Custom Item");
 			return null;
 		}
 
@@ -227,7 +228,7 @@ public abstract class RecipeItem implements Cloneable {
 		for (String item : ingredientsList) {
 			String[] ingredParts = item.split("/");
 			if (ingredParts.length == 2) {
-				BreweryPlugin.getInstance().errorLog("Item Amount can not be specified for Custom Items: " + item);
+				Logging.errorLog("Item Amount can not be specified for Custom Items: " + item);
 				return null;
 			}
 			Material mat = BUtil.getMaterialSafely(ingredParts[0]);
@@ -245,14 +246,14 @@ public abstract class RecipeItem implements Cloneable {
 						mat = vaultItem.getType();
 					}
 				} catch (Exception e) {
-					BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+					Logging.errorLog("Could not check vault for Item Name");
 					e.printStackTrace();
 				}
 			}
 			if (mat != null) {
 				materials.add(mat);
 			} else {
-				BreweryPlugin.getInstance().errorLog("Unknown Material: " + ingredParts[0]);
+				Logging.errorLog("Unknown Material: " + ingredParts[0]);
 				return null;
 			}
 		}

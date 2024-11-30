@@ -13,6 +13,7 @@ import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,8 +36,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Override
 	public void onFirstCreation() {
 		BreweryPlugin plugin = BreweryPlugin.getInstance();
-		plugin.log("&9Creating a new &6config.yml&9!");
-		plugin.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
+		Logging.log("&9Creating a new &6config.yml&9!");
+		Logging.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
 	}
 
 	// This doesn't need to be an enumerator, we're reading this value back to an enum from TranslationManager which doesn't rely on this class.

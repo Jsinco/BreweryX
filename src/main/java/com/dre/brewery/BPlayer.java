@@ -10,6 +10,7 @@ import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
@@ -231,7 +232,7 @@ public class BPlayer {
 				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
-			BreweryPlugin.getInstance().errorLog("Failed to show drunkenness to " + player.getName(), e);
+			Logging.errorLog("Failed to show drunkenness to " + player.getName(), e);
 		}
 	}
 
@@ -548,7 +549,7 @@ public class BPlayer {
 			} else if (homeType.startsWith("cmd:")) {
 				player.performCommand(homeType.substring(4));
 			} else {
-				BreweryPlugin.getInstance().errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
+				Logging.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 			}
 			if (home != null) {
 				player.teleport(home);
@@ -891,7 +892,7 @@ public class BPlayer {
 	public int getQuality() {
 		if (drunkenness == 0) {
 			// PAPI Placeholder %breweryx_quality% may be used on players that aren't drunk!
-			// BreweryPlugin.getInstance().errorLog("drunkenness should not be 0!");
+			// Logging.errorLog("drunkenness should not be 0!");
 			return quality;
 		}
 		if (drunkenness < 0) {

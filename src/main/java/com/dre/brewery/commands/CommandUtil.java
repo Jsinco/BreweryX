@@ -6,6 +6,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.dre.brewery.utility.Tuple;
@@ -52,13 +53,13 @@ public class CommandUtil {
 
         int page = 1;
         if (args.length > 1) {
-            page = plugin.parseInt(args[1]);
+            page = BUtil.parseInt(args[1]);
         }
 
         ArrayList<String> commands = getCommands(sender);
 
         if (page == 1) {
-            plugin.msg(sender, "&6" + plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion());
+            Logging.msg(sender, "&6" + plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion());
         }
 
         BUtil.list(sender, commands, page);
@@ -75,12 +76,12 @@ public class CommandUtil {
         boolean hasQuality = false;
         String pName = null;
         if (args.length > 2) {
-            quality = plugin.parseInt(args[args.length - 1]);
+            quality = BUtil.parseInt(args[args.length - 1]);
 
             if (quality <= 0 || quality > 10) {
                 pName = args[args.length - 1];
                 if (args.length > 3) {
-                    quality = plugin.parseInt(args[args.length - 2]);
+                    quality = BUtil.parseInt(args[args.length - 2]);
                 }
             }
             if (quality > 0 && quality <= 10) {

@@ -4,6 +4,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
@@ -48,11 +49,11 @@ public class TranslationManager {
 				if (trans != null) {
 					this.activeTranslation = trans;
 				} else {
-					BreweryPlugin.getInstance().warningLog("Invalid language in config.yml: &6" + data.get("language"));
+					Logging.warningLog("Invalid language in config.yml: &6" + data.get("language"));
 				}
 			}
 		} catch (IOException e) {
-			BreweryPlugin.getInstance().debugLog("Error reading YAML file: " + e.getMessage());
+			Logging.debugLog("Error reading YAML file: " + e.getMessage());
 		}
 
 		this.translations = new ConfigTranslations(activeTranslation, yaml);
@@ -77,7 +78,7 @@ public class TranslationManager {
 		// Fallback to the english translation
 		String fallbackTranslationString = fallbackTranslations.getTranslation(key);
 		if (fallbackTranslationString == null) {
-			BreweryPlugin.getInstance().warningLog("No translation found for key: " + key);
+			Logging.warningLog("No translation found for key: " + key);
 		}
 
 		return fallbackTranslationString;

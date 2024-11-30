@@ -2,6 +2,7 @@ package com.dre.brewery.integration.barrel;
 
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -45,8 +46,8 @@ public class WGBarrel7 implements WGBarrel {
 			try {
 				world = ((World) getWorldByName.invoke(platform, spigot.getWorld().getName()));
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
-				BreweryPlugin.getInstance().msg(player, "Error in WorldGuard");
+				Logging.errorLog("Error in WorldGuard", e);
+				Logging.msg(player, "Error in WorldGuard");
 				return false;
 			}
 		}

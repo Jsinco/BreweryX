@@ -1,6 +1,7 @@
 package com.dre.brewery.configuration;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.exception.OkaeriException;
@@ -13,10 +14,9 @@ import java.util.concurrent.CompletableFuture;
 @Getter @Setter
 public abstract class AbstractOkaeriConfigFile extends OkaeriConfig {
 
-    @Exclude
-    protected transient boolean update = false;
-    @Exclude
-    protected transient boolean firstCreation = false;
+    protected @Exclude transient boolean update = false;
+    protected @Exclude transient boolean firstCreation = false;
+    private @Exclude transient boolean blankInstance = false;
 
     // Util methods
 
@@ -26,11 +26,16 @@ public abstract class AbstractOkaeriConfigFile extends OkaeriConfig {
 
     @SneakyThrows
     public void reload() {
-        this.load(update);
+        if (this.blankInstance) {
+            ConfigManager.newInstance(this.getClass(), true);
+            this.blankInstance = false;
+        } else {
+            this.load(update);
+        }
     }
 
     public void onFirstCreation() {
-        BreweryPlugin.getInstance().log("Created a new configurable file: &6" + this.getBindFile().getFileName());
+        Logging.log("Created a new configurable file: &6" + this.getBindFile().getFileName());
     }
 
     @Override

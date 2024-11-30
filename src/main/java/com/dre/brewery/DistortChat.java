@@ -5,6 +5,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -103,7 +104,7 @@ public class DistortChat {
 						if (Character.isSpaceChar(chat.charAt(command.length()))) {
 							if (chat.toLowerCase().startsWith(command.toLowerCase())) {
 								if (config.isLogRealChat()) {
-									BreweryPlugin.getInstance().log(lang.getEntry("Player_TriedToSay", name, chat));
+									Logging.log(lang.getEntry("Player_TriedToSay", name, chat));
 								}
 
 								// exclude player parameters
@@ -167,7 +168,7 @@ public class DistortChat {
 			if (!words.isEmpty()) {
 				String message = event.getMessage();
 				if (config.isLogRealChat()) {
-					BreweryPlugin.getInstance().log(lang.getEntry("Player_TriedToSay", event.getPlayer().getName(), message));
+					Logging.log(lang.getEntry("Player_TriedToSay", event.getPlayer().getName(), message));
 				}
 
 				String distorted = distortMessage(message, bPlayer.getDrunkeness());

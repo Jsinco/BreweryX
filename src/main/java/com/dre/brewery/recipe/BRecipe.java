@@ -9,6 +9,7 @@ import com.dre.brewery.configuration.files.CustomItemsFile;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
@@ -111,17 +112,17 @@ public class BRecipe implements Cloneable {
 				recipe.name[0] = name[0];
 			}
 		} else {
-			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name missing or invalid!");
+			Logging.errorLog(recipeId + ": Recipe Name missing or invalid!");
 			return null;
 		}
 		if (recipe.getRecipeName() == null || recipe.getRecipeName().isEmpty()) {
-			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name invalid");
+			Logging.errorLog(recipeId + ": Recipe Name invalid");
 			return null;
 		}
 
 		recipe.ingredients = loadIngredients(configRecipe.getIngredients(), recipeId);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No ingredients for: " + recipe.getRecipeName());
+			Logging.errorLog("No ingredients for: " + recipe.getRecipeName());
 			return null;
 		}
 		recipe.cookingTime = configRecipe.getCookingTime();
@@ -140,7 +141,7 @@ public class BRecipe implements Cloneable {
 		String col = configRecipe.getColor() != null ? configRecipe.getColor() : "BLUE";
 		recipe.color = PotionColor.fromString(col);
 		if (recipe.color == PotionColor.WATER && !col.equals("WATER")) {
-			BreweryPlugin.getInstance().errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
+			Logging.errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
 			return null;
 		}
 
@@ -149,8 +150,8 @@ public class BRecipe implements Cloneable {
 		recipe.servercmds = loadQualityStringList(configRecipe.getServerCommands(), StringParser.ParseType.CMD);
 		recipe.playercmds = loadQualityStringList(configRecipe.getPlayerCommands(), StringParser.ParseType.CMD);
 
-		recipe.drinkMsg = BreweryPlugin.getInstance().color(configRecipe.getDrinkMessage());
-		recipe.drinkTitle = BreweryPlugin.getInstance().color(configRecipe.getDrinkTitle());
+		recipe.drinkMsg = BUtil.color(configRecipe.getDrinkMessage());
+		recipe.drinkTitle = BUtil.color(configRecipe.getDrinkTitle());
 		recipe.glint = configRecipe.isGlint();
 
 		if (configRecipe.getCustomModelData() != null) {
@@ -158,7 +159,7 @@ public class BRecipe implements Cloneable {
 			int[] cmData = new int[3];
 			for (int i = 0; i < 3; i++) {
 				if (cmdParts.length > i) {
-					cmData[i] = BreweryPlugin.getInstance().parseInt(cmdParts[i]);
+					cmData[i] = BUtil.parseInt(cmdParts[i]);
 				} else {
 					cmData[i] = i == 0 ? 0 : cmData[i - 1];
 				}
@@ -172,7 +173,7 @@ public class BRecipe implements Cloneable {
             if (effect.isValid()) {
                 recipe.effects.add(effect);
             } else {
-                BreweryPlugin.getInstance().errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
+                Logging.errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
             }
         }
         return recipe;
@@ -199,9 +200,9 @@ public class BRecipe implements Cloneable {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
 			if (ingredParts.length == 2) {
-				amount = BreweryPlugin.getInstance().parseInt(ingredParts[1]);
+				amount = BUtil.parseInt(ingredParts[1]);
 				if (amount < 1) {
-					BreweryPlugin.getInstance().errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
+					Logging.errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
 					return null;
 				}
 			}
@@ -232,7 +233,7 @@ public class BRecipe implements Cloneable {
 					continue;
 				} else {
 					// TODO Maybe load later ie on first use of recipe?
-					BreweryPlugin.getInstance().errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
+					Logging.errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
 					return null;
 				}
 			}
@@ -258,7 +259,7 @@ public class BRecipe implements Cloneable {
 			Material mat = BUtil.getMaterialSafely(matParts[0]);
 			short durability = -1;
 			if (matParts.length == 2) {
-				durability = (short) BreweryPlugin.getInstance().parseInt(matParts[1]);
+				durability = (short) BUtil.parseInt(matParts[1]);
 			}
 			if (mat == null && Hook.VAULT.isEnabled()) {
 				try {
@@ -275,7 +276,7 @@ public class BRecipe implements Cloneable {
 						}
 					}
 				} catch (Throwable e) {
-					BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
+					Logging.errorLog("Could not check vault for Item Name");
 					e.printStackTrace();
 				}
 			}
@@ -292,7 +293,7 @@ public class BRecipe implements Cloneable {
 				BCauldronRecipe.acceptedMaterials.add(mat);
 				BCauldronRecipe.acceptedSimple.add(mat);
 			} else {
-				BreweryPlugin.getInstance().errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
+				Logging.errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
 				return null;
 			}
 		}
@@ -327,31 +328,31 @@ public class BRecipe implements Cloneable {
 	 */
 	public boolean isValid() {
 		if (ingredients == null || ingredients.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
+			Logging.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
 			return false;
 		}
 		if (cookingTime < 1) {
-			BreweryPlugin.getInstance().errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillruns < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillTime < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
-			BreweryPlugin.getInstance().errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (age < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (difficulty < 0 || difficulty > 10) {
-			BreweryPlugin.getInstance().errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		return true;

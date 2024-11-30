@@ -1,6 +1,7 @@
 package com.dre.brewery.configuration.sector;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.CustomKey;
 
@@ -33,7 +34,7 @@ public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> {
 						map.put(field.getName(), obj);
 					}
                 } catch (IllegalAccessException e) {
-                    BreweryPlugin.getInstance().errorLog("Failed to access field: " + field.getName(), e);
+                    Logging.errorLog("Failed to access field: " + field.getName(), e);
                 }
             }
         }

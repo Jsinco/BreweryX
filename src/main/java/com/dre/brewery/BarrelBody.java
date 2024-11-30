@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -234,7 +235,7 @@ public class BarrelBody {
 	 * @return true if successful, false if Barrel was broken and should be removed.
 	 */
 	public boolean regenerateBounds() {
-		BreweryPlugin.getInstance().debugLog("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
+		Logging.debugLog("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
 		Block broken = getBrokenBlock(true);
 		if (broken != null) {
 			barrel.remove(broken, null, true);

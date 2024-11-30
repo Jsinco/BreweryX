@@ -13,6 +13,7 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,7 +82,7 @@ public class Barrel implements InventoryHolder {
 		if (items != null) {
 			for (String slot : items.keySet()) {
 				if (items.get(slot) instanceof ItemStack) {
-					this.inventory.setItem(BreweryPlugin.getInstance().parseInt(slot), (ItemStack) items.get(slot));
+					this.inventory.setItem(BUtil.parseInt(slot), (ItemStack) items.get(slot));
 				}
 			}
 		}
@@ -185,7 +186,7 @@ public class Barrel implements InventoryHolder {
 						}
 						loadTime = System.nanoTime() - loadTime;
 						float ftime = (float) (loadTime / 1000000.0);
-						BreweryPlugin.getInstance().debugLog("opening Barrel with potions (" + ftime + "ms)");
+						Logging.debugLog("opening Barrel with potions (" + ftime + "ms)");
 					}
 				}
 			}
@@ -197,7 +198,7 @@ public class Barrel implements InventoryHolder {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
-				BreweryPlugin.getInstance().errorLog("Failed to Log Barrel to LogBlock!", e);
+				Logging.errorLog("Failed to Log Barrel to LogBlock!", e);
 			}
 		}
 		player.openInventory(inventory);
@@ -399,12 +400,12 @@ public class Barrel implements InventoryHolder {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
-					BreweryPlugin.getInstance().errorLog("Failed to Log Barrel-break to LogBlock!", e);
+					Logging.errorLog("Failed to Log Barrel-break to LogBlock!", e);
 				}
 			}
 			if (event.willDropItems()) {
 				if (body == null) {
-					BreweryPlugin.getInstance().debugLog("Barrel Body is null, can't drop items: " + this.id);
+					Logging.debugLog("Barrel Body is null, can't drop items: " + this.id);
 					barrels.remove(this);
 					return;
 				}
@@ -577,7 +578,7 @@ public class Barrel implements InventoryHolder {
 						BreweryPlugin.getScheduler().runTask(barrel.getSpigot().getLocation(), () -> {
 							Block broken = barrel.body.getBrokenBlock(false);
 							if (broken != null) {
-								BreweryPlugin.getInstance().debugLog("Barrel at "
+								Logging.debugLog("Barrel at "
 										+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
 										+ " has been destroyed unexpectedly, contents will drop");
 								// remove the barrel if it was destroyed

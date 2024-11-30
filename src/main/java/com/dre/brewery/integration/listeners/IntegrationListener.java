@@ -21,6 +21,7 @@ import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.GameMode;
@@ -56,16 +57,16 @@ public class IntegrationListener implements Listener {
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
-					BreweryPlugin.getInstance().errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
-					BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
+					Logging.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
+					Logging.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
+					Logging.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 					e.printStackTrace();
 					Player player = event.getPlayer();
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						BreweryPlugin.getInstance().msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
-						BreweryPlugin.getInstance().msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
+						Logging.msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
+						Logging.msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
 					} else {
-						BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}
 				}
 			}
@@ -92,8 +93,8 @@ public class IntegrationListener implements Listener {
 						}
 					}
 				} catch (Throwable e) {
-					BreweryPlugin.getInstance().errorLog("Failed to Check GameModeInventories for Barrel Open Permissions!");
-					BreweryPlugin.getInstance().errorLog("Players will be able to open Barrel with GameMode Creative");
+					Logging.errorLog("Failed to Check GameModeInventories for Barrel Open Permissions!");
+					Logging.errorLog("Players will be able to open Barrel with GameMode Creative");
 					e.printStackTrace();
 					hook.setEnabled(false);
 				}
@@ -111,16 +112,16 @@ public class IntegrationListener implements Listener {
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
-					BreweryPlugin.getInstance().errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
-					BreweryPlugin.getInstance().errorLog("Disable the GriefPrevention support in the config and do /brew reload");
+					Logging.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
+					Logging.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
+					Logging.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
 					Player player = event.getPlayer();
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						BreweryPlugin.getInstance().msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
-						BreweryPlugin.getInstance().msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
+						Logging.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
+						Logging.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
 					} else {
-						BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}
 					return;
 				}
@@ -145,15 +146,15 @@ public class IntegrationListener implements Listener {
 							}
 						} catch (Throwable e) {
 							event.setCancelled(true);
-							BreweryPlugin.getInstance().errorLog("Failed to Check LWC for Barrel Open Permissions!");
-							BreweryPlugin.getInstance().errorLog("Brewery was tested with version 4.5.0 of LWC!");
-							BreweryPlugin.getInstance().errorLog("Disable the LWC support in the config and do /brew reload");
+							Logging.errorLog("Failed to Check LWC for Barrel Open Permissions!");
+							Logging.errorLog("Brewery was tested with version 4.5.0 of LWC!");
+							Logging.errorLog("Disable the LWC support in the config and do /brew reload");
 							e.printStackTrace();
 							if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-								BreweryPlugin.getInstance().msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-								BreweryPlugin.getInstance().msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+								Logging.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+								Logging.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
 							} else {
-								BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+								Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 							}
 							return;
 						}
@@ -172,16 +173,16 @@ public class IntegrationListener implements Listener {
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
-					BreweryPlugin.getInstance().errorLog("Failed to Check Towny for Barrel Open Permissions!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with Towny v0.96.3.0");
-					BreweryPlugin.getInstance().errorLog("Disable the Towny support in the config and do /brew reload");
+					Logging.errorLog("Failed to Check Towny for Barrel Open Permissions!");
+					Logging.errorLog("Brewery was tested with Towny v0.96.3.0");
+					Logging.errorLog("Disable the Towny support in the config and do /brew reload");
 					e.printStackTrace();
 					Player player = event.getPlayer();
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						BreweryPlugin.getInstance().msg(player, "&cTowny check Error, Brewery was tested with up to v0.96.3.0 of Towny");
-						BreweryPlugin.getInstance().msg(player, "&cSet &7useTowny: false &cin the config and /brew reload");
+						Logging.msg(player, "&cTowny check Error, Brewery was tested with up to v0.96.3.0 of Towny");
+						Logging.msg(player, "&cSet &7useTowny: false &cin the config and /brew reload");
 					} else {
-						BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}
 					return;
 				}
@@ -198,16 +199,16 @@ public class IntegrationListener implements Listener {
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
-					BreweryPlugin.getInstance().errorLog("Failed to Check BlockLocker for Barrel Open Permissions!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with BlockLocker v1.9");
-					BreweryPlugin.getInstance().errorLog("Disable the BlockLocker support in the config and do /brew reload");
+					Logging.errorLog("Failed to Check BlockLocker for Barrel Open Permissions!");
+					Logging.errorLog("Brewery was tested with BlockLocker v1.9");
+					Logging.errorLog("Disable the BlockLocker support in the config and do /brew reload");
 					e.printStackTrace();
 					Player player = event.getPlayer();
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						BreweryPlugin.getInstance().msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
-						BreweryPlugin.getInstance().msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
+						Logging.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
+						Logging.msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
 					} else {
-						BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}
 					return;
 				}
@@ -230,14 +231,14 @@ public class IntegrationListener implements Listener {
 			try {
 				BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(simulatedEvent);
 			} catch (Throwable e) {
-				BreweryPlugin.getInstance().errorLog("Failed to simulate a Chest for Barrel Open Permissions!");
-				BreweryPlugin.getInstance().errorLog("Disable useVirtualChestPerms in the config and do /brew reload");
+				Logging.errorLog("Failed to simulate a Chest for Barrel Open Permissions!");
+				Logging.errorLog("Disable useVirtualChestPerms in the config and do /brew reload");
 				e.printStackTrace();
 				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-					BreweryPlugin.getInstance().msg(player, "&cVirtual Chest Error");
-					BreweryPlugin.getInstance().msg(player, "&cSet &7useVirtualChestPerms: false &cin the config and /brew reload");
+					Logging.msg(player, "&cVirtual Chest Error");
+					Logging.msg(player, "&cSet &7useVirtualChestPerms: false &cin the config and /brew reload");
 				} else {
-					BreweryPlugin.getInstance().msg(player, "&cError opening Barrel, please report to an Admin!");
+					Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
 				}
 			} finally {
 				event.getClickedBlock().setType(Material.AIR, false);
@@ -265,15 +266,15 @@ public class IntegrationListener implements Listener {
 				}
 			} catch (Throwable e) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().errorLog("Failed to Check LWC for Barrel Break Permissions!");
-				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				BreweryPlugin.getInstance().errorLog("Disable the LWC support in the config and do /brew reload");
+				Logging.errorLog("Failed to Check LWC for Barrel Break Permissions!");
+				Logging.errorLog("Brewery was tested with version 4.5.0 of LWC!");
+				Logging.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
 				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-					BreweryPlugin.getInstance().msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-					BreweryPlugin.getInstance().msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+					Logging.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+					Logging.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
 				} else {
-					BreweryPlugin.getInstance().msg(player, "&cError breaking Barrel, please report to an Admin!");
+					Logging.msg(player, "&cError breaking Barrel, please report to an Admin!");
 				}
 			}
 		} else {
@@ -289,9 +290,9 @@ public class IntegrationListener implements Listener {
 				}
 			} catch (Throwable e) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().errorLog("Failed to Check LWC on Barrel Destruction!");
-				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				BreweryPlugin.getInstance().errorLog("Disable the LWC support in the config and do /brew reload");
+				Logging.errorLog("Failed to Check LWC on Barrel Destruction!");
+				Logging.errorLog("Brewery was tested with version 4.5.0 of LWC!");
+				Logging.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
 			}
 		}
@@ -304,8 +305,8 @@ public class IntegrationListener implements Listener {
 		try {
 			LWCBarrel.remove(event.getBarrel());
 		} catch (Throwable e) {
-			BreweryPlugin.getInstance().errorLog("Failed to Remove LWC Lock from Barrel!");
-			BreweryPlugin.getInstance().errorLog("Brewery was tested with version 4.5.0 of LWC!");
+			Logging.errorLog("Failed to Remove LWC Lock from Barrel!");
+			Logging.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 			e.printStackTrace();
 		}
 	}
@@ -317,8 +318,8 @@ public class IntegrationListener implements Listener {
 				try {
 					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
 				} catch (Exception e) {
-					BreweryPlugin.getInstance().errorLog("Failed to Log Barrel to LogBlock!");
-					BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.94 of LogBlock!");
+					Logging.errorLog("Failed to Log Barrel to LogBlock!");
+					Logging.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}
@@ -349,7 +350,7 @@ public class IntegrationListener implements Listener {
 				}
 			}
 		} catch (Throwable e) {
-			BreweryPlugin.getInstance().errorLog("Could not check MMOItems for Item" ,e);
+			Logging.errorLog("Could not check MMOItems for Item" ,e);
 			Hook.MMOITEMS.setEnabled(false);
 		}
 	}

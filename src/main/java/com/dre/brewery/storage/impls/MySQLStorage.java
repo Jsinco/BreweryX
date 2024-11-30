@@ -14,6 +14,7 @@ import com.dre.brewery.storage.records.SerializableCauldron;
 import com.dre.brewery.storage.records.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
+import com.dre.brewery.utility.Logging;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -71,7 +72,7 @@ public class MySQLStorage extends DataManager {
         try {
             connection.close();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to close MySQL connection!", e);
+            Logging.errorLog("Failed to close MySQL connection!", e);
         }
     }
 
@@ -85,7 +86,7 @@ public class MySQLStorage extends DataManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve object from table: " + table + ", from: MySQL!", e);
+            Logging.errorLog("Failed to retrieve object from table: " + table + ", from: MySQL!", e);
         }
         return null;
     }
@@ -102,7 +103,7 @@ public class MySQLStorage extends DataManager {
                 objects.add(serializer.deserialize(data, type));
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve objects from table: " + table + ", from: MySQL!", e);
+            Logging.errorLog("Failed to retrieve objects from table: " + table + ", from: MySQL!", e);
         }
         return objects;
     }
@@ -119,7 +120,7 @@ public class MySQLStorage extends DataManager {
 				}
 				insertStatement.executeBatch();
 			} catch (SQLException e) {
-				plugin.errorLog("Failed to save to MySQL!", e);
+				Logging.errorLog("Failed to save to MySQL!", e);
 			}
 			return;
 		}
@@ -154,12 +155,12 @@ public class MySQLStorage extends DataManager {
 				connection.commit();
 			} catch (SQLException e) {
 				connection.rollback();
-				plugin.errorLog("Failed to save objects to: " + table + " due to MySQL exception!", e);
+				Logging.errorLog("Failed to save objects to: " + table + " due to MySQL exception!", e);
 			} finally {
 				connection.setAutoCommit(true);
 			}
 		} catch (SQLException e) {
-			plugin.errorLog("Failed to manage transaction for saving objects to: " + table + " due to MySQL exception!", e);
+			Logging.errorLog("Failed to manage transaction for saving objects to: " + table + " due to MySQL exception!", e);
 		}
 	}
 
@@ -170,7 +171,7 @@ public class MySQLStorage extends DataManager {
             statement.setString(2, serializer.serialize(serializableThing));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save object to:" + table + ", to: MySQL!", e);
+            Logging.errorLog("Failed to save object to:" + table + ", to: MySQL!", e);
         }
     }
 
@@ -180,7 +181,7 @@ public class MySQLStorage extends DataManager {
             statement.setString(1, id.toString());
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to delete object from: " + table + ", from: MySQL!", e);
+            Logging.errorLog("Failed to delete object from: " + table + ", from: MySQL!", e);
         }
     }
 
@@ -329,7 +330,7 @@ public class MySQLStorage extends DataManager {
                 return serializer.deserialize(resultSet.getString("data"), BreweryMiscData.class);
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve misc data from MySQL!", e);
+            Logging.errorLog("Failed to retrieve misc data from MySQL!", e);
         }
         return new BreweryMiscData(System.currentTimeMillis(), 0, new ArrayList<>(), new ArrayList<>(), 0);
     }
@@ -341,7 +342,7 @@ public class MySQLStorage extends DataManager {
             statement.setString(1, serializer.serialize(data));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save misc data to MySQL!", e);
+            Logging.errorLog("Failed to save misc data to MySQL!", e);
         }
     }
 }

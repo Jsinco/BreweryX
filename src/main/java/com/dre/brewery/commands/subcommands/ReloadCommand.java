@@ -10,6 +10,7 @@ import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public class ReloadCommand implements SubCommand {
 				try {
 					file.reload();
 				} catch (Throwable e) {
-					breweryPlugin.errorLog("Something went wrong trying to load " + file.getBindFile().getFileName() + "!", e);
+					Logging.errorLog("Something went wrong trying to load " + file.getBindFile().getFileName() + "!", e);
 				}
 			}
 
@@ -75,7 +76,7 @@ public class ReloadCommand implements SubCommand {
 
 
 		} catch (Throwable e) {
-			breweryPlugin.errorLog("Something went wrong trying to reload Brewery!", e);
+			Logging.errorLog("Something went wrong trying to reload Brewery!", e);
 		}
 		// Make sure this reloader is set to null after
 		reloader = null;

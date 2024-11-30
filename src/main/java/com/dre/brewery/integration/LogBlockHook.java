@@ -2,6 +2,7 @@ package com.dre.brewery.integration;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
+import com.dre.brewery.utility.Logging;
 
 public class LogBlockHook extends Hook {
 
@@ -15,7 +16,7 @@ public class LogBlockHook extends Hook {
             BlocklockerBarrel.registerBarrelAsProtectable();
         } catch (ClassNotFoundException e) {
             this.enabled = false;
-            BreweryPlugin.getInstance().log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
+            Logging.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
         }
     }
 }

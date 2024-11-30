@@ -74,7 +74,7 @@ public class UpdateChecker {
 
 			if (UpdateChecker.parseVersion(latestVersion) > UpdateChecker.parseVersion(currentVersion)) {
 				UpdateChecker.setUpdateAvailable(true);
-				plugin.log(lang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
+				Logging.log(lang.getEntry("Etc_UpdateAvailable", "v" + currentVersion, "v" + latestVersion));
 			}
 			UpdateChecker.setLatestVersion(latestVersion);
 		});

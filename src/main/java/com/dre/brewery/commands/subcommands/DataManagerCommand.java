@@ -7,6 +7,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -15,24 +16,24 @@ public class DataManagerCommand implements SubCommand {
 	@Override
 	public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
-			breweryPlugin.msg(sender, "Missing arguments.");
+			Logging.msg(sender, "Missing arguments.");
 			return;
 		}
 
-		if (args[1].equalsIgnoreCase("reload")) {
-			BreweryPlugin.getDataManager().exit(true, true, () -> {
-				try {
-					BreweryPlugin.setDataManager(DataManager.createDataManager(ConfigManager.getConfig(Config.class).getStorage()));
-					breweryPlugin.msg(sender, "Reloaded the DataManager!");
-				} catch (StorageInitException e) {
-					breweryPlugin.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
-				}
-			});
-		} else if (args[1].equalsIgnoreCase("save")) {
-			BreweryPlugin.getDataManager().saveAll(true, () -> breweryPlugin.msg(sender, "Saved all Brewery data!"));
 
-		} else {
-			breweryPlugin.msg(sender, "Unknown argument: " + args[1]);
+		switch (args[1].toLowerCase()) {
+			case "reload" -> BreweryPlugin.getDataManager().exit(true, true, () -> {
+                try {
+                    BreweryPlugin.setDataManager(DataManager.createDataManager(ConfigManager.getConfig(Config.class).getStorage()));
+                    Logging.msg(sender, "Reloaded the DataManager!");
+                } catch (StorageInitException e) {
+					Logging.errorLog("Failed to initialize the DataManager! WARNING: This will cause issues and Brewery will NOT be able to save. Check your config and reload.", e);
+                }
+            });
+
+			case "save" -> BreweryPlugin.getDataManager().saveAll(true, () -> Logging.msg(sender, "Saved all Brewery data!"));
+
+			default -> lang.sendEntry(sender, "Error_UnknownCommand");
 		}
 	}
 

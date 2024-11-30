@@ -6,6 +6,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
 import org.bukkit.event.EventHandler;
@@ -35,7 +36,7 @@ public class ChestShopListener implements Listener {
 		} catch (Throwable e) {
 			HandlerList.unregisterAll(this);
 			Hook.CHESTSHOP.setEnabled(false);
-			BreweryPlugin.getInstance().errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support", e);
+			Logging.errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support", e);
 		}
 	}
 }

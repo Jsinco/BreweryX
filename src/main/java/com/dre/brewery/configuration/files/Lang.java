@@ -6,6 +6,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
 import eu.okaeri.configs.annotation.Exclude;
@@ -38,7 +39,7 @@ public class Lang extends AbstractOkaeriConfigFile {
 
     public void mapStrings() {
         BreweryPlugin plugin = BreweryPlugin.getInstance();
-        plugin.log("Using language&7: &6" + this.getBindFile().getFileName());
+        Logging.log("Using language&7: &6" + this.getBindFile().getFileName());
 
         this.mappedEntries = new HashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
@@ -54,13 +55,17 @@ public class Lang extends AbstractOkaeriConfigFile {
                     this.mappedEntries.put(field.getName(), (String) field.get(this));
                 }
             } catch (IllegalAccessException e) {
-                plugin.errorLog("Lang failed to get a field value! &6(" + field.getName() + ")", e);
+                Logging.errorLog("Lang failed to get a field value! &6(" + field.getName() + ")", e);
             }
         }
     }
 
     public void sendEntry(CommandSender recipient, String key, Object... args) {
         recipient.sendMessage(BUtil.color(config.getPluginPrefix() + this.getEntry(key, false, args)));
+    }
+
+    public void logEntry(Logging.LogLevel level, String key, Object... args) {
+        Logging.log(level, this.getEntry(key, false, args));
     }
 
     public String getEntry(String key, Object... args) {

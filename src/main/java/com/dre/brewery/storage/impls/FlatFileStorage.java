@@ -12,8 +12,8 @@ import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -52,7 +52,7 @@ public class FlatFileStorage extends DataManager {
         try {
             dataFile.save(rawFile);
         } catch (IOException e) {
-            plugin.errorLog("Failed to save to Flatfile!", e);
+            Logging.errorLog("Failed to save to Flatfile!", e);
         }
     }
 
@@ -60,14 +60,17 @@ public class FlatFileStorage extends DataManager {
     public Barrel getBarrel(UUID id) {
         String path = "barrels." + id;
 
-        Block spigot = deserializeLocation(dataFile.getString(path + ".spigot")).getBlock();
+        Location spigotLoc = deserializeLocation(dataFile.getString(path + ".spigot"));
+        if (spigotLoc == null) {
+            return null;
+        }
         BoundingBox bounds = BoundingBox.fromPoints(dataFile.getIntegerList(path + ".bounds"));
         float time = (float) dataFile.getDouble(path + ".time", 0.0);
         byte sign = (byte) dataFile.getInt(path + ".sign", 0);
         ItemStack[] items = BukkitSerialization.itemStackArrayFromBase64(dataFile.getString(path + ".items", null));
 
 
-        return new Barrel(spigot, sign, bounds, items, time, id);
+        return new Barrel(spigotLoc.getBlock(), sign, bounds, items, time, id);
     }
 
     @Override
@@ -120,11 +123,14 @@ public class FlatFileStorage extends DataManager {
     public BCauldron getCauldron(UUID id) {
         String path = "cauldrons." + id;
 
-        Block block = deserializeLocation(dataFile.getString(path + ".block")).getBlock();
+        Location loc = deserializeLocation(dataFile.getString(path + ".block"));
+        if (loc == null) {
+            return null;
+        }
         BIngredients ingredients = BIngredients.deserializeIngredients(dataFile.getString(path + ".ingredients"));
         int state = dataFile.getInt(path + ".state", 0);
 
-        return new BCauldron(block, ingredients, state, id);
+        return new BCauldron(loc.getBlock(), ingredients, state, id);
     }
 
     @Override
@@ -234,6 +240,9 @@ public class FlatFileStorage extends DataManager {
     public Wakeup getWakeup(UUID id) {
         String path = "wakeups." + id;
         Location wakeupLocation = deserializeLocation(dataFile.getString(path + ".location"), true);
+        if (wakeupLocation == null) {
+            return null;
+        }
         return new Wakeup(wakeupLocation, id);
     }
 

@@ -1,6 +1,7 @@
 package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 
 import java.util.logging.Level;
 
@@ -17,15 +18,15 @@ public class AddonLogger {
 	}
 
 	public void info(String message) {
-		plugin.log(prefix + message);
+		Logging.log(prefix + message);
 	}
 
 	public void warning(String message) {
-		plugin.warningLog(prefix + message);
+		Logging.warningLog(prefix + message);
 	}
 
 	public void severe(String message) {
-		plugin.errorLog(prefix + message);
+		Logging.errorLog(prefix + message);
 	}
 
 	public void info(String message, Throwable throwable) {
