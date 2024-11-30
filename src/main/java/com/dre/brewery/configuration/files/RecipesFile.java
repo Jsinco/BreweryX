@@ -47,12 +47,6 @@ public class RecipesFile extends AbstractOkaeriConfigFile {
     public Map<String, ConfigRecipe> getRecipes() {
         Map<String, ConfigRecipe> map = new HashMap<>(this.recipes);
         map.putAll(ConfigManager.getConfig(Config.class).getRecipes());
-
-		if (PlaceholderAPIHook.PLACEHOLDERAPI.isEnabled()) {
-			for (ConfigRecipe configRecipe : map.values()) {
-
-			}
-		}
         return map;
     }
 }
