@@ -246,8 +246,7 @@ public abstract class RecipeItem implements Cloneable {
 						mat = vaultItem.getType();
 					}
 				} catch (Exception e) {
-					Logging.errorLog("Could not check vault for Item Name");
-					e.printStackTrace();
+					Logging.errorLog("Could not check vault for Item Name", e);
 				}
 			}
 			if (mat != null) {

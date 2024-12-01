@@ -44,6 +44,9 @@ dependencies {
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3")
     // Nice annotations, I prefer these to Lombok's, https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("org.jetbrains:annotations:16.0.2")
+    // MongoDB & log4j to suppress MongoDB's logger
+    implementation("org.mongodb:mongodb-driver-sync:5.3.0-beta0")
+    compileOnly("org.apache.logging.log4j:log4j-core:2.23.1")
     // Lombok
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
@@ -78,6 +81,8 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.5") // https://www.spigotmc.org/resources/placeholderapi.6245/history
     compileOnly("io.th0rgal:oraxen:1.163.0")
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
+
+
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -115,7 +120,7 @@ tasks {
 		relocate("com.google", "com.dre.brewery.depend.google")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
         relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
-		//relocate("org.bstats", "com.dre.brewery.integration.bstats")
+        relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
 
         archiveClassifier.set("")
     }

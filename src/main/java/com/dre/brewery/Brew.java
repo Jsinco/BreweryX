@@ -955,11 +955,9 @@ public class Brew implements Cloneable {
 			}
 			return brew;
 		} catch (IOException e) {
-			Logging.errorLog("IO Error while loading Brew");
-			e.printStackTrace();
+			Logging.errorLog("IO Error while loading Brew", e);
 		} catch (InvalidKeyException e) {
-			Logging.errorLog("Failed to load Brew, has the data key 'encodeKey' in the config.yml been changed?");
-			e.printStackTrace();
+			Logging.errorLog("Failed to load Brew, has the data key 'encodeKey' in the config.yml been changed?", e);
 		}
 		return null;
 	}
@@ -1013,8 +1011,7 @@ public class Brew implements Cloneable {
 			}
 			saveToStream(out);
 		} catch (IOException e) {
-			Logging.errorLog("IO Error while saving Brew");
-			e.printStackTrace();
+			Logging.errorLog("IO Error while saving Brew", e);
 		}
 	}
 

@@ -6,6 +6,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import nl.rutgerkok.blocklocker.BlockLockerAPIv2;
 import nl.rutgerkok.blocklocker.ProtectableBlocksSettings;
 import nl.rutgerkok.blocklocker.ProtectionType;
@@ -85,7 +86,7 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 				extraProtectables.add(new BlocklockerBarrel());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to register Barrel as protectable block", e);
 		}
 	}
 }

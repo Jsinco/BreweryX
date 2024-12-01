@@ -277,8 +277,7 @@ public class BRecipe implements Cloneable {
 						}
 					}
 				} catch (Throwable e) {
-					Logging.errorLog("Could not check vault for Item Name");
-					e.printStackTrace();
+					Logging.errorLog("Could not check vault for Item Name", e);
 				}
 			}
 			if (mat != null) {

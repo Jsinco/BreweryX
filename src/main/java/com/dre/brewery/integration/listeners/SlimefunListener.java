@@ -43,8 +43,7 @@ public class SlimefunListener implements Listener {
 			}
 		} catch (Throwable e) {
 			HandlerList.unregisterAll(this);
-			Logging.errorLog("Slimefun check failed");
-			e.printStackTrace();
+			Logging.errorLog("Slimefun check failed!", e);
 		}
 	}
 }

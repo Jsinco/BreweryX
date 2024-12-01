@@ -194,7 +194,7 @@ public class Barrel implements InventoryHolder {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (config.isUseLogBlock()) {
+		if (LogBlockHook.LOGBLOCK.isEnabled()) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {

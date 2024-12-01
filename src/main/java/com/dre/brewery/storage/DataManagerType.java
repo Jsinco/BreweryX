@@ -5,7 +5,8 @@ public enum DataManagerType {
     // Maybe add: h2, mongodb, sqlite?
     FLATFILE("FlatFile"),
     MYSQL("MySQL"),
-    SQLITE("SQLite");
+    SQLITE("SQLite"),
+    MONGODB("MongoDB");
 
     private final String formattedName;
 

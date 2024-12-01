@@ -223,7 +223,7 @@ public class BData {
             byte ver = in.readByte();
             return BIngredients.load(in, ver);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logging.errorLog("Failed to load Ingredients from data.yml", e);
             return new BIngredients();
         }
     }
@@ -296,7 +296,7 @@ public class BData {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logging.errorLog("Error loading World Data", e);
         } finally {
             releaseDataLoadMutex();
             if (BData.dataMutex.get() == 0) {
@@ -392,7 +392,7 @@ public class BData {
                             try {
                                 box = BoundingBox.fromPoints(locs);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Logging.errorLog("Failed to load BoundingBox from Stair and Wood Locations", e);
                             }
                         }
 

@@ -71,8 +71,8 @@ public class LWCBarrel {
 					}
 				} catch (EventException e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
-					Logging.errorLog("Block Interact could not be passed to LWC");
-					e.printStackTrace();
+					Logging.errorLog("Block Interact could not be passed to LWC", e);
+
 					return false;
 				}
 			}

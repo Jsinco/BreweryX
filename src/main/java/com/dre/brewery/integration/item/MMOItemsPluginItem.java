@@ -20,8 +20,7 @@ public class MMOItemsPluginItem extends PluginItem {
 			NBTItem nbtItem = NBTItem.get(item);
 			return nbtItem.hasType() && nbtItem.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(getItemId());
 		} catch (Throwable e) {
-			e.printStackTrace();
-			Logging.errorLog("Could not check MMOItems for Item ID");
+			Logging.errorLog("Could not check MMOItems for Item ID", e);
 			Hook.MMOITEMS.setEnabled(false);
 			return false;
 		}

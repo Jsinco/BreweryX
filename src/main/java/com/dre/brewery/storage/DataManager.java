@@ -12,6 +12,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
+import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
@@ -140,6 +141,7 @@ public abstract class DataManager {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> new MySQLStorage(record);
             case SQLITE -> new SQLiteStorage(record);
+            case MONGODB -> new MongoDBStorage(record);
         };
 
         // Legacy data migration

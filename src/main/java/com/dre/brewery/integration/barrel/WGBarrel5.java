@@ -54,8 +54,8 @@ public class WGBarrel5 implements WGBarrel {
 				}
 
 			} catch (IllegalAccessException | InvocationTargetException e) {
-					e.printStackTrace();
-					return false;
+				Logging.errorLog("Failed to check WorldGuard Barrel Access!", e);
+				return false;
 			}
 		}
 		return true;

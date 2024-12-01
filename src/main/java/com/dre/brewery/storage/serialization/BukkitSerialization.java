@@ -164,8 +164,7 @@ public class BukkitSerialization {
             dataInput.close();
             return items;
         } catch (ClassNotFoundException | IOException e) {
-            Logging.errorLog("Unable to decode class type.");
-            e.printStackTrace();
+            Logging.errorLog("Unable to decode class type.", e);
         }
         return null;
     }

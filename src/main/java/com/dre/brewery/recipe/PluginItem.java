@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -156,7 +157,7 @@ public abstract class PluginItem extends com.dre.brewery.recipe.RecipeItem imple
 			}
 			return item;
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to load PluginItem from Ingredients", e);
 			return null;
 		}
 	}

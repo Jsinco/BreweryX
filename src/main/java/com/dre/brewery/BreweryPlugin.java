@@ -29,6 +29,7 @@ import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
+import com.dre.brewery.integration.LogBlockHook;
 import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.bstats.Stats;
@@ -228,6 +229,8 @@ public class BreweryPlugin extends JavaPlugin {
 
 		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		Logging.log("BreweryX enabled!");
+
+		System.out.println(LogBlockHook.LOGBLOCK.isEnabled());
 	}
 
 	@Override

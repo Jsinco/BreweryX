@@ -21,6 +21,11 @@ public class WorldGuarkHook extends Hook {
 
     public WorldGuarkHook(String name, boolean enabled) {
         super(name, enabled);
+
+        if (!isEnabled()) {
+            return;
+        }
+
         Plugin plugin = WORLDGUARD.getPlugin();
 
         if (plugin == null) {
