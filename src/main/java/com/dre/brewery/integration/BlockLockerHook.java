@@ -23,11 +23,11 @@ package com.dre.brewery.integration;
 import com.dre.brewery.integration.barrel.BlockLockerBarrel;
 import com.dre.brewery.utility.Logging;
 
-public class LogBlockHook extends Hook {
+public class BlockLockerHook extends Hook {
 
-    public static final LogBlockHook LOGBLOCK = new LogBlockHook("LogBlock", config.isUseLogBlock());
+    public static final BlockLockerHook BLOCKLOCKER = new BlockLockerHook("BlockLocker", config.isUseBlockLocker());
 
-    public LogBlockHook(String name, boolean enabled) {
+    public BlockLockerHook(String name, boolean enabled) {
         super(name, enabled);
 
         if (!isEnabled()) {
@@ -40,7 +40,7 @@ public class LogBlockHook extends Hook {
             BlockLockerBarrel.registerBarrelAsProtectable();
         } catch (ClassNotFoundException e) {
             this.enabled = false;
-            Logging.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
+            Logging.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels with LogBlock disabled.");
         }
     }
 }

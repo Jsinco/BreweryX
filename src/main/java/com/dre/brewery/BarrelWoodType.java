@@ -81,12 +81,14 @@ public enum BarrelWoodType {
 
 
     public static BarrelWoodType fromAny(Object intOrString) {
-        if (intOrString instanceof Integer) {
-            return fromIndex((int) intOrString);
-        } else if (intOrString instanceof String) {
-            return fromName((String) intOrString);
-        } else if (intOrString instanceof Float) {
+        if (intOrString instanceof Integer integer) {
+            return fromIndex(integer);
+        } else if (intOrString instanceof String s) {
+            return fromName(s);
+        } else if (intOrString instanceof Float || intOrString instanceof Double) {
             return fromIndex((int) (float) intOrString);
+        } else if (intOrString instanceof Material m) {
+            return fromMaterial(m);
         }
         return ANY;
     }

@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
@@ -36,7 +37,7 @@ public class Hook {
     public static final Hook LWC = new Hook("LWC", config.isUseLWC());
     public static final Hook GRIEFPREVENTION = new Hook("GriefPrevention", config.isUseGriefPrevention());
     public static final Hook TOWNY = new Hook("Towny", config.isUseTowny());
-    public static final Hook BLOCKLOCKER = new Hook("BlockLocker", config.isUseBlockLocker());
+    public static final Hook LOGBLOCK = new Hook("LogBlock", config.isUseLogBlock());
     public static final Hook GAMEMODEINVENTORIES = new Hook("GameModeInventories", config.isUseGMInventories());
     public static final Hook MMOITEMS = new Hook("MMOItems");
     public static final Hook VAULT = new Hook("Vault");
@@ -62,15 +63,16 @@ public class Hook {
     }
 
     public boolean isEnabled() {
-        if (!checked) {
+        if (!checked) { // Have we checked with Bukkit to see if the plugin is enabled yet?
             checked = true;
-            if (enabled) {
+            if (enabled) { // If it's 'enabled' in the config, check if it's actually enabled through Bukkit
                 enabled = Bukkit.getPluginManager().isPluginEnabled(name);
             }
         }
         return enabled;
     }
 
+    @Nullable
     public Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin(name);
     }

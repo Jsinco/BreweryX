@@ -27,7 +27,8 @@ import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
-import com.dre.brewery.integration.LogBlockHook;
+import com.dre.brewery.integration.BlockLockerHook;
+import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
@@ -209,7 +210,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (LogBlockHook.LOGBLOCK.isEnabled()) {
+		if (Hook.LOGBLOCK.isEnabled()) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
@@ -405,7 +406,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 			}
 			ItemStack[] items = inventory.getContents();
 			inventory.clear();
-			if (LogBlockHook.LOGBLOCK.isEnabled() && breaker != null) {
+			if (Hook.LOGBLOCK.isEnabled() && breaker != null) {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {

@@ -24,6 +24,7 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.BarrelBody;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
+import com.dre.brewery.integration.BlockLockerHook;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Logging;
@@ -51,7 +52,7 @@ public class BlockLockerBarrel implements ProtectableBlocksSettings {
 	}
 
 	public boolean isOrWillCreateBarrel(Block block) {
-		if (!BreweryPlugin.getInstance().isEnabled() || !Hook.BLOCKLOCKER.isEnabled()) {
+		if (!BreweryPlugin.getInstance().isEnabled() || !BlockLockerHook.BLOCKLOCKER.isEnabled()) {
 			return false;
 		}
 		if (!LegacyUtil.isWoodPlanks(block.getType()) && !LegacyUtil.isWoodStairs(block.getType())) {

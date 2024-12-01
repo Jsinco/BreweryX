@@ -89,6 +89,7 @@ public class Brew implements Cloneable {
 	private byte distillRuns;
 	private float ageTime;
 	private BarrelWoodType wood;
+	// TODO: This should extend BRecipe, not hold a reference.
 	private BRecipe currentRecipe; // Recipe this Brew is currently based off. May change between modifications and is often null when not modifying
 	private boolean unlabeled;
 	private boolean persistent; // Only for legacy

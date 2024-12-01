@@ -29,7 +29,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
-import com.dre.brewery.integration.LogBlockHook;
+import com.dre.brewery.integration.BlockLockerHook;
 import com.dre.brewery.integration.WorldGuarkHook;
 import com.dre.brewery.integration.barrel.BlockLockerBarrel;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
@@ -204,28 +204,26 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
-		if (Hook.BLOCKLOCKER.isEnabled()) {
-			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("BlockLocker")) {
-				try {
-					if (!BlockLockerBarrel.checkAccess(event)) {
-						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
-						event.setCancelled(true);
-						return;
-					}
-				} catch (Throwable e) {
+		if (BlockLockerHook.BLOCKLOCKER.isEnabled()) {
+			try {
+				if (!BlockLockerBarrel.checkAccess(event)) {
+					lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 					event.setCancelled(true);
-					Logging.errorLog("Failed to Check BlockLocker for Barrel Open Permissions!", e);
-					Logging.errorLog("Brewery was tested with BlockLocker v1.9");
-					Logging.errorLog("Disable the BlockLocker support in the config and do /brew reload");
-					Player player = event.getPlayer();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						Logging.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
-						Logging.msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
-					} else {
-						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
 					return;
 				}
+			} catch (Throwable e) {
+				event.setCancelled(true);
+				Logging.errorLog("Failed to Check BlockLocker for Barrel Open Permissions!", e);
+				Logging.errorLog("Brewery was tested with BlockLocker v1.9");
+				Logging.errorLog("Disable the BlockLocker support in the config and do /brew reload");
+				Player player = event.getPlayer();
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					Logging.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
+					Logging.msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
+				} else {
+					Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
+				}
+				return;
 			}
 		}
 
@@ -325,7 +323,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (LogBlockHook.LOGBLOCK.isEnabled()) {
+		if (Hook.LOGBLOCK.isEnabled()) {
 			if (event.getInventory().getHolder() instanceof Barrel) {
 				try {
 					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
