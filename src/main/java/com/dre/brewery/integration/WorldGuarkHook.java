@@ -26,7 +26,7 @@ public class WorldGuarkHook extends Hook {
             return;
         }
 
-        Plugin plugin = WORLDGUARD.getPlugin();
+        Plugin plugin = this.getPlugin();
 
         if (plugin == null) {
             Logging.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
