@@ -60,6 +60,8 @@ config:
   requireKeywordOnSigns: "只有在放置的标志包含“酒桶”一词（或其它语言的翻译）时才创建酒桶 [true]"
   ageInMCBarrels: "MC自带的桶内可以存放多少饮品 [6]"
   agingYearDuration: "陈酿饮品时“年份”的持续时间（分钟）[20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     使用的原料和其他酿造数据会被保存在所有酿酒物品中
     为了防止被修改后的客户端读取饮品的确切原料，数据可以被编码/搅乱

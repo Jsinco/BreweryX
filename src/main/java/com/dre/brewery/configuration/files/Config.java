@@ -133,6 +133,9 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.agingYearDuration")
 	private int agingYearDuration = 20;
 
+	@LocalizedComment("config.commandAliases")
+	private List<String> commandAliases = List.of("brewery", "brew");
+
 	@LocalizedComment("config.enableEncode")
 	private boolean enableEncode = false;
 	private long encodeKey = new Random().nextLong(); // Generate a random key

@@ -25,7 +25,7 @@ public class UpdateChecker {
 	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	@Getter @Setter
-	private static String latestVersion = plugin.getDescription().getVersion();
+	private static String latestVersion = "Unknown";
 	@Getter @Setter
 	private static boolean updateAvailable = false;
 

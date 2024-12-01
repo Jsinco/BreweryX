@@ -67,6 +67,8 @@ config:
   requireKeywordOnSigns: "Обязательно ли на табличке наличие слова barrel (или бочка), чтобы бочка могла быть создана [true]"
   ageInMCBarrels: "Включено ли настаивание в ванильных майнкрафтовских бочках [true], и сколько бутылок можно в них положить [6]"
   agingYearDuration: "Сколько длится 1 \"год\" (в минутах) во время настаивания напитков. 1 игровой день = 20 минут [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     Использованные ингредиенты и прочие данные сохраняются прямо в напиток посредством custom_data в предмете.
     Чтобы защитить эти данные от читеров, их можно зашифровать.

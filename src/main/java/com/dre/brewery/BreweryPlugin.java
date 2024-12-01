@@ -59,12 +59,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,8 +180,22 @@ public class BreweryPlugin extends JavaPlugin {
 		// Setup Metrics
 		this.stats.setupBStats();
 
+		// Register command and aliases
+		PluginCommand defaultCommand = getCommand("breweryx");
+		defaultCommand.setExecutor(new CommandManager());
+		try {
+			// This has to be done reflectively because Spigot doesn't expose the CommandMap through the API
+			Field bukkitCommandMap = getServer().getClass().getDeclaredField("commandMap");
+			bukkitCommandMap.setAccessible(true);
 
-		getCommand("breweryx").setExecutor(new CommandManager());
+			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(getServer());
+
+			for (String alias : config.getCommandAliases()) {
+				commandMap.register(alias, "breweryx", defaultCommand);
+			}
+		} catch (Exception e) {
+			Logging.errorLog("Failed to register command aliases!", e);
+		}
 
 		// Register Listeners
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
@@ -185,26 +203,17 @@ public class BreweryPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
-		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
-			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
-		}
-		if (Hook.CHESTSHOP.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_13)) {
-			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
-		}
-		if (Hook.SHOPKEEPERS.isEnabled()) {
-			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
-		}
-		if (Hook.SLIMEFUN.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_14)) {
-			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
-		}
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) getServer().getPluginManager().registerEvents(new CauldronListener(), this);
+		if (Hook.CHESTSHOP.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_13)) getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
+		if (Hook.SHOPKEEPERS.isEnabled()) getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
+		if (Hook.SLIMEFUN.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_14)) getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
+
 
 		// Heartbeat
 		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
 		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 
-		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
-			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
-		}
 
 
 		// Register PlaceholderAPI Placeholders

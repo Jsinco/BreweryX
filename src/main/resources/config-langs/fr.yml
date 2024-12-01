@@ -55,6 +55,8 @@ config:
   requireKeywordOnSigns: "Si les barils ne sont créés que lorsque le panneau placé contient le mot \"barrel\" (ou une traduction) [true]"
   ageInMCBarrels: "Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]"
   agingYearDuration: "Durée (en minutes) d'une « année » pour la maturation des boissons [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     Les ingrédients et autres données de brassage utilisés sont sauvegardés dans tous les articles de brasserie. [false]
     Pour empêcher les clients piratés de lire exactement ce qui a été utilisé pour infuser un élément, les données peuvent être encodées/brouillées.

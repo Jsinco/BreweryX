@@ -49,6 +49,8 @@ config:
   requireKeywordOnSigns: "Ob Fässer nur erstellt werden, wenn das platzierte Schild das Wort 'barrel' (oder eine Übersetzung) enthält [true]"
   ageInMCBarrels: "Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]"
   agingYearDuration: "Dauer (in Minuten) eines 'Jahres' beim Reifen von Getränken [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
     dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.

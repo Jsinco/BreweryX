@@ -7,6 +7,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.configuration.files.CustomItemsFile;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
+import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Logging;
@@ -488,10 +489,11 @@ public class BRecipe implements Cloneable {
 	}
 
 	private void executeCommand(Player player, String cmd, String playerName, int quality, boolean isServerCommand) {
+		String finalCommand = PlaceholderAPIHook.PLACEHOLDERAPI.setPlaceholders(player, BUtil.applyPlaceholders(cmd, playerName, quality));
 		if (isServerCommand) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), BUtil.applyPlaceholders(cmd, playerName, quality));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
 		} else {
-			player.performCommand(BUtil.applyPlaceholders(cmd, playerName, quality));
+			Bukkit.dispatchCommand(player, finalCommand);
 		}
 	}
 
