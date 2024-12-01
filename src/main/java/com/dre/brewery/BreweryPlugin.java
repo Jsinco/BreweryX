@@ -162,7 +162,7 @@ public class BreweryPlugin extends JavaPlugin {
             dataManager = DataManager.createDataManager(config.getStorage());
         } catch (StorageInitException e) {
 			Logging.errorLog("Failed to initialize DataManager!", e);
-			Bukkit.getPluginManager().disablePlugin(this);
+			Bukkit.getPluginManager().disablePlugin(this); // TODO: Maybe don't shut down and just revert to FLATFILE?
         }
 
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
@@ -234,10 +234,6 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// Stop schedulers
 		BreweryPlugin.getScheduler().cancelTasks(this);
-
-		if (instance == null) {
-			return;
-		}
 
 		// save Data to Disk
 		if (dataManager != null) dataManager.exit(true, false);
@@ -315,7 +311,7 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 	}
 
-	public class BreweryRunnable implements Runnable {
+	public static class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();

@@ -90,6 +90,13 @@ public class TranslationManager {
 
 
 	public static void newInstance(File dataFolder) {
+		newInstance(dataFolder, false);
+	}
+
+	public static void newInstance(File dataFolder, boolean respectAlreadyExisting) {
+		if (singleton != null && respectAlreadyExisting) {
+			return;
+		}
 		singleton = new TranslationManager(dataFolder);
 	}
 
