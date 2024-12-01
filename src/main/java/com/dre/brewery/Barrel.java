@@ -169,7 +169,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 				if (inventory.getViewers().isEmpty()) {
 					// if inventory contains potions
 					if (inventory.contains(Material.POTION)) {
-						byte wood = getWood();
+						BarrelWoodType wood = this.getWood();
 						long loadTime = System.nanoTime();
 						for (ItemStack item : inventory.getContents()) {
 							if (item != null) {
@@ -399,7 +399,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 					return;
 				}
 
-				byte wood = getWood();
+				BarrelWoodType wood = this.getWood();
 				for (ItemStack item : items) {
 					if (item != null) {
 						Brew brew = Brew.get(item);

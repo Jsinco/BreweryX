@@ -26,7 +26,7 @@ public class ConfigRecipe extends OkaeriConfig {
     private int distillRuns;
     @CustomKey("distilltime")
     private int distillTime;
-    private int wood;
+    private Object wood; // int or String(Enum<BarrelWoodType>)
     private int age;
     private String color;
     private int difficulty;

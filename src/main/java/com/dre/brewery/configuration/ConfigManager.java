@@ -223,6 +223,9 @@ public class ConfigManager {
 
             BRecipe.setNumConfigRecipes(configRecipes.size());
         }
+        for (var recipe : configRecipes) {
+            System.out.println(recipe.toString());
+        }
     }
 
 

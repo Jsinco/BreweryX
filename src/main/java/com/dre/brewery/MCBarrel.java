@@ -20,7 +20,6 @@ import java.util.List;
 
 public class MCBarrel {
 
-	public static final byte OAK = 2;
 	public static final String TAG = "Btime";
 
 	public static long mcBarrelTime; // Globally stored Barrel time. Difference between this and the time stored on each mc-barrel will give the barrel age time
@@ -72,7 +71,7 @@ public class MCBarrel {
 							if (brew != null && !brew.isStatic()) {
 								if (brews < config.getMaxBrewsInMCBarrels() || config.getMaxBrewsInMCBarrels() < 0) {
 									// The time is in minutes, but brew.age() expects time in mc-days
-									brew.age(item, ((float) time) / 20f, OAK);
+									brew.age(item, ((float) time) / 20f, BarrelWoodType.OAK);
 								}
 								brews++;
 							}

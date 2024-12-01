@@ -4,6 +4,7 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.BarrelWoodType;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
@@ -154,7 +155,7 @@ public class BData {
                     boolean stat = section.getBoolean(uid + ".stat", false);
                     int lastUpdate = section.getInt(uid + ".lastUpdate", 0);
 
-                    Brew.loadLegacy(ingredients, BUtil.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+                    Brew.loadLegacy(ingredients, BUtil.parseInt(uid), quality, alc, distillRuns, ageTime, BarrelWoodType.fromAny(wood), recipe, unlabeled, persistent, stat, lastUpdate);
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BIngredients;
+import com.dre.brewery.BarrelWoodType;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigManager;
@@ -55,7 +56,7 @@ public class BRecipe implements Cloneable {
 	private int cookingTime; // time to cook in cauldron
 	private byte distillruns; // runs through the brewer
 	private int distillTime; // time for one distill run in seconds
-	private byte wood; // type of wood the barrel has to consist of
+	private BarrelWoodType wood; // type of wood the barrel has to consist of
 	private int age; // time in minecraft days for the potions to age in barrels
 
 	// outcome
@@ -134,7 +135,7 @@ public class BRecipe implements Cloneable {
 			recipe.distillruns = (byte) dis;
 		}
 		recipe.distillTime = configRecipe.getDistillTime() * 20;
-		recipe.wood = (byte) configRecipe.getWood();
+		recipe.wood = BarrelWoodType.fromAny(configRecipe.getWood());
 		recipe.age = configRecipe.getAge();
 		recipe.difficulty = configRecipe.getDifficulty();
 		recipe.alcohol = configRecipe.getAlcohol();
@@ -343,10 +344,10 @@ public class BRecipe implements Cloneable {
 			Logging.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
-		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
-			Logging.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
-			return false;
-		}
+//		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
+//			Logging.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
+//			return false;
+//		}
 		if (age < 0) {
 			Logging.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
 			return false;
@@ -392,7 +393,7 @@ public class BRecipe implements Cloneable {
 	 * difference between given and recipe-wanted woodtype
 	 */
 	public float getWoodDiff(float wood) {
-		return Math.abs(wood - this.wood);
+		return Math.abs(wood - this.wood.getIndex());
 	}
 
 	public boolean isCookingOnly() {
@@ -882,7 +883,7 @@ public class BRecipe implements Cloneable {
 			return this;
 		}
 
-		public Builder age(int age, byte wood) {
+		public Builder age(int age, BarrelWoodType wood) {
 			recipe.age = age;
 			recipe.wood = wood;
 			return this;

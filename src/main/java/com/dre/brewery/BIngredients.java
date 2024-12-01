@@ -224,7 +224,7 @@ public class BIngredients {
 	/**
 	 * best recipe for current state of potion, STILL not always returns the correct one...
 	 */
-	public BRecipe getBestRecipe(float wood, float time, boolean distilled) {
+	public BRecipe getBestRecipe(BarrelWoodType wood, float time, boolean distilled) {
 		float quality = 0;
 		int ingredientQuality;
 		int cookingQuality;
@@ -268,7 +268,7 @@ public class BIngredients {
 	 * returns recipe that is cooking only and matches the ingredients and cooking time
 	 */
 	public BRecipe getCookRecipe() {
-		BRecipe bestRecipe = getBestRecipe(0, 0, false);
+		BRecipe bestRecipe = getBestRecipe(BarrelWoodType.ANY, 0, false);
 
 		// Check if best recipe is cooking only
 		if (bestRecipe != null) {
@@ -303,7 +303,7 @@ public class BIngredients {
 	/**
 	 * returns the currently best matching recipe for distilling for the ingredients and cooking time
 	 */
-	public BRecipe getDistillRecipe(float wood, float time) {
+	public BRecipe getDistillRecipe(BarrelWoodType wood, float time) {
 		BRecipe bestRecipe = getBestRecipe(wood, time, true);
 
 		// Check if best recipe needs to be destilled
@@ -318,7 +318,7 @@ public class BIngredients {
 	/**
 	 * returns currently best matching recipe for ingredients, cooking- and ageingtime
 	 */
-	public BRecipe getAgeRecipe(float wood, float time, boolean distilled) {
+	public BRecipe getAgeRecipe(BarrelWoodType wood, float time, boolean distilled) {
 		BRecipe bestRecipe = getBestRecipe(wood, time, distilled);
 
 		if (bestRecipe != null) {
@@ -400,12 +400,12 @@ public class BIngredients {
 	/**
 	 * returns the quality regarding the barrel wood conditioning given Recipe
 	 */
-	public int getWoodQuality(BRecipe recipe, float wood) {
-		if (recipe.getWood() == 0) {
+	public int getWoodQuality(BRecipe recipe, BarrelWoodType wood) {
+		if (recipe.getWood().equals(BarrelWoodType.ANY)) {
 			// type of wood doesnt matter
 			return 10;
 		}
-		int quality = 10 - Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
+		int quality = 10 - Math.round(recipe.getWoodDiff(wood.getIndex()) * recipe.getDifficulty());
 
 		return Math.max(quality, 0);
 	}

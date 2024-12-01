@@ -104,27 +104,19 @@ public abstract class BarrelBody {
 	/**
 	 * woodtype of the block the spigot is attached to
 	 */
-	public byte getWood() {
+	public BarrelWoodType getWood() {
 		Block wood;
 		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
             case 0 -> {
-                return 0;
+                return BarrelWoodType.ANY;
             }
 
             case 1 -> wood = spigot.getRelative(1, 0, 0);
-
 			case 2 -> wood = spigot.getRelative(-1, 0, 0);
-
 			case 3 -> wood = spigot.getRelative(0, 0, 1);
-
 			default -> wood = spigot.getRelative(0, 0, -1);
 		}
-		try {
-			return LegacyUtil.getWoodType(wood);
-		} catch (NoSuchFieldError | NoClassDefFoundError noSuchFieldError) {
-			// Using older minecraft versions some fields and classes do not exist
-			return 0;
-		}
+		return BarrelWoodType.fromMaterial(wood.getType());
 	}
 
 	/**
