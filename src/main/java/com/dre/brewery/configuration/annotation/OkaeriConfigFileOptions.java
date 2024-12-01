@@ -33,6 +33,12 @@ public @interface OkaeriConfigFileOptions {
     boolean update() default true;
 
     /**
+     * Remove orphan keys?
+     * @return true if orphan keys should be removed
+     */
+    boolean removeOrphans() default false;
+
+    /**
      * The configurer to be used for the file
      * @return the configurer class
      */

@@ -342,7 +342,7 @@ public class BUtil {
 						return false;
 					}
 				} else {
-					barrel2.getBody().destroySign();
+					barrel2.destroySign();
 				}
 			}
 			return true;

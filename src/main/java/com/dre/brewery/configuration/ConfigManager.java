@@ -112,12 +112,12 @@ public class ConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update, boolean removeOrphans) {
         boolean firstCreation = !Files.exists(file);
 
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
-            it.withRemoveOrphans(false); // Just leaving this off for now
+            it.withRemoveOrphans(removeOrphans);
             it.withBindFile(file);
             it.saveDefaults();
 
@@ -143,7 +143,7 @@ public class ConfigManager {
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
+        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), options.removeOrphans());
     }
 
 	@Nullable
@@ -198,6 +198,7 @@ public class ConfigManager {
                 @Override public Class<? extends Configurer> configurer() { return BreweryXConfigurer.class; }
                 @Override public boolean useLangFileName() { return false; }
                 @Override public boolean update() { return false; }
+                @Override public boolean removeOrphans() { return false; }
                 @Override public String value() { return configClass.getSimpleName().toLowerCase() + ".yml"; }
             };
         }

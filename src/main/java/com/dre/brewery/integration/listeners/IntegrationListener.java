@@ -11,7 +11,7 @@ import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.LogBlockHook;
 import com.dre.brewery.integration.WorldGuarkHook;
-import com.dre.brewery.integration.barrel.BlocklockerBarrel;
+import com.dre.brewery.integration.barrel.BlockLockerBarrel;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
 import com.dre.brewery.integration.barrel.LWCBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
@@ -131,7 +131,7 @@ public class IntegrationListener implements Listener {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
 				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
-					Block sign = event.getBarrel().getBody().getSignOfSpigot();
+					Block sign = event.getBarrel().getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
 						Player player = event.getPlayer();
@@ -187,7 +187,7 @@ public class IntegrationListener implements Listener {
 		if (Hook.BLOCKLOCKER.isEnabled()) {
 			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("BlockLocker")) {
 				try {
-					if (!BlocklockerBarrel.checkAccess(event)) {
+					if (!BlockLockerBarrel.checkAccess(event)) {
 						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 						event.setCancelled(true);
 						return;
@@ -328,9 +328,8 @@ public class IntegrationListener implements Listener {
 					NBTItem item = NBTItem.get(event.getItem());
 					if (item.hasType()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {
-							if (rItem instanceof MMOItemsPluginItem) {
-								MMOItemsPluginItem mmo = ((MMOItemsPluginItem) rItem);
-								if (mmo.matches(event.getItem())) {
+							if (rItem instanceof MMOItemsPluginItem mmo) {
+                                if (mmo.matches(event.getItem())) {
 									event.setCancelled(true);
 									PlayerListener.handlePlayerInteract(event);
 									return;

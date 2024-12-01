@@ -35,12 +35,12 @@ config:
   pukeItem: |
     L'objet utilisé pour représenter le vomit [Soul_Sand]
     Can be list of items such as [Soul_sand, Slime_block, Dirt]
-  pukeDespawnTime: |
+  pukeDespawntime: |
     Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
     If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
   stumblePercent: "How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]"
   showStatusOnDrink: "Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]"
-  drainItem: "Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)"
+  drainItems: "Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)"
   enableCauldronParticles: |
     Show Particles over Cauldrons when they have ingredients and a heat source. [true]
     The changing color of the particles can help with timing some recipes

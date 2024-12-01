@@ -212,12 +212,12 @@ public class PlayerListener implements Listener {
 							// replace the potion with an empty potion to avoid effects
 							event.setItem(new ItemStack(Material.POTION));
 						} else {
-							// Dont replace the item when keeping the potion, just cancel the event
+							// Don't replace the item when keeping the potion, just cancel the event
 							event.setCancelled(true);
 						}
 					}
 				}
-			} else if (BUtil.getMaterialMap(config.getDrainItem()).containsKey(item.getType())) {
+			} else if (BUtil.getMaterialMap(config.getDrainItems()).containsKey(item.getType())) {
 				BPlayer bplayer = BPlayer.get(player);
 				if (bplayer != null) {
 					bplayer.drainByItem(player, item.getType());

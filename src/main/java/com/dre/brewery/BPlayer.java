@@ -370,7 +370,7 @@ public class BPlayer {
 
 	// Eat something to drain the drunkenness
 	public void drainByItem(Player player, Material mat) {
-		int strength = BUtil.getMaterialMap(config.getDrainItem()).get(mat);
+		int strength = BUtil.getMaterialMap(config.getDrainItems()).get(mat);
 		if (drain(player, strength)) {
 			remove(player);
 		}
@@ -652,7 +652,7 @@ public class BPlayer {
 		item.setMetadata("brewery_puke", new FixedMetadataValue(BreweryPlugin.getInstance(), true));
 		if (VERSION.isOrLater(MinecraftVersion.V1_14)) item.setPersistent(false); // No need to save Puke items
 
-		int pukeDespawntime = config.getPukeDespawnTime();
+		int pukeDespawntime = config.getPukeDespawntime();
 		if (pukeDespawntime >= 5800) {
 			return;
 		}

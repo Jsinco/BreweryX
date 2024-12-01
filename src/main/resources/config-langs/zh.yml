@@ -35,12 +35,12 @@ config:
   pukeItem: |
     呕吐物[Soul_Sand]
     Can be list of items such as [Soul_sand, Slime_block, Dirt]
-  pukeDespawnTime: |
+  pukeDespawntime: |
     呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟) [60]
     如果spigot.yml中的物品消失时间被变更, 此处也会变更
   stumblePercent: "玩家跌倒程度取决于饮酒量，设置范围可以是0或超过100 [100]"
   showStatusOnDrink: "玩家饮用饮品或吃掉解酒物时，显示其醉酒程度 [true]"
-  drainItem: |
+  drainItems: |
     解酒物/解酒强度
     降低玩家一定程度的醉酒程度, 解酒强度为百分数
   enableCauldronParticles: |

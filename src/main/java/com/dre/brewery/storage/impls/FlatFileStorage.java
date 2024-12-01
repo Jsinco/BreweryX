@@ -106,9 +106,9 @@ public class FlatFileStorage extends DataManager {
         String path = "barrels." + barrel.getId();
 
         dataFile.set(path + ".spigot", serializeLocation(barrel.getSpigot().getLocation()));
-        dataFile.set(path + ".bounds", barrel.getBody().getBounds().serialize());
+        dataFile.set(path + ".bounds", barrel.getBounds().serialize());
         dataFile.set(path + ".time", barrel.getTime());
-        dataFile.set(path + ".sign", barrel.getBody().getSignoffset());
+        dataFile.set(path + ".sign", barrel.getSignoffset());
         dataFile.set(path + ".items", BukkitSerialization.itemStackArrayToBase64(barrel.getInventory().getContents()));
         save();
     }

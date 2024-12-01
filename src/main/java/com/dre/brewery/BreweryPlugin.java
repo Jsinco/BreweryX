@@ -23,15 +23,13 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
-import com.dre.brewery.commands.subcommands.ReloadCommand;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
-import com.dre.brewery.integration.LogBlockHook;
 import com.dre.brewery.integration.PlaceholderAPIHook;
-import com.dre.brewery.integration.barrel.BlocklockerBarrel;
+import com.dre.brewery.integration.barrel.BlockLockerBarrel;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.integration.listeners.ChestShopListener;
 import com.dre.brewery.integration.listeners.IntegrationListener;
@@ -49,7 +47,6 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
@@ -60,9 +57,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -80,7 +75,6 @@ import java.util.stream.Collectors;
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
-	// TODO: File backups
 	// TODO: Change the addon API FileManager to use Okaeri
 
 	private static final int RESOURCE_ID = 114777;
@@ -100,6 +94,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
+		this.migrateBreweryDataFolder(); // This has to be done before Okaeri can bind
 		instance = this;
 		MCVersion = MinecraftVersion.getIt();
 		scheduler = UniversalScheduler.getScheduler(this);
@@ -110,7 +105,6 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		migrateBreweryDataFolder();
 		try {
 			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
 			isFolia = true;
@@ -340,7 +334,7 @@ public class BreweryPlugin extends JavaPlugin {
 			Barrel.onUpdate();// runs every min to check and update ageing time
 
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
-			if (Hook.BLOCKLOCKER.isEnabled()) BlocklockerBarrel.clearBarrelSign();
+			if (Hook.BLOCKLOCKER.isEnabled()) BlockLockerBarrel.clearBarrelSign();
 
 			BPlayer.onUpdate();// updates players drunkenness
 

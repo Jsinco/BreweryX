@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Random;
 
 
-@OkaeriConfigFileOptions("config.yml")
+@OkaeriConfigFileOptions(value = "config.yml", removeOrphans = true)
 @Header({"!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!",
 		"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
@@ -89,8 +89,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.pukeItem")
 	private List<Material> pukeItem = List.of(Material.SOUL_SAND);
 
-	@LocalizedComment("config.pukeDespawnTime")
-	private int pukeDespawnTime = 60;
+	@LocalizedComment("config.pukeDespawntime")
+	private int pukeDespawntime = 60;
 
 	@LocalizedComment("config.stumblePercent")
 	private int stumblePercent = 100;
@@ -98,8 +98,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.showStatusOnDrink")
 	private boolean showStatusOnDrink = true;
 
-	@LocalizedComment("config.drainItem")
-	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
+	@LocalizedComment("config.drainItems")
+	private List<String> drainItems = List.of("Bread/4", "Milk_Bucket/2");
 
 	@LocalizedComment("config.enableCauldronParticles")
 	private boolean enableCauldronParticles = true;
