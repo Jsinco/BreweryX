@@ -1,0 +1,170 @@
+# German translation for BreweryX
+# Author: DieReicheEtherons
+
+config:
+  language: |
+    Sprachedatei die genutzt werden sollte [en]
+    Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
+  updateCheck: |
+    Aktiviert das Suchen nach Updates für Brewery mit der spigot api [true]
+    Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
+  autosave: "Autosave Intervall in Minuten [10]"
+  pluginPrefix: "Prefix used on messages"
+  debug: "Debug Nachrichten im Log anzeigen [false]"
+  storage:
+    header: "-- Storage Settings --"
+    type: |
+      What type of storage to use [FLATFILE]
+      Available types: FlatFile, MySQL, SQLite, MongoDB
+    database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
+  enableHome: "IOb der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause 'aufwacht' (Ein home Plugin muss installiert sein!) [true]"
+  homeType: |
+    Art des Nachhause-teleports: ['cmd: home']
+    bed = Spieler wird zu seinem Spawn Bett teleportiert
+    'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
+    'cmd: spawn' = /spawn wird vom Spieler ausgelöst
+    'cmd: whatever' = /whatever wird vom Spieler ausgelöst
+  enableWake: |
+    Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/brew Wakeup add' von einem Admin festgelegt werden)
+    Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
+  enableLoginDisallow: "Ob der Spieler bei großer Trunkenheit mehrmals probieren muss sich einzuloggen, da sein Charakter kurz nicht reagiert [true]"
+  enablePuke: |
+    Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt) [true]
+    Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.
+  pukeItem: "Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [Soul_Sand]"
+  pukeDespawntime: |
+    Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
+    Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
+  stumblePercent: "Wie stark in Prozent der Spieler taumelt, je nach dem wie viel Alkohol er getrunken hat. Kann auf 0 und höher als 100 gesetzt werden"
+  showStatusOnDrink: "Ob seine Betrunkenheit dem Spieler kurz angezeigt werden soll wenn er etwas trinkt oder ein drainItem isst. [true]"
+  drainItems: "Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert."
+  enableCauldronParticles: "Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]"
+  minimalParticles: "Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]"
+  craft-enableSealingTable: "Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]"
+  sealingTableBlock: |
+    By default, Brewery uses Smoker as a Sealing Table, this option allows you to change it
+    IMPORTANT: It needs to be a container - meaning a block that can store items (e.g., SMOKER, CHEST, BLAST_FURNACE).
+  alwaysShowQuality: "Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]"
+  showBrewer: "If we should show who brewed the drink [false]"
+  requireKeywordOnSigns: "Ob Fässer nur erstellt werden, wenn das platzierte Schild das Wort 'barrel' (oder eine Übersetzung) enthält [true]"
+  ageInMCBarrels: "Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]"
+  agingYearDuration: "Dauer (in Minuten) eines 'Jahres' beim Reifen von Getränken [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
+  enableEncode: |
+    Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
+    dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
+    Einziger Nachteil: Tränke können nur auf Servern mit dem gleichen encodeKey benutzt werden.
+    Wenn Brewery Tränke auf mehreren (Bungeecord) Servern benutzt werden, unten unter 'multiServerDB' eine gemeinsame Datenbank eintragen.
+    Dies kann also aktiviert werden um Rezept-cheating schwerer zu machen, aber keine Tränke per World Download, Schematic, o.ä. geteilt werden. [false]
+  useOtherPlugins: |
+    -- Plugin Kompatiblität --
+    
+    Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
+    Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.
+  useVirtualChestPerms: |
+    Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen
+    Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
+    Diese Option für das Plugin 'Residence' aktivieren, und andere Plugins, die nicht alle Fälle des PlayerInteractEvent checken
+  useLogBlock: "Änderungen an Fassinventaren mit LogBlock aufzeichen [true]"
+  useOffhandForCauldron: "Ob Items in der Zweithand auch in den Kessel geworfen werden sollen [false]"
+  loadDataAsync: |
+    This option no longer does anything anymore, and will be removed in future releases of BreweryX.
+    BreweryX will load data asynchronously always, with the exception of server startup and shutdown.
+  hangoverDays: "Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]"
+  colorInBarrels: "Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]"
+  openLargeBarrelEverywhere: "Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]"
+  brewHopperDump: "Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]"
+  enableChatDistortion: |
+    Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
+    so dass es etwas betrunken aussieht was geschrieben wird.
+    Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
+    Unten kann noch eingestellt werden wie und was verändert wird [true]
+  logRealChat: "In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]"
+  distortCommands: "Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]"
+  distortSignText: "Geschriebenen Text auf Schildern bei Trunkenheit verändern [false]"
+  distortBypass: |
+    Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+    Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*
+  words: |
+    words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
+    Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
+
+    replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-all": Alles, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+    to: In welches Wort es ersetzt werden soll.
+    pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
+    match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
+    alcohol: 1-100 Trunkenheit ab der die Wörter ersetzt werden
+    percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
+
+recipesFile:
+  header: |
+    -- Rezepte für Getränke --
+    
+    name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
+    ingredients: Auflistung von 'Material/Anzahl'
+      Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
+      (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+      Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+      Plugin Items mit 'Plugin:Id' (Im Moment ExoticGarden, Slimefun, MMOItems, Brewery)
+      Oder ein oben definiertes Custom Item
+    cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
+    distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
+    distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
+    wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche 7=Karmesin 8=Wirr 9=Mangrove 10=Kirschholz 11=Bambus  (12=Kupfer)
+      Das Minecraft Fass besteht aus Eiche
+    age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
+    color: Farbe des Getränks nach destillieren/reifen.
+      Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+      Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+    difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
+    alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
+    lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
+        Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
+    servercommands: Liste von Befehlen ausgeführt vom -Server- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
+    playercommands: Liste von Befehlen ausgeführt vom -Spieler- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
+        Befehle nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut
+    drinkmessage: Nachricht im Chat beim trinken des Trankes
+    drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
+    glint: Boolean if the item should have a glint (enchant glint)
+    customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
+        Es kann eine für alle, oder drei für die qualitäten schlecht/normal/gut agegeben werden, mit / getrennt
+    effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
+        Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+        Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
+        Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität
+        Längste mögliche Effektdauer: 1638 sek. Es muss keine Dauer für Effekte mit sofortiger Wirkung angegeben werden.
+  
+
+cauldronFile:
+  header: |
+    -- Zutaten im Kessel --
+    Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
+    Es braucht nur etwas hier eingetragen werden falls der Basistrank besondere Eigenschaften wie Name und Farbe haben soll
+    
+    name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
+    ingredients: Auflistung von 'Material/Anzahl'
+      Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
+      (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+      Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+    color: Farbe des Trankes der aus dem Kessel kommt. (Standard ist CYAN)
+        Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+        Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+    cookParticles:
+        Farbe der Partikel über dem Kessel während verschiedener Kochzeiten
+        Farbe und Minute während die Farbe erscheinen soll. Z.B. eine Farbe bei 8 Minuten, übergehend zu einer anderen bei 18 minuten
+        Als Liste, jede Farbe als Name oder RGB wie oben. Geschrieben 'Farbe/Minute'
+        Zum Ende geht es in die letzte Farbe über, gibt es nur eine Farbe in der Liste, wird es von dieser langsam zu grau.
+    lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
+    customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
+
+customItemsFile:
+  header: |
+    -- Eigene Items Definieren --
+    Die festgelegte id kann dann in einem Rezept verwendet werden
+    
+    matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
+    material: Welche Art das Item haben muss
+    name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
+    lore: Was in der Lore des Items stehen muss
+    customModelData: Custom Model Data Int. Whatever Model data number the item has to have in a list format

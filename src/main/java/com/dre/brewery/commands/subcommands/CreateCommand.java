@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,17 +14,11 @@ import java.util.List;
 
 public class CreateCommand implements SubCommand {
 
-    private final BreweryPlugin breweryPlugin;
-
-    public CreateCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
-
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length < 2) {
-            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Etc_Usage"));
-            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Help_Create"));
+            lang.sendEntry(sender, "Etc_Usage");
+            lang.sendEntry(sender, "Help_Create");
             return;
         }
 
@@ -31,14 +26,14 @@ public class CreateCommand implements SubCommand {
 
         if (brewForPlayer != null) {
             if (brewForPlayer.b().getInventory().firstEmpty() == -1) {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Copy_Error", "1"));
+                lang.sendEntry(sender, "CMD_Copy_Error", "1");
                 return;
             }
 
             ItemStack item = brewForPlayer.a().createItem(null);
             if (item != null) {
                 brewForPlayer.b().getInventory().addItem(item);
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Created"));
+                lang.sendEntry(sender, "CMD_Created");
             }
         }
     }

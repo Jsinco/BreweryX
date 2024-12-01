@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
@@ -179,7 +180,7 @@ public class BDistiller {
 				if (standBlock.getType() != Material.BREWING_STAND) {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
-					BreweryPlugin.getInstance().debugLog("The block was replaced; not a brewing stand.");
+					Logging.debugLog("The block was replaced; not a brewing stand.");
 					return;
 				}
 
@@ -202,10 +203,10 @@ public class BDistiller {
 				if (!runDistill(stand.getInventory(), contents)) {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
-					BreweryPlugin.getInstance().debugLog("All done distilling");
+					Logging.debugLog("All done distilling");
 				} else {
 					brewTime = -1; // go again.
-					BreweryPlugin.getInstance().debugLog("Can distill more! Continuing.");
+					Logging.debugLog("Can distill more! Continuing.");
 				}
 			});
 		}
@@ -240,12 +241,12 @@ public class BDistiller {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
 					showAlc(inventory, contents);
-					BreweryPlugin.getInstance().debugLog("nothing to distill");
+					Logging.debugLog("nothing to distill");
 					return false;
 				default:
 					runTime = getLongestDistillTime(contents);
 					brewTime = runTime;
-					BreweryPlugin.getInstance().debugLog("using brewtime: " + runTime);
+					Logging.debugLog("using brewtime: " + runTime);
 
 			}
 			return true;

@@ -1,7 +1,27 @@
 package com.dre.brewery.commands;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.commands.subcommands.*;
+import com.dre.brewery.commands.subcommands.CopyCommand;
+import com.dre.brewery.commands.subcommands.CreateCommand;
+import com.dre.brewery.commands.subcommands.DataManagerCommand;
+import com.dre.brewery.commands.subcommands.DebugInfoCommand;
+import com.dre.brewery.commands.subcommands.DeleteCommand;
+import com.dre.brewery.commands.subcommands.DrinkCommand;
+import com.dre.brewery.commands.subcommands.HelpCommand;
+import com.dre.brewery.commands.subcommands.InfoCommand;
+import com.dre.brewery.commands.subcommands.ItemName;
+import com.dre.brewery.commands.subcommands.PukeCommand;
+import com.dre.brewery.commands.subcommands.ReloadAddonsCommand;
+import com.dre.brewery.commands.subcommands.ReloadCommand;
+import com.dre.brewery.commands.subcommands.SealCommand;
+import com.dre.brewery.commands.subcommands.SetCommand;
+import com.dre.brewery.commands.subcommands.ShowStatsCommand;
+import com.dre.brewery.commands.subcommands.StaticCommand;
+import com.dre.brewery.commands.subcommands.UnLabelCommand;
+import com.dre.brewery.commands.subcommands.VersionCommand;
+import com.dre.brewery.commands.subcommands.WakeupCommand;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,29 +37,31 @@ import java.util.Map;
 public class CommandManager implements TabExecutor {
 
     private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
+    private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
     private static final Map<String, SubCommand> subCommands = new HashMap<>();
 
     public CommandManager() {
-        subCommands.put("help" , new HelpCommand());
-        subCommands.put("reload", new ReloadCommand());
-        subCommands.put("wakeup", new WakeupCommand());
-        subCommands.put("itemName", new ItemName());
-        subCommands.put("create", new CreateCommand(plugin));
-        subCommands.put("info", new InfoCommand(plugin));
-        subCommands.put("seal", new SealCommand());
-        subCommands.put("copy", new CopyCommand(plugin));
-        subCommands.put("delete", new DeleteCommand(plugin));
-        subCommands.put("static", new StaticCommand());
-		subCommands.put("set", new SetCommand());
-        subCommands.put("unLabel", new UnLabelCommand());
-        subCommands.put("debuginfo", new DebugInfoCommand(plugin));
-        subCommands.put("showstats", new ShowStatsCommand());
-        subCommands.put("puke", new PukeCommand());
-        subCommands.put("drink", new DrinkCommand());
-		subCommands.put("reloadaddons", new ReloadAddonsCommand());
-        subCommands.put("version", new VersionCommand());
-        subCommands.put("data", new DataManagerCommand());
+        addSubCommand("help", new HelpCommand());
+        addSubCommand("reload", new ReloadCommand());
+        addSubCommand("wakeup", new WakeupCommand());
+        addSubCommand("itemName", new ItemName());
+        addSubCommand("info", new InfoCommand());
+        addSubCommand("seal", new SealCommand());
+        addSubCommand("copy", new CopyCommand());
+        addSubCommand("delete", new DeleteCommand());
+        addSubCommand("static", new StaticCommand());
+        addSubCommand("set", new SetCommand());
+        addSubCommand("unLabel", new UnLabelCommand());
+        addSubCommand("debuginfo", new DebugInfoCommand());
+        addSubCommand("showstats", new ShowStatsCommand());
+        addSubCommand("puke", new PukeCommand());
+        addSubCommand("drink", new DrinkCommand());
+        addSubCommand("reloadaddons", new ReloadAddonsCommand());
+        addSubCommand("version", new VersionCommand());
+        addSubCommand("data", new DataManagerCommand());
+
+        addSubCommand(new CreateCommand(), "create", "give");
     }
 
     @Override
@@ -49,7 +71,7 @@ public class CommandManager implements TabExecutor {
             return true;
         }
 
-        SubCommand subCommand = subCommands.get(args[0]); //
+        SubCommand subCommand = subCommands.get(args[0]);
         if (subCommand == null) {
             CommandUtil.cmdHelp(sender, args);
             return true;
@@ -58,14 +80,14 @@ public class CommandManager implements TabExecutor {
         String permission = subCommand.permission();
 
         if (playerOnly && !(sender instanceof Player)) {
-            plugin.msg(sender, plugin.languageReader.get("Error_NotPlayer"));
+            lang.sendEntry(sender, "Error_NotPlayer");
             return true;
         } else if (permission != null && !sender.hasPermission(permission)) {
-            plugin.msg(sender, plugin.languageReader.get("Error_NoPermission"));
+            lang.sendEntry(sender, "Error_NoPermissions");
             return true;
         }
 
-        subCommand.execute(plugin, sender, s, args);
+        subCommand.execute(plugin, lang, sender, s, args);
         return false;
     }
 
@@ -94,7 +116,31 @@ public class CommandManager implements TabExecutor {
 		subCommands.put(name, subCommand);
 	}
 
+    public static void addSubCommand(SubCommand subCommand, String... names) {
+        for (String name : names) {
+            subCommands.put(name, subCommand);
+        }
+    }
+
 	public static void removeSubCommand(String name) {
 		subCommands.remove(name);
 	}
+
+    public static void removeSubCommand(String... names) {
+        for (String name : names) {
+            subCommands.remove(name);
+        }
+    }
+
+    public static void removeSubCommand(SubCommand subCommand) {
+        List<String> keys = new ArrayList<>();
+        for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
+            if (entry.getValue() == subCommand) {
+                keys.add(entry.getKey());
+            }
+        }
+        for (String key : keys) {
+            subCommands.remove(key);
+        }
+    }
 }

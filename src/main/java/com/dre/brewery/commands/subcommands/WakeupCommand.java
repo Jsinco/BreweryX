@@ -4,13 +4,15 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 public class WakeupCommand implements SubCommand {
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length == 1) {
             CommandUtil.cmdHelp(sender, args);
             return;
@@ -25,7 +27,7 @@ public class WakeupCommand implements SubCommand {
             int page = 1;
             String world = null;
             if (args.length > 2) {
-                page = breweryPlugin.parseInt(args[2]);
+                page = BUtil.parseInt(args[2]);
             }
             if (args.length > 3) {
                 world = args[3];
@@ -35,18 +37,18 @@ public class WakeupCommand implements SubCommand {
         } else if (args[1].equalsIgnoreCase("remove")){
 
             if (args.length > 2) {
-                int id = breweryPlugin.parseInt(args[2]);
+                int id = BUtil.parseInt(args[2]);
                 Wakeup.remove(sender, id);
             } else {
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Etc_Usage"));
-                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Help_WakeupRemove"));
+                lang.sendEntry(sender, "Etc_Usage");
+                lang.sendEntry(sender, "Help_WakeupRemove");
             }
 
         } else if (args[1].equalsIgnoreCase("check")){
 
             int id = -1;
             if (args.length > 2) {
-                id = breweryPlugin.parseInt(args[2]);
+                id = BUtil.parseInt(args[2]);
                 if (id < 0) {
                     id = 0;
                 }
@@ -59,8 +61,8 @@ public class WakeupCommand implements SubCommand {
 
         } else {
 
-            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_UnknownCommand"));
-            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ShowHelp"));
+            lang.sendEntry(sender, "Error_UnknownCommand");
+            lang.sendEntry(sender, "Error_ShowHelp");
 
         }
     }

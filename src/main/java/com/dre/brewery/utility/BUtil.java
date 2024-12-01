@@ -1,9 +1,12 @@
 package com.dre.brewery.utility;
 
+import com.Acrobot.ChestShop.Libs.ORMlite.stmt.query.In;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -27,8 +30,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.UUID;
 
 public class BUtil {
@@ -191,6 +196,27 @@ public class BUtil {
 		return null;
 	}
 
+
+	public static <T> List<T> getListSafely(Object object) {
+		if (object == null) {
+			return new ArrayList<>();
+		}
+		if (object instanceof List) {
+			return (List<T>) object;
+		} else if (object != null) {
+			List<T> list = new ArrayList<>(1);
+			list.add((T) object);
+			return list;
+		}
+		return null;
+
+	}
+
+
+	public static <E extends Enum<E>> List<E> getListSafely(Object object, Class<E> mapToEnum) {
+		return getListSafely(object).stream().map(it -> getEnumByName(mapToEnum, it.toString())).toList();
+	}
+
 	/**
 	 * Load a String from config, if found a List, will return the first String
 	 */
@@ -316,7 +342,7 @@ public class BUtil {
 						return false;
 					}
 				} else {
-					barrel2.getBody().destroySign();
+					barrel2.destroySign();
 				}
 			}
 			return true;
@@ -351,7 +377,7 @@ public class BUtil {
 			page = 1;
 		}
 
-		sender.sendMessage(color("&7-------------- &f" + BreweryPlugin.getInstance().languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
+		sender.sendMessage(color("&7-------------- &f" + ConfigManager.getConfig(Lang.class).getEntry("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 
@@ -364,12 +390,47 @@ public class BUtil {
 		}
 	}
 
+	public static Map<Material, Integer> getMaterialMap(List<String> stringList) {
+		Map<Material, Integer> map = new HashMap<>();
+		for (String materialString : stringList) {
+			String[] drainSplit = materialString.split("/");
+			if (drainSplit.length > 1) {
+				Material mat = BUtil.getMaterialSafely(drainSplit[0]);
+				int strength = BUtil.parseInt(drainSplit[1]);
+//                if (mat == null && hasVault && strength > 0) {
+//                    try {
+//                        net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
+//                        if (vaultItem != null) {
+//                            mat = vaultItem.getType();
+//                        }
+//                    } catch (Exception e) {
+//                        Logging.errorLog("Could not check vault for Item Name");
+//                        e.printStackTrace();
+//                    }
+//                }
+				if (mat != null && strength > 0) {
+					map.put(mat, strength);
+				}
+			}
+		}
+		return map;
+	}
+
 
 	public static UUID uuidFromString(String uuid) {
 		try {
 			return UUID.fromString(uuid);
 		} catch (IllegalArgumentException e) {
-			BreweryPlugin.getInstance().errorLog("UUID is invalid! " + uuid, e);
+			Logging.errorLog("UUID is invalid! " + uuid, e);
+			return null;
+		}
+	}
+
+	@Nullable
+	public static <E extends Enum<E>> E getEnumByName(Class<E> enumClass, String name) {
+		try {
+			return Enum.valueOf(enumClass, name.toUpperCase());
+		} catch (IllegalArgumentException | NullPointerException e) {
 			return null;
 		}
 	}
@@ -418,6 +479,40 @@ public class BUtil {
 
 		in.close();
 		out.close();
+	}
+
+
+	public static int parseInt(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	public static double parseDouble(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Double.parseDouble(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	public static float parseFloat(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Float.parseFloat(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
 	}
 
 }

@@ -1,6 +1,12 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.PlayerChatDistortEvent;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
+import com.dre.brewery.utility.Logging;
+import lombok.Getter;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -9,14 +15,16 @@ import java.util.*;
 
 public class DistortChat {
 
-	// represends Words and letters, that are replaced in drunk players messages
+	// represents Words and letters, that are replaced in drunk players messages
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
-	public static List<DistortChat> words = new ArrayList<>();
-	public static List<String> commands;
-	private static List<String> playerParameterCommands = Arrays.asList("/msg", "/tell", "/whisper", "/w"); // e.g. '/msg PLAYER ...' -> don't distort the player name here
-	public static List<String[]> ignoreText = new ArrayList<>();
-	public static Boolean doSigns;
-	public static Boolean log;
+	public static final List<DistortChat> words = new ArrayList<>();
+	@Getter
+	public static final List<String> commands = new ArrayList<>();
+	private static final List<String> playerParameterCommands = Arrays.asList("/msg", "/tell", "/whisper", "/w"); // e.g. '/msg PLAYER ...' -> don't distort the player name here
+	@Getter
+	public static final List<String[]> ignoreText = new ArrayList<>();
 	private static final Map<String, Long> waitPlayers = new HashMap<>();
 
 	private String from;
@@ -62,6 +70,25 @@ public class DistortChat {
 		}
 	}
 
+	public DistortChat(ConfigDistortWord configDistortWord) {
+		this.from = configDistortWord.getReplace();
+		this.to = configDistortWord.getTo();
+
+		String pre = configDistortWord.getPre();
+		if (pre != null && !pre.isEmpty()) {
+			this.pre = pre.split(",");
+		} else {
+			this.pre = null;
+		}
+		this.match = configDistortWord.isMatch();
+		this.alcohol = configDistortWord.getAlcohol();
+		this.percentage = configDistortWord.getPercentage();
+
+		if (this.from != null && this.to != null) {
+			words.add(this);
+		}
+	}
+
 	// Distort players words when he uses a command
 	public static void playerCommand(PlayerCommandPreprocessEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer());
@@ -76,8 +103,8 @@ public class DistortChat {
 					if (command.length() + 1 < chat.length()) {
 						if (Character.isSpaceChar(chat.charAt(command.length()))) {
 							if (chat.toLowerCase().startsWith(command.toLowerCase())) {
-								if (log) {
-									BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", name, chat));
+								if (config.isLogRealChat()) {
+									Logging.log(lang.getEntry("Player_TriedToSay", name, chat));
 								}
 
 								// exclude player parameters
@@ -140,8 +167,8 @@ public class DistortChat {
 		if (bPlayer != null) {
 			if (!words.isEmpty()) {
 				String message = event.getMessage();
-				if (log) {
-					BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
+				if (config.isLogRealChat()) {
+					Logging.log(lang.getEntry("Player_TriedToSay", event.getPlayer().getName(), message));
 				}
 
 				String distorted = distortMessage(message, bPlayer.getDrunkeness());

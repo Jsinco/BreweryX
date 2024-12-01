@@ -5,15 +5,15 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.storage.serialization.BukkitSerialization;
+import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
-import com.dre.brewery.storage.records.ConfiguredDataManager;
-import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.serialization.BukkitSerialization;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -26,14 +26,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-
+// TODO: Should we use Okaeri here?
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
     private final YamlConfiguration dataFile;
 
     public FlatFileStorage(ConfiguredDataManager record) throws StorageInitException {
-        String fileName = record.database() + ".yml";
+        String fileName = record.getDatabase() + ".yml";
         this.rawFile = new File(plugin.getDataFolder(), fileName);
 
         if (!rawFile.exists()) {
@@ -52,7 +52,7 @@ public class FlatFileStorage extends DataManager {
         try {
             dataFile.save(rawFile);
         } catch (IOException e) {
-            plugin.errorLog("Failed to save to Flatfile!", e);
+            Logging.errorLog("Failed to save to Flatfile!", e);
         }
     }
 
@@ -60,14 +60,17 @@ public class FlatFileStorage extends DataManager {
     public Barrel getBarrel(UUID id) {
         String path = "barrels." + id;
 
-        Block spigot = deserializeLocation(dataFile.getString(path + ".spigot")).getBlock();
+        Location spigotLoc = deserializeLocation(dataFile.getString(path + ".spigot"));
+        if (spigotLoc == null) {
+            return null;
+        }
         BoundingBox bounds = BoundingBox.fromPoints(dataFile.getIntegerList(path + ".bounds"));
         float time = (float) dataFile.getDouble(path + ".time", 0.0);
         byte sign = (byte) dataFile.getInt(path + ".sign", 0);
         ItemStack[] items = BukkitSerialization.itemStackArrayFromBase64(dataFile.getString(path + ".items", null));
 
 
-        return new Barrel(spigot, sign, bounds, items, time, id);
+        return new Barrel(spigotLoc.getBlock(), sign, bounds, items, time, id);
     }
 
     @Override
@@ -103,9 +106,9 @@ public class FlatFileStorage extends DataManager {
         String path = "barrels." + barrel.getId();
 
         dataFile.set(path + ".spigot", serializeLocation(barrel.getSpigot().getLocation()));
-        dataFile.set(path + ".bounds", barrel.getBody().getBounds().serialize());
+        dataFile.set(path + ".bounds", barrel.getBounds().serialize());
         dataFile.set(path + ".time", barrel.getTime());
-        dataFile.set(path + ".sign", barrel.getBody().getSignoffset());
+        dataFile.set(path + ".sign", barrel.getSignoffset());
         dataFile.set(path + ".items", BukkitSerialization.itemStackArrayToBase64(barrel.getInventory().getContents()));
         save();
     }
@@ -120,11 +123,14 @@ public class FlatFileStorage extends DataManager {
     public BCauldron getCauldron(UUID id) {
         String path = "cauldrons." + id;
 
-        Block block = deserializeLocation(dataFile.getString(path + ".block")).getBlock();
+        Location loc = deserializeLocation(dataFile.getString(path + ".block"));
+        if (loc == null) {
+            return null;
+        }
         BIngredients ingredients = BIngredients.deserializeIngredients(dataFile.getString(path + ".ingredients"));
         int state = dataFile.getInt(path + ".state", 0);
 
-        return new BCauldron(block, ingredients, state, id);
+        return new BCauldron(loc.getBlock(), ingredients, state, id);
     }
 
     @Override
@@ -234,6 +240,9 @@ public class FlatFileStorage extends DataManager {
     public Wakeup getWakeup(UUID id) {
         String path = "wakeups." + id;
         Location wakeupLocation = deserializeLocation(dataFile.getString(path + ".location"), true);
+        if (wakeupLocation == null) {
+            return null;
+        }
         return new Wakeup(wakeupLocation, id);
     }
 

@@ -8,12 +8,14 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
+import com.dre.brewery.utility.UpdateChecker;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -42,9 +44,15 @@ import org.bukkit.inventory.PlayerInventory;
 public class PlayerListener implements Listener {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		handlePlayerInteract(event);
+	}
+
+	public static void handlePlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock == null) return;
 
@@ -55,7 +63,7 @@ public class PlayerListener implements Listener {
 
 		// -- Clicking an Hopper --
 		if (type == Material.HOPPER) {
-			if (BConfig.brewHopperDump && event.getPlayer().isSneaking()) {
+			if (config.isBrewHopperDump() && event.getPlayer().isSneaking()) {
 				if (VERSION.isOrEarlier(MinecraftVersion.V1_9) || event.getHand() == EquipmentSlot.HAND) {
 					ItemStack item = event.getItem();
 					if (Brew.isBrew(item)) {
@@ -77,11 +85,11 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			event.setCancelled(true);
-			if (BConfig.enableSealingTable) {
+			if (config.isEnableSealingTable()) {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
 			} else {
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_SealingTableDisabled"));
+				lang.sendEntry(player, "Error_SealingTableDisabled");
 			}
 			return;
 		}
@@ -100,7 +108,7 @@ public class PlayerListener implements Listener {
 		if (VERSION.isOrLater(MinecraftVersion.V1_14) && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
+				lang.sendEntry(player, "Error_NoPermissions");
 			}
 			return;
 		}
@@ -113,13 +121,13 @@ public class PlayerListener implements Listener {
 		// -- Access a Barrel --
 		Barrel barrel = null;
 		if (LegacyUtil.isWoodPlanks(type)) {
-			if (BConfig.openEverywhere) {
+			if (config.isOpenLargeBarrelEverywhere()) {
 				barrel = Barrel.getByWood(clickedBlock);
 			}
 		} else if (LegacyUtil.isWoodStairs(type)) {
 			barrel = Barrel.getByWood(clickedBlock);
 			if (barrel != null) {
-				if (!BConfig.openEverywhere && barrel.isLarge()) {
+				if (!config.isOpenLargeBarrelEverywhere() && barrel.isLarge()) {
 					barrel = null;
 				}
 			}
@@ -204,16 +212,16 @@ public class PlayerListener implements Listener {
 							// replace the potion with an empty potion to avoid effects
 							event.setItem(new ItemStack(Material.POTION));
 						} else {
-							// Dont replace the item when keeping the potion, just cancel the event
+							// Don't replace the item when keeping the potion, just cancel the event
 							event.setCancelled(true);
 						}
 					}
 				}
-			} else if (BConfig.drainItems.containsKey(item.getType())) {
+			} else if (BUtil.getMaterialMap(config.getDrainItems()).containsKey(item.getType())) {
 				BPlayer bplayer = BPlayer.get(player);
 				if (bplayer != null) {
 					bplayer.drainByItem(player, item.getType());
-					if (BConfig.showStatusOnDrink) {
+					if (config.isShowStatusOnDrink()) {
 						bplayer.showDrunkeness(player);
 					}
 				}
@@ -257,36 +265,36 @@ public class PlayerListener implements Listener {
 	// player joins while passed out
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-			final Player player = event.getPlayer();
-			BPlayer bplayer = BPlayer.get(player);
-			if (bplayer != null) {
-				if (player.hasPermission("brewery.bypass.logindeny")) {
-					if (bplayer.getDrunkeness() > 100) {
-						bplayer.setData(100, 0);
-					}
-					return;
-				}
-				switch (bplayer.canJoin()) {
-					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDeny"));
-						return;
-					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDenyLong"));
-				}
+		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+			return;
+		}
+		Player player = event.getPlayer();
+		BPlayer bplayer = BPlayer.get(player);
+		if (bplayer == null) {
+			return;
+		}
+		if (player.hasPermission("brewery.bypass.logindeny")) {
+			if (bplayer.getDrunkeness() > 100) {
+				bplayer.setData(100, 0);
 			}
+			return;
+		}
+		switch (bplayer.canJoin()) {
+			case 2 ->
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDeny"));
+			case 3 ->
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lang.getEntry("Player_LoginDenyLong"));
 		}
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		UpdateChecker.notify(event.getPlayer());
-
-		Player player = event.getPlayer();
-		BPlayer bplayer = BPlayer.get(player);
-
-		if (bplayer != null)
-			bplayer.join(player);
+		
+		BPlayer bplayer = BPlayer.get(event.getPlayer());
+		if (bplayer != null) {
+			bplayer.login(event.getPlayer());
+		}
 	}
 
 	@EventHandler

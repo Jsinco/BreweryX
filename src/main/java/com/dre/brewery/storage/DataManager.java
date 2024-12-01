@@ -7,13 +7,17 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.storage.impls.FlatFileStorage;
+import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
-import com.dre.brewery.storage.records.ConfiguredDataManager;
+import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -63,12 +67,34 @@ public abstract class DataManager {
 
 
     public void tryAutoSave() {
-        long interval = BConfig.autoSaveInterval * 60000L;
+        long interval = ConfigManager.getConfig(Config.class).getAutosave() * 60000L;
 
         if (System.currentTimeMillis() - lastAutoSave > interval) {
             saveAll(true);
             lastAutoSave = System.currentTimeMillis();
-            plugin.debugLog("Auto saved all data!");
+            Logging.debugLog("Auto saved all data!");
+        }
+    }
+
+    public void exit(boolean save, boolean async) {
+        this.exit(save, async, null);
+    }
+
+    public void exit(boolean save, boolean async, Runnable callback) {
+        if (save) {
+            saveAll(async, () -> {
+                this.closeConnection();
+                Logging.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
+                if (callback != null) {
+                    callback.run();
+                }
+            });
+        } else {
+            this.closeConnection(); // let databases close their connections
+            Logging.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
+            if (callback != null) {
+                callback.run();
+            }
         }
     }
 
@@ -103,59 +129,37 @@ public abstract class DataManager {
         saveAllCauldrons(cauldrons, true);
         saveAllPlayers(players, true);
         saveAllWakeups(wakeups, true);
-        plugin.debugLog("Saved all data!");
+        Logging.debugLog("Saved all data!");
     }
 
     protected void closeConnection() {
         // Implemented in subclasses that use database connections
     }
 
-
-    public void exit(boolean save, boolean async) {
-        this.exit(save, async, null);
-    }
-
-    public void exit(boolean save, boolean async, Runnable callback) {
-        if (save) {
-            saveAll(async, () -> {
-                this.closeConnection();
-                plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
-                if (callback != null) {
-                    callback.run();
-                }
-            });
-        } else {
-            this.closeConnection(); // let databases close their connections
-            plugin.log("Closed connection from&7:&a " + this.getClass().getSimpleName());
-            if (callback != null) {
-                callback.run();
-            }
-        }
-    }
-
     public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {
-        DataManager dataManager = switch (record.type()) {
+        DataManager dataManager = switch (record.getType()) {
             case FLATFILE -> new FlatFileStorage(record);
             case MYSQL -> new MySQLStorage(record);
             case SQLITE -> new SQLiteStorage(record);
+            case MONGODB -> new MongoDBStorage(record);
         };
 
         // Legacy data migration
         if (BData.checkForLegacyData()) {
             long start = System.currentTimeMillis();
-            plugin.log("&5Brewery is loading data from a legacy format!");
+            Logging.log("&5Brewery is loading data from a legacy format!");
 
             BData.readData();
             BData.finalizeLegacyDataMigration();
 
             dataManager.saveAll(false);
 
-            plugin.log("&5Finished migrating legacy data! Took&7: &a" + (System.currentTimeMillis() - start) + "ms&5! Join our discord if you need assistance: &ahttps://discord.gg/3FkNaNDnta");
-			plugin.warningLog("BreweryX can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
+            Logging.log("&5Finished migrating legacy data! Took&7: &a" + (System.currentTimeMillis() - start) + "ms&5! Join our discord if you need assistance: &ahttps://discord.gg/3FkNaNDnta");
+			Logging.warningLog("BreweryX can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
         }
 
 
-        plugin.log("DataManager created&7:&a " + record.type().getFormattedName());
+        Logging.log("DataManager created&7:&a " + record.getType().getFormattedName());
         return dataManager;
     }
 
@@ -169,7 +173,7 @@ public abstract class DataManager {
         Brew.loadPrevSeeds(miscData.prevSaveSeeds());
 
 
-        Stats stats = plugin.stats;
+        Stats stats = plugin.getStats();
         // Check the hash to prevent tampering with statistics - Note by original author
         if (miscData.brewsCreated().size() == 7 && miscData.brewsCreatedHash() == miscData.brewsCreated().hashCode()) {
             stats.brewsCreated = miscData.brewsCreated().get(0);
@@ -184,7 +188,7 @@ public abstract class DataManager {
 
     public static BreweryMiscData getLoadedMiscData() {
         List<Integer> brewsCreated = new ArrayList<>(7);
-        Stats stats = plugin.stats;
+        Stats stats = plugin.getStats();
         brewsCreated.addAll(List.of(stats.brewsCreated, stats.brewsCreatedCmd, stats.exc, stats.good, stats.norm, stats.bad, stats.terr));
 
 
@@ -208,7 +212,7 @@ public abstract class DataManager {
 
     public static Location deserializeLocation(String string, boolean yawPitch) {
         if (string == null) {
-            plugin.warningLog("Location is null!");
+            Logging.warningLog("Location is null!");
             return null;
         }
 
@@ -241,20 +245,20 @@ public abstract class DataManager {
 
 
         if (world == null) {
-            plugin.warningLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
+            Logging.warningLog("World not found! " + loc[0]); // TODO: add command to purge stuff in non-existent worlds
             return null;
         }
 
         if (yawPitch && loc.length == 6) {
-            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]), plugin.parseFloat(loc[4]), plugin.parseFloat(loc[5]));
+            return new Location(world, BUtil.parseInt(loc[1]), BUtil.parseInt(loc[2]), BUtil.parseInt(loc[3]), BUtil.parseFloat(loc[4]), BUtil.parseFloat(loc[5]));
         } else {
-            return new Location(world, plugin.parseInt(loc[1]), plugin.parseInt(loc[2]), plugin.parseInt(loc[3]));
+            return new Location(world, BUtil.parseInt(loc[1]), BUtil.parseInt(loc[2]), BUtil.parseInt(loc[3]));
         }
     }
 
     public static String serializeLocation(Location location, boolean yawPitch) {
         if (location.getWorld() == null) {
-            plugin.errorLog("Location must have a world! " + location);
+            Logging.errorLog("Location must have a world! " + location);
             return null;
         }
         String locationString;
