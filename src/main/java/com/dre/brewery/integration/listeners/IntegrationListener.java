@@ -121,27 +121,25 @@ public class IntegrationListener implements Listener {
 			}
 		}
 		if (Hook.GRIEFPREVENTION.isEnabled()) {
-			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
-				try {
-					if (!GriefPreventionBarrel.checkAccess(event)) {
-						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
-						event.setCancelled(true);
-						return;
-					}
-				} catch (Throwable e) {
+			try {
+				if (!GriefPreventionBarrel.checkAccess(event)) {
+					lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 					event.setCancelled(true);
-					Logging.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!", e);
-					Logging.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
-					Logging.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
-					Player player = event.getPlayer();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						Logging.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
-						Logging.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
-					} else {
-						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
 					return;
 				}
+			} catch (Throwable e) {
+				event.setCancelled(true);
+				Logging.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!", e);
+				Logging.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
+				Logging.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
+				Player player = event.getPlayer();
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					Logging.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
+					Logging.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
+				} else {
+					Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
+				}
+				return;
 			}
 		}
 
@@ -180,27 +178,25 @@ public class IntegrationListener implements Listener {
 		}
 
 		if (Hook.TOWNY.isEnabled()) {
-			if (BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("Towny")) {
-				try {
-					if (!TownyBarrel.checkAccess(event)) {
-						lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
-						event.setCancelled(true);
-						return;
-					}
-				} catch (Throwable e) {
+			try {
+				if (!TownyBarrel.checkAccess(event)) {
+					lang.sendEntry(event.getPlayer(), "Error_NoBarrelAccess");
 					event.setCancelled(true);
-					Logging.errorLog("Failed to Check Towny for Barrel Open Permissions!", e);
-					Logging.errorLog("Brewery was tested with Towny v0.96.3.0");
-					Logging.errorLog("Disable the Towny support in the config and do /brew reload");
-					Player player = event.getPlayer();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						Logging.msg(player, "&cTowny check Error, Brewery was tested with up to v0.96.3.0 of Towny");
-						Logging.msg(player, "&cSet &7useTowny: false &cin the config and /brew reload");
-					} else {
-						Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
 					return;
 				}
+			} catch (Throwable e) {
+				event.setCancelled(true);
+				Logging.errorLog("Failed to Check Towny for Barrel Open Permissions!", e);
+				Logging.errorLog("Brewery was tested with Towny v0.96.3.0");
+				Logging.errorLog("Disable the Towny support in the config and do /brew reload");
+				Player player = event.getPlayer();
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					Logging.msg(player, "&cTowny check Error, Brewery was tested with up to v0.96.3.0 of Towny");
+					Logging.msg(player, "&cSet &7useTowny: false &cin the config and /brew reload");
+				} else {
+					Logging.msg(player, "&cError opening Barrel, please report to an Admin!");
+				}
+				return;
 			}
 		}
 
