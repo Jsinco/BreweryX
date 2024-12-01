@@ -94,6 +94,7 @@ public class Config extends AbstractOkaeriConfigFile {
 
 	@LocalizedComment("config.stumblePercent")
 	private int stumblePercent = 100;
+	public float getStumblePercent() { return stumblePercent / 100f; }
 
 	@LocalizedComment("config.showStatusOnDrink")
 	private boolean showStatusOnDrink = true;
