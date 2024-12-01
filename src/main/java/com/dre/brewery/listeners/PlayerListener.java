@@ -287,12 +287,12 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		UpdateChecker.notify(event.getPlayer());
 		BPlayer bplayer = BPlayer.get(event.getPlayer());
 		if (bplayer != null) {
-			bplayer.login(event.getPlayer());
+			bplayer.join(event.getPlayer());
 		}
 	}
 
