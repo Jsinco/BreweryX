@@ -5,8 +5,8 @@ api-version: 1.13
 load: POSTWORLD
 folia-supported: true
 website: 'https://brewery.lumamc.net/'
-authors: [Jsinco, Mitality, Szarkans, Sn0wStorm, TTTheKing, Grafe]
-libraries: ['org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10']
+authors: [Jsinco, Mitality, Nadwey, Szarkans, Sn0wStorm, TTTheKing, Grafe]
+libraries: ['org.jetbrains.kotlin:kotlin-stdlib:2.0.21']
 softdepend:
   - LWC
   - LogBlock
@@ -24,7 +24,7 @@ softdepend:
 commands:
   breweryx:
     description: Mostly admin commands to create/modify Brews and drunkenness
-    aliases: [brewery, brew]
+#    aliases: [brewery, brew] Now handled by config
 permissions:
 # -- Groups --
 # User
@@ -39,6 +39,7 @@ permissions:
       brewery.cauldron.insert: true
       brewery.cauldron.fill: true
       brewery.cmd.version: true
+      brewery.cmd.info: true
 # Mod
   brewery.mod:
     description: Allow to maintain Wakeup Points and to login even if overdrunken

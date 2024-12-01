@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -315,7 +316,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 			}
 			return item;
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to load CustomItem", e);
 			return null;
 		}
 	}

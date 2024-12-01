@@ -6,12 +6,14 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.integration.bstats.Metrics.AdvancedPie;
 import com.dre.brewery.integration.bstats.Metrics.DrilldownPie;
 import com.dre.brewery.integration.bstats.Metrics.SimplePie;
 import com.dre.brewery.integration.bstats.Metrics.SingleLineChart;
 import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.Map;
 
 public class Stats {
 
+	private final Config config = ConfigManager.getConfig(Config.class);
 	public int brewsCreated;
 	public int brewsCreatedCmd; // Created by command
 	public int exc, good, norm, bad, terr; // Brews drunken with quality
@@ -101,16 +104,16 @@ public class Stats {
 
 			}));
 			metrics.addCustomChart(new SimplePie("cauldron_particles", () -> {
-				if (!BConfig.enableCauldronParticles) {
+				if (!config.isEnableCauldronParticles()) {
 					return "disabled";
 				}
-				if (BConfig.minimalParticles) {
+				if (config.isMinimalParticles()) {
 					return "minimal";
 				}
 				return "enabled";
 			}));
 			metrics.addCustomChart(new SimplePie("wakeups", () -> {
-				if (!BConfig.enableWake) {
+				if (!config.isEnableWake()) {
 					return "disabled";
 				}
 				int wakeups = Wakeup.wakeups.size();
@@ -159,17 +162,17 @@ public class Stats {
 				map.put(BreweryPlugin.getInstance().getDescription().getVersion(), innerMap);
 				return map;
 			}));
-			metrics.addCustomChart(new SimplePie("language", () -> BreweryPlugin.getInstance().language));
-			metrics.addCustomChart(new SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
+			metrics.addCustomChart(new SimplePie("language", config::getLanguage));
+			metrics.addCustomChart(new SimplePie("config_scramble", () -> config.isEnableEncode() ? "enabled" : "disabled"));
 			metrics.addCustomChart(new SimplePie("config_lore_color", () -> {
-				if (BConfig.colorInBarrels) {
-					if (BConfig.colorInBrewer) {
+				if (config.isColorInBarrels()) {
+					if (config.isColorInBrewer()) {
 						return "both";
 					} else {
 						return "in barrels";
 					}
 				} else {
-					if (BConfig.colorInBrewer) {
+					if (config.isColorInBrewer()) {
 						return "in distiller";
 					} else {
 						return "none";
@@ -177,14 +180,14 @@ public class Stats {
 				}
 			}));
 			metrics.addCustomChart(new SimplePie("config_always_show", () -> {
-				if (BConfig.alwaysShowQuality) {
-					if (BConfig.alwaysShowAlc) {
+				if (config.isAlwaysShowQuality()) {
+					if (config.isAlwaysShowAlc()) {
 						return "both";
 					} else {
 						return "quality stars";
 					}
 				} else {
-					if (BConfig.alwaysShowAlc) {
+					if (config.isAlwaysShowAlc()) {
 						return "alc content";
 					} else {
 						return "none";
@@ -192,7 +195,7 @@ public class Stats {
 				}
 			}));
 		} catch (Exception | LinkageError e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to submit stats data to bStats.org", e);
 		}
 	}
 

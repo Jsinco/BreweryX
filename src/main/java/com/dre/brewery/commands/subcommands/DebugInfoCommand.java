@@ -4,9 +4,11 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,14 +18,9 @@ import java.util.List;
 
 public class DebugInfoCommand implements SubCommand {
 
-    private final BreweryPlugin breweryPlugin;
-
-    public DebugInfoCommand(BreweryPlugin breweryPlugin) {
-        this.breweryPlugin = breweryPlugin;
-    }
 
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         debugInfo(sender, args.length > 1 ? args[1] : null);
     }
 
@@ -50,47 +47,47 @@ public class DebugInfoCommand implements SubCommand {
         if (hand != null) {
             Brew brew = Brew.get(hand);
             if (brew == null) return;
-            BreweryPlugin.getInstance().log(brew.toString());
+            Logging.log(brew.toString());
             BIngredients ingredients = brew.getIngredients();
             if (recipeName == null) {
-                BreweryPlugin.getInstance().log("&lIngredients:");
+                Logging.log("&lIngredients:");
                 for (Ingredient ing : ingredients.getIngredientList()) {
-                    BreweryPlugin.getInstance().log(ing.toString());
+                    Logging.log(ing.toString());
                 }
-                BreweryPlugin.getInstance().log("&lTesting Recipes");
+                Logging.log("&lTesting Recipes");
                 for (BRecipe recipe : BRecipe.getAllRecipes()) {
                     int ingQ = ingredients.getIngredientQuality(recipe);
                     int cookQ = ingredients.getCookingQuality(recipe, false);
                     int cookDistQ = ingredients.getCookingQuality(recipe, true);
                     int ageQ = ingredients.getAgeQuality(recipe, brew.getAgeTime());
-                    BreweryPlugin.getInstance().log(recipe.getRecipeName() + ": ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ + ", ageQlty: " + ageQ);
+                    Logging.log(recipe.getRecipeName() + ": ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ + ", ageQlty: " + ageQ);
                 }
                 BRecipe distill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), true);
                 BRecipe nonDistill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), false);
-                BreweryPlugin.getInstance().log("&lWould prefer Recipe: " + (nonDistill == null ? "none" : nonDistill.getRecipeName()) + " and Distill-Recipe: " + (distill == null ? "none" : distill.getRecipeName()));
+                Logging.log("&lWould prefer Recipe: " + (nonDistill == null ? "none" : nonDistill.getRecipeName()) + " and Distill-Recipe: " + (distill == null ? "none" : distill.getRecipeName()));
             } else {
                 BRecipe recipe = BRecipe.getMatching(recipeName);
                 if (recipe == null) {
-                    BreweryPlugin.getInstance().msg(player, "Could not find Recipe " + recipeName);
+                    Logging.msg(player, "Could not find Recipe " + recipeName);
                     return;
                 }
-                BreweryPlugin.getInstance().log("&lIngredients in Recipe " + recipe.getRecipeName() + ":");
+                Logging.log("&lIngredients in Recipe " + recipe.getRecipeName() + ":");
                 for (RecipeItem ri : recipe.getIngredients()) {
-                    BreweryPlugin.getInstance().log(ri.toString());
+                    Logging.log(ri.toString());
                 }
-                BreweryPlugin.getInstance().log("&lIngredients in Brew:");
+                Logging.log("&lIngredients in Brew:");
                 for (Ingredient ingredient : ingredients.getIngredientList()) {
                     int amountInRecipe = recipe.amountOf(ingredient);
-                    BreweryPlugin.getInstance().log(ingredient.toString() + ": " + amountInRecipe + " of this are in the Recipe");
+                    Logging.log(ingredient.toString() + ": " + amountInRecipe + " of this are in the Recipe");
                 }
                 int ingQ = ingredients.getIngredientQuality(recipe);
                 int cookQ = ingredients.getCookingQuality(recipe, false);
                 int cookDistQ = ingredients.getCookingQuality(recipe, true);
                 int ageQ = ingredients.getAgeQuality(recipe, brew.getAgeTime());
-                BreweryPlugin.getInstance().log("ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ  + ", ageQlty: " + ageQ);
+                Logging.log("ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ  + ", ageQlty: " + ageQ);
             }
 
-            BreweryPlugin.getInstance().msg(player, "Debug Info for item written into Log");
+            Logging.msg(player, "Debug Info for item written into Log");
         }
     }
 }

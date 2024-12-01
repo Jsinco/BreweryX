@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.commands.SubCommand;
+import com.dre.brewery.configuration.files.Lang;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class StaticCommand implements SubCommand {
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         ItemStack hand = player.getItemInHand();
         if (hand.getType() != Material.AIR) {
@@ -23,14 +24,14 @@ public class StaticCommand implements SubCommand {
                 if (brew.isStatic()) {
                     if (!brew.isStripped()) {
                         brew.setStatic(false, hand);
-                        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_NonStatic"));
+                        lang.sendEntry(sender, "CMD_NonStatic");
                     } else {
-                        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_SealedAlwaysStatic"));
+                        lang.sendEntry(sender, "Error_SealedAlwaysStatic");
                         return;
                     }
                 } else {
                     brew.setStatic(true, hand);
-                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Static"));
+                    lang.sendEntry(sender, "CMD_Static");
                 }
                 brew.touch();
                 ItemMeta meta = hand.getItemMeta();
@@ -46,7 +47,7 @@ public class StaticCommand implements SubCommand {
                 return;
             }
         }
-        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ItemNotPotion"));
+        lang.sendEntry(sender, "Error_ItemNotPotion");
     }
 
     @Override

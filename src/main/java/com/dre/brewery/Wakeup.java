@@ -1,6 +1,10 @@
 package com.dre.brewery;
 
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -13,9 +17,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// Holy shit this code is so bad. - Jsinco
+@Getter
 public class Wakeup {
 
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
+
+	@Getter
 	public static List<Wakeup> wakeups = new ArrayList<>();
 	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	public static int checkId = -1;
@@ -36,17 +43,6 @@ public class Wakeup {
 		this.id = id;
 	}
 
-	public Location getLoc() {
-		return loc;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public static List<Wakeup> getWakeups() {
-		return wakeups;
-	}
 
 	// get the nearest of two random Wakeup-Locations
 	public static Location getRandom(Location playerLoc) {
@@ -68,7 +64,7 @@ public class Wakeup {
 		if (w1 == null) return null;
 
 		while (!w1.check()) {
-			breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
+			Logging.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
 
 			w1 = calcRandom(worldWakes);
 			if (w1 == null) {
@@ -82,7 +78,7 @@ public class Wakeup {
 			worldWakes.remove(w2);
 
 			while (!w2.check()) {
-				breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
+				Logging.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
 
 				w2 = calcRandom(worldWakes);
 				if (w2 == null) {
@@ -111,16 +107,16 @@ public class Wakeup {
 
 			Player player = (Player) sender;
 			wakeups.add(new Wakeup(player.getLocation()));
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeCreated", "" + (wakeups.size() - 1)));
+			lang.sendEntry(sender, "Player_WakeCreated", "" + (wakeups.size() - 1));
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
+			lang.sendEntry(sender, "Error_PlayerCommand");
 		}
 	}
 
 	public static void remove(CommandSender sender, int id) {
 		if (wakeups.isEmpty() || id < 0 || id >= wakeups.size()) {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
+			lang.sendEntry(sender, "Player_WakeNotExist", "" + id);//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
 			return;
 		}
 
@@ -128,16 +124,16 @@ public class Wakeup {
 
 		if (wakeup.active) {
 			wakeup.active = false;
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeDeleted", "" + id));
+			lang.sendEntry(sender, "Player_WakeDeleted", "" + id);
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeAlreadyDeleted", "" + id));
+			lang.sendEntry(sender, "Player_WakeAlreadyDeleted", "" + id);
 		}
 	}
 
 	public static void list(CommandSender sender, int page, String worldOnly) {
 		if (wakeups.isEmpty()) {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoPoints"));
+			lang.sendEntry(sender, "Player_WakeNoPoints");
 			return;
 		}
 
@@ -170,7 +166,7 @@ public class Wakeup {
 
 			if (!all) {
 				if (wakeups.isEmpty() || id >= wakeups.size()) {
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNotExist", "" + id));
+					lang.sendEntry(sender, "Player_WakeNotExist", "" + id);
 					return;
 				}
 
@@ -182,12 +178,12 @@ public class Wakeup {
 					int x = (int) wakeup.loc.getX();
 					int y = (int) wakeup.loc.getY();
 					int z = (int) wakeup.loc.getZ();
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
+					lang.sendEntry(sender, "Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z);
 				}
 
 			} else {
 				if (wakeups.isEmpty()) {
-					breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoPoints"));
+					lang.sendEntry(sender, "Player_WakeNoPoints");
 					return;
 				}
 				if (checkPlayer != null && checkPlayer != player) {
@@ -199,7 +195,7 @@ public class Wakeup {
 
 
 		} else {
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
+			lang.sendEntry(sender, "Error_PlayerCommand");
 		}
 	}
 
@@ -210,7 +206,7 @@ public class Wakeup {
 	public static void tpNext() {
 		checkId++;
 		if (checkId >= wakeups.size()) {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeLast"));
+			lang.sendEntry(checkPlayer, "Player_WakeLast");
 			checkId = -1;
 			checkPlayer = null;
 			return;
@@ -228,23 +224,23 @@ public class Wakeup {
 		int z = (int) wakeup.loc.getZ();
 
 		if (wakeup.check()) {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeTeleport", "" + checkId, world, "" + x , "" + y, "" + z));
+			lang.sendEntry(checkPlayer, "Player_WakeTeleport", checkId, world, "" + x , "" + y, "" + z);
 			checkPlayer.teleport(wakeup.loc);
 		} else {
-			breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeFilled", "" + checkId, world, "" + x , "" + y, "" + z));
+			lang.sendEntry(checkPlayer, "Player_WakeFilled", checkId, world, "" + x , "" + y, "" + z);
 		}
-		breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeHint1"));
-		breweryPlugin.msg(checkPlayer, breweryPlugin.languageReader.get("Player_WakeHint2"));
+		lang.sendEntry(checkPlayer, "Player_WakeHint1");
+		lang.sendEntry(checkPlayer, "Player_WakeHint2");
 	}
 
 	public static void cancel(CommandSender sender) {
 		if (checkPlayer != null) {
 			checkPlayer = null;
 			checkId = -1;
-			breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeCancel"));
+			lang.sendEntry(sender, "Player_WakeCancel");
 			return;
 		}
-		breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Player_WakeNoCheck"));
+		lang.sendEntry(sender, "Player_WakeNoCheck");
 	}
 
 

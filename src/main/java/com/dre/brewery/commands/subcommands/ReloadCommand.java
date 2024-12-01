@@ -1,68 +1,85 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.BSealer;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.storage.DataManager;
-import com.dre.brewery.storage.StorageInitException;
+import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.configurer.TranslationManager;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.Logging;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
 
 public class ReloadCommand implements SubCommand {
 
+	@Getter
+	private static CommandSender reloader;
+
     @Override
-    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
-		if (sender != null && !sender.equals(Bukkit.getConsoleSender())) {
-			BConfig.reloader = sender;
-		}
-		FileConfiguration cfg = BConfig.loadConfigFile();
-		if (cfg == null) {
-			// Could not read yml file, do not proceed, error was printed
-			breweryPlugin.log("Something went wrong when trying to load the config file! Please check your config.yml");
-			return;
+    public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
+		if (!sender.equals(Bukkit.getConsoleSender())) {
+			reloader = sender;
 		}
 
-		// clear all existent config Data
-		breweryPlugin.clearConfigData();
 
-		// load the Config
 		try {
-			BConfig.readConfig(cfg);
-		} catch (Exception e) {
-			e.printStackTrace();
-			breweryPlugin.log("Something went wrong when trying to load the config file! Please check your config.yml");
-			return;
-		}
+			// Reload translation manager
+			TranslationManager.newInstance(breweryPlugin.getDataFolder());
 
-		// Reload Cauldron Particle Recipes
-		BCauldron.reload();
-
-		// Clear Recipe completions
-		CommandUtil.reloadTabCompleter();
-
-		// Reload Recipes
-		boolean successful = true;
-		for (Brew brew : Brew.legacyPotions.values()) {
-			if (!brew.reloadRecipe()) {
-				successful = false;
+			// Reload each config
+			for (var entry : ConfigManager.LOADED_CONFIGS.entrySet()) {
+				AbstractOkaeriConfigFile file = entry.getValue();
+				try {
+					file.reload();
+				} catch (Throwable e) {
+					Logging.errorLog("Something went wrong trying to load " + file.getBindFile().getFileName() + "!", e);
+				}
 			}
-		}
-		if (sender != null) {
+
+			// Reload Cauldron Ingredients
+			ConfigManager.loadCauldronIngredients();
+			// Reload Recipes
+			ConfigManager.loadRecipes();
+
+			// Reload Cauldron Particle Recipes
+			BCauldron.reload();
+
+			// Clear Recipe completions
+			CommandUtil.reloadTabCompleter();
+
+			// Sealing table recipe
+			BSealer.registerRecipe();
+
+			// Let addons know this command was executed
+			BreweryPlugin.getAddonManager().reloadAddons();
+
+			// Reload Recipes <-- TODO: Not really sure what this is doing...? - Jsinco
+			boolean successful = true;
+			for (Brew brew : Brew.legacyPotions.values()) {
+				if (!brew.reloadRecipe()) {
+					successful = false;
+				}
+			}
+
 			if (!successful) {
-				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_Recipeload"));
+				lang.sendEntry(sender, "Error_Recipeload");
 			} else {
-				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Reload"));
+				lang.sendEntry(sender, "CMD_Reload");
 			}
-		}
 
-		BreweryPlugin.getAddonManager().reloadAddons();
-		BConfig.reloader = null;
+
+		} catch (Throwable e) {
+			Logging.errorLog("Something went wrong trying to reload Brewery!", e);
+		}
+		// Make sure this reloader is set to null after
+		reloader = null;
     }
 
     @Override

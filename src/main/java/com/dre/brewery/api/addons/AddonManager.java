@@ -1,6 +1,7 @@
 package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,11 +42,11 @@ public class AddonManager extends ClassLoader {
 				addon.unregisterCommands();
 				addon.getAddonLogger().info("Disabled.");
 			} catch (Throwable t) {
-				plugin.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
+				Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 			}
 		}
 		int loaded = addons.size();
-		if (loaded > 0) plugin.log("Disabled " + loaded + " addon(s)");
+		if (loaded > 0) Logging.log("Disabled " + loaded + " addon(s)");
 		addons.clear();
 	}
 
@@ -56,7 +57,7 @@ public class AddonManager extends ClassLoader {
 			addon.unregisterCommands();
 			addon.getAddonLogger().info("Disabled.");
 		} catch (Throwable t) {
-			plugin.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
+			Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 		}
 		addons.remove(addon);
 	}
@@ -67,11 +68,11 @@ public class AddonManager extends ClassLoader {
 			try {
 				addon.onBreweryReload();
 			} catch (Throwable t) {
-				plugin.errorLog("Failed to reload addon " + addon.getClass().getSimpleName(), t);
+				Logging.errorLog("Failed to reload addon " + addon.getClass().getSimpleName(), t);
 			}
 		}
 		int loaded = addons.size();
-		if (loaded > 0) plugin.log("Reloaded " + loaded + " addon(s)");
+		if (loaded > 0) Logging.log("Reloaded " + loaded + " addon(s)");
 	}
 
 	public List<BreweryAddon> getAddons() {
@@ -95,11 +96,11 @@ public class AddonManager extends ClassLoader {
 			try {
 				addon.onAddonEnable();
 			} catch (Throwable t) {
-				plugin.errorLog("Failed to enable addon " + addon.getClass().getSimpleName(), t);
+				Logging.errorLog("Failed to enable addon " + addon.getClass().getSimpleName(), t);
 			}
 		}
 		int loaded = addons.size();
-		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");
+		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
 	}
 
 
@@ -133,8 +134,8 @@ public class AddonManager extends ClassLoader {
 					managerField.set(addon, this);
 
 
-					if (addon.getAddonInfo() == null) {
-						plugin.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
+					if (addon.getAddonInfo() == null) { // This CAN be null for us. It's only annotated NotNull for addons.
+						Logging.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
 						continue;
 					}
 
@@ -144,11 +145,11 @@ public class AddonManager extends ClassLoader {
 					addons.add(addon); // Add to our list of addons
 					addon.onAddonPreEnable();
 				} catch (Exception e) {
-					plugin.errorLog("Failed to load addon class " + clazz.getSimpleName(), e);
+					Logging.errorLog("Failed to load addon class " + clazz.getSimpleName(), e);
 				}
 			}
 		} catch (Throwable ex) {
-			plugin.errorLog("Failed to load addon classes from jar " + file.getName(), ex);
+			Logging.errorLog("Failed to load addon classes from jar " + file.getName(), ex);
 		}
 	}
 

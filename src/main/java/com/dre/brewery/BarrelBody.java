@@ -3,36 +3,36 @@ package com.dre.brewery;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * The Blocks that make up a Barrel in the World
  */
-public class BarrelBody {
+@Getter
+@Setter
+public abstract class BarrelBody {
 
-	private final Barrel barrel;
-	private final Block spigot;
-	private BoundingBox bounds;
-	private byte signoffset;
+	protected final Block spigot;
+	protected BoundingBox bounds;
+	protected byte signoffset;
 
-	public BarrelBody(Barrel barrel, byte signoffset) {
-		this.barrel = barrel;
+	public BarrelBody(Block spigot, byte signoffset) {
+		this.spigot = spigot;
 		this.signoffset = signoffset;
-		spigot = barrel.getSpigot();
 		this.bounds = new BoundingBox(0, 0, 0, 0, 0, 0);
 	}
 
 	/**
 	 * Loading from file
 	 */
-	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
-		this(barrel, signoffset);
+	public BarrelBody(Block spigot, byte signoffset, BoundingBox bounds) {
+		this.spigot = spigot;
+		this.signoffset = signoffset;
 
 		if (boundsSeemBad(bounds)) {
 			if (!Bukkit.isPrimaryThread()) {
@@ -47,31 +47,7 @@ public class BarrelBody {
 		}
 	}
 
-	public Barrel getBarrel() {
-		return barrel;
-	}
 
-	public Block getSpigot() {
-		return spigot;
-	}
-
-	@NotNull
-	public BoundingBox getBounds() {
-		return bounds;
-	}
-
-	public void setBounds(@NotNull BoundingBox bounds) {
-		Objects.requireNonNull(bounds);
-		this.bounds = bounds;
-	}
-
-	public byte getSignoffset() {
-		return signoffset;
-	}
-
-	public void setSignoffset(byte signoffset) {
-		this.signoffset = signoffset;
-	}
 
 	/**
 	 * If the Sign of a Large Barrel gets destroyed, set signOffset to 0
@@ -126,38 +102,22 @@ public class BarrelBody {
 	}
 
 	/**
-	 * is this a Large barrel?
-	 */
-	public boolean isLarge() {
-		return barrel.isLarge();
-	}
-
-	/**
-	 * is this a Small barrel?
-	 */
-	public boolean isSmall() {
-		return barrel.isSmall();
-	}
-
-	/**
 	 * woodtype of the block the spigot is attached to
 	 */
 	public byte getWood() {
 		Block wood;
 		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
-			case 0:
-				return 0;
-			case 1:
-				wood = spigot.getRelative(1, 0, 0);
-				break;
-			case 2:
-				wood = spigot.getRelative(-1, 0, 0);
-				break;
-			case 3:
-				wood = spigot.getRelative(0, 0, 1);
-				break;
-			default:
-				wood = spigot.getRelative(0, 0, -1);
+            case 0 -> {
+                return 0;
+            }
+
+            case 1 -> wood = spigot.getRelative(1, 0, 0);
+
+			case 2 -> wood = spigot.getRelative(-1, 0, 0);
+
+			case 3 -> wood = spigot.getRelative(0, 0, 1);
+
+			default -> wood = spigot.getRelative(0, 0, -1);
 		}
 		try {
 			return LegacyUtil.getWoodType(wood);
@@ -233,15 +193,7 @@ public class BarrelBody {
 	 *
 	 * @return true if successful, false if Barrel was broken and should be removed.
 	 */
-	public boolean regenerateBounds() {
-		BreweryPlugin.getInstance().debugLog("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
-		Block broken = getBrokenBlock(true);
-		if (broken != null) {
-			barrel.remove(broken, null, true);
-			return false;
-		}
-		return true;
-	}
+	public abstract boolean regenerateBounds();
 
 	/**
 	 * returns null if Barrel is correctly placed; the block that is missing when not.

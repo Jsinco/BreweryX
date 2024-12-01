@@ -4,10 +4,13 @@ import com.dre.brewery.api.events.PlayerEffectEvent;
 import com.dre.brewery.api.events.PlayerPukeEvent;
 import com.dre.brewery.api.events.PlayerPushEvent;
 import com.dre.brewery.api.events.brew.BrewDrinkEvent;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
@@ -41,6 +44,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BPlayer {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	private static final ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
 	private static final ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
@@ -178,7 +183,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player, brew.getQuality());
 		}
-		BreweryPlugin.getInstance().stats.forDrink(brew);
+		BreweryPlugin.getInstance().getStats().forDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();
@@ -203,7 +208,7 @@ public class BPlayer {
 			bPlayer.drinkCap(player);
 		}
 
-		if (BConfig.showStatusOnDrink) {
+		if (config.isShowStatusOnDrink()) {
 			// Only show the Player his drunkenness if he is already drunk, or this drink changed his drunkenness
 			if (brewAlc != 0 || bPlayer.drunkenness > 0) {
 				bPlayer.showDrunkeness(player);
@@ -227,7 +232,7 @@ public class BPlayer {
 				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
-			BreweryPlugin.getInstance().errorLog("Failed to show drunkenness to " + player.getName(), e);
+			Logging.errorLog("Failed to show drunkenness to " + player.getName(), e);
 		}
 	}
 
@@ -247,7 +252,7 @@ public class BPlayer {
 			hangover = true;
 		}
 
-		b.append(BreweryPlugin.getInstance().languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
+		b.append(lang.getEntry(hangover ? "Player_Hangover" : "Player_Drunkeness"));
 
 		// Drunkenness or Hangover Strength Bars
 		b.append(": §7[");
@@ -347,11 +352,11 @@ public class BPlayer {
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
 		drunkenness = 100;
-		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
+		if (config.isEnableKickOnOverdrink() && !player.hasPermission("brewery.bypass.overdrink")) {
 			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
-			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CantDrink"));
+			lang.sendEntry(player, "Player_CantDrink");
 		}
 	}
 
@@ -365,7 +370,7 @@ public class BPlayer {
 
 	// Eat something to drain the drunkenness
 	public void drainByItem(Player player, Material mat) {
-		int strength = BConfig.drainItems.get(mat);
+		int strength = BUtil.getMaterialMap(config.getDrainItems()).get(mat);
 		if (drain(player, strength)) {
 			remove(player);
 		}
@@ -392,7 +397,7 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkenness <= -offlineDrunk) {
-				return drunkenness <= -BConfig.hangoverTime;
+				return drunkenness <= -config.getHangoverDays();
 			}
 		}
 		return false;
@@ -401,7 +406,7 @@ public class BPlayer {
 	// player is drunk
 	public void move(PlayerMoveEvent event) {
 		// has player more alc than 10
-		if (drunkenness >= 10 && BConfig.stumbleModifier > 0.001f) {
+		if (drunkenness >= 10 && config.getStumblePercent() > 0.001f) {
 			if (drunkenness <= 100) {
 				if (time > 1) {
 					time--;
@@ -424,7 +429,7 @@ public class BPlayer {
 									push.setX(Math.random() - 0.5);
 									push.setZ(Math.random() - 0.5);
 								}
-								push.multiply(BConfig.stumbleModifier);
+								push.multiply(config.getStumblePercent());
 								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
 								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(pushEvent);
 								push = pushEvent.getPush();
@@ -448,7 +453,7 @@ public class BPlayer {
 	}
 
 	public void passOut(Player player) {
-		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
+		player.kickPlayer(lang.getEntry("Player_DrunkPassOut"));
 		offlineDrunk = drunkenness;
 	}
 
@@ -464,7 +469,7 @@ public class BPlayer {
 		if (drunkenness <= 70) {
 			return 0;
 		}
-		if (!BConfig.enableLoginDisallow) {
+		if (!config.isEnableLoginDisallow()) {
 			if (drunkenness <= 100) {
 				return 0;
 			} else {
@@ -499,9 +504,13 @@ public class BPlayer {
 
 	// he may be having a hangover
 	public void login(final Player player) {
+		if (offlineDrunk == 0) {
+			return;
+		}
+
 		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
-				if (BConfig.enableHome && !player.hasPermission("brewery.bypass.teleport")) {
+				if (config.isEnableHome() && !player.hasPermission("brewery.bypass.teleport")) {
 					goHome(player);
 				}
 			}
@@ -514,14 +523,13 @@ public class BPlayer {
 			}
 
 		} else if (offlineDrunk - drunkenness >= 30) {
-			if (BConfig.enableWake && !player.hasPermission("brewery.bypass.teleport")) {
+			if (config.isEnableWake() && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
 					player.teleport(randomLoc);
-					BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_Wake"));
+					lang.sendEntry(player, "Player_Wake");
 				}
 			}
-			offlineDrunk = 0;
 		}
 		offlineDrunk = 0;
 	}
@@ -531,7 +539,7 @@ public class BPlayer {
 	}
 
 	public void goHome(final Player player) {
-		String homeType = BConfig.homeType;
+		String homeType = config.getHomeType();
 		if (homeType != null) {
 			Location home = null;
 			if (homeType.equalsIgnoreCase("bed")) {
@@ -541,7 +549,7 @@ public class BPlayer {
 			} else if (homeType.startsWith("cmd:")) {
 				player.performCommand(homeType.substring(4));
 			} else {
-				BreweryPlugin.getInstance().errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
+				Logging.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 			}
 			if (home != null) {
 				player.teleport(home);
@@ -586,7 +594,7 @@ public class BPlayer {
 
 	// make a Player puke "count" items
 	public static void addPuke(Player player, int count) {
-		if (!BConfig.enablePuke) {
+		if (!config.isEnablePuke()) {
 			return;
 		}
 
@@ -627,8 +635,8 @@ public class BPlayer {
 		if (pukeRand == null) {
 			pukeRand = new Random();
 		}
-		if (BConfig.pukeItem == null || BConfig.pukeItem.isEmpty()) {
-			BConfig.pukeItem = List.of(Material.SOUL_SAND);
+		if (config.getPukeItem() == null || config.getPukeItem().isEmpty()) {
+			config.setPukeItem(List.of(Material.SOUL_SAND));
 		}
 		Location loc = player.getLocation();
 		loc.setY(loc.getY() + 1.1);
@@ -638,13 +646,13 @@ public class BPlayer {
 		direction.multiply(0.5);
 		loc.add(direction);
 
-		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem.get(new Random().nextInt(BConfig.pukeItem.size()))));
+		Item item = player.getWorld().dropItem(loc, new ItemStack(config.getPukeItem().get(new Random().nextInt(config.getPukeItem().size()))));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
 		item.setMetadata("brewery_puke", new FixedMetadataValue(BreweryPlugin.getInstance(), true));
 		if (VERSION.isOrLater(MinecraftVersion.V1_14)) item.setPersistent(false); // No need to save Puke items
 
-		int pukeDespawntime = BConfig.pukeDespawntime;
+		int pukeDespawntime = config.getPukeDespawntime();
 		if (pukeDespawntime >= 5800) {
 			return;
 		}
@@ -811,7 +819,7 @@ public class BPlayer {
 
 						bplayer.drunkEffects(player);
 
-						if (BConfig.enablePuke) {
+						if (config.isEnablePuke()) {
 							bplayer.drunkPuke(player);
 						}
 
@@ -884,7 +892,7 @@ public class BPlayer {
 	public int getQuality() {
 		if (drunkenness == 0) {
 			// PAPI Placeholder %breweryx_quality% may be used on players that aren't drunk!
-			// BreweryPlugin.getInstance().errorLog("drunkenness should not be 0!");
+			// Logging.errorLog("drunkenness should not be 0!");
 			return quality;
 		}
 		if (drunkenness < 0) {

@@ -3,12 +3,19 @@ package com.dre.brewery.recipe;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.integration.Hook;
+import com.dre.brewery.configuration.files.CustomItemsFile;
+import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
+import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -23,13 +30,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
  */
+@Getter
+@Setter
 public class BRecipe implements Cloneable {
 
+	@Getter
 	private static final List<BRecipe> recipes = new ArrayList<>();
+	@Getter @Setter
 	public static int numConfigRecipes; // The number of recipes in the list that are from config
 
 	// info
@@ -88,10 +100,10 @@ public class BRecipe implements Cloneable {
 	}
 
 	@Nullable
-	public static BRecipe fromConfig(ConfigurationSection configSectionRecipes, String recipeId) {
+	public static BRecipe fromConfig(String recipeId, ConfigRecipe configRecipe) {
 		BRecipe recipe = new BRecipe();
 		recipe.id = recipeId;
-		String nameList = configSectionRecipes.getString(recipeId + ".name");
+		String nameList = configRecipe.getName();
 		if (nameList != null) {
 			String[] name = nameList.split("/");
 			if (name.length > 2) {
@@ -101,73 +113,68 @@ public class BRecipe implements Cloneable {
 				recipe.name[0] = name[0];
 			}
 		} else {
-			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name missing or invalid!");
+			Logging.errorLog(recipeId + ": Recipe Name missing or invalid!");
 			return null;
 		}
 		if (recipe.getRecipeName() == null || recipe.getRecipeName().isEmpty()) {
-			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name invalid");
+			Logging.errorLog(recipeId + ": Recipe Name invalid");
 			return null;
 		}
 
-		recipe.ingredients = loadIngredients(configSectionRecipes, recipeId);
+		recipe.ingredients = loadIngredients(configRecipe.getIngredients(), recipeId);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No ingredients for: " + recipe.getRecipeName());
+			Logging.errorLog("No ingredients for: " + recipe.getRecipeName());
 			return null;
 		}
-		recipe.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
-		int dis = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
+		recipe.cookingTime = configRecipe.getCookingTime();
+		int dis = configRecipe.getDistillRuns();
 		if (dis > Byte.MAX_VALUE) {
 			recipe.distillruns = Byte.MAX_VALUE;
 		} else {
 			recipe.distillruns = (byte) dis;
 		}
-		recipe.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
-		recipe.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
-		recipe.age = configSectionRecipes.getInt(recipeId + ".age", 0);
-		recipe.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
-		recipe.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
+		recipe.distillTime = configRecipe.getDistillTime() * 20;
+		recipe.wood = (byte) configRecipe.getWood();
+		recipe.age = configRecipe.getAge();
+		recipe.difficulty = configRecipe.getDifficulty();
+		recipe.alcohol = configRecipe.getAlcohol();
 
-		String col = configSectionRecipes.getString(recipeId + ".color", "BLUE");
+		String col = configRecipe.getColor() != null ? configRecipe.getColor() : "BLUE";
 		recipe.color = PotionColor.fromString(col);
 		if (recipe.color == PotionColor.WATER && !col.equals("WATER")) {
-			BreweryPlugin.getInstance().errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
+			Logging.errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
 			return null;
 		}
 
-		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.ParseType.LORE);
+		recipe.lore = loadQualityStringList(BUtil.getListSafely(configRecipe.getLore()), StringParser.ParseType.LORE);
 
-		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.ParseType.CMD);
-		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.ParseType.CMD);
+		recipe.servercmds = loadQualityStringList(configRecipe.getServerCommands(), StringParser.ParseType.CMD);
+		recipe.playercmds = loadQualityStringList(configRecipe.getPlayerCommands(), StringParser.ParseType.CMD);
 
-		recipe.drinkMsg = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
-		recipe.drinkTitle = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
-		recipe.glint = configSectionRecipes.getBoolean(recipeId + ".glint", false);
+		recipe.drinkMsg = BUtil.color(configRecipe.getDrinkMessage());
+		recipe.drinkTitle = BUtil.color(configRecipe.getDrinkTitle());
+		recipe.glint = configRecipe.isGlint();
 
-		if (configSectionRecipes.isString(recipeId + ".customModelData")) {
-			String[] cmdParts = configSectionRecipes.getString(recipeId + ".customModelData", "").split("/");
-			if (cmdParts.length == 3) {
-				recipe.cmData = new int[] {BreweryPlugin.getInstance().parseInt(cmdParts[0]), BreweryPlugin.getInstance().parseInt(cmdParts[1]), BreweryPlugin.getInstance().parseInt(cmdParts[2])};
-				if (recipe.cmData[0] == 0 && recipe.cmData[1] == 0 && recipe.cmData[2] == 0) {
-					BreweryPlugin.getInstance().errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
-					recipe.cmData = null;
+		if (configRecipe.getCustomModelData() != null) {
+			String[] cmdParts = configRecipe.getCustomModelData().split("/");
+			int[] cmData = new int[3];
+			for (int i = 0; i < 3; i++) {
+				if (cmdParts.length > i) {
+					cmData[i] = BUtil.parseInt(cmdParts[i]);
+				} else {
+					cmData[i] = i == 0 ? 0 : cmData[i - 1];
 				}
-			} else {
-				BreweryPlugin.getInstance().errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
 			}
-		} else {
-			int cmd = configSectionRecipes.getInt(recipeId + ".customModelData", 0);
-			if (cmd != 0) {
-				recipe.cmData = new int[] {cmd, cmd, cmd};
-			}
+			recipe.cmData = cmData;
 		}
 
-		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
+		List<String> effectStringList = configRecipe.getEffects() != null ? configRecipe.getEffects() : Collections.emptyList();
         for (String effectString : effectStringList) {
             BEffect effect = new BEffect(effectString);
             if (effect.isValid()) {
                 recipe.effects.add(effect);
             } else {
-                BreweryPlugin.getInstance().errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
+                Logging.errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
             }
         }
         return recipe;
@@ -185,15 +192,18 @@ public class BRecipe implements Cloneable {
 	}
 
 	public static List<RecipeItem> loadIngredients(List<String> stringList, String recipeId) {
+		if (stringList == null) {
+			stringList = Collections.emptyList();
+		}
         List<RecipeItem> ingredients = new ArrayList<>(stringList.size());
 
 		listLoop: for (String item : stringList) {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
 			if (ingredParts.length == 2) {
-				amount = BreweryPlugin.getInstance().parseInt(ingredParts[1]);
+				amount = BUtil.parseInt(ingredParts[1]);
 				if (amount < 1) {
-					BreweryPlugin.getInstance().errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
+					Logging.errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
 					return null;
 				}
 			}
@@ -224,13 +234,13 @@ public class BRecipe implements Cloneable {
 					continue;
 				} else {
 					// TODO Maybe load later ie on first use of recipe?
-					BreweryPlugin.getInstance().errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
+					Logging.errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
 					return null;
 				}
 			}
 
 			// Try to find this Ingredient as Custom Item
-			for (RecipeItem custom : BConfig.customItems) {
+			for (RecipeItem custom : ConfigManager.getConfig(CustomItemsFile.class).getRecipeItems().stream().filter(Objects::nonNull).toList()) {
 				if (custom.getConfigId().equalsIgnoreCase(matParts[0])) {
 					custom = custom.getMutableCopy();
 					custom.setAmount(amount);
@@ -250,9 +260,9 @@ public class BRecipe implements Cloneable {
 			Material mat = BUtil.getMaterialSafely(matParts[0]);
 			short durability = -1;
 			if (matParts.length == 2) {
-				durability = (short) BreweryPlugin.getInstance().parseInt(matParts[1]);
+				durability = (short) BUtil.parseInt(matParts[1]);
 			}
-			if (mat == null && BConfig.hasVault) {
+			if (mat == null && Hook.VAULT.isEnabled()) {
 				try {
 					net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(matParts[0]);
 					if (vaultItem != null) {
@@ -267,8 +277,7 @@ public class BRecipe implements Cloneable {
 						}
 					}
 				} catch (Throwable e) {
-					BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
-					e.printStackTrace();
+					Logging.errorLog("Could not check vault for Item Name", e);
 				}
 			}
 			if (mat != null) {
@@ -284,7 +293,7 @@ public class BRecipe implements Cloneable {
 				BCauldronRecipe.acceptedMaterials.add(mat);
 				BCauldronRecipe.acceptedSimple.add(mat);
 			} else {
-				BreweryPlugin.getInstance().errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
+				Logging.errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
 				return null;
 			}
 		}
@@ -305,6 +314,9 @@ public class BRecipe implements Cloneable {
 
 	public static List<Tuple<Integer, String>> loadQualityStringList(List<String> stringList, StringParser.ParseType parseType) {
 		List<Tuple<Integer, String>> result = new ArrayList<>();
+		if (stringList == null) {
+			return result;
+		}
 		for (String line : stringList) {
 			result.add(StringParser.parseQuality(line, parseType));
 		}
@@ -316,31 +328,31 @@ public class BRecipe implements Cloneable {
 	 */
 	public boolean isValid() {
 		if (ingredients == null || ingredients.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
+			Logging.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
 			return false;
 		}
 		if (cookingTime < 1) {
-			BreweryPlugin.getInstance().errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillruns < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillTime < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
-			BreweryPlugin.getInstance().errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (age < 0) {
-			BreweryPlugin.getInstance().errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (difficulty < 0 || difficulty > 10) {
-			BreweryPlugin.getInstance().errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
+			Logging.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		return true;
@@ -476,10 +488,11 @@ public class BRecipe implements Cloneable {
 	}
 
 	private void executeCommand(Player player, String cmd, String playerName, int quality, boolean isServerCommand) {
+		String finalCommand = PlaceholderAPIHook.PLACEHOLDERAPI.setPlaceholders(player, BUtil.applyPlaceholders(cmd, playerName, quality));
 		if (isServerCommand) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), BUtil.applyPlaceholders(cmd, playerName, quality));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
 		} else {
-			player.performCommand(BUtil.applyPlaceholders(cmd, playerName, quality));
+			Bukkit.dispatchCommand(player, finalCommand);
 		}
 	}
 
@@ -593,49 +606,9 @@ public class BRecipe implements Cloneable {
 		return false;
 	}
 
-
-	public String getId() {
-		return id;
-	}
-
-	public List<RecipeItem> getIngredients() {
-		return ingredients;
-	}
-
-	public int getCookingTime() {
-		return cookingTime;
-	}
-
-	public byte getDistillRuns() {
-		return distillruns;
-	}
-
-	public int getDistillTime() {
-		return distillTime;
-	}
-
 	@NotNull
 	public PotionColor getColor() {
 		return color;
-	}
-
-	/**
-	 * get the woodtype
-	 */
-	public byte getWood() {
-		return wood;
-	}
-
-	public float getAge() {
-		return (float) age;
-	}
-
-	public int getDifficulty() {
-		return difficulty;
-	}
-
-	public int getAlcohol() {
-		return alcohol;
 	}
 
 	public boolean hasLore() {
@@ -685,128 +658,10 @@ public class BRecipe implements Cloneable {
 		return list;
 	}
 
-	/**
-	 * Get the Custom Model Data array for bad, normal, good quality
-	 */
-	public int[] getCmData() {
-		return cmData;
-	}
 
-	@Nullable
-	public List<Tuple<Integer, String>> getPlayercmds() {
-		return playercmds;
-	}
-
-	@Nullable
-	public List<Tuple<Integer, String>> getServercmds() {
-		return servercmds;
-	}
-
-	public String getDrinkMsg() {
-		return drinkMsg;
-	}
-
-	public String getDrinkTitle() {
-		return drinkTitle;
-	}
-
-	public boolean hasGlint() {
-		return glint;
-	}
-
-	public List<BEffect> getEffects() {
-		return effects;
-	}
-
-	public boolean isSaveInData() {
-		return saveInData;
-	}
-
-	// Setters
-
-
-	public void setName(String[] name) {
-		this.name = name;
-	}
-
-	public void setCmData(int[] cmData) {
-		this.cmData = cmData;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public void setDrinkTitle(String drinkTitle) {
-		this.drinkTitle = drinkTitle;
-	}
-
-	public void setPlayercmds(@Nullable List<Tuple<Integer, String>> playercmds) {
-		this.playercmds = playercmds;
-	}
-
-	public void setServercmds(@Nullable List<Tuple<Integer, String>> servercmds) {
-		this.servercmds = servercmds;
-	}
-
-	public void setGlint(boolean glint) {
-		this.glint = glint;
-	}
-
-
-	public void setDrinkMsg(String drinkMsg) {
-		this.drinkMsg = drinkMsg;
-	}
-
-	/**
-	 * When Changing ingredients, Accepted Lists have to be updated in BCauldronRecipe
-	 */
-	public void setIngredients(List<RecipeItem> ingredients) {
-		this.ingredients = ingredients;
-	}
-
-	public void setCookingTime(int cookingTime) {
-		this.cookingTime = cookingTime;
-	}
-
-	public void setDistillRuns(byte distillRuns) {
-		this.distillruns = distillRuns;
-	}
-
-	public void setDistillTime(int distillTime) {
-		this.distillTime = distillTime;
-	}
-
-	public void setWood(byte wood) {
-		this.wood = wood;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
 
 	public void setColor(@NotNull PotionColor color) {
 		this.color = color;
-	}
-
-	public void setDifficulty(int difficulty) {
-		this.difficulty = difficulty;
-	}
-
-	public void setAlcohol(int alcohol) {
-		this.alcohol = alcohol;
-	}
-
-	public void setLore(List<Tuple<Integer, String>> lore) {
-		this.lore = lore;
-	}
-
-	public void setEffects(List<BEffect> effects) {
-		this.effects = effects;
-	}
-
-	public void setSaveInData(boolean saveInData) {
-		throw new UnsupportedOperationException();
 	}
 
 

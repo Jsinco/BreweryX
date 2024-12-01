@@ -1,8 +1,9 @@
 package com.dre.brewery.integration.item;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.Hook;
 import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.utility.Logging;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,7 +16,7 @@ public class SlimefunPluginItem extends PluginItem {
 
 	@Override
 	public boolean matches(ItemStack item) {
-		if (!BConfig.hasSlimefun) return false;
+		if (!Hook.SLIMEFUN.isEnabled()) return false;
 
 		try {
 			SlimefunItem sfItem = SlimefunItem.getByItem(item);
@@ -23,10 +24,8 @@ public class SlimefunPluginItem extends PluginItem {
 				return sfItem.getId().equalsIgnoreCase(getItemId());
 			}
 		} catch (Exception | LinkageError e) {
-			e.printStackTrace();
-			BreweryPlugin.getInstance().errorLog("Could not check Slimefun for Item ID");
-			BConfig.hasSlimefun = false;
-			return false;
+			Logging.errorLog("Could not check Slimefun for Item ID", e);
+			Hook.SLIMEFUN.setEnabled(false);
 		}
 		return false;
 	}

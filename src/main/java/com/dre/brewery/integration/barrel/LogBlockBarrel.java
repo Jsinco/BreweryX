@@ -2,11 +2,11 @@ package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import de.diddiz.LogBlock.Actor;
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
-import de.diddiz.LogBlock.Logging;
 import de.diddiz.util.BukkitUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -39,10 +39,9 @@ public class LogBlockBarrel {
 				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
 				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class, short.class);
 			} catch (NoSuchMethodException e) {
-				BreweryPlugin.getInstance().errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
-				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
-				BreweryPlugin.getInstance().errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
-				e.printStackTrace();
+				Logging.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.", e);
+				Logging.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
+				Logging.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
 			}
 		}
 	}
@@ -69,7 +68,7 @@ public class LogBlockBarrel {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+					Logging.errorLog("Failed to log barrel access.", e);
 				}
 			} else {
 				ItemStack i2 = item;
@@ -92,12 +91,12 @@ public class LogBlockBarrel {
 	}
 
 	public static void openBarrel(HumanEntity player, Inventory inv, Location spigotLoc) {
-		if (!isLogging(player.getWorld(), Logging.CHESTACCESS)) return;
+		if (!isLogging(player.getWorld(), de.diddiz.LogBlock.Logging.CHESTACCESS)) return;
 		new LogBlockBarrel(player, compressInventory(inv.getContents()), spigotLoc);
 	}
 
 	public static void closeBarrel(HumanEntity player, Inventory inv) {
-		if (!isLogging(player.getWorld(), Logging.CHESTACCESS)) return;
+		if (!isLogging(player.getWorld(), de.diddiz.LogBlock.Logging.CHESTACCESS)) return;
 		LogBlockBarrel open = get(player);
 		if (open != null) {
 			open.compareInv(compressInventory(inv.getContents()));
@@ -109,7 +108,7 @@ public class LogBlockBarrel {
 		if (consumer == null) {
 			return;
 		}
-		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
+		if (!isLogging(spigotLoc.getWorld(), de.diddiz.LogBlock.Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {
 			if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
@@ -117,7 +116,7 @@ public class LogBlockBarrel {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+					Logging.errorLog("Failed to log barrel break.", e);
 				}
 			} else {
 				consumer.queueChestAccess(Actor.actorFromEntity(player), spigotLoc, spigotLoc.getBlock().getBlockData(), item, false);

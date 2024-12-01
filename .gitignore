@@ -14,7 +14,9 @@
 /.vscode
 
 # IntelliJ
-/.idea
+/.idea/*.xml
+/.idea/modules
+/.idea/shelf
 /*.iml
 
 # various other potential build files

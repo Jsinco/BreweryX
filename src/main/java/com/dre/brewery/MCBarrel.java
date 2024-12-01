@@ -1,5 +1,9 @@
 package com.dre.brewery;
 
+import com.dre.brewery.configuration.ConfigManager;
+import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Barrel;
@@ -18,11 +22,11 @@ public class MCBarrel {
 
 	public static final byte OAK = 2;
 	public static final String TAG = "Btime";
-	public static int maxBrews = 6;
-	public static boolean enableAging = true;
 
 	public static long mcBarrelTime; // Globally stored Barrel time. Difference between this and the time stored on each mc-barrel will give the barrel age time
 	public static List<MCBarrel> openBarrels = new ArrayList<>();
+	private static final Config config = ConfigManager.getConfig(Config.class);
+	private static final Lang lang = ConfigManager.getConfig(Lang.class);
 
 	private byte brews = -1; // How many Brewery Brews are in this Barrel
 	private final Inventory inv;
@@ -55,7 +59,7 @@ public class MCBarrel {
 			long time = mcBarrelTime - data.getOrDefault(key, PersistentDataType.LONG, mcBarrelTime);
 			data.remove(key);
 			barrel.update();
-			BreweryPlugin.getInstance().debugLog("Barrel Time since last open: " + time);
+			Logging.debugLog("Barrel Time since last open: " + time);
 
 			if (time > 0) {
 				brews = 0;
@@ -66,7 +70,7 @@ public class MCBarrel {
 						if (item != null) {
 							Brew brew = Brew.get(item);
 							if (brew != null && !brew.isStatic()) {
-								if (brews < maxBrews || maxBrews < 0) {
+								if (brews < config.getMaxBrewsInMCBarrels() || config.getMaxBrewsInMCBarrels() < 0) {
 									// The time is in minutes, but brew.age() expects time in mc-days
 									brew.age(item, ((float) time) / 20f, OAK);
 								}
@@ -74,10 +78,10 @@ public class MCBarrel {
 							}
 						}
 					}
-					if (BreweryPlugin.debug) {
+					if (config.isDebug()) {
 						loadTime = System.nanoTime() - loadTime;
 						float ftime = (float) (loadTime / 1000000.0);
-						BreweryPlugin.getInstance().debugLog("opening MC Barrel with potions (" + ftime + "ms)");
+						Logging.debugLog("opening MC Barrel with potions (" + ftime + "ms)");
 					}
 				}
 			}
@@ -123,7 +127,7 @@ public class MCBarrel {
 
 
 	public static void onUpdate() {
-		if (enableAging) {
+		if (config.isAgeInMCBarrels()) {
 			mcBarrelTime++;
 		}
 	}
@@ -132,7 +136,7 @@ public class MCBarrel {
 	// There are still methods to place more Brews in that would be too tedious to catch.
 	// This is only for direct visual Notification, the age routine above will never age more than 6 brews in any case.
 	public void clickInv(InventoryClickEvent event) {
-		if (maxBrews >= invSize || maxBrews < 0) {
+		if (config.getMaxBrewsInMCBarrels() >= invSize || config.getMaxBrewsInMCBarrels() < 0) {
 			// There are enough brews allowed to fill the inventory, we don't need to keep track
 			return;
 		}
@@ -201,9 +205,9 @@ public class MCBarrel {
 			if (brews == -1) {
 				countBrews();
 			}
-			if (brews >= maxBrews) {
+			if (brews >= config.getMaxBrewsInMCBarrels()) {
 				event.setCancelled(true);
-				BreweryPlugin.getInstance().msg(event.getWhoClicked(), BreweryPlugin.getInstance().languageReader.get("Player_BarrelFull"));
+				lang.sendEntry(event.getWhoClicked(), "Player_BarrelFull");
 			} else {
 				brews++;
 			}

@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -141,7 +142,7 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 				return item;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to load SimpleItem", e);
 		}
 		return null;
 	}
