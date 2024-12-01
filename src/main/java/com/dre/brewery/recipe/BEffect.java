@@ -2,6 +2,7 @@ package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -44,7 +45,7 @@ public class BEffect implements Cloneable {
 		}
 		type = PotionEffectType.getByName(effect);
 		if (type == null) {
-			BreweryPlugin.getInstance().errorLog("Effect: " + effect + " does not exist!");
+			Logging.errorLog("Effect: " + effect + " does not exist!");
 			return;
 		}
 
@@ -76,21 +77,21 @@ public class BEffect implements Cloneable {
 
 	private void setLvl(String[] range) {
 		if (range.length == 1) {
-			maxlvl = (short) BreweryPlugin.getInstance().parseInt(range[0]);
+			maxlvl = (short) BUtil.parseInt(range[0]);
 			minlvl = 1;
 		} else {
-			maxlvl = (short) BreweryPlugin.getInstance().parseInt(range[1]);
-			minlvl = (short) BreweryPlugin.getInstance().parseInt(range[0]);
+			maxlvl = (short) BUtil.parseInt(range[1]);
+			minlvl = (short) BUtil.parseInt(range[0]);
 		}
 	}
 
 	private void setDuration(String[] range) {
 		if (range.length == 1) {
-			maxduration = (short) BreweryPlugin.getInstance().parseInt(range[0]);
+			maxduration = (short) BUtil.parseInt(range[0]);
 			minduration = (short) (maxduration / 8);
 		} else {
-			maxduration = (short) BreweryPlugin.getInstance().parseInt(range[1]);
-			minduration = (short) BreweryPlugin.getInstance().parseInt(range[0]);
+			maxduration = (short) BUtil.parseInt(range[1]);
+			minduration = (short) BUtil.parseInt(range[0]);
 		}
 	}
 

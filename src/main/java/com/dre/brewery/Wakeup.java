@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -63,7 +64,7 @@ public class Wakeup {
 		if (w1 == null) return null;
 
 		while (!w1.check()) {
-			breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
+			Logging.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
 
 			w1 = calcRandom(worldWakes);
 			if (w1 == null) {
@@ -77,7 +78,7 @@ public class Wakeup {
 			worldWakes.remove(w2);
 
 			while (!w2.check()) {
-				breweryPlugin.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
+				Logging.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
 
 				w2 = calcRandom(worldWakes);
 				if (w2 == null) {

@@ -6,6 +6,7 @@ import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import org.bukkit.event.EventHandler;
@@ -42,8 +43,7 @@ public class SlimefunListener implements Listener {
 			}
 		} catch (Throwable e) {
 			HandlerList.unregisterAll(this);
-			BreweryPlugin.getInstance().errorLog("Slimefun check failed");
-			e.printStackTrace();
+			Logging.errorLog("Slimefun check failed!", e);
 		}
 	}
 }

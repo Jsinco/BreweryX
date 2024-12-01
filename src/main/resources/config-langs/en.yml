@@ -15,7 +15,7 @@ config:
     header: "-- Storage Settings --"
     type: |
       What type of storage to use [FLATFILE]
-      Available types: FlatFile, MySQL, SQLite
+      Available types: FlatFile, MySQL, SQLite, MongoDB
     database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
   enableHome: "If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]"
   homeType: |
@@ -35,12 +35,12 @@ config:
   pukeItem: |
     Items that is dropped multiple times uncollectable when puking [Soul_Sand]
     Can be list of items such as [Soul_sand, Slime_block, Dirt]
-  pukeDespawnTime: |
+  pukeDespawntime: |
     Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
     If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
   stumblePercent: "How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]"
   showStatusOnDrink: "Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]"
-  drainItem: "Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)"
+  drainItems: "Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)"
   enableCauldronParticles: |
     Show Particles over Cauldrons when they have ingredients and a heat source. [true]
     The changing color of the particles can help with timing some recipes
@@ -55,6 +55,8 @@ config:
   requireKeywordOnSigns: "If barrels are only created when the sign placed contains the word \"barrel\" (or a translation when using another language) [true]"
   ageInMCBarrels: "If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]"
   agingYearDuration: "Duration (in minutes) of a 'year' when aging drinks [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
     hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.

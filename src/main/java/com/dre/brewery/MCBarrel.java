@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Barrel;
@@ -58,7 +59,7 @@ public class MCBarrel {
 			long time = mcBarrelTime - data.getOrDefault(key, PersistentDataType.LONG, mcBarrelTime);
 			data.remove(key);
 			barrel.update();
-			BreweryPlugin.getInstance().debugLog("Barrel Time since last open: " + time);
+			Logging.debugLog("Barrel Time since last open: " + time);
 
 			if (time > 0) {
 				brews = 0;
@@ -80,7 +81,7 @@ public class MCBarrel {
 					if (config.isDebug()) {
 						loadTime = System.nanoTime() - loadTime;
 						float ftime = (float) (loadTime / 1000000.0);
-						BreweryPlugin.getInstance().debugLog("opening MC Barrel with potions (" + ftime + "ms)");
+						Logging.debugLog("opening MC Barrel with potions (" + ftime + "ms)");
 					}
 				}
 			}

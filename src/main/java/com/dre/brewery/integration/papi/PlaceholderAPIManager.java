@@ -14,12 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlaceholderAPI extends PlaceholderExpansion {
+public class PlaceholderAPIManager extends PlaceholderExpansion {
 
 	private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 	private static final Map<String, Placeholder> placeholders = new HashMap<>();
 
-	public PlaceholderAPI() {
+	public PlaceholderAPIManager() {
 		placeholders.put("drunkenness", new DrunkennessPlaceholder());
 		placeholders.put("drunkennessbars", new DrunkennessBarsPlaceholder());
 		placeholders.put("quality", new QualityPlaceholder());

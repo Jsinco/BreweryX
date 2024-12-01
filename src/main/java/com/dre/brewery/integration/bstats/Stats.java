@@ -13,6 +13,7 @@ import com.dre.brewery.integration.bstats.Metrics.DrilldownPie;
 import com.dre.brewery.integration.bstats.Metrics.SimplePie;
 import com.dre.brewery.integration.bstats.Metrics.SingleLineChart;
 import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
@@ -194,7 +195,7 @@ public class Stats {
 				}
 			}));
 		} catch (Exception | LinkageError e) {
-			BreweryPlugin.getInstance().errorLog("Failed to submit stats data to bStats.org", e);
+			Logging.errorLog("Failed to submit stats data to bStats.org", e);
 		}
 	}
 

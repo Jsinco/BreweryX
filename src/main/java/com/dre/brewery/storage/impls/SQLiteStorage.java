@@ -14,6 +14,7 @@ import com.dre.brewery.storage.records.SerializableCauldron;
 import com.dre.brewery.storage.records.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
+import com.dre.brewery.utility.Logging;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class SQLiteStorage extends DataManager {
         try {
             connection.close();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to close SQLite connection!", e);
+            Logging.errorLog("Failed to close SQLite connection!", e);
         }
     }
 
@@ -89,7 +90,7 @@ public class SQLiteStorage extends DataManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve object from table: " + table + ", from: SQLite!", e);
+            Logging.errorLog("Failed to retrieve object from table: " + table + ", from: SQLite!", e);
         }
         return null;
     }
@@ -106,7 +107,7 @@ public class SQLiteStorage extends DataManager {
                 objects.add(serializer.deserialize(data, type));
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve objects from table: " + table + ", from: SQLite!", e);
+            Logging.errorLog("Failed to retrieve objects from table: " + table + ", from: SQLite!", e);
         }
         return objects;
     }
@@ -127,7 +128,7 @@ public class SQLiteStorage extends DataManager {
             }
             insertStatement.executeBatch();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save objects to SQLite!", e);
+            Logging.errorLog("Failed to save objects to SQLite!", e);
         }
     }
 
@@ -139,7 +140,7 @@ public class SQLiteStorage extends DataManager {
             statement.setString(2, serializer.serialize(serializableThing));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save object to:" + table + ", to: SQLite!", e);
+            Logging.errorLog("Failed to save object to:" + table + ", to: SQLite!", e);
         }
     }
 
@@ -149,7 +150,7 @@ public class SQLiteStorage extends DataManager {
             statement.setString(1, id.toString());
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to delete object from: " + table + ", from: SQLite!", e);
+            Logging.errorLog("Failed to delete object from: " + table + ", from: SQLite!", e);
         }
     }
 
@@ -298,7 +299,7 @@ public class SQLiteStorage extends DataManager {
                 return serializer.deserialize(resultSet.getString("data"), BreweryMiscData.class);
             }
         } catch (SQLException e) {
-            plugin.errorLog("Failed to retrieve misc data from SQLite!", e);
+            Logging.errorLog("Failed to retrieve misc data from SQLite!", e);
         }
         return new BreweryMiscData(System.currentTimeMillis(), 0, new ArrayList<>(), new ArrayList<>(), 0);
     }
@@ -310,7 +311,7 @@ public class SQLiteStorage extends DataManager {
             statement.setString(1, serializer.serialize(data));
             statement.execute();
         } catch (SQLException e) {
-            plugin.errorLog("Failed to save misc data to SQLite!", e);
+            Logging.errorLog("Failed to save misc data to SQLite!", e);
         }
     }
 }

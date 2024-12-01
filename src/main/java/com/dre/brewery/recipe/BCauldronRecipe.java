@@ -3,6 +3,7 @@ package com.dre.brewery.recipe;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.sector.capsule.ConfigCauldronIngredient;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import lombok.Getter;
@@ -55,9 +56,9 @@ public class BCauldronRecipe {
 
 		String name = cfgCauldronIngredient.getName();
 		if (name != null) {
-			name = BreweryPlugin.getInstance().color(name);
+			name = BUtil.color(name);
 		} else {
-			BreweryPlugin.getInstance().errorLog("Missing name for Cauldron-Recipe: " + id);
+			Logging.errorLog("Missing name for Cauldron-Recipe: " + id);
 			return null;
 		}
 
@@ -65,7 +66,7 @@ public class BCauldronRecipe {
 
 		recipe.ingredients = BRecipe.loadIngredients(BUtil.getListSafely(cfgCauldronIngredient.getIngredients()), id);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
-			BreweryPlugin.getInstance().errorLog("No ingredients for Cauldron-Recipe: " + recipe.name);
+			Logging.errorLog("No ingredients for Cauldron-Recipe: " + recipe.name);
 			return null;
 		}
 
@@ -89,18 +90,18 @@ public class BCauldronRecipe {
 			if (split.length == 1) {
 				minute = 10;
 			} else if (split.length == 2) {
-				minute = BreweryPlugin.getInstance().parseInt(split[1]);
+				minute = BUtil.parseInt(split[1]);
 			} else {
-				BreweryPlugin.getInstance().errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
+				Logging.errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
 				return null;
 			}
 			if (minute < 1) {
-				BreweryPlugin.getInstance().errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
+				Logging.errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
 				return null;
 			}
 			PotionColor partCol = PotionColor.fromString(split[0]);
 			if (partCol == PotionColor.WATER && !split[0].equals("WATER")) {
-				BreweryPlugin.getInstance().errorLog("Color of cookParticle: '" + entry + "' in: " + recipe.name);
+				Logging.errorLog("Color of cookParticle: '" + entry + "' in: " + recipe.name);
 				return null;
 			}
 			recipe.particleColor.add(new Tuple<>(minute, partCol.getColor()));
@@ -172,7 +173,7 @@ public class BCauldronRecipe {
 			double mod = Math.pow(0.1, tooMuch);
 			match *= mod;
 		}
-		BreweryPlugin.getInstance().debugLog("Match for Cauldron Recipe " + name + ": " + match);
+		Logging.debugLog("Match for Cauldron Recipe " + name + ": " + match);
 		return match;
 	}
 

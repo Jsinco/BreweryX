@@ -13,6 +13,7 @@ import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -127,7 +128,7 @@ public class BData {
                             List<Ingredient> ingredients = oldDeserializeIngredients(matSection);
                             ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0), true));
                         } else {
-                            plugin.errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
+                            Logging.errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
                         }
                     } else {
                         // New way of saving ingredients
@@ -153,7 +154,7 @@ public class BData {
                     boolean stat = section.getBoolean(uid + ".stat", false);
                     int lastUpdate = section.getInt(uid + ".lastUpdate", 0);
 
-                    Brew.loadLegacy(ingredients, plugin.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+                    Brew.loadLegacy(ingredients, BUtil.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
                 }
             }
 
@@ -187,7 +188,7 @@ public class BData {
                         }
                     }
                     if (removed > 0) {
-                        plugin.log("Removed " + removed + " Legacy Brews older than 3 months");
+                        Logging.log("Removed " + removed + " Legacy Brews older than 3 months");
                     }
                 }
             }
@@ -222,7 +223,7 @@ public class BData {
             byte ver = in.readByte();
             return BIngredients.load(in, ver);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logging.errorLog("Failed to load Ingredients from data.yml", e);
             return new BIngredients();
         }
     }
@@ -239,12 +240,12 @@ public class BData {
                 } else {
                     m = Material.matchMaterial(matSplit[0], true);
                 }
-                plugin.debugLog("converting Data Material from " + matSplit[0] + " to " + m);
+                Logging.debugLog("converting Data Material from " + matSplit[0] + " to " + m);
             }
             if (m == null) continue;
             SimpleItem item;
             if (matSplit.length == 2) {
-                item = new SimpleItem(m, (short) plugin.parseInt(matSplit[1]));
+                item = new SimpleItem(m, (short) BUtil.parseInt(matSplit[1]));
             } else {
                 item = new SimpleItem(m);
             }
@@ -261,7 +262,7 @@ public class BData {
                 return ingMap.get(id);
             }
         }
-        plugin.errorLog("Ingredient id: '" + id + "' not found in data.yml");
+        Logging.errorLog("Ingredient id: '" + id + "' not found in data.yml");
         return new BIngredients();
     }
 
@@ -274,7 +275,7 @@ public class BData {
                 // matSection has all the materials + amount as Integers
                 return new BIngredients(oldDeserializeIngredients(section), 0);
             } else {
-                plugin.errorLog("Cauldron is missing Ingredient Section");
+                Logging.errorLog("Cauldron is missing Ingredient Section");
                 return new BIngredients();
             }
         } else {
@@ -295,11 +296,11 @@ public class BData {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logging.errorLog("Error loading World Data", e);
         } finally {
             releaseDataLoadMutex();
             if (BData.dataMutex.get() == 0) {
-                plugin.log("Background data loading complete.");
+                Logging.log("Background data loading complete.");
             }
         }
     }
@@ -316,10 +317,10 @@ public class BData {
                 if (t2 - t1 > 15000) {
                     // Spigot is _very_ slow at loading inventories from yml. Paper is way faster.
                     // Notify Admin that loading Data took long (its async so not much of a problem)
-                    plugin.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load Inventories from the World-Data File (in the Background),");
-                    plugin.log("consider switching to Paper, or have less items in Barrels if it takes a long time for Barrels to become available");
+                    Logging.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load Inventories from the World-Data File (in the Background),");
+                    Logging.log("consider switching to Paper, or have less items in Barrels if it takes a long time for Barrels to become available");
                 } else {
-                    plugin.debugLog("Loading worlddata.yml: " + (t2 - t1) + "ms");
+                    Logging.debugLog("Loading worlddata.yml: " + (t2 - t1) + "ms");
                 }
             } else {
                 return;
@@ -337,16 +338,16 @@ public class BData {
                     String[] splitted = block.split("/");
                     if (splitted.length == 3) {
 
-                        Block worldBlock = world.getBlockAt(plugin.parseInt(splitted[0]), plugin.parseInt(splitted[1]), plugin.parseInt(splitted[2]));
+                        Block worldBlock = world.getBlockAt(BUtil.parseInt(splitted[0]), BUtil.parseInt(splitted[1]), BUtil.parseInt(splitted[2]));
                         BIngredients ingredients = loadCauldronIng(section, cauldron + ".ingredients");
                         int state = section.getInt(cauldron + ".state", 0);
 
                         initCauldrons.put(worldBlock, new BCauldron(worldBlock, ingredients, state, UUID.randomUUID()));
                     } else {
-                        plugin.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+                        Logging.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
                     }
                 } else {
-                    plugin.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+                    Logging.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
                 }
             }
         }
@@ -364,7 +365,7 @@ public class BData {
 
                         // load itemStacks from invSection
                         ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
-                        Block block = world.getBlockAt(plugin.parseInt(splitted[0]), plugin.parseInt(splitted[1]), plugin.parseInt(splitted[2]));
+                        Block block = world.getBlockAt(BUtil.parseInt(splitted[0]), BUtil.parseInt(splitted[1]), BUtil.parseInt(splitted[2]));
                         float time = (float) section.getDouble(barrel + ".time", 0.0);
                         byte sign = (byte) section.getInt(barrel + ".sign", 0);
 
@@ -372,7 +373,7 @@ public class BData {
                         if (section.contains(barrel + ".bounds")) {
                             String[] bds = section.getString(barrel + ".bounds", "").split(",");
                             if (bds.length == 6) {
-                                box = new BoundingBox(plugin.parseInt(bds[0]), plugin.parseInt(bds[1]), plugin.parseInt(bds[2]), plugin.parseInt(bds[3]), plugin.parseInt(bds[4]), plugin.parseInt(bds[5]));
+                                box = new BoundingBox(BUtil.parseInt(bds[0]), BUtil.parseInt(bds[1]), BUtil.parseInt(bds[2]), BUtil.parseInt(bds[3]), BUtil.parseInt(bds[4]), BUtil.parseInt(bds[5]));
                             }
                         } else if (section.contains(barrel + ".st")) {
                             // Convert from Stair and Wood Locations to BoundingBox
@@ -387,11 +388,11 @@ public class BData {
                             if (woLength > 1) {
                                 System.arraycopy(wo, 0, points, st.length, woLength);
                             }
-                            int[] locs = Arrays.stream(points).mapToInt(s -> plugin.parseInt(s)).toArray();
+                            int[] locs = Arrays.stream(points).mapToInt(s -> BUtil.parseInt(s)).toArray();
                             try {
                                 box = BoundingBox.fromPoints(locs);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Logging.errorLog("Failed to load BoundingBox from Stair and Wood Locations", e);
                             }
                         }
 
@@ -408,10 +409,10 @@ public class BData {
                         initBarrels.add(b);
 
                     } else {
-                        plugin.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+                        Logging.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
                     }
                 } else {
-                    plugin.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+                    Logging.errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
                 }
             }
         }
@@ -427,17 +428,17 @@ public class BData {
                     String[] splitted = loc.split("/");
                     if (splitted.length == 5) {
 
-                        double x = plugin.parseDouble(splitted[0]);
-                        double y = plugin.parseDouble(splitted[1]);
-                        double z = plugin.parseDouble(splitted[2]);
-                        float pitch = plugin.parseFloat(splitted[3]);
-                        float yaw = plugin.parseFloat(splitted[4]);
+                        double x = BUtil.parseDouble(splitted[0]);
+                        double y = BUtil.parseDouble(splitted[1]);
+                        double z = BUtil.parseDouble(splitted[2]);
+                        float pitch = BUtil.parseFloat(splitted[3]);
+                        float yaw = BUtil.parseFloat(splitted[4]);
                         Location location = new Location(world, x, y, z, yaw, pitch);
 
                         initWakeups.add(new Wakeup(location));
 
                     } else {
-                        plugin.errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
+                        Logging.errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
                     }
                 }
             }
@@ -467,7 +468,7 @@ public class BData {
         while (BData.dataMutex.updateAndGet(i -> i >= 0 ? i + 1 : i) <= 0) {
             wait++;
             if (wait > 60) {
-                plugin.errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
+                Logging.errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
                 return false;
             }
             try {

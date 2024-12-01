@@ -23,14 +23,13 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
-import com.dre.brewery.commands.subcommands.ReloadCommand;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.PlaceholderAPIHook;
-import com.dre.brewery.integration.barrel.BlocklockerBarrel;
+import com.dre.brewery.integration.barrel.BlockLockerBarrel;
 import com.dre.brewery.integration.bstats.Stats;
 import com.dre.brewery.integration.listeners.ChestShopListener;
 import com.dre.brewery.integration.listeners.IntegrationListener;
@@ -48,8 +47,8 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.UpdateChecker;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
@@ -58,22 +57,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
-	// TODO: File backups
 	// TODO: Change the addon API FileManager to use Okaeri
 
 	private static final int RESOURCE_ID = 114777;
@@ -93,6 +94,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
+		this.migrateBreweryDataFolder(); // This has to be done before Okaeri can bind
 		instance = this;
 		MCVersion = MinecraftVersion.getIt();
 		scheduler = UniversalScheduler.getScheduler(this);
@@ -103,7 +105,6 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		migrateBreweryDataFolder();
 		try {
 			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
 			isFolia = true;
@@ -150,9 +151,9 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 
-		log("Minecraft version&7:&a " + MCVersion.getVersion());
+		Logging.log("Minecraft version&7:&a " + MCVersion.getVersion());
 		if (MCVersion == MinecraftVersion.UNKNOWN) {
-			warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
+			Logging.warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");
 		}
 
 
@@ -160,22 +161,36 @@ public class BreweryPlugin extends JavaPlugin {
         try {
             dataManager = DataManager.createDataManager(config.getStorage());
         } catch (StorageInitException e) {
-            errorLog("Failed to initialize DataManager!", e);
+			Logging.errorLog("Failed to initialize DataManager!", e);
 			Bukkit.getPluginManager().disablePlugin(this);
         }
 
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
-		Barrel.getBarrels().addAll(dataManager.getAllBarrels());
-		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-		Wakeup.getWakeups().addAll(dataManager.getAllWakeups());
+		Barrel.getBarrels().addAll(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList());
+		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
+		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
+		Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
 
 
 		// Setup Metrics
 		this.stats.setupBStats();
 
+		// Register command and aliases
+		PluginCommand defaultCommand = getCommand("breweryx");
+		defaultCommand.setExecutor(new CommandManager());
+		try {
+			// This has to be done reflectively because Spigot doesn't expose the CommandMap through the API
+			Field bukkitCommandMap = getServer().getClass().getDeclaredField("commandMap");
+			bukkitCommandMap.setAccessible(true);
 
-		getCommand("breweryx").setExecutor(new CommandManager());
+			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(getServer());
+
+			for (String alias : config.getCommandAliases()) {
+				commandMap.register(alias, "breweryx", defaultCommand);
+			}
+		} catch (Exception e) {
+			Logging.errorLog("Failed to register command aliases!", e);
+		}
 
 		// Register Listeners
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
@@ -183,26 +198,17 @@ public class BreweryPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
-		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
-			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
-		}
-		if (Hook.CHESTSHOP.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_13)) {
-			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
-		}
-		if (Hook.SHOPKEEPERS.isEnabled()) {
-			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
-		}
-		if (Hook.SLIMEFUN.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_14)) {
-			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
-		}
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) getServer().getPluginManager().registerEvents(new CauldronListener(), this);
+		if (Hook.CHESTSHOP.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_13)) getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
+		if (Hook.SHOPKEEPERS.isEnabled()) getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
+		if (Hook.SLIMEFUN.isEnabled() && getMCVersion().isOrLater(MinecraftVersion.V1_14)) getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
+
 
 		// Heartbeat
 		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
 		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
+		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 
-		if (getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
-			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
-		}
 
 
 		// Register PlaceholderAPI Placeholders
@@ -215,8 +221,8 @@ public class BreweryPlugin extends JavaPlugin {
 			UpdateChecker.run(RESOURCE_ID);
 		}
 
-		log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
-		log("BreweryX enabled!");
+		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
+		Logging.log("BreweryX enabled!");
 	}
 
 	@Override
@@ -243,7 +249,7 @@ public class BreweryPlugin extends JavaPlugin {
 			placeholderAPIHook.getInstance().unregister();
 		}
 
-		this.log("BreweryX disabled!");
+		Logging.log("BreweryX disabled!");
 	}
 
 	private void migrateBreweryDataFolder() {
@@ -266,10 +272,10 @@ public class BreweryPlugin extends JavaPlugin {
 				try {
 					Files.copy(file.toPath(), new File(breweryXFolder, file.getName()).toPath());
 				} catch (IOException e) {
-					errorLog("Failed to move file: " + file.getName(), e);
+					Logging.errorLog("Failed to move file: " + file.getName(), e);
 				}
 			}
-			log("&5Moved files from Brewery to BreweryX's data folder");
+			Logging.log("&5Moved files from Brewery to BreweryX's data folder");
 		}
 	}
 
@@ -297,96 +303,6 @@ public class BreweryPlugin extends JavaPlugin {
 	}
 
 
-	// Utility
-
-	public void msg(CommandSender sender, String msg) {
-		sender.sendMessage(color(ConfigManager.getConfig(Config.class).getPluginPrefix() + msg));
-	}
-
-	public void log(String msg) {
-		Bukkit.getConsoleSender().sendMessage(color(ConfigManager.getConfig(Config.class).getPluginPrefix() + msg));
-	}
-
-	public void debugLog(String msg) {
-		if (ConfigManager.getConfig(Config.class).isDebug()) {
-			this.msg(Bukkit.getConsoleSender(), "&2[Debug] &f" + msg);
-		}
-	}
-
-	public void warningLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(color("&e[BreweryX] WARNING: " + msg));
-	}
-
-	public void errorLog(String msg) {
-		String str = color("&c[BreweryX] ERROR: " + msg);
-		Bukkit.getConsoleSender().sendMessage(str);
-		if (ReloadCommand.getReloader() != null) { // I hate this, but I'm too lazy to go change all of it - Jsinco
-			ReloadCommand.getReloader().sendMessage(str);
-		}
-	}
-
-	// TODO: cleanup
-	public void errorLog(String msg, Throwable throwable) {
-		errorLog(msg);
-		errorLog("&6" + throwable.toString());
-		for (StackTraceElement ste : throwable.getStackTrace()) {
-			String str = ste.toString();
-			if (str.contains(".jar//")) {
-				str = str.substring(str.indexOf(".jar//") + 6);
-			}
-			errorLog(str);
-		}
-		Throwable cause = throwable.getCause();
-		while (cause != null) {
-			Bukkit.getConsoleSender().sendMessage(color("&c[BreweryX]&6 Caused by: " + cause));
-			for (StackTraceElement ste : cause.getStackTrace()) {
-				String str = ste.toString();
-				if (str.contains(".jar//")) {
-					str = str.substring(str.indexOf(".jar//") + 6);
-				}
-				Bukkit.getConsoleSender().sendMessage(color("&c[BreweryX]&6      " + str));
-			}
-			cause = cause.getCause();
-		}
-	}
-
-	public int parseInt(String string) {
-		if (string == null) {
-			return 0;
-		}
-		try {
-			return Integer.parseInt(string);
-		} catch (NumberFormatException ignored) {
-			return 0;
-		}
-	}
-
-	public double parseDouble(String string) {
-		if (string == null) {
-			return 0;
-		}
-		try {
-			return Double.parseDouble(string);
-		} catch (NumberFormatException ignored) {
-			return 0;
-		}
-	}
-
-	public float parseFloat(String string) {
-		if (string == null) {
-			return 0;
-		}
-		try {
-			return Float.parseFloat(string);
-		} catch (NumberFormatException ignored) {
-			return 0;
-		}
-	}
-
-
-	public String color(String msg) {
-		return BUtil.color(msg);
-	}
 
 	// Runnables
 
@@ -418,7 +334,7 @@ public class BreweryPlugin extends JavaPlugin {
 			Barrel.onUpdate();// runs every min to check and update ageing time
 
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
-			if (Hook.BLOCKLOCKER.isEnabled()) BlocklockerBarrel.clearBarrelSign();
+			if (Hook.BLOCKLOCKER.isEnabled()) BlockLockerBarrel.clearBarrelSign();
 
 			BPlayer.onUpdate();// updates players drunkenness
 
@@ -426,7 +342,7 @@ public class BreweryPlugin extends JavaPlugin {
 			//DataSave.autoSave();
 			dataManager.tryAutoSave();
 
-			debugLog("BreweryRunnable: " + (System.currentTimeMillis() - start) + "ms");
+			Logging.debugLog("BreweryRunnable: " + (System.currentTimeMillis() - start) + "ms");
 		}
 
 	}

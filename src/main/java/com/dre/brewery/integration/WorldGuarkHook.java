@@ -5,6 +5,7 @@ import com.dre.brewery.integration.barrel.WGBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel5;
 import com.dre.brewery.integration.barrel.WGBarrel6;
 import com.dre.brewery.integration.barrel.WGBarrel7;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.plugin.Plugin;
@@ -20,12 +21,17 @@ public class WorldGuarkHook extends Hook {
 
     public WorldGuarkHook(String name, boolean enabled) {
         super(name, enabled);
+
+        if (!isEnabled()) {
+            return;
+        }
+
         Plugin plugin = WORLDGUARD.getPlugin();
 
         if (plugin == null) {
-            BreweryPlugin.getInstance().errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-            BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
-            BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
+            Logging.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
+            Logging.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
+            Logging.errorLog("Disable the WorldGuard support in the config and do /brew reload");
             return;
         }
 

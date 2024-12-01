@@ -6,6 +6,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Logging;
 import nl.rutgerkok.blocklocker.BlockLockerAPIv2;
 import nl.rutgerkok.blocklocker.ProtectableBlocksSettings;
 import nl.rutgerkok.blocklocker.ProtectionType;
@@ -14,7 +15,7 @@ import org.bukkit.block.BlockFace;
 
 import java.util.List;
 
-public class BlocklockerBarrel implements ProtectableBlocksSettings {
+public class BlockLockerBarrel implements ProtectableBlocksSettings {
 	private static Block lastBarrelSign;
 
 	@Override
@@ -55,14 +56,14 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 				}
 				Barrel barrel = new Barrel(spigot, signoffset);
 
-				return barrel.getBody().getBrokenBlock(true) == null;
+				return barrel.getBrokenBlock(true) == null;
 			}
 		}
 		return false;
 	}
 
 	public static boolean checkAccess(BarrelAccessEvent event) {
-		Block sign = event.getBarrel().getBody().getSignOfSpigot();
+		Block sign = event.getBarrel().getSignOfSpigot();
 		if (!LegacyUtil.isSign(sign.getType())) {
 			return true;
 		}
@@ -81,11 +82,11 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 	public static void registerBarrelAsProtectable() {
 		try {
 			List<ProtectableBlocksSettings> extraProtectables = BlockLockerAPIv2.getPlugin().getChestSettings().getExtraProtectables();
-			if (extraProtectables.stream().noneMatch(blockSettings -> blockSettings instanceof BlocklockerBarrel)) {
-				extraProtectables.add(new BlocklockerBarrel());
+			if (extraProtectables.stream().noneMatch(blockSettings -> blockSettings instanceof BlockLockerBarrel)) {
+				extraProtectables.add(new BlockLockerBarrel());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logging.errorLog("Failed to register Barrel as protectable block", e);
 		}
 	}
 }

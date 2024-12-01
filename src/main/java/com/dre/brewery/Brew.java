@@ -17,6 +17,7 @@ import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PotionColor;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -159,7 +160,7 @@ public class Brew implements Cloneable {
 			// Brew needs saving from a previous format
 			if (BreweryPlugin.isUseNBT()) {
 				new BrewLore(brew, (PotionMeta) meta).removeLoreData();
-				BreweryPlugin.getInstance().debugLog("removed Data from Lore");
+				Logging.debugLog("removed Data from Lore");
 			}
 			brew.save(meta);
 			item.setItemMeta(meta);
@@ -201,7 +202,7 @@ public class Brew implements Cloneable {
 	public static Brew get(int uid) {
 		if (uid < -1) {
 			if (!legacyPotions.containsKey(uid)) {
-				BreweryPlugin.getInstance().errorLog("Database failure! unable to find UID " + uid + " of a custom Potion!");
+				Logging.errorLog("Database failure! unable to find UID " + uid + " of a custom Potion!");
 				return null;// throw some exception?
 			}
 		} else {
@@ -270,10 +271,10 @@ public class Brew implements Cloneable {
 					/*if (!immutable) {
 						this.quality = calcQuality();
 					}*/
-					BreweryPlugin.getInstance().log("A Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
+					Logging.log("A Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
 					return true;
 				} else {
-					BreweryPlugin.getInstance().errorLog("A Brew was made from Recipe: '" + name + "' which could not be found!");
+					Logging.errorLog("A Brew was made from Recipe: '" + name + "' which could not be found!");
 				}
 			}
 		}
@@ -653,13 +654,13 @@ public class Brew implements Cloneable {
 			quality = calcQuality();
 
 			lore.addOrReplaceEffects(getEffects(), quality);
-			potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + recipe.getName(quality)));
+			potionMeta.setDisplayName(BUtil.color("&f" + recipe.getName(quality)));
 			recipe.getColor().colorBrew(potionMeta, slotItem, canDistill());
 
 		} else {
 			quality = 0;
 			lore.removeEffects();
-			potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + lang.getEntry("Brew_DistillUndefined")));
+			potionMeta.setDisplayName(BUtil.color("&f" + lang.getEntry("Brew_DistillUndefined")));
 			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
 		alc = calcAlcohol();
@@ -726,7 +727,7 @@ public class Brew implements Cloneable {
 				quality = calcQuality();
 
 				lore.addOrReplaceEffects(getEffects(), quality);
-				potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + recipe.getName(quality)));
+				potionMeta.setDisplayName(BUtil.color("&f" + recipe.getName(quality)));
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 
 				if (recipe.isGlint()) {
@@ -738,7 +739,7 @@ public class Brew implements Cloneable {
 				lore.convertLore(false);
 				lore.removeEffects();
 				currentRecipe = null;
-				potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + lang.getEntry("Brew_BadPotion")));
+				potionMeta.setDisplayName(BUtil.color("&f" + lang.getEntry("Brew_BadPotion")));
 				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 			}
 		}
@@ -838,7 +839,7 @@ public class Brew implements Cloneable {
 			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
 
-		potionMeta.setDisplayName(BreweryPlugin.getInstance().color("&f" + recipe.getName(quality)));
+		potionMeta.setDisplayName(BUtil.color("&f" + recipe.getName(quality)));
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
 		// This is due to the Duration Modifier, that is removed in 1.14
@@ -917,7 +918,7 @@ public class Brew implements Cloneable {
 		try (DataInputStream in = new DataInputStream(unscrambler)) {
 			boolean parityFailed = false;
 			if (in.readByte() != 86) {
-				BreweryPlugin.getInstance().errorLog("Parity check failed on Brew while loading, trying to load anyways!");
+				Logging.errorLog("Parity check failed on Brew while loading, trying to load anyways!");
 				parityFailed = true;
 			}
 			Brew brew = new Brew();
@@ -931,34 +932,32 @@ public class Brew implements Cloneable {
 					break;
 				default:
 					if (parityFailed) {
-						BreweryPlugin.getInstance().errorLog("Failed to load Brew. Maybe something corrupted the Lore of the Item?");
+						Logging.errorLog("Failed to load Brew. Maybe something corrupted the Lore of the Item?");
 					} else {
-						BreweryPlugin.getInstance().errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v" + SAVE_VER);
+						Logging.errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v" + SAVE_VER);
 					}
 					return null;
 			}
 
 			XORUnscrambleStream.SuccessType successType = unscrambler.getSuccessType();
 			if (successType == XORUnscrambleStream.SuccessType.PREV_SEED) {
-				BreweryPlugin.getInstance().debugLog("Converting Brew from previous Seed");
+				Logging.debugLog("Converting Brew from previous Seed");
 				brew.setNeedsSave(true);
 			} else if ((config.isEnableEncode() && !brew.isStripped()) != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
 				// We have either enabled encode and the data was not encoded or the other way round
-				BreweryPlugin.getInstance().debugLog("Converting Brew to new encode setting");
+				Logging.debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
 			} else if (BreweryPlugin.isUseNBT() && itemLoadStream instanceof Base91DecoderStream) {
 				// We are on a version that supports nbt but the data is still in the lore of the item
 				// Just save it again so that it gets saved to nbt
-				BreweryPlugin.getInstance().debugLog("Converting Brew to NBT");
+				Logging.debugLog("Converting Brew to NBT");
 				brew.setNeedsSave(true);
 			}
 			return brew;
 		} catch (IOException e) {
-			BreweryPlugin.getInstance().errorLog("IO Error while loading Brew");
-			e.printStackTrace();
+			Logging.errorLog("IO Error while loading Brew", e);
 		} catch (InvalidKeyException e) {
-			BreweryPlugin.getInstance().errorLog("Failed to load Brew, has the data key 'encodeKey' in the config.yml been changed?");
-			e.printStackTrace();
+			Logging.errorLog("Failed to load Brew, has the data key 'encodeKey' in the config.yml been changed?", e);
 		}
 		return null;
 	}
@@ -1012,8 +1011,7 @@ public class Brew implements Cloneable {
 			}
 			saveToStream(out);
 		} catch (IOException e) {
-			BreweryPlugin.getInstance().errorLog("IO Error while saving Brew");
-			e.printStackTrace();
+			Logging.errorLog("IO Error while saving Brew", e);
 		}
 	}
 

@@ -4,6 +4,7 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -35,7 +36,7 @@ public class PukeCommand implements SubCommand {
         }
         int count = 0;
         if (args.length > 2) {
-            count = BreweryPlugin.getInstance().parseInt(args[2]);
+            count = BUtil.parseInt(args[2]);
         }
         if (count <= 0) {
             count = 20 + (int) (Math.random() * 40);

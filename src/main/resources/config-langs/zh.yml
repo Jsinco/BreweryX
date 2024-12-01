@@ -15,7 +15,7 @@ config:
     header: "-- Storage Settings --"
     type: |
       What type of storage to use [FLATFILE]
-      Available types: FlatFile, MySQL, SQLite
+      Available types: FlatFile, MySQL, SQLite, MongoDB
     database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
   enableHome: "喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]"
   homeType: |
@@ -35,12 +35,12 @@ config:
   pukeItem: |
     呕吐物[Soul_Sand]
     Can be list of items such as [Soul_sand, Slime_block, Dirt]
-  pukeDespawnTime: |
+  pukeDespawntime: |
     呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟) [60]
     如果spigot.yml中的物品消失时间被变更, 此处也会变更
   stumblePercent: "玩家跌倒程度取决于饮酒量，设置范围可以是0或超过100 [100]"
   showStatusOnDrink: "玩家饮用饮品或吃掉解酒物时，显示其醉酒程度 [true]"
-  drainItem: |
+  drainItems: |
     解酒物/解酒强度
     降低玩家一定程度的醉酒程度, 解酒强度为百分数
   enableCauldronParticles: |
@@ -60,6 +60,8 @@ config:
   requireKeywordOnSigns: "只有在放置的标志包含“酒桶”一词（或其它语言的翻译）时才创建酒桶 [true]"
   ageInMCBarrels: "MC自带的桶内可以存放多少饮品 [6]"
   agingYearDuration: "陈酿饮品时“年份”的持续时间（分钟）[20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     使用的原料和其他酿造数据会被保存在所有酿酒物品中
     为了防止被修改后的客户端读取饮品的确切原料，数据可以被编码/搅乱

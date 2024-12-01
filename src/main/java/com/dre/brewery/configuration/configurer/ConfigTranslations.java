@@ -1,6 +1,6 @@
 package com.dre.brewery.configuration.configurer;
 
-import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.utility.Logging;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
@@ -54,7 +54,7 @@ public class ConfigTranslations {
 
 			return (String) current.get(keys[keys.length - 1]);
 		} catch (Exception e) {
-			BreweryPlugin.getInstance().errorLog("Error while getting translation for key: " + key, e);
+			Logging.errorLog("Error while getting translation for key: " + key, e);
 			return null;
 		}
 	}

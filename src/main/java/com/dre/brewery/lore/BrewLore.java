@@ -539,7 +539,7 @@ public class BrewLore {
 		} else {
 			color = "&4";
 		}
-		return BreweryPlugin.getInstance().color(color);
+		return BUtil.color(color);
 	}
 
 	/**

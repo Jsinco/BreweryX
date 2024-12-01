@@ -15,7 +15,7 @@ config:
     header: "-- Storage Settings --"
     type: |
       What type of storage to use [FLATFILE]
-      Available types: FlatFile, MySQL, SQLite
+      Available types: FlatFile, MySQL, SQLite, MongoDB
     database: "The name of the database. When the database is a file, this will be the name of the file. [brewery-data]"
   enableHome: "Se il giocatore si sveglia nella sua /home dopo aver bevuto troppo(il plugin di /home deve essere installato!) [true]"
   homeType: |
@@ -35,12 +35,12 @@ config:
   pukeItem: |
     L'oggetto droppato in massa quando si vomita che dovrebbe rappresentare il vomito [Soul_Sand]
     Can be list of items such as [Soul_sand, Slime_block, Dirt]
-  pukeDespawnTime: |
+  pukeDespawntime: |
     Tempo in secondi perché il vomito sparisca (il valore di minecraft di default è 300 = 5 min) [60]
     Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
   stumblePercent: "How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]"
   showStatusOnDrink: "Display his drunkenness to the player when he drinks a brew or eats a drainItem [true]"
-  drainItem: "Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della \"forza\" che avevi impsotato) (list)"
+  drainItems: "Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della \"forza\" che avevi impsotato) (list)"
   enableCauldronParticles: |
     Show Particles over Cauldrons when they have ingredients and a heat source. [true]
     The changing color of the particles can help with timing some recipes
@@ -55,6 +55,8 @@ config:
   requireKeywordOnSigns: "Se i barili vengono creati solo quando il cartello posto contiene la parola \"barrel\" (o una traduzione) [true]"
   ageInMCBarrels: "If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]"
   agingYearDuration: "Durata (in minuti) di un \"anno\" durante l'invecchiamento delle bevande [20]"
+  commandAliases: |
+    Aliases for the '/breweryx' command. Requires a server restart to take effect. (list) [brewery, brew]
   enableEncode: |
     The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
     hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.

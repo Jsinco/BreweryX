@@ -18,6 +18,7 @@ import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
@@ -64,8 +65,8 @@ public class ConfigManager {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            BreweryPlugin.getInstance().errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ".yml)", e);
-            BreweryPlugin.getInstance().warningLog("Resolve the issue in the file and run &6/brewery reload");
+            Logging.errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ".yml)", e);
+            Logging.warningLog("Resolve the issue in the file and run &6/brewery reload");
             return createBlankConfigInstance(configClass);
         }
     }
@@ -111,12 +112,12 @@ public class ConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update) {
+    private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file, Configurer configurer, OkaeriSerdesPack serdesPack, boolean update, boolean removeOrphans) {
         boolean firstCreation = !Files.exists(file);
 
         T instance = eu.okaeri.configs.ConfigManager.create(configClass, (it) -> {
             it.withConfigurer(configurer, serdesPack);
-            it.withRemoveOrphans(false); // Just leaving this off for now
+            it.withRemoveOrphans(removeOrphans);
             it.withBindFile(file);
             it.saveDefaults();
 
@@ -142,17 +143,18 @@ public class ConfigManager {
     private static <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
 
-        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update());
+        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), options.removeOrphans());
     }
 
 	@Nullable
 	private static <T extends AbstractOkaeriConfigFile> T createBlankConfigInstance(Class<T> configClass) {
 		try {
 			T inst = configClass.getDeclaredConstructor().newInstance();
+            inst.setBlankInstance(true);
 			LOADED_CONFIGS.put(configClass, inst);
 			return inst;
 		} catch (Exception e) {
-            BreweryPlugin.getInstance().errorLog("Failed to create a blank config instance for " + configClass.getSimpleName(), e);
+            Logging.errorLog("Failed to create a blank config instance for " + configClass.getSimpleName(), e);
 			return null;
 		}
 	}
@@ -179,7 +181,7 @@ public class ConfigManager {
                     // Copy the input stream content to the target file
                     Files.copy(inputStream, destination);
                 } else {
-                    BreweryPlugin.getInstance().warningLog("Could not find resource file for " + resourcesPath);
+                    Logging.warningLog("Could not find resource file for " + resourcesPath);
                 }
             }
         } catch (IOException e) {
@@ -196,6 +198,7 @@ public class ConfigManager {
                 @Override public Class<? extends Configurer> configurer() { return BreweryXConfigurer.class; }
                 @Override public boolean useLangFileName() { return false; }
                 @Override public boolean update() { return false; }
+                @Override public boolean removeOrphans() { return false; }
                 @Override public String value() { return configClass.getSimpleName().toLowerCase() + ".yml"; }
             };
         }
@@ -215,7 +218,7 @@ public class ConfigManager {
             if (recipe != null && recipe.isValid()) {
                 configRecipes.add(recipe);
             } else {
-                BreweryPlugin.getInstance().errorLog("Loading the Recipe with id: '" + recipeEntry.getKey() + "' failed!");
+                Logging.errorLog("Loading the Recipe with id: '" + recipeEntry.getKey() + "' failed!");
             }
 
             BRecipe.setNumConfigRecipes(configRecipes.size());
@@ -234,7 +237,7 @@ public class ConfigManager {
             if (recipe != null) {
                 configRecipes.add(recipe);
             } else {
-                BreweryPlugin.getInstance().errorLog("Loading the Cauldron-Recipe with id: '" + cauldronEntry.getKey() + "' failed!");
+                Logging.errorLog("Loading the Cauldron-Recipe with id: '" + cauldronEntry.getKey() + "' failed!");
             }
         }
         BCauldronRecipe.setNumConfigRecipes(configRecipes.size());

@@ -5,6 +5,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.integration.Hook;
+import com.dre.brewery.utility.Logging;
 import com.nisovin.shopkeepers.api.events.PlayerOpenUIEvent;
 import com.nisovin.shopkeepers.api.ui.DefaultUITypes;
 import org.bukkit.Material;
@@ -62,7 +63,7 @@ public class ShopKeepersListener implements Listener {
 	private void failed(Throwable e) {
 		HandlerList.unregisterAll(this);
 		Hook.SHOPKEEPERS.setEnabled(false);
-		BreweryPlugin.getInstance().errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support", e);
+		Logging.errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support", e);
 		openedEditors.clear();
 	}
 

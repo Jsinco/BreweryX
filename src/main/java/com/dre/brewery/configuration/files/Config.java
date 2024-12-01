@@ -13,6 +13,7 @@ import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
+import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,7 @@ import java.util.Map;
 import java.util.Random;
 
 
-@OkaeriConfigFileOptions("config.yml")
+@OkaeriConfigFileOptions(value = "config.yml", removeOrphans = true)
 @Header({"!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!",
 		"Our proper config guide can be found at: https://brewery.lumamc.net/en/guide/edit_config/",
 		"Still have questions? Join our Discord: https://discord.gg/ZTGCzeKg45"})
@@ -35,8 +36,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@Override
 	public void onFirstCreation() {
 		BreweryPlugin plugin = BreweryPlugin.getInstance();
-		plugin.log("&9Creating a new &6config.yml&9!");
-		plugin.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
+		Logging.log("&9Creating a new &6config.yml&9!");
+		Logging.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
 	}
 
 	// This doesn't need to be an enumerator, we're reading this value back to an enum from TranslationManager which doesn't rely on this class.
@@ -88,8 +89,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.pukeItem")
 	private List<Material> pukeItem = List.of(Material.SOUL_SAND);
 
-	@LocalizedComment("config.pukeDespawnTime")
-	private int pukeDespawnTime = 60;
+	@LocalizedComment("config.pukeDespawntime")
+	private int pukeDespawntime = 60;
 
 	@LocalizedComment("config.stumblePercent")
 	private int stumblePercent = 100;
@@ -97,8 +98,8 @@ public class Config extends AbstractOkaeriConfigFile {
 	@LocalizedComment("config.showStatusOnDrink")
 	private boolean showStatusOnDrink = true;
 
-	@LocalizedComment("config.drainItem")
-	private List<String> drainItem = List.of("Bread/4", "Milk_Bucket/2");
+	@LocalizedComment("config.drainItems")
+	private List<String> drainItems = List.of("Bread/4", "Milk_Bucket/2");
 
 	@LocalizedComment("config.enableCauldronParticles")
 	private boolean enableCauldronParticles = true;
@@ -131,6 +132,9 @@ public class Config extends AbstractOkaeriConfigFile {
 
 	@LocalizedComment("config.agingYearDuration")
 	private int agingYearDuration = 20;
+
+	@LocalizedComment("config.commandAliases")
+	private List<String> commandAliases = List.of("brewery", "brew");
 
 	@LocalizedComment("config.enableEncode")
 	private boolean enableEncode = false;

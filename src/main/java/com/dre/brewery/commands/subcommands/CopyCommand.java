@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +16,7 @@ public class CopyCommand implements SubCommand {
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
-            cmdCopy(sender, breweryPlugin.parseInt(args[1]), lang);
+            cmdCopy(sender, BUtil.parseInt(args[1]), lang);
         } else {
             cmdCopy(sender, 1, lang);
         }

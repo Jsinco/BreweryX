@@ -4,6 +4,7 @@ import com.dre.brewery.*;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -42,7 +43,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		BreweryPlugin.getInstance().debugLog("Starting brew inventory tracking");
+		Logging.debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
 	}
 
@@ -56,7 +57,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		BreweryPlugin.getInstance().debugLog("Stopping brew inventory tracking");
+		Logging.debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
 	}
 
