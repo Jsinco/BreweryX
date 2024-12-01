@@ -229,8 +229,6 @@ public class BreweryPlugin extends JavaPlugin {
 
 		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		Logging.log("BreweryX enabled!");
-
-		System.out.println(LogBlockHook.LOGBLOCK.isEnabled());
 	}
 
 	@Override
