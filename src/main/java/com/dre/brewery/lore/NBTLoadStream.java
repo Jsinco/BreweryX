@@ -21,7 +21,7 @@
 package com.dre.brewery.lore;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.NBTUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,9 +37,9 @@ public class NBTLoadStream extends ByteArrayInputStream {
 	}
 
 	private static byte[] getNBTBytes(ItemMeta meta) {
-		byte[] bytes = LegacyUtil.readBytesItem(meta, KEY);
+		byte[] bytes = NBTUtil.readBytesItem(meta, KEY);
 		if (bytes == null) {
-			bytes = LegacyUtil.readBytesItem(meta, LEGACY_KEY);
+			bytes = NBTUtil.readBytesItem(meta, LEGACY_KEY);
 		}
 		if (bytes == null) {
 			return new byte[0];
@@ -52,6 +52,6 @@ public class NBTLoadStream extends ByteArrayInputStream {
 	}
 
 	public static boolean hasDataInMeta(ItemMeta meta) {
-		return LegacyUtil.hasBytesItem(meta, KEY) || LegacyUtil.hasBytesItem(meta, LEGACY_KEY);
+		return NBTUtil.hasBytesItem(meta, KEY) || NBTUtil.hasBytesItem(meta, LEGACY_KEY);
 	}
 }

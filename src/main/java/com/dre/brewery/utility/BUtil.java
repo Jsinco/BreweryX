@@ -20,9 +20,9 @@
 
 package com.dre.brewery.utility;
 
-import com.Acrobot.ChestShop.Libs.ORMlite.stmt.query.In;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.BarrelAsset;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.configuration.ConfigManager;
@@ -56,7 +56,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
-public class BUtil {
+public final class BUtil {
 
 	/* **************************************** */
 	/* *********                      ********* */
@@ -157,13 +157,6 @@ public class BUtil {
 		return player.getUniqueId().toString();
 	}
 
-
-	public static Material getMaterialSafely(String name) {
-		if (name.equalsIgnoreCase("GRASS")) {
-			return Material.GRASS;
-		}
-		return Material.matchMaterial(name);
-	}
 
 	/**
 	 * returns the Player if online
@@ -332,12 +325,12 @@ public class BUtil {
 			return true;
 		}
 		Material type = block.getType();
-		if (type == Material.CAULDRON || type == LegacyUtil.WATER_CAULDRON) {
+		if (type == Material.CAULDRON || type == MaterialUtil.WATER_CAULDRON) {
 			// will only remove when existing
 			BCauldron.remove(block);
 			return true;
 
-		} else if (LegacyUtil.isFence(type)) {
+		} else if (BarrelAsset.isBarrelAsset(BarrelAsset.FENCE, type)) {
 			// remove barrel and throw potions on the ground
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {
@@ -350,7 +343,7 @@ public class BUtil {
 			}
 			return true;
 
-		} else if (LegacyUtil.isSign(type)) {
+		} else if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, type)) {
 			// remove small Barrels
 			Barrel barrel2 = Barrel.getBySpigot(block);
 			if (barrel2 != null) {
@@ -367,7 +360,7 @@ public class BUtil {
 			}
 			return true;
 
-		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
+		} else if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)){
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player, block, reason)) {
@@ -415,7 +408,7 @@ public class BUtil {
 		for (String materialString : stringList) {
 			String[] drainSplit = materialString.split("/");
 			if (drainSplit.length > 1) {
-				Material mat = BUtil.getMaterialSafely(drainSplit[0]);
+				Material mat = MaterialUtil.getMaterialSafely(drainSplit[0]);
 				int strength = BUtil.parseInt(drainSplit[1]);
 //                if (mat == null && hasVault && strength > 0) {
 //                    try {

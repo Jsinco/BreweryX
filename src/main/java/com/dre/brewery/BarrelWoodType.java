@@ -20,13 +20,16 @@
 
 package com.dre.brewery;
 
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.jetbrains.annotations.Nullable;
+
 
 @Getter
 public enum BarrelWoodType {
 
-    ANY("Any", 0),
+    ANY("Any", 0, true),
     BIRCH("Birch", 1),
     OAK("Oak", 2),
     JUNGLE("Jungle", 3),
@@ -38,19 +41,52 @@ public enum BarrelWoodType {
     MANGROVE("Mangrove", 9),
     CHERRY("Cherry", 10),
     BAMBOO("Bamboo", 11),
-    CUT_COPPER("Cut Copper", 12),
+    CUT_COPPER("Cut Copper", 12, Material.CUT_COPPER, Material.CUT_COPPER_STAIRS, null, null),
     PALE_OAK("Pale Oak", 13),
     // If you're adding more wood types, add them above 'NONE'
-    NONE("None", -1);
+    NONE("None", -1, true);
 
 
     private final String formattedName;
     private final int index;
 
-    BarrelWoodType(String formattedName, int index) {
+	BarrelWoodType(String formattedName, int index) {
+		this(formattedName, index, false);
+	}
+
+    BarrelWoodType(String formattedName, int index, boolean exclude) {
         this.formattedName = formattedName;
-        this.index = index;
+		this.index = index;
+		if (!exclude) {
+			BarrelAsset.addBarrelAsset(BarrelAsset.PLANKS, getStandardBarrelAssetMaterial(BarrelAsset.PLANKS));
+			BarrelAsset.addBarrelAsset(BarrelAsset.STAIRS, getStandardBarrelAssetMaterial(BarrelAsset.STAIRS));
+			BarrelAsset.addBarrelAsset(BarrelAsset.SIGN, getStandardBarrelAssetMaterial(BarrelAsset.SIGN));
+			BarrelAsset.addBarrelAsset(BarrelAsset.FENCE, getStandardBarrelAssetMaterial(BarrelAsset.FENCE));
+		}
     }
+
+
+	BarrelWoodType(String formattedName, int index, Material planks, Material stairs, Material sign, Material fence) {
+		this.formattedName = formattedName;
+		this.index = index;
+
+		BarrelAsset.addBarrelAsset(BarrelAsset.PLANKS, planks);
+		BarrelAsset.addBarrelAsset(BarrelAsset.STAIRS, stairs);
+		BarrelAsset.addBarrelAsset(BarrelAsset.SIGN, sign);
+		BarrelAsset.addBarrelAsset(BarrelAsset.FENCE, fence);
+	}
+
+	@Nullable
+	private  Material getStandardBarrelAssetMaterial(BarrelAsset assetType) {
+		try {
+			return Material.valueOf(this.name() + "_" + assetType.name());
+		} catch (IllegalArgumentException e) {
+			Logging.errorLog("Unable to find a standard asset for " + this.name() + " and " + assetType.name() + "!");
+			Logging.errorLog("Developers should Manually specify the assets for the BarrelWoodType if they are not standard!");
+			return null;
+		}
+	}
+
 
     public static BarrelWoodType fromName(String name) {
         for (BarrelWoodType type : values()) {

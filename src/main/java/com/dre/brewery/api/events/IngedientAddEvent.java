@@ -22,7 +22,7 @@ package com.dre.brewery.api.events;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.recipe.RecipeItem;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
@@ -138,7 +138,7 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	 * @return The fill level as a byte 0-2
 	 */
 	public byte getFillLevel() {
-		return LegacyUtil.getFillLevel(block);
+		return MaterialUtil.getFillLevel(block);
 	}
 
 	@Override

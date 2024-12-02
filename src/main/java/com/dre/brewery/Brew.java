@@ -825,7 +825,7 @@ public class Brew implements Cloneable {
 		//}
 		// This effect stores the UID in its Duration
 		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
-		
+
 		BrewLore lore = new BrewLore(this, potionMeta);
 		lore.convertLore(false);
 		lore.addOrReplaceEffects(recipe.getEffects(), quality);

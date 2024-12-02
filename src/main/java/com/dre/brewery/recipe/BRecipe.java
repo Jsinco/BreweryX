@@ -30,7 +30,7 @@ import com.dre.brewery.configuration.files.CustomItemsFile;
 import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.utility.BUtil;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.StringParser;
@@ -282,7 +282,7 @@ public class BRecipe implements Cloneable {
 				}
 			}
 
-			Material mat = BUtil.getMaterialSafely(matParts[0]);
+			Material mat = MaterialUtil.getMaterialSafely(matParts[0]);
 			short durability = -1;
 			if (matParts.length == 2) {
 				durability = (short) BUtil.parseInt(matParts[1]);

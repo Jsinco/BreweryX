@@ -21,7 +21,7 @@
 package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import de.diddiz.LogBlock.Actor;
@@ -86,7 +86,7 @@ public class LogBlockBarrel {
 			if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 				try {
 					//noinspection deprecation
-					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
+					queueChestAccess.invoke(consumer, player.getName(), loc, MaterialUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					Logging.errorLog("Failed to log barrel access.", e);
 				}
@@ -134,7 +134,7 @@ public class LogBlockBarrel {
 			if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
 				try {
 					//noinspection deprecation
-					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
+					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, MaterialUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					Logging.errorLog("Failed to log barrel break.", e);
 				}

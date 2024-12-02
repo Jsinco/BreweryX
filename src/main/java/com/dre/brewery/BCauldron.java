@@ -27,7 +27,7 @@ import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Color;
@@ -105,12 +105,12 @@ public class BCauldron {
 		if (!BUtil.isChunkLoaded(block)) {
 			increaseState();
 		} else {
-			if (!LegacyUtil.isWaterCauldron(block.getType())) {
+			if (!MaterialUtil.isWaterCauldron(block.getType())) {
 				// Catch any WorldEdit etc. removal
 				return false;
 			}
 			// Check if fire still alive
-			if (LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
+			if (MaterialUtil.isCauldronHeatSource(block.getRelative(BlockFace.DOWN))) {
 				increaseState();
 			}
 		}
@@ -188,7 +188,7 @@ public class BCauldron {
 	// Calls the IngredientAddEvent and may be cancelled or changed
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
-		if (LegacyUtil.getFillLevel(block) != EMPTY) {
+		if (MaterialUtil.getFillLevel(block) != EMPTY) {
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
 				// Extremely fast way to check for most items
@@ -241,7 +241,7 @@ public class BCauldron {
 			}
 
 			// If the Water_Cauldron type exists and the cauldron is on last level
-			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
+			if (MaterialUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
 				// Empty Cauldron
 				block.setType(Material.CAULDRON);
 				bcauldrons.remove(block);
@@ -270,7 +270,7 @@ public class BCauldron {
 				return false;
 			}
 			data -= 1;
-			LegacyUtil.setData(block, data);
+			MaterialUtil.setData(block, data);
 
 			if (data == 0) {
 				bcauldrons.remove(block);
@@ -307,7 +307,7 @@ public class BCauldron {
 	}
 
 	public void cookEffect() {
-		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
+		if (BUtil.isChunkLoaded(block) && MaterialUtil.isCauldronHeatSource(block.getRelative(BlockFace.DOWN))) {
 			Color color = getParticleColor();
 			// Colorable spirally spell, 0 count enables color instead of the offset variables
 			// Configurable RGB color. The last parameter seems to control the hue and motion, but I couldn't find
@@ -450,7 +450,7 @@ public class BCauldron {
 		if (materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
 			return;
 
-		} else if (materialInHand == LegacyUtil.CLOCK) {
+		} else if (materialInHand == MaterialUtil.CLOCK) {
 			printTime(player, clickedBlock);
 			return;
 
@@ -481,7 +481,7 @@ public class BCauldron {
 			if (VERSION.isOrEarlier(V1_9)) {
 				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
-				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
+				if (MaterialUtil.getFillLevel(clickedBlock) == 1) {
 					// will only remove when existing
 					BCauldron.remove(clickedBlock);
 				}
@@ -491,7 +491,7 @@ public class BCauldron {
 
 		// Check if fire alive below cauldron when adding ingredients
 		Block down = clickedBlock.getRelative(BlockFace.DOWN);
-		if (LegacyUtil.isCauldronHeatsource(down)) {
+		if (MaterialUtil.isCauldronHeatSource(down)) {
 
 			event.setCancelled(true);
 			boolean handSwap = false;
@@ -525,7 +525,7 @@ public class BCauldron {
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {
 				boolean isBucket = item.getType().name().endsWith("_BUCKET");
-				boolean isBottle = LegacyUtil.isBottle(item.getType());
+				boolean isBottle = MaterialUtil.isBottle(item.getType());
 				if (item.getAmount() > 1) {
 					item.setAmount(item.getAmount() - 1);
 
@@ -555,7 +555,7 @@ public class BCauldron {
 			cauldron.particleRecipe = null;
 			cauldron.particleColor = null;
 			if (config.isEnableCauldronParticles()) {
-				if (BUtil.isChunkLoaded(cauldron.block) && LegacyUtil.isCauldronHeatsource(cauldron.block.getRelative(BlockFace.DOWN))) {
+				if (BUtil.isChunkLoaded(cauldron.block) && MaterialUtil.isCauldronHeatSource(cauldron.block.getRelative(BlockFace.DOWN))) {
 					cauldron.getParticleColor();
 				}
 			}

@@ -22,7 +22,7 @@ package com.dre.brewery;
 
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -91,11 +91,11 @@ public abstract class BarrelBody {
 	public static int getDirection(Block spigot) {
 		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
 		Material type = spigot.getRelative(0, 0, 1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 			direction = 3;
 		}
 		type = spigot.getRelative(0, 0, -1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 			if (direction == 0) {
 				direction = 4;
 			} else {
@@ -103,7 +103,7 @@ public abstract class BarrelBody {
 			}
 		}
 		type = spigot.getRelative(1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 			if (direction == 0) {
 				direction = 1;
 			} else {
@@ -111,7 +111,7 @@ public abstract class BarrelBody {
 			}
 		}
 		type = spigot.getRelative(-1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 			if (direction == 0) {
 				direction = 2;
 			} else {
@@ -170,12 +170,13 @@ public abstract class BarrelBody {
 	 */
 	public Block getSignOfSpigot() {
 		if (signoffset != 0) {
-			if (LegacyUtil.isSign(spigot.getType())) {
+			if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, spigot.getType())) {
 				return spigot;
 			}
 
-			if (LegacyUtil.isSign(spigot.getRelative(0, signoffset, 0).getType())) {
-				return spigot.getRelative(0, signoffset, 0);
+			Block relative = spigot.getRelative(0, signoffset, 0);
+			if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, relative.getType())) {
+				return relative;
 			} else {
 				signoffset = 0;
 			}
@@ -192,8 +193,8 @@ public abstract class BarrelBody {
 		while (y <= 1) {
 			// Fence and Netherfence
 			Block relative = block.getRelative(0, y, 0);
-			if (LegacyUtil.isFence(relative.getType())) {
-				return (relative);
+			if (BarrelAsset.isBarrelAsset(BarrelAsset.FENCE, relative.getType())) {
+				return relative;
 			}
 			y++;
 		}
@@ -216,7 +217,7 @@ public abstract class BarrelBody {
 	public Block getBrokenBlock(boolean force) {
 		if (force || BUtil.isChunkLoaded(spigot)) {
 			//spigot = getSpigotOfSign(spigot);
-			if (LegacyUtil.isSign(spigot.getType())) {
+			if (BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, spigot.getType())) {
 				return checkSBarrel();
 			} else {
 				return checkLBarrel();
@@ -261,10 +262,10 @@ public abstract class BarrelBody {
 					Block block = spigot.getRelative(x, y, z);
 					type = block.getType();
 
-					if (LegacyUtil.isWoodStairs(type)) {
+					if (BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 						if (y == 0) {
 							// stairs have to be upside down
-							if (!LegacyUtil.areStairsInverted(block)) {
+							if (!MaterialUtil.areStairsInverted(block)) {
 								return block;
 							}
 						}
@@ -341,7 +342,7 @@ public abstract class BarrelBody {
 							continue;
 						}
 					}
-					if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+					if (BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, type) || BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, type)) {
 						z++;
 					} else {
 						return block;

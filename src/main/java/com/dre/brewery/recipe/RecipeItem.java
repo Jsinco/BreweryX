@@ -24,6 +24,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.configuration.sector.capsule.ConfigCustomItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
@@ -251,7 +252,7 @@ public abstract class RecipeItem implements Cloneable {
 				Logging.errorLog("Item Amount can not be specified for Custom Items: " + item);
 				return null;
 			}
-			Material mat = BUtil.getMaterialSafely(ingredParts[0]);
+			Material mat = MaterialUtil.getMaterialSafely(ingredParts[0]);
 
 			if (mat == null && VERSION.isOrEarlier(MinecraftVersion.V1_14) && ingredParts[0].equalsIgnoreCase("cornflower")) {
 				// Using this in default custom-items, but will error on < 1.14

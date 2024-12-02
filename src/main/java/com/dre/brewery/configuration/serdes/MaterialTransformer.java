@@ -20,7 +20,7 @@
 
 package com.dre.brewery.configuration.serdes;
 
-import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import eu.okaeri.configs.schema.GenericsPair;
 import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.SerdesContext;
@@ -35,7 +35,7 @@ public class MaterialTransformer extends BidirectionalTransformer<String, Materi
 
 	@Override
 	public Material leftToRight(@NonNull String data, @NonNull SerdesContext serdesContext) {
-		return BUtil.getMaterialSafely(data); // handles grass -> short_grass
+		return MaterialUtil.getMaterialSafely(data); // handles grass -> short_grass
 	}
 
 	@Override

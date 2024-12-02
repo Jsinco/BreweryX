@@ -21,6 +21,7 @@
 package com.dre.brewery.integration.listeners;
 
 import com.dre.brewery.Barrel;
+import com.dre.brewery.BarrelAsset;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
@@ -40,7 +41,7 @@ import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import io.lumine.mythic.lib.api.item.NBTItem;
@@ -148,7 +149,7 @@ public class IntegrationListener implements Listener {
 			if (plugin != null) {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
-				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
+				if (!BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, event.getClickedBlock().getType())) {
 					Block sign = event.getBarrel().getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
@@ -338,7 +339,7 @@ public class IntegrationListener implements Listener {
 		if (!Hook.MMOITEMS.isEnabled()) return;
 		try {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
-				if (event.getClickedBlock() != null && LegacyUtil.isWaterCauldron(event.getClickedBlock().getType())) {
+				if (event.getClickedBlock() != null && MaterialUtil.isWaterCauldron(event.getClickedBlock().getType())) {
 					NBTItem item = NBTItem.get(event.getItem());
 					if (item.hasType()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {

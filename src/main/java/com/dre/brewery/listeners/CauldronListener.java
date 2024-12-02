@@ -21,7 +21,7 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.BCauldron;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -40,7 +40,7 @@ public class CauldronListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onCauldronChange(CauldronLevelChangeEvent event) {
-		if (LegacyUtil.WATER_CAULDRON == null) {
+		if (MaterialUtil.WATER_CAULDRON == null) {
 			// < 1.17
 			oldCauldronChange(event);
 			return;

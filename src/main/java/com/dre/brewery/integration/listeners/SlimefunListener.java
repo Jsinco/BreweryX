@@ -20,12 +20,11 @@
 
 package com.dre.brewery.integration.listeners;
 
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -46,7 +45,7 @@ public class SlimefunListener implements Listener {
 	public void onCauldronClickSlimefun(PlayerRightClickEvent event) {
 		try {
 			if (event.getClickedBlock().isPresent() && event.getHand() == EquipmentSlot.HAND) {
-				if (LegacyUtil.isWaterCauldron(event.getClickedBlock().get().getType())) {
+				if (MaterialUtil.isWaterCauldron(event.getClickedBlock().get().getType())) {
 					Optional<SlimefunItem> slimefunItem = event.getSlimefunItem();
 					if (slimefunItem.isPresent()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {

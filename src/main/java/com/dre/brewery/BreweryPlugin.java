@@ -26,6 +26,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.integration.BlockLockerHook;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.integration.barrel.BlockLockerBarrel;
@@ -46,10 +47,7 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.utility.LegacyUtil;
-import com.dre.brewery.utility.Logging;
-import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.utility.UpdateChecker;
+import com.dre.brewery.utility.*;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import lombok.Getter;
@@ -113,7 +111,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
-		if (LegacyUtil.initNbt()) {
+		if (NBTUtil.initNbt()) {
 			useNBT = true;
 		}
 
@@ -329,7 +327,7 @@ public class BreweryPlugin extends JavaPlugin {
 			Barrel.onUpdate();// runs every min to check and update ageing time
 
 			if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) MCBarrel.onUpdate();
-			if (Hook.BLOCKLOCKER.isEnabled()) BlockLockerBarrel.clearBarrelSign();
+			if (BlockLockerHook.BLOCKLOCKER.isEnabled()) BlockLockerBarrel.clearBarrelSign();
 
 			BPlayer.onUpdate();// updates players drunkenness
 

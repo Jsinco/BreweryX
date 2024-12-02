@@ -21,7 +21,7 @@
 package com.dre.brewery.lore;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.NBTUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -43,6 +43,6 @@ public class NBTSaveStream extends ByteArrayOutputStream {
 	public void flush() throws IOException {
 		super.flush();
 		if (size() <= 0) return;
-		LegacyUtil.writeBytesItem(toByteArray(), meta, KEY);
+		NBTUtil.writeBytesItem(toByteArray(), meta, KEY);
 	}
 }

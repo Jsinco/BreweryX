@@ -21,12 +21,11 @@
 package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.Barrel;
+import com.dre.brewery.BarrelAsset;
 import com.dre.brewery.BarrelBody;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.integration.BlockLockerHook;
-import com.dre.brewery.integration.Hook;
-import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Logging;
 import nl.rutgerkok.blocklocker.BlockLockerAPIv2;
 import nl.rutgerkok.blocklocker.ProtectableBlocksSettings;
@@ -55,7 +54,7 @@ public class BlockLockerBarrel implements ProtectableBlocksSettings {
 		if (!BreweryPlugin.getInstance().isEnabled() || !BlockLockerHook.BLOCKLOCKER.isEnabled()) {
 			return false;
 		}
-		if (!LegacyUtil.isWoodPlanks(block.getType()) && !LegacyUtil.isWoodStairs(block.getType())) {
+		if (!BarrelAsset.isBarrelAsset(BarrelAsset.PLANKS, block.getType()) && !BarrelAsset.isBarrelAsset(BarrelAsset.STAIRS, block.getType())) {
 			// Can only be a barrel if it's a planks block
 			return false;
 		}
@@ -85,7 +84,7 @@ public class BlockLockerBarrel implements ProtectableBlocksSettings {
 
 	public static boolean checkAccess(BarrelAccessEvent event) {
 		Block sign = event.getBarrel().getSignOfSpigot();
-		if (!LegacyUtil.isSign(sign.getType())) {
+		if (!BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, sign.getType())) {
 			return true;
 		}
 		return BlockLockerAPIv2.isAllowed(event.getPlayer(), sign, true);
