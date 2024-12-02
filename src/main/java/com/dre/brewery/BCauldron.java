@@ -30,6 +30,8 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.Tuple;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -58,17 +60,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.dre.brewery.utility.MinecraftVersion.V1_9;
-
+@Getter
+@Setter
 public class BCauldron {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 	private static final Config config = ConfigManager.getConfig(Config.class);
 	private static final Lang lang = ConfigManager.getConfig(Lang.class);
-	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static final Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
+	@Getter
 	public static Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
@@ -151,32 +153,6 @@ public class BCauldron {
 		}
 	}
 
-	/**
-	 * Get the Block that this BCauldron represents
-	 */
-	public Block getBlock() {
-		return block;
-	}
-
-	/**
-	 * Get the State (Time in Minutes) that this Cauldron currently has
-	 */
-	public int getState() {
-		return state;
-	}
-
-
-	public BIngredients getIngredients() {
-		return ingredients;
-	}
-
-	public static Map<Block, BCauldron> getBcauldrons() {
-		return bcauldrons;
-	}
-
-	public UUID getId() {
-		return id;
-	}
 
 	// get cauldron by Block
 	@Nullable
@@ -188,7 +164,7 @@ public class BCauldron {
 	// Calls the IngredientAddEvent and may be cancelled or changed
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
-		if (MaterialUtil.getFillLevel(block) != EMPTY) {
+		if (MaterialUtil.getFillLevel(block) != MaterialUtil.EMPTY) {
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
 				// Extremely fast way to check for most items
@@ -278,7 +254,7 @@ public class BCauldron {
 				changed = true;
 			}
 		}
-		if (VERSION.isOrLater(V1_9)) {
+		if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
 			block.getWorld().playSound(block.getLocation(), Sound.ITEM_BOTTLE_FILL, 1f, 1f);
 		}
 		// Bukkit Bug, inventory not updating while in event so this
@@ -478,7 +454,7 @@ public class BCauldron {
 
 			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
-			if (VERSION.isOrEarlier(V1_9)) {
+			if (VERSION.isOrEarlier(MinecraftVersion.V1_9)) {
 				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (MaterialUtil.getFillLevel(clickedBlock) == 1) {
@@ -500,7 +476,7 @@ public class BCauldron {
 			// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
 			// We mark if a player had the event for the main hand
 			// If not, we handle the main hand in the event for the offhand
-			if (VERSION.isOrLater(V1_9)) {
+			if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);

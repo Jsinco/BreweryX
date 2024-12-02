@@ -62,6 +62,7 @@ public class MongoDBStorage extends DataManager {
     private final String collectionPrefix;
 
     public MongoDBStorage(ConfiguredDataManager record) throws StorageInitException {
+        super(record.getType());
         Logging.warningLog("Mongo storage option is in an experimental stage. Use at your own discretion.");
 
         try {

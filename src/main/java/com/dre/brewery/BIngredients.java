@@ -217,7 +217,7 @@ public class BIngredients {
 		}
 		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
-		plugin.getStats().metricsForCreate(false);
+		plugin.getBreweryStats().metricsForCreate(false);
 
 		return potion;
 	}

@@ -121,13 +121,13 @@ public class BData {
                 int hash = data.getInt("brewsCreatedH");
                 // Check the hash to prevent tampering with statistics
                 if (brewsCreated.hashCode() == hash) {
-                    plugin.getStats().brewsCreated = brewsCreated.get(0);
-                    plugin.getStats().brewsCreatedCmd = brewsCreated.get(1);
-                    plugin.getStats().exc = brewsCreated.get(2);
-                    plugin.getStats().good = brewsCreated.get(3);
-                    plugin.getStats().norm = brewsCreated.get(4);
-                    plugin.getStats().bad = brewsCreated.get(5);
-                    plugin.getStats().terr = brewsCreated.get(6);
+                    plugin.getBreweryStats().brewsCreated = brewsCreated.get(0);
+                    plugin.getBreweryStats().brewsCreatedCmd = brewsCreated.get(1);
+                    plugin.getBreweryStats().exc = brewsCreated.get(2);
+                    plugin.getBreweryStats().good = brewsCreated.get(3);
+                    plugin.getBreweryStats().norm = brewsCreated.get(4);
+                    plugin.getBreweryStats().bad = brewsCreated.get(5);
+                    plugin.getBreweryStats().terr = brewsCreated.get(6);
                 }
             }
         }
@@ -180,17 +180,17 @@ public class BData {
             }
 
             // Store how many legacy brews were created
-            if (plugin.getStats().brewsCreated <= 0) {
-                plugin.getStats().brewsCreated = 0;
-                plugin.getStats().brewsCreatedCmd = 0;
-                plugin.getStats().exc = 0;
-                plugin.getStats().good = 0;
-                plugin.getStats().norm = 0;
-                plugin.getStats().bad = 0;
-                plugin.getStats().terr = 0;
+            if (plugin.getBreweryStats().brewsCreated <= 0) {
+                plugin.getBreweryStats().brewsCreated = 0;
+                plugin.getBreweryStats().brewsCreatedCmd = 0;
+                plugin.getBreweryStats().exc = 0;
+                plugin.getBreweryStats().good = 0;
+                plugin.getBreweryStats().norm = 0;
+                plugin.getBreweryStats().bad = 0;
+                plugin.getBreweryStats().terr = 0;
                 if (!Brew.noLegacy()) {
                     for (int i = Brew.legacyPotions.size(); i > 0; i--) {
-                        plugin.getStats().metricsForCreate(false);
+                        plugin.getBreweryStats().metricsForCreate(false);
                     }
                 }
             }

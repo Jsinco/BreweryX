@@ -64,6 +64,7 @@ public class MySQLStorage extends DataManager {
     private final SQLDataSerializer serializer;
 
     public MySQLStorage(ConfiguredDataManager record) throws StorageInitException {
+        super(record.getType());
         try {
             this.connection = DriverManager.getConnection(URL + record.getAddress(), record.getUsername(), record.getPassword());
             this.tablePrefix = record.getTablePrefix();

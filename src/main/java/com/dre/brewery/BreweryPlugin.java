@@ -30,7 +30,8 @@ import com.dre.brewery.integration.BlockLockerHook;
 import com.dre.brewery.integration.Hook;
 import com.dre.brewery.integration.PlaceholderAPIHook;
 import com.dre.brewery.integration.barrel.BlockLockerBarrel;
-import com.dre.brewery.integration.bstats.Stats;
+import com.dre.brewery.integration.bstats.BreweryXStats;
+import com.dre.brewery.integration.bstats.BreweryStats;
 import com.dre.brewery.integration.listeners.ChestShopListener;
 import com.dre.brewery.integration.listeners.IntegrationListener;
 import com.dre.brewery.integration.listeners.ShopKeepersListener;
@@ -47,7 +48,10 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
-import com.dre.brewery.utility.*;
+import com.dre.brewery.utility.Logging;
+import com.dre.brewery.utility.MinecraftVersion;
+import com.dre.brewery.utility.NBTUtil;
+import com.dre.brewery.utility.UpdateChecker;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import lombok.Getter;
@@ -86,7 +90,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 	private final Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
-	private Stats stats; // Metrics
+	private BreweryStats breweryStats; // Metrics
 
 
 	@Override
@@ -140,7 +144,7 @@ public class BreweryPlugin extends JavaPlugin {
 		ConfigManager.loadCauldronIngredients();
 		ConfigManager.loadRecipes();
 		ConfigManager.loadDistortWords();
-		this.stats = new Stats(); // Load metrics
+		this.breweryStats = new BreweryStats(); // Load metrics
 
         // Load Addons
 		addonManager = new AddonManager(this);
@@ -170,7 +174,8 @@ public class BreweryPlugin extends JavaPlugin {
 
 
 		// Setup Metrics
-		this.stats.setupBStats();
+		this.breweryStats.setupBStats();
+		new BreweryXStats().setupBStats();
 
 		// Register command and aliases
 		PluginCommand defaultCommand = getCommand("breweryx");

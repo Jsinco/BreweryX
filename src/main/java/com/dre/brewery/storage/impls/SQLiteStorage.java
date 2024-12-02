@@ -65,6 +65,7 @@ public class SQLiteStorage extends DataManager {
     private final SQLDataSerializer serializer;
 
     public SQLiteStorage(ConfiguredDataManager record) throws StorageInitException {
+        super(record.getType());
         String fileName = record.getDatabase() + ".db";
         File rawFile = new File(plugin.getDataFolder(), fileName);
 

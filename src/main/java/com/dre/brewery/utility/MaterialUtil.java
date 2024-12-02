@@ -34,10 +34,6 @@ import org.bukkit.material.MaterialData;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.dre.brewery.BCauldron.EMPTY;
-import static com.dre.brewery.BCauldron.FULL;
-import static com.dre.brewery.BCauldron.SOME;
-
 public final class MaterialUtil {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
@@ -51,6 +47,8 @@ public final class MaterialUtil {
 	public static final Material STATIONARY_LAVA = getMaterialSafely("STATIONARY_LAVA");
 
 
+	// Cauldron stuff
+	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final Material WATER_CAULDRON = getMaterialSafely("WATER_CAULDRON");
 	public static final Material MAGMA_BLOCK = getV1_13MaterialSafely("MAGMA_BLOCK", "MAGMA");
 	public static final Material CAMPFIRE = getMaterialSafely("CAMPFIRE");

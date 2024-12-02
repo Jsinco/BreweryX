@@ -39,7 +39,12 @@ import org.bukkit.Bukkit;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Stats {
+/**
+ * General stats written by the original author of Brewery.
+ */
+public class BreweryStats {
+
+	private static final int BSTATS_ID = 3494;
 
 	private final Config config = ConfigManager.getConfig(Config.class);
 	public int brewsCreated;
@@ -71,7 +76,7 @@ public class Stats {
 
 	public void setupBStats() {
 		try {
-			Metrics metrics = new Metrics(BreweryPlugin.getInstance(), 3494);
+			Metrics metrics = new Metrics(BreweryPlugin.getInstance(), BSTATS_ID);
 			metrics.addCustomChart(new SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
 			metrics.addCustomChart(new SingleLineChart("brews_in_existence", () -> brewsCreated));
 			metrics.addCustomChart(new SingleLineChart("barrels_built", Barrel.barrels::size));
