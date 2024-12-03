@@ -53,10 +53,10 @@ config:
   alwaysShowAlc: "Muestra siempre el nivel de alcohol del objeto. Si se desactiva, solo se mostrará en el estante de pociones [false]"
   showBrewer: "Si se debería mostrar quien hizo la bebida [false]"
   requireKeywordOnSigns: "Si los toneles solo son creados cuando el cartel contiene la palabra \"barrel\" (o una traducción cuando se usa otro idioma) [true]"
-  ageInMCBarrels: "Si se activa el enevjecismiento en los barriles de -Minecraft- [true] y cuantas bebidas de BreweryX pueden ponerse en estos [6]"
+  ageInMCBarrels: "Si se activa el enevjecimiento en los barriles de -Minecraft- [true] y cuantas bebidas de BreweryX pueden ponerse en estos [6]"
   agingYearDuration: "Duración (en minutos) de un 'año' al envejecer bebidas [20]"
   commandAliases: |
-    Aliases para el comando '/breweryx'. Requieer un reinicio del servidor para tomar efecto. (lista) [brewery, brew]
+    Aliases para el comando '/breweryx'. Requiere un reinicio del servidor para tomar efecto. (lista) [brewery, brew]
   enableEncode: |
     Los ingredientes usados y otros datos de cocina están guardados en todos los objetos de BreweryX. para prevernir
     que clientes hack puedan leer exactamente que se utiliza en un objeto, los datos se pueden codificar/revolver.
@@ -105,7 +105,7 @@ config:
     alcohol: 1-100 borrachera mínima a partir de la que la palabra es reemplazada
     percentage: Probabilidad de que la palabra se reemplace en porcentaje
   useOtherFiles: |
-    Puedes declarar objetos, recetas, e ingredientes eprsonalizados aquí opcionalmente, pero usar sus archivos respectivos es recomendado.
+    Puedes declarar objetos, recetas, e ingredientes personalizados aquí opcionalmente, pero usar sus archivos respectivos es recomendado.
     IMPORTANTE: objetos, recetas e ingredientes personalizados declarados en sus archivos tendrán prioridad sobre lo declarado aquí (por ejemplo, 2 recetas con el mismo nombre)
 
 
