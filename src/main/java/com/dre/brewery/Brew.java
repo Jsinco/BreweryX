@@ -589,10 +589,6 @@ public class Brew implements Cloneable {
 		this.immutable = immutable;
 	}
 
-	public int getLastUpdate() {
-		return lastUpdate;
-	}
-
 	// Distilling section ---------------
 
 	/**
@@ -1038,7 +1034,7 @@ public class Brew implements Cloneable {
 			out.writeFloat(ageTime);
 		}
 		if (wood != BarrelWoodType.NONE) {
-			out.writeFloat(wood.getIndex());
+			out.writeFloat(wood != null ? wood.getIndex() : 0);
 		}
 		if (currentRecipe != null) {
 			out.writeUTF(currentRecipe.getRecipeName());
