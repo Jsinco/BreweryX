@@ -82,7 +82,7 @@ config:
     BreweryX siempre carga los datos de forma asíncrona, con las excepciones del inicio y el apagado del servidor.
   hangoverDays: "Tiempo (en días) por el que se guarda los datos de borrachera en la memoria después de que un jugador se desconecte, para aplicar resaca. [7]"
   colorInBarrels-Brewer: "Colorea la información (lore) de un objeto dependiendo de su calidad mientras está A) en un tonel y/o B) en un estante de pociones [true, true]"
-  openLargeBarrelEverywhere: "Si un tonel grande puede abrirse desde cualquiera de sus bloques, no solo la espiga o el cartel. Esto está siempre activado para los toneles pequeños. [true]"
+  openLargeBarrelEverywhere: "Si un tonel grande puede abrirse desde cualquiera de sus bloques, no solo el grifo o el cartel. Esto está siempre activado para los toneles pequeños. [true]"
   brewHopperDump: "Permitir vaciar bebidas en tolvas para descartarlas, manteniendo la botella de cristal [true]"
   enableChatDistortion: |
     Si el chat escrito se distorsiona cuando el jugador está borracho, para aparentarlo tambien al escribir
