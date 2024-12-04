@@ -1,9 +1,9 @@
 # Traducción al español for BreweryX
-# Author: MrNizzy
+# Author: MrNizzy, KoCitrusMaker
 # Brew
 Brew_-times: -veces
 Brew_BadPotion: Poción arruinada
-Brew_BarrelRiped: en el barril envejecido
+Brew_BarrelRiped: Añejado en tonel
 Brew_DistillUndefined: Destilado turbio
 Brew_Distilled: Destilado
 Brew_LessDistilled: Menos destilado
@@ -12,20 +12,20 @@ Brew_Ingredients: Ingredientes
 Brew_MinutePluralPostfix: s
 Brew_OneYear: Un Año
 Brew_ThickBrew: Brebaje fangoso
-Brew_Undefined: Cerveza de Caldero
-Brew_Woodtype: Tipo madera
+Brew_Undefined: Brebaje de Caldero
+Brew_Woodtype: Tipo de madera
 Brew_Years: Años
 Brew_fermented: fermentado
 Brew_minute: minuto
 Brew_Alc: Alc &v1ml
-Brew_Brewer: 'Brewer: &v1'
+Brew_Brewer: 'Creador de la bebida: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cLas pociones no cabían en tu inventario'
-CMD_Info_Drunk: '&v1 está &6&v2% &fborracho(a), con una cualidad de &6&v3'
+CMD_Info_Drunk: '&v1 está &6&v2% &fborracho(a), con una calidad de &6&v3'
 CMD_Info_NotDrunk: '&v1 no está borracho(a)'
-CMD_NonStatic: '&eLa poción ya no es estática y normalmente envejecerá en barriles.'
-CMD_Player: '&a&v1 está ahora &6&v2% &aborracho, con una cualidad de &6&v3'
+CMD_NonStatic: '&eLa poción ya no es estática y envejecerá normalmente en barriles.'
+CMD_Player: '&a&v1 está ahora &6&v2% &aborracho, con una calidad de &6&v3'
 CMD_Player_Error: '&c¡La calidad tiene que estar entre 1 y 10!'
 CMD_Reload: '&aLa configuración se volvió a cargar correctamente'
 CMD_Created: '&aBrebaje Creado'
@@ -33,8 +33,8 @@ CMD_Configname: '&aEl nombre de la configuración es: &f&v1'
 CMD_Configname_Error: '&cNo se pudo encontrar el artículo en tu mano'
 CMD_Static: '&aLa poción ahora es estática y no cambiará en barriles o puestos de elaboración.'
 CMD_UnLabel: '&aEtiqueta eliminada!'
-CMD_Drink: '&aYou drank one &v1'
-CMD_DrinkOther: '&a&v1 drinks one &v2'
+CMD_Drink: '&aTomaste un(a) &v1'
+CMD_DrinkOther: '&a&v1 toma otro(a) &v2'
 CMD_Set: '&aSe ha establecido con éxito la borrachera de &v1 a &v2 con una calidad de &v3.'
 
 # Error
@@ -51,10 +51,10 @@ Error_Recipeload: '&cNo se pudieron restaurar todas las recetas: ¡Más informac
 Error_ShowHelp: Usa &6/brew help &fpara mostrar la ayuda
 Error_UnknownCommand: Comando desconocido
 Error_YmlRead: 'No se pudo leer el archivo config.yml, asegúrese de que el archivo esté en formato yml válido (espacios correctos, etc.)'
-Error_NoPlayer: 'Player not found: &v1'
+Error_NoPlayer: 'No se encuentra al jugador: &v1'
 
 # Etc
-Etc_Barrel: Barril
+Etc_Barrel: Tonel
 Etc_Page: Página
 Etc_Usage: 'Usa:'
 Etc_SealingTable: Mesa de sellado
@@ -62,8 +62,8 @@ Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.
 
 # Help
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la poción en tu mano'
-Help_Create: '&6/brew create <Receta> [Cantidad] [Jugador] &9Crea una cerveza con calidad opcional (1-10)'
-Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
+Help_Create: '&6/brew create <Receta> [Cantidad] [Jugador] &9Crea una bebida con calidad opcional (1-10)'
+Help_Give: '&6/brew give <Receta> [Calidad] [Jugador] &9Alias de /brew create'
 Help_Delete: '&6/brew delete &9Elimina la poción en tu mano'
 Help_Help: '&6/brew help [Página] &9Muestra una página de ayuda específica.'
 Help_Info: '&6/brew info&9 Muestra tu embriaguez y calidad actuales'
@@ -80,19 +80,19 @@ Help_WakeupCheck: '&6/brew wakeup check &9Teletransporta a todos los puntos de a
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teletransporta al punto de activación con <id>'
 Help_WakeupList: '&6/brew wakeup list <Página> [Mundo]&9 Enumera todos los puntos de activación del <Mundo>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Elimina el punto de activación con <id>'
-Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
-Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
+Help_Puke: '&6/brew puke [Jugador] [Cantidad] &9Hace que tu o [Jugador] vomiten'
+Help_Drink: '&6/brew drink <Receta> [Calidad] [Jugador] &9Simula que [Jugador] bebe una bebida'
 
 # Perms
-Perms_NoBarrelCreate: '&c¡No tienes permisos para crear barriles!'
-Perms_NoBigBarrelCreate: '&c¡No tienes permisos para crear barriles grandes!'
+Perms_NoBarrelCreate: '&c¡No tienes permisos para crear toneles!'
+Perms_NoBigBarrelCreate: '&c¡No tienes permisos para crear toneles grandes!'
 Perms_NoCauldronFill: '&c¡No tienes permisos para llenar botellas de este caldero!'
 Perms_NoCauldronInsert: '&c¡No tienes permisos para poner ingredientes en calderos!'
-Perms_NoSmallBarrelCreate: '&c¡No tienes permisos para crear barriles pequeños!'
+Perms_NoSmallBarrelCreate: '&c¡No tienes permisos para crear toneles pequeños!'
 
 # Player
-Player_BarrelCreated: Barril creado
-Player_BarrelFull: '&cEste barril no puede contener más bebidas'
+Player_BarrelCreated: Tonel creado
+Player_BarrelFull: '&cEste tonel no puede contener más bebidas'
 Player_CantDrink: No puedes beber más.
 Player_CauldronInfo1: Este caldero ha estado hirviendo durante &v1 minutos.
 Player_CauldronInfo2: Este caldero acaba de comenzar a hervir.
@@ -104,14 +104,14 @@ Player_Wake: ¡Oh no! No recuerdo cómo llegué aquí ...
 Player_WakeAlreadyDeleted: '&c¡El punto de activación con la identificación: &6&v1 &cya se ha eliminado!'
 Player_WakeCancel: '&6Se canceló la verificación del punto de activación'
 Player_WakeCreated: '&a¡Punto de activación con id: &6&v1 &afue creado con éxito!'
-Player_WakeDeleted: '&aEl punto de activación con la id: &6&v1 &a¡ha sido eliminado con éxito!'
-Player_WakeFilled: '&cEl punto de activación con la id: &6&v1&c en la posición &6&v2 &v3, &v4, &v5&c ¡está lleno de bloques!'
+Player_WakeDeleted: '&a¡El punto de activación con la id: &6&v1 &aha sido eliminado con éxito!'
+Player_WakeFilled: '&c¡El punto de activación con la id: &6&v1&c en la posición &6&v2 &v3, &v4, &v5&c está lleno de bloques!'
 Player_WakeHint1: 'Al siguiente punto de activación: golpea el puño en el aire'
 Player_WakeHint2: 'Para cancelar: &9/brew wakeup cancel'
 Player_WakeLast: '&aEste fue el último punto de activación'
 Player_WakeNoCheck: '&cNinguna verificación de punto de activación está activa actualmente'
 Player_WakeNoPoints: '&c¡No hay puntos de activación!'
-Player_WakeNotExist: '&cEl Punto de Despertar con el id: &6&v1 &c¡No existe!'
+Player_WakeNotExist: '&c¡El Punto de Despertar con el id: &6&v1 &cno existe!'
 Player_WakeTeleport: 'Teletransporte al punto de activación con la identificación: &6&v1&f En la posición: &6&v2 &v3, &v4, &v5'
 Player_ShopSealBrew: '&eLas cervezas deben sellarse antes de venderlas.'
 Player_Drunkeness: 'Ebriedad'
