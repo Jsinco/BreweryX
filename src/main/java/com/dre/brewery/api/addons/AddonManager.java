@@ -60,7 +60,6 @@ public class AddonManager extends ClassLoader {
 				addon.onAddonDisable();
 				addon.unregisterListeners();
 				addon.unregisterCommands();
-				addon.getAddonLogger().info("Disabled.");
 			} catch (Throwable t) {
 				Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 			}
@@ -75,7 +74,6 @@ public class AddonManager extends ClassLoader {
 			addon.onAddonDisable();
 			addon.unregisterListeners();
 			addon.unregisterCommands();
-			addon.getAddonLogger().info("Disabled.");
 		} catch (Throwable t) {
 			Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 		}
@@ -137,35 +135,33 @@ public class AddonManager extends ClassLoader {
 					BreweryAddon addon = addonClass.getConstructor().newInstance();
 					Class<BreweryAddon> breweryAddonClass = BreweryAddon.class;
 					// Set the logger and file manager
-					Field loggerField = breweryAddonClass.getDeclaredField("logger");
-					Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager");
-					Field infoField = breweryAddonClass.getDeclaredField("addonInfo");
-					Field managerField = breweryAddonClass.getDeclaredField("addonManager");
-
-
-					loggerField.setAccessible(true);
-					fileManagerField.setAccessible(true);
-					infoField.setAccessible(true);
-					managerField.setAccessible(true);
-
-					loggerField.set(addon, new AddonLogger(addonClass));
-					fileManagerField.set(addon, new AddonFileManager(addon, file));
+					Field infoField = breweryAddonClass.getDeclaredField("addonInfo"); infoField.setAccessible(true);
 					infoField.set(addon, addonClass.getAnnotation(AddonInfo.class));
-					managerField.set(addon, this);
-
 
 					if (addon.getAddonInfo() == null) { // This CAN be null for us. It's only annotated NotNull for addons.
 						Logging.errorLog("Addon " + addonClass.getSimpleName() + " is missing the AddonInfo annotation. It will not be loaded.");
 						continue;
 					}
 
-					// let the addon know it has been enabled
-					addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
+					Field loggerField = breweryAddonClass.getDeclaredField("logger"); loggerField.setAccessible(true);
+					Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager"); fileManagerField.setAccessible(true);
+					Field addonConfigManagerField = breweryAddonClass.getDeclaredField("addonConfigManager"); addonConfigManagerField.setAccessible(true);
+					Field managerField = breweryAddonClass.getDeclaredField("addonManager"); managerField.setAccessible(true);
 
+
+					loggerField.set(addon, new AddonLogger(addonClass));
+					fileManagerField.set(addon, new AddonFileManager(addon, file));
+					addonConfigManagerField.set(addon, new AddonConfigManager(addon));
+					managerField.set(addon, this);
+
+
+					addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
 					addons.add(addon); // Add to our list of addons
+
+					// let the addon know it has been enabled
 					addon.onAddonPreEnable();
 				} catch (Exception e) {
-					Logging.errorLog("Failed to load addon class " + clazz.getSimpleName(), e);
+					Logging.errorLog("Failed to load addon: " + file.getName(), e);
 				}
 			}
 		} catch (Throwable ex) {

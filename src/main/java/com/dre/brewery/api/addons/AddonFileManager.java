@@ -31,21 +31,23 @@ import java.nio.file.Files;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+/**
+ * A class to manage files for an addon.
+ * Deprecated, use {@link AddonConfigFile} and {@link AddonConfigManager} instead.
+ */
+@Deprecated(since = "3.4.3-SNAPSHOT")
 public class AddonFileManager {
 	private final static BreweryPlugin plugin = BreweryPlugin.getInstance();
 
-	private final BreweryAddon addon;
-	private final String addonName;
-	private final File addonFolder;
+    private final File addonFolder;
 	private final AddonLogger logger;
 	private final File configFile;
 	private YamlConfiguration addonConfig;
 	private final File jarFile;
 
 	public AddonFileManager(BreweryAddon addon, File jarFile) {
-		this.addon = addon;
-		this.jarFile = jarFile;
-		this.addonName = addon.getClass().getSimpleName();
+        this.jarFile = jarFile;
+        String addonName = addon.getClass().getSimpleName();
 		this.addonFolder = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "addons" + File.separator + addonName);
 		this.logger = addon.getAddonLogger();
 		this.configFile = new File(addonFolder, addonName + ".yml");

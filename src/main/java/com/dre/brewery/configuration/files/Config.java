@@ -55,7 +55,6 @@ public class Config extends AbstractOkaeriConfigFile {
 
 	@Override
 	public void onFirstCreation() {
-		BreweryPlugin plugin = BreweryPlugin.getInstance();
 		Logging.log("&9Creating a new &6config.yml&9!");
 		Logging.log("&9If this is your first time using BreweryX, change config.yml#language to your language and run &6/brewery reload");
 	}

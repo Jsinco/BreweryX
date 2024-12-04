@@ -26,9 +26,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public enum BarrelAsset {
 	PLANKS, // Base block
@@ -37,10 +39,10 @@ public enum BarrelAsset {
 	FENCE; // Optional: Alt 3 Block
 
 
-	public static final Map<BarrelAsset, List<Material>> BARREL_ASSET_LIST_MAP = new HashMap<>();
+	public static final Map<BarrelAsset, Set<Material>> BARREL_ASSET_LIST_MAP = new HashMap<>();
 	static {
 		for (BarrelAsset asset : values()) {
-			BARREL_ASSET_LIST_MAP.put(asset, new ArrayList<>());
+			BARREL_ASSET_LIST_MAP.put(asset, new HashSet<>());
 		}
 	}
 

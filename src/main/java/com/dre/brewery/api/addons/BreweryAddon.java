@@ -30,15 +30,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings("unused")
 public abstract class BreweryAddon {
 
 	private final List<Listener> listeners = new ArrayList<>();
 	private final List<String> commands = new ArrayList<>();
-	private AddonLogger logger = null;
-	private AddonFileManager addonFileManager = null;
-	private AddonInfo addonInfo = null;
-	private AddonManager addonManager = null;
+
+	private AddonInfo addonInfo;
+
+	private AddonLogger logger;
+	private AddonFileManager addonFileManager;
+	private AddonConfigManager addonConfigManager;
+	private AddonManager addonManager;
 
 	public void onAddonPreEnable() {
 	}
@@ -58,18 +61,23 @@ public abstract class BreweryAddon {
 	}
 
 	@NotNull
+	public AddonInfo getAddonInfo() {
+		return addonInfo;
+	}
+
+	@NotNull
 	public AddonFileManager getAddonFileManager() {
 		return addonFileManager;
 	}
 
 	@NotNull
-	public AddonLogger getAddonLogger() {
-		return logger;
+	public AddonConfigManager getAddonConfigManager() {
+		return addonConfigManager;
 	}
 
 	@NotNull
-	public AddonInfo getAddonInfo() {
-		return addonInfo;
+	public AddonLogger getAddonLogger() {
+		return logger;
 	}
 
 	@NotNull

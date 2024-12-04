@@ -76,8 +76,6 @@ import java.util.stream.Collectors;
 @Getter
 public class BreweryPlugin extends JavaPlugin {
 
-	// TODO: Change the addon API FileManager to use Okaeri
-
 	private static final int RESOURCE_ID = 114777;
 
 	private @Getter static AddonManager addonManager;
