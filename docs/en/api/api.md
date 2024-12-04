@@ -157,12 +157,12 @@ method in the `onAddonEnable` method.
 
 ## Configuration files in addons
 
-Addons support configuration files using Okaeri config,
-which is a powerful and easy-to-use configuration library.
+Addons support configuration files using Okaeri config, 
+which is a powerful and easy-to-use configuration library. 
 
 Lombok is recommended for Java developers to reduce boilerplate code.
 
-== "Java"
+=== "Java"
 
     ``` java
     @OkaeriConfigFile(fileName = "addon-config.yml")
@@ -178,7 +178,7 @@ Lombok is recommended for Java developers to reduce boilerplate code.
     }
     ```
 
-== "Kotlin"
+=== "Kotlin"
 
     ``` kotlin
     @OkaeriConfigFile(fileName = "addon-config.yml")
