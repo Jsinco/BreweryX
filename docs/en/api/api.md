@@ -1,3 +1,4 @@
+
 # Addon API
 
 BreweryX supports addons that can add new features to the plugin.
@@ -6,7 +7,10 @@ This section documents how to create an addon for BreweryX.
 
 ## Creating an addon
 
-After setting up your project, you'll need a main class that extends `BreweryAddon` 
+See our repository [template addons](https://github.com/BreweryTeam/ExampleBreweryAddon)
+for project setup and what dependencies to include.
+
+After setting up your project, you'll need a main class that extends `BreweryAddon`
 and implements the `onAddonEnable` method.
 
 === "Java"
@@ -157,11 +161,11 @@ method in the `onAddonEnable` method.
 ## Configuration files in addons
 
 Addons support configuration files using Okaeri config, 
-which is a powerful and easy-to-use configuration library.
+which is a powerful and easy-to-use configuration library. 
 
 Lombok is recommended for Java developers to reduce boilerplate code.
 
-== "Java"
+=== "Java"
 
     ``` java
     @OkaeriConfigFile(fileName = "addon-config.yml")
@@ -177,7 +181,7 @@ Lombok is recommended for Java developers to reduce boilerplate code.
     }
     ```
 
-== "Kotlin"
+=== "Kotlin"
 
     ``` kotlin
     @OkaeriConfigFile(fileName = "addon-config.yml")
@@ -201,15 +205,15 @@ For Java developers, use any release jar locally or preferably, use JitPack:
 
 ```XML
 <repository>
-   <id>jitpack.io</id>
-   <url>https://jitpack.io</url>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
 </repository>
 
 <dependency>
-   <groupId>com.github.BreweryTeam</groupId>
-   <artifactId>BreweryX</artifactId>
-   <version>VERSION</version>
-   <scope>provided</scope>
+<groupId>com.github.BreweryTeam</groupId>
+<artifactId>BreweryX</artifactId>
+<version>VERSION</version>
+<scope>provided</scope>
 </dependency>
 ```
 

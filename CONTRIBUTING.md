@@ -25,7 +25,7 @@ BreweryX. Let's take a look at some examples that should be an addon vs what sho
 - A contribution which patches bugs, exploits, or improves performance of BreweryX <-- ✅ **Great as a Contribution**
 - A contribution which adds growable plants which can be used in recipes  <-- ❌ **Bloating BreweryX with somewhat-niche features should not be a contribution, write this as an addon instead**
 
-Want to get started on building a BreweryX addon? See our </TODO: FUTURE WIKI PAGE>
+Want to get started on building a BreweryX addon? See our wiki page on [Creating an Addon](https://brewery.lumamc.net/api/api/#creating_an_addon).
 
 ### Don't Use Local Libraries
 
