@@ -7,6 +7,9 @@ This section documents how to create an addon for BreweryX.
 
 ## Creating an addon
 
+See our repository [template addons](https://github.com/BreweryTeam/ExampleBreweryAddon)
+for project setup and what dependencies to include.
+
 After setting up your project, you'll need a main class that extends `BreweryAddon`
 and implements the `onAddonEnable` method.
 
