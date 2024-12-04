@@ -22,7 +22,6 @@ package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.AbstractConfigManager;
-import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
@@ -30,6 +29,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
+/**
+ * Management of addon configuration files.
+ * @see AddonConfigFile
+ * @see OkaeriConfigFileOptions
+ */
 public class AddonConfigManager {
 
     private final AbstractConfigManager INSTANCE;
@@ -112,7 +116,7 @@ public class AddonConfigManager {
     }
 
 
-    private OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AbstractOkaeriConfigFile> configClass) {
+    private OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AddonConfigFile> configClass) {
         return INSTANCE.getOkaeriConfigFileOptions(configClass);
     }
     

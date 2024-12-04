@@ -107,8 +107,7 @@ public class BreweryPlugin extends JavaPlugin {
 		try {
 			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
 			isFolia = true;
-		} catch (ClassNotFoundException ignored) {
-		}
+		} catch (ClassNotFoundException ignored) {}
 
 
 		// MC 1.13 uses a different NBT API than the newer versions.

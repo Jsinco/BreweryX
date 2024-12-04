@@ -34,7 +34,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletionException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -97,9 +96,8 @@ public class AddonManager extends ClassLoader {
 		return addons;
 	}
 
-	/**
-	 * Get all classes that extend Addon and instantiates them
-	 */
+
+	// Get all classes that extend Addon and instantiates them
 	public void loadAddons() {
 		File[] files = addonsFolder.listFiles((dir, name) -> name.endsWith(".jar"));
 		if (files == null) {
@@ -131,8 +129,15 @@ public class AddonManager extends ClassLoader {
 					continue;
 				}
 				Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
+				BreweryAddon addon;
 				try {
-					BreweryAddon addon = addonClass.getConstructor().newInstance();
+					addon = addonClass.getConstructor().newInstance();
+				}  catch (Exception e) {
+					Logging.errorLog("Failed to load addon: " + file.getName(), e);
+					continue;
+				}
+				try {
+
 					Class<BreweryAddon> breweryAddonClass = BreweryAddon.class;
 					// Set the logger and file manager
 					Field infoField = breweryAddonClass.getDeclaredField("addonInfo"); infoField.setAccessible(true);
@@ -146,13 +151,10 @@ public class AddonManager extends ClassLoader {
 					Field loggerField = breweryAddonClass.getDeclaredField("logger"); loggerField.setAccessible(true);
 					Field fileManagerField = breweryAddonClass.getDeclaredField("addonFileManager"); fileManagerField.setAccessible(true);
 					Field addonConfigManagerField = breweryAddonClass.getDeclaredField("addonConfigManager"); addonConfigManagerField.setAccessible(true);
-					Field managerField = breweryAddonClass.getDeclaredField("addonManager"); managerField.setAccessible(true);
 
-
-					loggerField.set(addon, new AddonLogger(addonClass));
+					loggerField.set(addon, new AddonLogger(addon.getAddonInfo()));
 					fileManagerField.set(addon, new AddonFileManager(addon, file));
 					addonConfigManagerField.set(addon, new AddonConfigManager(addon));
-					managerField.set(addon, this);
 
 
 					addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
@@ -162,38 +164,12 @@ public class AddonManager extends ClassLoader {
 					addon.onAddonPreEnable();
 				} catch (Exception e) {
 					Logging.errorLog("Failed to load addon: " + file.getName(), e);
+					unloadAddon(addon);
 				}
 			}
 		} catch (Throwable ex) {
 			Logging.errorLog("Failed to load addon classes from jar " + file.getName(), ex);
 		}
-	}
-
-
-	private static <T> @NotNull List<Class<? extends T>> findClasses(@NotNull final File file, @NotNull final Class<T> clazz) throws CompletionException {
-		if (!file.exists()) {
-			return Collections.emptyList();
-		}
-
-		final List<Class<? extends T>> classes = new ArrayList<>();
-
-		final List<String> matches = matchingNames(file);
-
-		for (final String match : matches) {
-			try {
-				final URL jar = file.toURI().toURL();
-				try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar}, clazz.getClassLoader())) {
-					Class<? extends T> addonClass = loadClass(loader, match, clazz);
-					if (addonClass != null) {
-						classes.add(addonClass);
-					}
-				}
-			} catch (final VerifyError ignored) {
-			} catch (IOException | ClassNotFoundException e) {
-				throw new CompletionException(e.getCause());
-			}
-		}
-		return classes;
 	}
 
 	private List<Class<?>> loadAllClassesFromJar(File jarFile) {
@@ -243,6 +219,36 @@ public class AddonManager extends ClassLoader {
 		return classes;
 	}
 
+
+}
+
+/*
+private static <T> @NotNull List<Class<? extends T>> findClasses(@NotNull final File file, @NotNull final Class<T> clazz) throws CompletionException {
+		if (!file.exists()) {
+			return Collections.emptyList();
+		}
+
+		final List<Class<? extends T>> classes = new ArrayList<>();
+
+		final List<String> matches = matchingNames(file);
+
+		for (final String match : matches) {
+			try {
+				final URL jar = file.toURI().toURL();
+				try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar}, clazz.getClassLoader())) {
+					Class<? extends T> addonClass = loadClass(loader, match, clazz);
+					if (addonClass != null) {
+						classes.add(addonClass);
+					}
+				}
+			} catch (final VerifyError ignored) {
+			} catch (IOException | ClassNotFoundException e) {
+				throw new CompletionException(e.getCause());
+			}
+		}
+		return classes;
+	}
+
 	private static @NotNull List<String> matchingNames(final File file) {
 		final List<String> matches = new ArrayList<>();
 		try {
@@ -274,5 +280,4 @@ public class AddonManager extends ClassLoader {
 		}
 		return null;
 	}
-
-}
+ */

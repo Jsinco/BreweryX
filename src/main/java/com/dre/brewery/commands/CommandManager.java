@@ -133,12 +133,15 @@ public class CommandManager implements TabExecutor {
     }
 
 	public static void addSubCommand(String name, SubCommand subCommand) {
+        if (subCommands.containsKey(name)) {
+            throw new IllegalArgumentException("SubCommand with name '" + name + "' already exists!");
+        }
 		subCommands.put(name, subCommand);
 	}
 
     public static void addSubCommand(SubCommand subCommand, String... names) {
         for (String name : names) {
-            subCommands.put(name, subCommand);
+            addSubCommand(name, subCommand);
         }
     }
 
