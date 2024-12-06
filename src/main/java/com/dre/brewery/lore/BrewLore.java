@@ -296,7 +296,7 @@ public class BrewLore {
 	public void updateAlc(boolean inDistiller) {
 		if (!brew.isUnlabeled() && (inDistiller || config.isAlwaysShowAlc()) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() != 0)) {
 			int alc = brew.getOrCalcAlc();
-			addOrReplaceLore(Type.ALC, "§8",lang.getEntry("Brew_Alc", alc + ""));
+			addOrReplaceLore(Type.ALC, "§8", lang.getEntry("Brew_Alc", alc + ""));
 		} else {
 			removeLore(Type.ALC);
 		}
@@ -304,7 +304,7 @@ public class BrewLore {
 
 	public void updateBrewer(String name) {
 		if (name != null && config.isShowBrewer()) {
-			addOrReplaceLore(Type.BREWER, "§8",lang.getEntry("Brew_Brewer", name));
+			addOrReplaceLore(Type.BREWER, "§8", lang.getEntry("Brew_Brewer", name));
 		} else {
 			removeLore(Type.BREWER);
 		}
@@ -409,7 +409,7 @@ public class BrewLore {
 				return i;
 			}
 		}
-		lore.add(type.id + prefix + line + suffix);
+		lore.add(type.id + prefix + BUtil.color(line) + suffix); // TODO: Color
 		return lore.size() - 1;
 	}
 

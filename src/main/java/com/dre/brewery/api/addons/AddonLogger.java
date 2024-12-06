@@ -22,6 +22,9 @@ package com.dre.brewery.api.addons;
 
 import com.dre.brewery.utility.Logging;
 
+/**
+ * Logger for addons. Logs messages with a prefix that includes the addon's name.
+ */
 public class AddonLogger {
 
     private final String prefix;

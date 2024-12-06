@@ -29,5 +29,5 @@ import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
  * @see AbstractOkaeriConfigFile
  * @see OkaeriConfigFileOptions
  */
-public abstract class AddonConfigFile extends AbstractOkaeriConfigFile  {
+public abstract class AddonConfigFile extends AbstractOkaeriConfigFile {
 }

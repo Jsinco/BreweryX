@@ -72,6 +72,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class BreweryAddon {
 
+	private static final boolean isPaper;
 	private final List<Listener> listeners = new ArrayList<>();
 	private final List<String> commands = new ArrayList<>();
 
@@ -81,29 +82,20 @@ public abstract class BreweryAddon {
 	private AddonFileManager addonFileManager;
 	private AddonConfigManager addonConfigManager;
 
-	/**
-	 * Code for this addon which runs before the addon is enabled.
-	 */
+
 	public void onAddonPreEnable() {
+		// Code for this addon which runs before the addon is enabled.
 	}
-
-	/**
-	 * Code for this addon which runs after the addon is enabled.
-	 */
 	public void onAddonEnable() {
+		// Code for this addon which runs after the addon is enabled.
 	}
-
-	/**
-	 * Code for this addon which runs before the addon is disabled.
-	 */
 	public void onAddonDisable() {
+		// Code for this addon which runs before the addon is disabled.
+	}
+	public void onBreweryReload() {
+		// Code for this addon which runs after `/breweryx reload` is executed.
 	}
 
-	/**
-	 * Code for this addon which runs after `/breweryx reload` is executed.
-	 */
-	public void onBreweryReload() {
-	}
 
 	/**
 	 * Get the AddonInfo for this addon.
@@ -252,11 +244,18 @@ public abstract class BreweryAddon {
 	 * @return true if running on Paper, false otherwise.
 	 */
 	public boolean isPaper() {
+		return isPaper;
+	}
+
+
+	static {
+		boolean tempBool;
 		try {
 			Class.forName("com.destroystokyo.paper.ParticleBuilder");
-			return true;
+			tempBool = true;
 		} catch (ClassNotFoundException ignored) {
-			return false;
+			tempBool = false;
 		}
+		isPaper = tempBool;
 	}
 }
