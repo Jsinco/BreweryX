@@ -39,6 +39,12 @@ import java.util.logging.Level;
  * Yep, you guessed it. This is the class that manages all the addons. It loads them, unloads them, reloads them, and keeps track of them.
  * <p>
  * Basically just copies what Bukkit's plugin loader does, but on a much, much smaller scale.
+ *
+ * @see BreweryAddon
+ * @see AddonInfo
+ * @see AddonLogger
+ * @see AddonFileManager
+ * @see AddonConfigManager
  */
 public class AddonManager {
 

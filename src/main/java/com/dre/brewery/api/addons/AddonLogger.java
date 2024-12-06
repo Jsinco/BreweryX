@@ -24,6 +24,8 @@ import com.dre.brewery.utility.Logging;
 
 /**
  * Logger for addons. Logs messages with a prefix that includes the addon's name.
+ *
+ * @see BreweryAddon#getAddonLogger()
  */
 public class AddonLogger {
 

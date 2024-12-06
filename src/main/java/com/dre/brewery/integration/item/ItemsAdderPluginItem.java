@@ -36,6 +36,11 @@ public class ItemsAdderPluginItem extends PluginItem {
         if (cs == null) {
             return false;
         }
-        return cs.getId().equals(this.getItemId());
+
+        if (!this.getItemId().contains(":")) {
+            return cs.getId().equals(this.getItemId());
+        } else {
+            return cs.getNamespacedID().equals(this.getItemId());
+        }
     }
 }

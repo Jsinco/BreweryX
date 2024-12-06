@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 
 /**
  * Some information about the addon. Addons won't load without this annotation being present on their main class.
+ *
+ * @see BreweryAddon#getAddonInfo()
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
