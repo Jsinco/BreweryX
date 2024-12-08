@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -48,9 +49,10 @@ import java.util.logging.Level;
  */
 public class AddonManager {
 
+	public final static ConcurrentLinkedQueue<BreweryAddon> LOADED_ADDONS = new ConcurrentLinkedQueue<>();
+
 	private final BreweryPlugin plugin;
 	private final File addonsFolder;
-	private final static List<BreweryAddon> addons = new ArrayList<>();
 
 	public AddonManager(BreweryPlugin plugin) {
         this.plugin = plugin;
@@ -61,7 +63,7 @@ public class AddonManager {
 	}
 
 	public void unloadAddons() {
-		for (BreweryAddon addon : addons) {
+		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onAddonDisable();
 				addon.unregisterListeners();
@@ -70,9 +72,9 @@ public class AddonManager {
 				Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 			}
 		}
-		int loaded = addons.size();
+		int loaded = LOADED_ADDONS.size();
 		if (loaded > 0) Logging.log("Disabled " + loaded + " addon(s)");
-		addons.clear();
+		LOADED_ADDONS.clear();
 	}
 
 	public void unloadAddon(BreweryAddon addon) {
@@ -83,24 +85,24 @@ public class AddonManager {
 		} catch (Throwable t) {
 			Logging.errorLog("Failed to disable addon " + addon.getClass().getSimpleName(), t);
 		}
-		addons.remove(addon);
+		LOADED_ADDONS.remove(addon);
 	}
 
 
 	public void reloadAddons() {
-		for (BreweryAddon addon : addons) {
+		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onBreweryReload();
 			} catch (Throwable t) {
 				Logging.errorLog("Failed to reload addon " + addon.getClass().getSimpleName(), t);
 			}
 		}
-		int loaded = addons.size();
+		int loaded = LOADED_ADDONS.size();
 		if (loaded > 0) Logging.log("Reloaded " + loaded + " addon(s)");
 	}
 
-	public List<BreweryAddon> getAddons() {
-		return addons;
+	public ConcurrentLinkedQueue<BreweryAddon> getAddons() {
+		return LOADED_ADDONS;
 	}
 
 
@@ -115,7 +117,7 @@ public class AddonManager {
 			loadAddon(file); // Go read the documentation below to understand what this does.
 		}
 
-		for (BreweryAddon addon : addons) {
+		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onAddonEnable(); // All done, let the addon know it's been enabled.
 			} catch (Throwable t) {
@@ -123,7 +125,7 @@ public class AddonManager {
 				unloadAddon(addon);
 			}
 		}
-		int loaded = addons.size();
+		int loaded = LOADED_ADDONS.size();
 		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
 	}
 
@@ -175,7 +177,7 @@ public class AddonManager {
 
 
 					addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
-					addons.add(addon); // Add to our list of addons
+					LOADED_ADDONS.add(addon); // Add to our list of addons
 
 					// let the addon know it has been loaded, it can do some pre-enable stuff here.
 					addon.onAddonPreEnable();

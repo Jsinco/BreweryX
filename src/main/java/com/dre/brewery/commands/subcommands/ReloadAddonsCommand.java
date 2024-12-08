@@ -33,13 +33,14 @@ public class ReloadAddonsCommand implements SubCommand {
 	@Override
 	public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
 		if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
-			AddonManager addonManager = new AddonManager(breweryPlugin);
+			AddonManager addonManager = BreweryPlugin.getAddonManager();
 			addonManager.unloadAddons();
 			addonManager.loadAddons();
-			Logging.msg(sender, "Loaded " + addonManager.getAddons().size() + " addons");
+			Logging.msg(sender, "Finished loading " + addonManager.getAddons().size() + " addon(s)");
+			Logging.msg(sender, "&eUsing this command should be avoided as it can cause unpredictable behavior within addons!");
 		} else {
-			Logging.msg(sender, "&rThis command should be avoided as it can cause unpredictable behavior within addons, use &c/brewery reloadaddons confirm &r to confirm.");
-			Logging.msg(sender, "&aMost addons support reloading without using this command! Try using &c/brewery reload &ainstead.");
+			Logging.msg(sender, "&rThis command should be avoided as it can cause unpredictable behavior within addons, use &6/brewery reloadaddons confirm &r to confirm.");
+			Logging.msg(sender, "&aMost addons support reloading without using this command! Try using &6/brewery reload &ainstead.");
 		}
 	}
 

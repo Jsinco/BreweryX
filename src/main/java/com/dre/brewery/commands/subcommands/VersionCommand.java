@@ -34,9 +34,10 @@ import java.util.List;
 public class VersionCommand implements SubCommand {
     @Override
     public void execute(BreweryPlugin breweryPlugin, Lang lang, CommandSender sender, String label, String[] args) {
-        List<BreweryAddon> addons = new AddonManager(breweryPlugin).getAddons();
         StringBuilder addonString = new StringBuilder();
 
+
+        List<BreweryAddon> addons = List.copyOf(AddonManager.LOADED_ADDONS);
         for (BreweryAddon addon : addons) {
             addonString.append(addon.getClass().getSimpleName());
             if (addons.indexOf(addon) < addons.size() - 1) {

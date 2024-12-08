@@ -42,6 +42,7 @@ import com.dre.brewery.commands.subcommands.VersionCommand;
 import com.dre.brewery.commands.subcommands.WakeupCommand;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
+import com.dre.brewery.utility.Logging;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -134,7 +135,7 @@ public class CommandManager implements TabExecutor {
 
 	public static void addSubCommand(String name, SubCommand subCommand) {
         if (subCommands.containsKey(name)) {
-            throw new IllegalArgumentException("SubCommand with name '" + name + "' already exists!");
+            Logging.warningLog("SubCommand with name: &6" + name + " &ealready exists! It's being overwritten!");
         }
 		subCommands.put(name, subCommand);
 	}

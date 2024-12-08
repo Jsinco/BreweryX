@@ -160,7 +160,8 @@ public class BreweryPlugin extends JavaPlugin {
             dataManager = DataManager.createDataManager(config.getStorage());
         } catch (StorageInitException e) {
 			Logging.errorLog("Failed to initialize DataManager!", e);
-			Bukkit.getPluginManager().disablePlugin(this); // TODO: Maybe don't shut down and just revert to FLATFILE?
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
         }
 
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
