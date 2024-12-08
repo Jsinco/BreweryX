@@ -759,8 +759,8 @@ public class Brew implements Cloneable {
 		float factor = 1;
 		if (ageTime > 5) {
 			factor = 2;
-		} else if (ageTime > 10) {
-			factor = 2;
+		}
+		if (ageTime > 10) {
 			factor += ageTime / 10F;
 		}
 		if (fromIndex > toIndex) {
