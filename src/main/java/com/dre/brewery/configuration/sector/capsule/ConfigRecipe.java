@@ -37,20 +37,23 @@ import java.util.List;
 @AllArgsConstructor
 public class ConfigRecipe extends OkaeriConfig {
 
+    // Added because our configs don't support external comments yet
+    private Boolean enabled;
+
     private String name;
     private List<String> ingredients;
 
     @CustomKey("cookingtime")
-    private int cookingTime;
+    private Integer cookingTime;
     @CustomKey("distillruns")
-    private int distillRuns;
+    private Integer distillRuns;
     @CustomKey("distilltime")
-    private int distillTime;
+    private Integer distillTime;
     private Object wood; // int or String(Enum<BarrelWoodType>)
-    private int age;
+    private Integer age;
     private String color;
-    private int difficulty;
-    private int alcohol;
+    private Integer difficulty;
+    private Integer alcohol;
     private Object lore; // List<String> or String
     @CustomKey("servercommands")
     private List<String> serverCommands;
@@ -60,7 +63,7 @@ public class ConfigRecipe extends OkaeriConfig {
     private String drinkMessage;
     @CustomKey("drinktitle")
     private String drinkTitle;
-    private boolean glint;
+    private Boolean glint;
     private String customModelData;
     private List<String> effects;
 }

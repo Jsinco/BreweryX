@@ -24,10 +24,8 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
-import com.dre.brewery.configuration.serdes.MaterialTransformer;
 import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.configurer.Configurer;
-import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
@@ -41,7 +39,6 @@ import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -52,9 +49,6 @@ public class AbstractConfigManager {
     public static final Map<Class<? extends Configurer>, Supplier<Configurer>> CONFIGURERS = Map.of(
             BreweryXConfigurer.class, BreweryXConfigurer::new,
             YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
-    );
-    public static final List<Supplier<BidirectionalTransformer<?, ?>>> TRANSFORMERS = List.of(
-            MaterialTransformer::new
     );
 
     public Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
@@ -139,11 +133,6 @@ public class AbstractConfigManager {
             it.withRemoveOrphans(removeOrphans);
             it.withBindFile(file);
             it.saveDefaults();
-
-
-            for (Supplier<BidirectionalTransformer<?, ?>> packSupplier : TRANSFORMERS) {
-                it.withSerdesPack(registry -> registry.register(packSupplier.get()));
-            }
             it.load(update);
         });
 

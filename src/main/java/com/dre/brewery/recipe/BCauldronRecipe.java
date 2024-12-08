@@ -137,7 +137,7 @@ public class BCauldronRecipe {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}
 
-		recipe.cmData = cfgCauldronIngredient.getCustomModelData();
+		recipe.cmData = cfgCauldronIngredient.getCustomModelData() != null ? cfgCauldronIngredient.getCustomModelData() : 0;
 
 		return recipe;
 	}

@@ -27,9 +27,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.bukkit.Material;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -39,7 +36,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ConfigCustomItem extends OkaeriConfig {
 
-    private boolean matchAny;
+    private Boolean matchAny;
     private Object material; // List<Material> or Material
     private Object name; // String or List<String>
     private Object lore; // List<String> or String

@@ -24,6 +24,7 @@ import com.dre.brewery.configuration.annotation.CommentSpace;
 import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.Footer;
 import com.dre.brewery.configuration.annotation.LocalizedComment;
+import com.dre.brewery.configuration.serdes.BreweryXSerdesPack;
 import eu.okaeri.configs.postprocessor.ConfigLineInfo;
 import eu.okaeri.configs.postprocessor.ConfigPostprocessor;
 import eu.okaeri.configs.postprocessor.format.YamlSectionWalker;
@@ -56,6 +57,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BreweryXConfigurer extends YamlSnakeYamlConfigurer {
+
+	{
+		register(new BreweryXSerdesPack());
+	}
+
 	private final Yaml yaml;
 	private Map<String, Object> map = new LinkedHashMap<>();
 

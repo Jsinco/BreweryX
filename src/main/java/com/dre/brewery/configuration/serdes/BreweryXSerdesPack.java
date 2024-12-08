@@ -18,26 +18,15 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package com.dre.brewery.configuration.sector.capsule;
+package com.dre.brewery.configuration.serdes;
 
-import eu.okaeri.configs.OkaeriConfig;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import eu.okaeri.configs.serdes.OkaeriSerdesPack;
+import eu.okaeri.configs.serdes.SerdesRegistry;
+import lombok.NonNull;
 
-@Getter
-@Setter
-@Builder
-@ToString
-@AllArgsConstructor
-public class ConfigDistortWord extends OkaeriConfig {
-
-    private String replace;
-    private String to;
-    private String pre;
-    private Boolean match;
-    private Integer alcohol;
-    private Integer percentage;
+public class BreweryXSerdesPack implements OkaeriSerdesPack {
+    @Override
+    public void register(@NonNull SerdesRegistry registry) {
+        registry.register(new MaterialTransformer());
+    }
 }

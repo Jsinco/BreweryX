@@ -100,9 +100,9 @@ public class DistortChat {
 		} else {
 			this.pre = null;
 		}
-		this.match = configDistortWord.isMatch();
-		this.alcohol = configDistortWord.getAlcohol();
-		this.percentage = configDistortWord.getPercentage();
+		this.match = configDistortWord.getMatch() != null ? configDistortWord.getMatch() : false;
+		this.alcohol = configDistortWord.getAlcohol() != null ? configDistortWord.getAlcohol() : 1;
+		this.percentage = configDistortWord.getPercentage() != null ? configDistortWord.getPercentage() : 100;
 
 		if (this.from != null && this.to != null) {
 			words.add(this);
@@ -115,7 +115,7 @@ public class DistortChat {
 		if (bPlayer == null) {
 			return;
 		}
-		if (commands != null && !commands.isEmpty() && !words.isEmpty()) {
+		if (!commands.isEmpty() && !words.isEmpty()) {
 			String name = event.getPlayer().getName();
 			if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
 				String chat = event.getMessage();

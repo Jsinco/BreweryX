@@ -147,18 +147,18 @@ public class BRecipe implements Cloneable {
 			Logging.errorLog("No ingredients for: " + recipe.getRecipeName());
 			return null;
 		}
-		recipe.cookingTime = configRecipe.getCookingTime();
-		int dis = configRecipe.getDistillRuns();
+		recipe.cookingTime = configRecipe.getCookingTime() != null ? configRecipe.getCookingTime() : 0;
+		int dis = configRecipe.getDistillRuns() != null ? configRecipe.getDistillRuns() : 0;
 		if (dis > Byte.MAX_VALUE) {
 			recipe.distillruns = Byte.MAX_VALUE;
 		} else {
 			recipe.distillruns = (byte) dis;
 		}
-		recipe.distillTime = configRecipe.getDistillTime() * 20;
+		recipe.distillTime = (configRecipe.getDistillTime() != null ? configRecipe.getDistillTime() : 0) * 20;
 		recipe.wood = BarrelWoodType.fromAny(configRecipe.getWood());
-		recipe.age = configRecipe.getAge();
-		recipe.difficulty = configRecipe.getDifficulty();
-		recipe.alcohol = configRecipe.getAlcohol();
+		recipe.age = configRecipe.getAge() != null ? configRecipe.getAge() : 0;
+		recipe.difficulty = configRecipe.getDifficulty() != null ? configRecipe.getDifficulty() : 0;
+		recipe.alcohol = configRecipe.getAlcohol() != null ? configRecipe.getAlcohol() : 0;
 
 		String col = configRecipe.getColor() != null ? configRecipe.getColor() : "BLUE";
 		recipe.color = PotionColor.fromString(col);
@@ -174,7 +174,7 @@ public class BRecipe implements Cloneable {
 
 		recipe.drinkMsg = BUtil.color(configRecipe.getDrinkMessage());
 		recipe.drinkTitle = BUtil.color(configRecipe.getDrinkTitle());
-		recipe.glint = configRecipe.isGlint();
+		recipe.glint = configRecipe.getGlint() != null ? configRecipe.getGlint() : false;
 
 		if (configRecipe.getCustomModelData() != null) {
 			String[] cmdParts = configRecipe.getCustomModelData().split("/");

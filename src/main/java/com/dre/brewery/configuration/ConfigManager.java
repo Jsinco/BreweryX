@@ -29,6 +29,7 @@ import com.dre.brewery.configuration.sector.capsule.ConfigDistortWord;
 import com.dre.brewery.integration.item.BreweryPluginItem;
 import com.dre.brewery.integration.item.ItemsAdderPluginItem;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.integration.item.NexoPluginItem;
 import com.dre.brewery.integration.item.OraxenPluginItem;
 import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
@@ -190,5 +191,6 @@ public class ConfigManager {
         PluginItem.registerForConfig("exoticgarden", SlimefunPluginItem::new);
         PluginItem.registerForConfig("oraxen", OraxenPluginItem::new);
         PluginItem.registerForConfig("itemsadder", ItemsAdderPluginItem::new);
+        PluginItem.registerForConfig("nexo", NexoPluginItem::new);
     }
 }

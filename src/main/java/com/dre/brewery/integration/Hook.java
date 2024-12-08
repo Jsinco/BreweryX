@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
@@ -46,6 +47,7 @@ public class Hook {
     public static final Hook SLIMEFUN = new Hook("Slimefun");
     public static final Hook ORAXEN = new Hook("Oraxen");
     public static final Hook ITEMSADDER = new Hook("ItemsAdder");
+    public static final Hook NEXO = new Hook("Nexo");
 
 
     protected final String name;
@@ -72,9 +74,17 @@ public class Hook {
         return enabled;
     }
 
-    @Nullable
+    @Contract
     public Plugin getPlugin() {
-        return Bukkit.getPluginManager().getPlugin(name);
+        if (isEnabled()) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
+            if (plugin == null) {
+                throw new IllegalStateException("Plugin " + name + " is marked enabled but not found!");
+            }
+            return plugin;
+        } else {
+            return null;
+        }
     }
 
 }
