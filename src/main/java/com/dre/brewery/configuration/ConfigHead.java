@@ -29,8 +29,6 @@ import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -42,9 +40,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@Getter
-@Setter
-public class AbstractConfigManager {
+/**
+ * A class which manages the creation and retrieval of config files. This class
+ * can be used as a singleton {@link ConfigManager} or as a standalone class {@link com.dre.brewery.api.addons.AddonConfigManager}.
+ */
+public class ConfigHead {
 
     public static final Map<Class<? extends Configurer>, Supplier<Configurer>> CONFIGURERS = Map.of(
             BreweryXConfigurer.class, BreweryXConfigurer::new,
@@ -55,10 +55,10 @@ public class AbstractConfigManager {
     public Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
 
 
-    public AbstractConfigManager() {
+    public ConfigHead() {
     }
 
-    public AbstractConfigManager(Path dataFolder) {
+    public ConfigHead(Path dataFolder) {
         this.DATA_FOLDER = dataFolder;
     }
 
@@ -149,7 +149,7 @@ public class AbstractConfigManager {
      * @param <T> The type of the config
      */
     public <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
-        OkaeriConfigFileOptions options = configClass.getAnnotation(OkaeriConfigFileOptions.class);
+        OkaeriConfigFileOptions options = getOkaeriConfigFileOptions(configClass);
 
         return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), options.removeOrphans());
     }

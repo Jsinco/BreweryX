@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class ConfigManager {
 
-    private static final AbstractConfigManager INSTANCE = new AbstractConfigManager();
+    private static final ConfigHead INSTANCE = new ConfigHead();
 
     public static final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = INSTANCE.LOADED_CONFIGS;
 

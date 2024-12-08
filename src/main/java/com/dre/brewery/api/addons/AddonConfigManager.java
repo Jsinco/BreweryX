@@ -21,7 +21,7 @@
 package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
-import com.dre.brewery.configuration.AbstractConfigManager;
+import com.dre.brewery.configuration.ConfigHead;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import eu.okaeri.configs.configurer.Configurer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
@@ -36,15 +36,15 @@ import java.nio.file.Path;
  */
 public class AddonConfigManager {
 
-    private final AbstractConfigManager INSTANCE;
+    private final ConfigHead INSTANCE;
 
 
     public AddonConfigManager(BreweryAddon addon) {
-        this.INSTANCE = new AbstractConfigManager(BreweryPlugin.getInstance().getDataFolder().toPath().resolve("addons").resolve(addon.getAddonInfo().name()));
+        this.INSTANCE = new ConfigHead(BreweryPlugin.getInstance().getDataFolder().toPath().resolve("addons").resolve(addon.getAddonInfo().name()));
     }
 
     public AddonConfigManager(Path addonDataFolder) {
-        this.INSTANCE = new AbstractConfigManager(addonDataFolder);
+        this.INSTANCE = new ConfigHead(addonDataFolder);
     }
 
     /**
