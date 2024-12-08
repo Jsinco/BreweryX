@@ -183,11 +183,41 @@ java {
 
 
 publishing {
+    val user = System.getenv("repo_username")
+    val pass = System.getenv("repo_secret")
+
+    repositories {
+        if (user != null && pass != null) {
+            maven {
+                name = "jsinco-repo"
+                url = uri("https://repo.jsinco.dev/releases")
+                credentials(PasswordCredentials::class) {
+                    username = user
+                    password = pass
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+            }
+        }
+    }
+
 	publications {
-		create<MavenPublication>("maven") {
+		create<MavenPublication>("maven") { // Jitpack
 			artifact(tasks.shadowJar.get().archiveFile) {
 				builtBy(tasks.shadowJar)
 			}
 		}
+
+        if (user != null && pass != null) {
+            create<MavenPublication>("jsinco") {
+                groupId = "com.dre.brewery"
+                artifactId = "BreweryX"
+                version = project.version.toString()
+                artifact(tasks.shadowJar.get().archiveFile) {
+                    builtBy(tasks.shadowJar)
+                }
+            }
+        }
 	}
 }
