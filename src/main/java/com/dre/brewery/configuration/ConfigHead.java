@@ -51,7 +51,7 @@ public class ConfigHead {
             YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
     );
 
-    public Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
+    public final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
     public Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
 
 
