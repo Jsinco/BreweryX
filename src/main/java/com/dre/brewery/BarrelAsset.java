@@ -39,7 +39,7 @@ public enum BarrelAsset {
 	FENCE; // Optional: Alt 3 Block
 
 
-	public static final Map<BarrelAsset, Set<Material>> BARREL_ASSET_LIST_MAP = new HashMap<>();
+	private static final Map<BarrelAsset, Set<Material>> BARREL_ASSET_LIST_MAP = new HashMap<>();
 	static {
 		for (BarrelAsset asset : values()) {
 			BARREL_ASSET_LIST_MAP.put(asset, new HashSet<>());
