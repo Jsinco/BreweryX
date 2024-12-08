@@ -120,8 +120,9 @@ config:
     alcohol: 1-100 минимальное опьянение, необходимое для того, чтобы данное коверкание сработало
     percentage: шанс того, что данное коверкание произойдет
   useOtherFiles: |
-    You may declare custom items, recipes, and cauldron ingredients here too, optionally, but using their respective files is recommended.
-    IMPORTANT: custom items, recipes, and cauldron ingredients declared in their proper files will take priority over those declared here! (e.g. 2 recipes with the same name)
+    В этом файле тоже можно указывать Кастомные предметы, Рецепты или Ингредиенты для котла (Недовары), но рекомендуется использовать для этого их соответствующие файлы.
+    ВАЖНО: Кастом-итемы/Рецепты/Недовары, указанные тут, имеют меньший приоритет по сравнению с указанными в подходящих для этого файлах! (Например, при двух рецептах с одинаковыми названиями)
+    Если вы обновляетесь с более старой версии, или с оригинального Brewery, то ваши прошлые Кастом-итемы/Рецепты/Недовары также будут в этом файле (их всё равно лучше перенести в соответствующие файлы) 
 
 
 
