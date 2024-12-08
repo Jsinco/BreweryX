@@ -21,6 +21,7 @@ softdepend:
   - PlaceholderAPI
   - Oraxen
   - ItemsAdder
+  - Nexo
 commands:
   breweryx:
     description: Mostly admin commands to create/modify Brews and drunkenness
