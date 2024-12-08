@@ -119,5 +119,7 @@ public class AddonConfigManager {
     private OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AddonConfigFile> configClass) {
         return INSTANCE.getOkaeriConfigFileOptions(configClass);
     }
-    
+    public Path getDataFolder() {
+        return INSTANCE.DATA_FOLDER;
+    }
 }
