@@ -199,7 +199,7 @@ Lombok is recommended for Java developers to reduce boilerplate code.
 
 # External Plugin API
 
-For Java developers, you can use [JitPack](https://jitpack.io/#BreweryTeam/BreweryX) or the [provided repository](https://repo.jsinco.dev/#/releases/com/dre/brewery/BreweryX) to add BreweryX as a dependency:
+For Java developers, you can use a local jar or the [provided repository](https://repo.jsinco.dev/#/releases/com/dre/brewery/BreweryX) to add BreweryX as a dependency:
 
 ## Maven
 

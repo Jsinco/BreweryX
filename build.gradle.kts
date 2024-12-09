@@ -183,40 +183,39 @@ java {
 
 
 publishing {
+    val repoUrl = System.getenv("repo_url") ?: "https://repo.jsinco.dev/releases"
     val user = System.getenv("repo_username")
     val pass = System.getenv("repo_secret")
 
+
     repositories {
-        if (user != null && pass != null) {
-            maven {
-                name = "jsinco-repo"
-                url = uri("https://repo.jsinco.dev/releases")
-                credentials(PasswordCredentials::class) {
-                    username = user
-                    password = pass
-                }
-                authentication {
-                    create<BasicAuthentication>("basic")
-                }
+        if (user == null || pass == null) {
+            println("No repository credentials found, skipping publication")
+            return@repositories
+        }
+        maven {
+            url = uri(repoUrl)
+            credentials(PasswordCredentials::class) {
+                username = user
+                password = pass
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
 
 	publications {
-		create<MavenPublication>("maven") { // Jitpack
-			artifact(tasks.shadowJar.get().archiveFile) {
-				builtBy(tasks.shadowJar)
-			}
-		}
-
-        if (user != null && pass != null) {
-            create<MavenPublication>("jsinco") {
-                groupId = project.group.toString()
-                artifactId = "BreweryX"
-                version = project.version.toString()
-                artifact(tasks.shadowJar.get().archiveFile) {
-                    builtBy(tasks.shadowJar)
-                }
+        if (user == null || pass == null) {
+            println("No repository credentials found, skipping publication")
+            return@publications
+        }
+        create<MavenPublication>("maven") {
+            groupId = project.group.toString()
+            artifactId = "BreweryX"
+            version = project.version.toString()
+            artifact(tasks.shadowJar.get().archiveFile) {
+                builtBy(tasks.shadowJar)
             }
         }
 	}
