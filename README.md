@@ -7,12 +7,13 @@
 ---
 
 > [!IMPORTANT]
-> Brewery**X** is based off of an over **decade** old plugin called Brewery. A lot of this code is old and awful to look at. If you see poorly written code, don't assume the worst because chances are, I didn't even write it. Thanks
+> Brewery**X** is based off of an over **decade** old plugin, [Brewery](https://github.com/DieReicheErethons/Brewery). 
+> Bugs and issues are bound to happen, so please report them on our [Discord](https://discord.gg/aV5Am7uxWr) or [GitHub issues](https://github.com/BreweryTeam/BreweryX/issues)!
 
 
 ### Brewery is a Plugin for an alternate brewing process, including alcoholic Potions.
 
-Works with Spigot, Paper, and Folia from `1.21.1` to `1.8.x`!
+Works with Spigot, Paper, and Folia from `1.21.4` to `1.8.9`!
 
 The somewhat difficult brewing process rewards you with a diversity of Potions, which, through their effects, create a drunkenness that has never existed in Minecraft before.
 
@@ -57,7 +58,7 @@ The somewhat difficult brewing process rewards you with a diversity of Potions, 
 
 - [Depenizen support](https://github.com/DenizenScript/Depenizen/pull/430) for Denizen Scripters
 
-### For Java developers, use any release jar locally or get any release from [Jitpack](https://jitpack.io/#BreweryTeam/BreweryX)
+### For Java developers, find our repository for the BreweryX API [here](https://repo.jsinco.dev/#/releases/com/dre/brewery/BreweryX).
 
 Check [the documentation](https://brewery.lumamc.net/api/api/) for more information.
 

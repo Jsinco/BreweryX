@@ -1,3 +1,23 @@
+/*
+ * BreweryX Bukkit-Plugin for an alternate brewing process
+ * Copyright (C) 2024 The Brewery Team
+ *
+ * This file is part of BreweryX.
+ *
+ * BreweryX is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BreweryX is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.PlayerEffectEvent;
@@ -14,6 +34,9 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -41,6 +64,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ToString
+@Getter
+@Setter
 public class BPlayer {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
@@ -183,7 +209,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player, brew.getQuality());
 		}
-		BreweryPlugin.getInstance().getStats().forDrink(brew);
+		BreweryPlugin.getInstance().getBreweryStats().forDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();
@@ -491,9 +517,8 @@ public class BPlayer {
 
 	// he may be having a hangover
 	public void join(final Player player) {
-		if (offlineDrunk == 0) {
-			return;
-		}
+		// TODO: Rewrite part of this class to not use offlinedrunk, a bunch of this overhead boilerplate is completely unnecessary and overcomplicates our code
+		// Modified this method a bit to just patch wakeups not working but this *REALLY* needs a rewrite
 
 		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
@@ -509,7 +534,7 @@ public class BPlayer {
 				remove(player);
 			}
 
-		} else if (offlineDrunk - drunkenness >= 30) {
+		} else if (offlineDrunk >= 30 || drunkenness >= 30) {
 			if (config.isEnableWake() && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
@@ -518,6 +543,7 @@ public class BPlayer {
 				}
 			}
 		}
+
 		offlineDrunk = 0;
 	}
 
