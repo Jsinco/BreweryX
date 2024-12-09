@@ -34,6 +34,9 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -61,6 +64,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ToString
+@Getter
+@Setter
 public class BPlayer {
 
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
@@ -511,9 +517,8 @@ public class BPlayer {
 
 	// he may be having a hangover
 	public void join(final Player player) {
-		if (offlineDrunk == 0) {
-			return;
-		}
+		// TODO: Rewrite part of this class to not use offlinedrunk, a bunch of this overhead boilerplate is completely unnecessary and overcomplicates our code
+		// Modified this method a bit to just patch wakeups not working but this *REALLY* needs a rewrite
 
 		if (drunkenness < 10) {
 			if (offlineDrunk > 60) {
@@ -529,7 +534,7 @@ public class BPlayer {
 				remove(player);
 			}
 
-		} else if (offlineDrunk - drunkenness >= 30) {
+		} else if (offlineDrunk >= 30 || drunkenness >= 30) {
 			if (config.isEnableWake() && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
@@ -538,6 +543,7 @@ public class BPlayer {
 				}
 			}
 		}
+
 		offlineDrunk = 0;
 	}
 

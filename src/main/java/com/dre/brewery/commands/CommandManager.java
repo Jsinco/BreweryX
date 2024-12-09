@@ -167,4 +167,10 @@ public class CommandManager implements TabExecutor {
             subCommands.remove(key);
         }
     }
+
+    public static void execute(Class<? extends SubCommand> clazz, CommandSender sender, String label, String[] args) {
+        subCommands.values().stream()
+                .filter(subCommand -> subCommand.getClass().equals(clazz))
+                .forEach(subCommand -> subCommand.execute(plugin, lang, sender, label, args));
+    }
 }

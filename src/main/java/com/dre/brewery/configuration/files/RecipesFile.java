@@ -69,15 +69,12 @@ public class RecipesFile extends AbstractOkaeriConfigFile {
         map.putAll(ConfigManager.getConfig(Config.class).getRecipes());
 
 		// Filter out the disabled ones now
-		// TODO: Remove debug
-		System.out.println("Recipes: " + map.size());
 		map.values().removeIf(recipe -> {
 			if (recipe.getEnabled() == null) {
 				return false;
 			}
             return !recipe.getEnabled();
         });
-		System.out.println("Recipes: " + map.size());
 
         return map;
     }

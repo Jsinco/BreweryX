@@ -21,6 +21,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
@@ -43,6 +44,7 @@ public class DataManagerCommand implements SubCommand {
 
 		switch (args[1].toLowerCase()) {
 			case "reload" -> BreweryPlugin.getDataManager().exit(true, true, () -> {
+				CommandManager.execute(ReloadCommand.class, sender, label, args);
                 try {
                     BreweryPlugin.setDataManager(DataManager.createDataManager(ConfigManager.getConfig(Config.class).getStorage()));
                     Logging.msg(sender, "Reloaded the DataManager!");

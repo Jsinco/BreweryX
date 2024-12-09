@@ -199,21 +199,22 @@ Lombok is recommended for Java developers to reduce boilerplate code.
 
 # External Plugin API
 
-For Java developers, use any release jar locally or preferably, use JitPack:
+For Java developers, you can use [JitPack](https://jitpack.io/#BreweryTeam/BreweryX) or the [provided repository](https://repo.jsinco.dev/#/releases/com/dre/brewery/BreweryX) to add BreweryX as a dependency:
 
 ## Maven
 
 ```XML
 <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
+    <id>jsinco-repo</id>
+    <url>https://repo.jsinco.dev/releases</url>
 </repository>
 
+
 <dependency>
-<groupId>com.github.BreweryTeam</groupId>
-<artifactId>BreweryX</artifactId>
-<version>VERSION</version>
-<scope>provided</scope>
+    <groupId>com.dre.brewery</groupId>
+    <artifactId>BreweryX</artifactId>
+    <version>VERSION</version>
+    <scope>provided</scope>
 </dependency>
 ```
 
@@ -223,11 +224,11 @@ For Java developers, use any release jar locally or preferably, use JitPack:
 
     ``` groovy
     repositories {
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://repo.jsinco.dev/releases' }
     }
 
     dependencies {
-        implementation 'com.github.BreweryTeam:BreweryX:VERSION'
+        implementation 'com.dre.brewery:BreweryX:VERSION'
     }
     ```
 
@@ -235,17 +236,17 @@ For Java developers, use any release jar locally or preferably, use JitPack:
 
     ``` kotlin
     repositories {
-        maven("https://jitpack.io")
+        maven("https://repo.jsinco.dev/releases")
     }
 
     dependencies {
-        implementation("com.github.BreweryTeam:BreweryX:VERSION")
+        implementation("com.dre.brewery:BreweryX:VERSION")
     }
     ```
 
 !!! warning
 
-    Don't forget to replace `VERSION` with a version [available on JitPack](https://jitpack.io/#BreweryTeam/BreweryX#releasesLink).
+    Don't forget to replace `VERSION` with an available [version](https://repo.jsinco.dev/#/releases/com/dre/brewery/BreweryX).
 
 You also need to add a dependency in the `plugin.yml` or `paper-plugin.yml` file. This ensures BreweryX loads before your plugin.
 

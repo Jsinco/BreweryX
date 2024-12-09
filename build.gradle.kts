@@ -211,7 +211,7 @@ publishing {
 
         if (user != null && pass != null) {
             create<MavenPublication>("jsinco") {
-                groupId = "com.dre.brewery"
+                groupId = project.group.toString()
                 artifactId = "BreweryX"
                 version = project.version.toString()
                 artifact(tasks.shadowJar.get().archiveFile) {
