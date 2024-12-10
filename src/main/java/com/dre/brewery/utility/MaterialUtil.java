@@ -21,6 +21,7 @@
 package com.dre.brewery.utility;
 
 import com.dre.brewery.BreweryPlugin;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -127,7 +128,7 @@ public final class MaterialUtil {
 
 	public static boolean areStairsInverted(Block block) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) {
-			MaterialData data = block.getState().getData();
+			MaterialData data = block.getState().getData(); // PaperLib not needed here
 			return data instanceof org.bukkit.material.Stairs && (((org.bukkit.material.Stairs) data).isInverted());
 		} else {
 			BlockData data = block.getBlockData();
@@ -164,7 +165,8 @@ public final class MaterialUtil {
 			}
 
 		} else {
-			Cauldron cauldron = (Cauldron) block.getState().getData();
+			// TODO: This needs to be swapped with non-deprecated API
+			Cauldron cauldron = (Cauldron) PaperLib.getBlockState(block, true).getState().getData();
 			if (cauldron.isEmpty()) {
 				return EMPTY;
 			} else if (cauldron.isFull()) {

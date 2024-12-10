@@ -28,7 +28,6 @@ import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.BrewerInventory;
@@ -205,7 +204,7 @@ public class BDistiller {
 					return;
 				}
 
-				BrewingStand stand = (BrewingStand) standBlock.getState();
+				BrewingStand stand = (BrewingStand) PaperLib.getBlockState(standBlock, true).getState();
 				if (brewTime == -1 && !prepareForDistillables(stand)) { // check at the beginning for distillables
 					return;
 				}

@@ -132,7 +132,7 @@ public class BSealer implements InventoryHolder {
 
 	public static boolean isBSealer(Block block) {
 		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == config.getSealingTableBlock()) {
-			Container container = (Container) block.getState();
+			Container container = (Container) PaperLib.getBlockState(block, true).getState();
 			if (container.getCustomName() != null) {
 				if (container.getCustomName().equals("§e" + lang.getEntry("Etc_SealingTable"))) {
 					return true;
@@ -150,7 +150,7 @@ public class BSealer implements InventoryHolder {
 			assert itemMeta != null;
 			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + lang.getEntry("Etc_SealingTable"))) ||
 				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
-				Container container = (Container) block.getState();
+				Container container = (Container) PaperLib.getBlockState(block, true).getState();
 				// Rotate the Block 180° so it looks different
 				if (container.getBlockData() instanceof Directional dir) {
 					dir.setFacing(dir.getFacing().getOppositeFace());

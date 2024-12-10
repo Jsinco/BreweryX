@@ -227,7 +227,7 @@ public class IntegrationListener implements Listener {
 
 		if (config.isUseVirtualChestPerms()) {
 			Player player = event.getPlayer();
-			BlockState originalBlockState = event.getClickedBlock().getState();
+			BlockState originalBlockState = PaperLib.getBlockState(event.getClickedBlock(), true).getState();
 
 			event.getClickedBlock().setType(Material.CHEST, false);
 			PlayerInteractEvent simulatedEvent = new PlayerInteractEvent(

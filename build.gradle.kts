@@ -50,7 +50,7 @@ repositories {
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
     maven("https://repo.oraxen.com/releases") // Oraxen
     maven("https://storehouse.okaeri.eu/repository/maven-public/") // Okaeri Config
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://papermc.io/repo/repository/maven-public/") // PaperLib
 }
 
 dependencies {
@@ -58,7 +58,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
         exclude("com.google.code.gson", "gson") // Implemented manually
     }
-    // Paper Lib
+    // Paper Lib, performance improvements on Paper based servers and async teleporting on Folia
     implementation("io.papermc:paperlib:1.0.8")
 
     // Implemented manually mainly due to older server versions implementing versions of GSON
@@ -212,7 +212,6 @@ publishing {
 
 	publications {
         if (user == null || pass == null) {
-            println("No repository credentials found, skipping publication")
             return@publications
         }
         create<MavenPublication>("maven") {

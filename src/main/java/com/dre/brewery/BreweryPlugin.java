@@ -210,7 +210,7 @@ public class BreweryPlugin extends JavaPlugin {
 		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		Logging.log("Environment&7: &a" + Logging.getEnvironmentAsString());
 		if (!PaperLib.isPaper()) {
-			Logging.log("&aBreweryX performs best on Paper-based servers. Please consider switching to Paper for the best experience. &7(https://papermc.io/)");
+			Logging.log("&aBreweryX performs best on Paper-based servers. Please consider switching to Paper for the best experience. &7https://papermc.io");
 		}
 		Logging.log("BreweryX enabled!");
 	}
