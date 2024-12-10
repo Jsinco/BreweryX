@@ -25,6 +25,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -61,16 +62,16 @@ public class BSealer implements InventoryHolder {
 	public BSealer(Player player) {
 		this.player = player;
 		if (inventoryHolderWorking) {
-			Inventory inv = BreweryPlugin.getInstance().getServer().createInventory(this, InventoryType.DISPENSER, lang.getEntry("Etc_SealingTable"));
+			Inventory inv = Bukkit.createInventory(this, InventoryType.DISPENSER, lang.getEntry("Etc_SealingTable"));
 			// Inventory Holder (for DISPENSER, ...) is only passed in Paper, not in Spigot. Doing inventory.getHolder() will return null in spigot :/
-			if (inv.getHolder() == this) {
+			if (PaperLib.getHolder(inv, true).getHolder() == this) {
 				inventory = inv;
 				return;
 			} else {
 				inventoryHolderWorking = false;
 			}
 		}
-		inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, lang.getEntry("Etc_SealingTable"));
+		inventory = Bukkit.createInventory(this, 9, lang.getEntry("Etc_SealingTable"));
 	}
 
 	@Override

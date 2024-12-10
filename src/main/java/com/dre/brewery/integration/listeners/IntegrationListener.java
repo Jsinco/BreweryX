@@ -45,6 +45,7 @@ import com.dre.brewery.utility.MaterialUtil;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import io.papermc.lib.PaperLib;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -320,14 +321,15 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (Hook.LOGBLOCK.isEnabled()) {
-			if (event.getInventory().getHolder() instanceof Barrel) {
-				try {
-					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
-				} catch (Exception e) {
-					Logging.errorLog("Failed to Log Barrel to LogBlock!", e);
-					Logging.errorLog("Brewery was tested with version 1.94 of LogBlock!");
-				}
+		if (!Hook.LOGBLOCK.isEnabled()) {
+			return;
+		}
+		if (PaperLib.getHolder(event.getInventory(), true).getHolder() instanceof Barrel) {
+			try {
+				LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
+			} catch (Exception e) {
+				Logging.errorLog("Failed to Log Barrel to LogBlock!", e);
+				Logging.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 			}
 		}
 	}

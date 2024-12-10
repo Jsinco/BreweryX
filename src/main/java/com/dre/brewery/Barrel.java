@@ -33,6 +33,7 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.Logging;
+import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import lombok.Getter;
 import lombok.Setter;
@@ -469,7 +470,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 	 * is this a Small barrel?
 	 */
 	public boolean isSmall() {
-		if (!BreweryPlugin.isFolia()) {
+		if (!MinecraftVersion.isFolia()) {
 			return BarrelAsset.isBarrelAsset(BarrelAsset.SIGN, spigot.getType());
 		}
 

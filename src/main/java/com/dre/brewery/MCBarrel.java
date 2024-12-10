@@ -24,6 +24,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.Logging;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Barrel;
@@ -61,9 +62,8 @@ public class MCBarrel {
 	// Now Opening this Barrel for a player
 	public void open() {
 		// if nobody had the inventory opened
-		if (inv.getViewers().size() == 1 && inv.getHolder() instanceof org.bukkit.block.Barrel) {
-			Barrel barrel = (Barrel) inv.getHolder();
-			PersistentDataContainer data = barrel.getPersistentDataContainer();
+		if (inv.getViewers().size() == 1 && PaperLib.getHolder(inv, true).getHolder() instanceof Barrel barrel) {
+            PersistentDataContainer data = barrel.getPersistentDataContainer();
 			NamespacedKey key = new NamespacedKey(BreweryPlugin.getInstance(), TAG);
 			if (!data.has(key, PersistentDataType.LONG)) {
 				key = new NamespacedKey("brewery", TAG.toLowerCase()); // Legacy key
@@ -115,8 +115,7 @@ public class MCBarrel {
 				if (item != null) {
 					if (Brew.isBrew(item)) {
 						// We found a brew, so set time on this Barrel
-						if (inv.getHolder() instanceof org.bukkit.block.Barrel) {
-							Barrel barrel = (Barrel) inv.getHolder();
+						if (PaperLib.getHolder(inv, true).getHolder() instanceof org.bukkit.block.Barrel barrel) {
 							PersistentDataContainer data = barrel.getPersistentDataContainer();
 							data.set(new NamespacedKey(BreweryPlugin.getInstance(), TAG), PersistentDataType.LONG, mcBarrelTime);
 							barrel.update();

@@ -146,7 +146,7 @@ public class Brew implements Cloneable {
 	 */
 	@Nullable
 	public static Brew get(ItemMeta meta) {
-		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return null;
+		if (!MinecraftVersion.isUseNBT() && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -170,7 +170,7 @@ public class Brew implements Cloneable {
 
 		ItemMeta meta = item.getItemMeta();
 		assert meta != null;
-		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return null;
+		if (!MinecraftVersion.isUseNBT() && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -183,7 +183,7 @@ public class Brew implements Cloneable {
 			item.setItemMeta(meta);
 		} else if (brew != null && brew.needsSave) {
 			// Brew needs saving from a previous format
-			if (BreweryPlugin.isUseNBT()) {
+			if (MinecraftVersion.isUseNBT()) {
 				new BrewLore(brew, (PotionMeta) meta).removeLoreData();
 				Logging.debugLog("removed Data from Lore");
 			}
@@ -853,9 +853,9 @@ public class Brew implements Cloneable {
 
 		ItemMeta meta = item.getItemMeta();
 		assert meta != null;
-		if (!BreweryPlugin.isUseNBT() && !meta.hasLore()) return false;
+		if (!MinecraftVersion.isUseNBT() && !meta.hasLore()) return false;
 
-		if (BreweryPlugin.isUseNBT()) {
+		if (MinecraftVersion.isUseNBT()) {
 			// Check for Data on PersistentDataContainer
 			if (NBTLoadStream.hasDataInMeta(meta)) {
 				return true;
@@ -871,7 +871,7 @@ public class Brew implements Cloneable {
 
 	private static Brew load(ItemMeta meta) {
 		InputStream itemLoadStream = null;
-		if (BreweryPlugin.isUseNBT()) {
+		if (MinecraftVersion.isUseNBT()) {
 			// Try loading the Item Data from PersistentDataContainer
 			NBTLoadStream nbtStream = new NBTLoadStream(meta);
 			if (nbtStream.hasData()) {
@@ -921,7 +921,7 @@ public class Brew implements Cloneable {
 				// We have either enabled encode and the data was not encoded or the other way round
 				Logging.debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
-			} else if (BreweryPlugin.isUseNBT() && itemLoadStream instanceof Base91DecoderStream) {
+			} else if (MinecraftVersion.isUseNBT() && itemLoadStream instanceof Base91DecoderStream) {
 				// We are on a version that supports nbt but the data is still in the lore of the item
 				// Just save it again so that it gets saved to nbt
 				Logging.debugLog("Converting Brew to NBT");
@@ -968,7 +968,7 @@ public class Brew implements Cloneable {
 	 */
 	public void save(ItemMeta meta) {
 		OutputStream itemSaveStream;
-		if (BreweryPlugin.isUseNBT()) {
+		if (MinecraftVersion.isUseNBT()) {
 			itemSaveStream = new NBTSaveStream(meta);
 		} else {
 			itemSaveStream = new Base91EncoderStream(new LoreSaveStream(meta, 0));
