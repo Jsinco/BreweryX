@@ -25,6 +25,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -61,16 +62,16 @@ public class BSealer implements InventoryHolder {
 	public BSealer(Player player) {
 		this.player = player;
 		if (inventoryHolderWorking) {
-			Inventory inv = BreweryPlugin.getInstance().getServer().createInventory(this, InventoryType.DISPENSER, lang.getEntry("Etc_SealingTable"));
+			Inventory inv = Bukkit.createInventory(this, InventoryType.DISPENSER, lang.getEntry("Etc_SealingTable"));
 			// Inventory Holder (for DISPENSER, ...) is only passed in Paper, not in Spigot. Doing inventory.getHolder() will return null in spigot :/
-			if (inv.getHolder() == this) {
+			if (PaperLib.getHolder(inv, true).getHolder() == this) {
 				inventory = inv;
 				return;
 			} else {
 				inventoryHolderWorking = false;
 			}
 		}
-		inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, lang.getEntry("Etc_SealingTable"));
+		inventory = Bukkit.createInventory(this, 9, lang.getEntry("Etc_SealingTable"));
 	}
 
 	@Override
@@ -131,7 +132,7 @@ public class BSealer implements InventoryHolder {
 
 	public static boolean isBSealer(Block block) {
 		if (BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_14) && block.getType() == config.getSealingTableBlock()) {
-			Container container = (Container) block.getState();
+			Container container = (Container) PaperLib.getBlockState(block, true).getState();
 			if (container.getCustomName() != null) {
 				if (container.getCustomName().equals("§e" + lang.getEntry("Etc_SealingTable"))) {
 					return true;
@@ -149,7 +150,7 @@ public class BSealer implements InventoryHolder {
 			assert itemMeta != null;
 			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + lang.getEntry("Etc_SealingTable"))) ||
 				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
-				Container container = (Container) block.getState();
+				Container container = (Container) PaperLib.getBlockState(block, true).getState();
 				// Rotate the Block 180° so it looks different
 				if (container.getBlockData() instanceof Directional dir) {
 					dir.setFacing(dir.getFacing().getOppositeFace());

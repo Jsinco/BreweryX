@@ -24,6 +24,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -72,7 +73,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class BreweryAddon {
 
-	private static final boolean isPaper;
 	private final List<Listener> listeners = new ArrayList<>();
 	private final List<String> commands = new ArrayList<>();
 
@@ -236,7 +236,7 @@ public abstract class BreweryAddon {
 	 * @return true if running on Folia, false otherwise.
 	 */
 	public boolean isFolia() {
-		return BreweryPlugin.isFolia();
+		return MinecraftVersion.isFolia();
 	}
 
 	/**
@@ -244,18 +244,6 @@ public abstract class BreweryAddon {
 	 * @return true if running on Paper, false otherwise.
 	 */
 	public boolean isPaper() {
-		return isPaper;
-	}
-
-
-	static {
-		boolean tempBool;
-		try {
-			Class.forName("com.destroystokyo.paper.ParticleBuilder");
-			tempBool = true;
-		} catch (ClassNotFoundException ignored) {
-			tempBool = false;
-		}
-		isPaper = tempBool;
+		return PaperLib.isPaper();
 	}
 }

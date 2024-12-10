@@ -41,7 +41,7 @@ public enum BarrelWoodType {
     MANGROVE("Mangrove", 9),
     CHERRY("Cherry", 10),
     BAMBOO("Bamboo", 11),
-    CUT_COPPER("Cut Copper", 12, Material.CUT_COPPER, Material.CUT_COPPER_STAIRS, null, null),
+    CUT_COPPER("Cut Copper", 12, Material.CUT_COPPER, Material.CUT_COPPER_STAIRS),
     PALE_OAK("Pale Oak", 13),
     // If you're adding more wood types, add them above 'NONE'
     NONE("None", -1, true);
@@ -65,7 +65,6 @@ public enum BarrelWoodType {
 		}
     }
 
-
 	BarrelWoodType(String formattedName, int index, Material planks, Material stairs, Material sign, Material fence) {
 		this.formattedName = formattedName;
 		this.index = index;
@@ -75,6 +74,14 @@ public enum BarrelWoodType {
 		BarrelAsset.addBarrelAsset(BarrelAsset.SIGN, sign);
 		BarrelAsset.addBarrelAsset(BarrelAsset.FENCE, fence);
 	}
+
+    BarrelWoodType(String formattedName, int index, Material planks, Material stairs) {
+        this.formattedName = formattedName;
+        this.index = index;
+
+        BarrelAsset.addBarrelAsset(BarrelAsset.PLANKS, planks);
+        BarrelAsset.addBarrelAsset(BarrelAsset.STAIRS, stairs);
+    }
 
 	@Nullable
 	private Material[] getStandardBarrelAssetMaterial(BarrelAsset assetType) {

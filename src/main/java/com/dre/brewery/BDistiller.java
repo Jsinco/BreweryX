@@ -25,9 +25,9 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.BrewerInventory;
@@ -73,17 +73,17 @@ public class BDistiller {
 	}
 
 	public static void distillerClick(InventoryClickEvent event) {
-		BrewerInventory standInv = (BrewerInventory) event.getInventory();
-		final Block standBlock = standInv.getHolder().getBlock();
+		BrewingStand standInv = (BrewingStand) PaperLib.getHolder(event.getInventory(), true).getHolder();
+		final Block standBlock = standInv.getBlock();
 
 		// If we were already tracking the brewer, cancel any ongoing event due to the click.
 		BDistiller distiller = trackedDistillers.get(standBlock);
 		if (distiller != null) {
 			distiller.cancelDistill();
-			standInv.getHolder().setBrewingTime(0); // Fixes brewing continuing without fuel for normal potions
-			standInv.getHolder().update();
+			standInv.setBrewingTime(0); // Fixes brewing continuing without fuel for normal potions
+			standInv.update();
 		}
-		final int fuel = standInv.getHolder().getFuelLevel();
+		final int fuel = standInv.getFuelLevel();
 
 		// Now check if we should bother to track it.
 		distiller = new BDistiller(standBlock, fuel);
@@ -204,7 +204,7 @@ public class BDistiller {
 					return;
 				}
 
-				BrewingStand stand = (BrewingStand) standBlock.getState();
+				BrewingStand stand = (BrewingStand) PaperLib.getBlockState(standBlock, true).getState();
 				if (brewTime == -1 && !prepareForDistillables(stand)) { // check at the beginning for distillables
 					return;
 				}

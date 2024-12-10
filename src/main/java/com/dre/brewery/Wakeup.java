@@ -24,6 +24,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -192,7 +193,7 @@ public class Wakeup {
 
 				Wakeup wakeup = wakeups.get(id);
 				if (wakeup.check()) {
-					player.teleport(wakeup.loc);
+					PaperLib.teleportAsync(player, wakeup.loc);
 				} else {
 					String world = wakeup.loc.getWorld().getName();
 					int x = (int) wakeup.loc.getX();
@@ -245,7 +246,7 @@ public class Wakeup {
 
 		if (wakeup.check()) {
 			lang.sendEntry(checkPlayer, "Player_WakeTeleport", checkId, world, "" + x , "" + y, "" + z);
-			checkPlayer.teleport(wakeup.loc);
+			PaperLib.teleportAsync(checkPlayer, wakeup.loc);
 		} else {
 			lang.sendEntry(checkPlayer, "Player_WakeFilled", checkId, world, "" + x , "" + y, "" + z);
 		}

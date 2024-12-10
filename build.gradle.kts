@@ -32,7 +32,7 @@ val langVersion = 17
 val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.4.3"
+version = "3.4.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -50,6 +50,7 @@ repositories {
     maven("https://repo.glaremasters.me/repository/towny/") // Towny
     maven("https://repo.oraxen.com/releases") // Oraxen
     maven("https://storehouse.okaeri.eu/repository/maven-public/") // Okaeri Config
+    maven("https://papermc.io/repo/repository/maven-public/") // PaperLib
 }
 
 dependencies {
@@ -57,6 +58,9 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
         exclude("com.google.code.gson", "gson") // Implemented manually
     }
+    // Paper Lib, performance improvements on Paper based servers and async teleporting on Folia
+    implementation("io.papermc:paperlib:1.0.8")
+
     // Implemented manually mainly due to older server versions implementing versions of GSON
     // Which don't support records.
     implementation("com.google.code.gson:gson:2.11.0")
@@ -114,7 +118,7 @@ tasks {
 
     build {
         dependsOn(shadowJar)
-        finalizedBy("kotlinReducedJar")
+        //finalizedBy("kotlinReducedJar")
     }
 
     jar {
@@ -141,6 +145,7 @@ tasks {
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
         relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
         relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
+        relocate("io.papermc.lib", "com.dre.brewery.depend.paperlib")
 
         archiveClassifier.set("")
     }
@@ -207,7 +212,6 @@ publishing {
 
 	publications {
         if (user == null || pass == null) {
-            println("No repository credentials found, skipping publication")
             return@publications
         }
         create<MavenPublication>("maven") {

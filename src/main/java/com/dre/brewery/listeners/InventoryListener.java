@@ -26,7 +26,9 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Material;
+import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -161,11 +163,14 @@ public class InventoryListener implements Listener {
 	// convert to non colored Lore when taking out of Barrel/Brewer
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (event.getInventory().getType() == InventoryType.BREWING) {
+		Inventory inv = event.getInventory();
+		if (inv.getType() == InventoryType.BREWING) {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(VERSION.isOrLater(MinecraftVersion.V1_14) && event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
+		}
+		InventoryHolder holder = PaperLib.getHolder(inv, true).getHolder();
+		if (!(holder instanceof Barrel) && !(VERSION.isOrLater(MinecraftVersion.V1_14) && holder instanceof org.bukkit.block.Barrel)) {
 			return;
 		}
 
@@ -222,7 +227,7 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClickBSealer(InventoryClickEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) return;
-		InventoryHolder holder = event.getInventory().getHolder();
+		InventoryHolder holder = PaperLib.getHolder(event.getInventory(), true).getHolder();
 		if (!(holder instanceof BSealer)) {
 			return;
 		}
@@ -284,8 +289,8 @@ public class InventoryListener implements Listener {
 	// Convert Color Lore from MC Barrels back into normal color on taking out
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onHopperMove(InventoryMoveItemEvent event){
-		if (event.getSource() instanceof BrewerInventory) {
-			if (BDistiller.isTrackingDistiller(((BrewerInventory) event.getSource()).getHolder().getBlock())) {
+		if (event.getSource() instanceof BrewerInventory inv && PaperLib.getHolder(inv, true).getHolder() instanceof BrewingStand holder) {
+			if (BDistiller.isTrackingDistiller(holder.getBlock())) {
 				event.setCancelled(true);
 			}
 			return;
@@ -316,15 +321,14 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_13)) return;
-		if (event.getInventory().getHolder() instanceof BSealer) {
-			((BSealer) event.getInventory().getHolder()).closeInv();
+		if (PaperLib.getHolder(event.getInventory(), true).getHolder() instanceof BSealer holder) {
+			holder.closeInv();
 		}
 
 		if (VERSION.isOrEarlier(MinecraftVersion.V1_14)) return;
 
 		// Barrel Closing Sound
-		if (event.getInventory().getHolder() instanceof Barrel) {
-			Barrel barrel = ((Barrel) event.getInventory().getHolder());
+		if (PaperLib.getHolder(event.getInventory(), true).getHolder() instanceof Barrel barrel) {
 			barrel.playClosingSound();
 		}
 

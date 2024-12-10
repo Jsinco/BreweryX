@@ -86,7 +86,7 @@ public class BrewLore {
 			} else if (t != null && t.isAfter(Type.SPACE)) {
 				if (hasSpace) return;
 
-				if (hasCustom || BreweryPlugin.isUseNBT()) {
+				if (hasCustom || MinecraftVersion.isUseNBT()) {
 					// We want to add the spacer if we have Custom Lore, to have a space between custom and brew lore.
 					// Also add a space if there is no Custom Lore but we don't already have a invisible data line
 					lore.add(i, Type.SPACE.id);
@@ -501,11 +501,11 @@ public class BrewLore {
 	 * Remove the Old Spacer from the legacy potion data system
 	 */
 	public void removeLegacySpacing() {
-		if (BreweryPlugin.isUseNBT()) {
+		if (MinecraftVersion.isUseNBT()) {
 			// Using NBT we don't get the invisible line, so we keep our spacing
 			return;
 		}
-		if (lore.size() > 0 && lore.get(0).equals("")) {
+		if (!lore.isEmpty() && lore.get(0).isEmpty()) {
 			lore.remove(0);
 			write();
 		}

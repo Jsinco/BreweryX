@@ -54,6 +54,7 @@ import com.dre.brewery.utility.NBTUtil;
 import com.dre.brewery.utility.UpdateChecker;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -83,8 +84,6 @@ public class BreweryPlugin extends JavaPlugin {
 	private @Getter static BreweryPlugin instance;
 	private @Getter static MinecraftVersion MCVersion;
 	private @Getter @Setter static DataManager dataManager;
-	private @Getter static boolean isFolia = false;
-	private @Getter static boolean useNBT = false;
 
 
 	private final Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>(); // Registrations
@@ -104,21 +103,8 @@ public class BreweryPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		try {
-			Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-			isFolia = true;
-		} catch (ClassNotFoundException ignored) {}
-
-
-		// MC 1.13 uses a different NBT API than the newer versions.
-		// We decide here which to use, the new or the old or none at all
-		if (NBTUtil.initNbt()) {
-			useNBT = true;
-		}
-
 		if (getMCVersion().isOrLater(MinecraftVersion.V1_14)) {
-			// Campfires are weird
-			// Initialize once now so it doesn't lag later when we check for campfires under Cauldrons
+			// Campfires are weird, Initialize once now so it doesn't lag later when we check for campfires under Cauldrons
 			getServer().createBlockData(Material.CAMPFIRE);
 		}
 
@@ -222,6 +208,10 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
+		Logging.log("Environment&7: &a" + Logging.getEnvironmentAsString());
+		if (!PaperLib.isPaper()) {
+			Logging.log("&aBreweryX performs best on Paper-based servers. Please consider switching to Paper for the best experience. &7https://papermc.io");
+		}
 		Logging.log("BreweryX enabled!");
 	}
 

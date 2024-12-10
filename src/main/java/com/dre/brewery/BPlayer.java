@@ -34,6 +34,7 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -538,7 +539,7 @@ public class BPlayer {
 			if (config.isEnableWake() && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
-					player.teleport(randomLoc);
+					PaperLib.teleportAsync(player, randomLoc);
 					lang.sendEntry(player, "Player_Wake");
 				}
 			}
@@ -553,20 +554,21 @@ public class BPlayer {
 
 	public void goHome(final Player player) {
 		String homeType = config.getHomeType();
-		if (homeType != null) {
-			Location home = null;
-			if (homeType.equalsIgnoreCase("bed")) {
-				home = player.getBedSpawnLocation();
-			} else if (homeType.startsWith("cmd: ")) {
-				player.performCommand(homeType.substring(5));
-			} else if (homeType.startsWith("cmd:")) {
-				player.performCommand(homeType.substring(4));
-			} else {
-				Logging.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
-			}
-			if (home != null) {
-				player.teleport(home);
-			}
+		if (homeType == null) {
+			return;
+		}
+		if (homeType.equalsIgnoreCase("bed")) {
+			PaperLib.getBedSpawnLocationAsync(player, true).thenAcceptAsync(it -> {
+				if (it != null) {
+					PaperLib.teleportAsync(player, it);
+				}
+			});
+		} else if (homeType.startsWith("cmd: ")) {
+			player.performCommand(homeType.substring(5));
+		} else if (homeType.startsWith("cmd:")) {
+			player.performCommand(homeType.substring(4));
+		} else {
+			Logging.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 		}
 	}
 

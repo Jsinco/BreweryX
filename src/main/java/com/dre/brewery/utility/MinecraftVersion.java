@@ -20,12 +20,14 @@
 
 package com.dre.brewery.utility;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 /**
  * Enum for major Minecraft versions where Brewery needs
  * to handle things differently.
  */
+@Getter
 public enum MinecraftVersion {
 
     //V1_7("1.7"), Remove 1.7 support. We only support versions that use UUIDs.
@@ -45,14 +47,14 @@ public enum MinecraftVersion {
     V1_21("1.21"),
     UNKNOWN("Unknown");
 
+
+    private @Getter static final boolean isFolia = MinecraftVersion.checkFolia();
+    private @Getter static final boolean useNBT = NBTUtil.initNbt();
+
     private final String version;
 
     MinecraftVersion(String version) {
         this.version = version;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     public static MinecraftVersion get(String version) {
@@ -85,4 +87,12 @@ public enum MinecraftVersion {
         return this.ordinal() <= version.ordinal();
     }
 
+    private static boolean checkFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+    }
 }
