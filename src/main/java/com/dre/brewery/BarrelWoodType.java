@@ -92,8 +92,7 @@ public enum BarrelWoodType {
             }
 			return new Material[]{Material.valueOf(this.name() + "_" + assetType.name())};
 		} catch (IllegalArgumentException e) {
-			Logging.errorLog("Unable to find a standard asset for " + this.name() + " and " + assetType.name() + "!");
-			Logging.errorLog("Developers should Manually specify the assets for the BarrelWoodType if they are not standard!");
+			// Just assume they're running some older version.
 			return null;
 		}
 	}
