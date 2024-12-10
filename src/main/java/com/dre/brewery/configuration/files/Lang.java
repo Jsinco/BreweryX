@@ -59,7 +59,7 @@ public class Lang extends AbstractOkaeriConfigFile {
 
     public void mapStrings() {
         BreweryPlugin plugin = BreweryPlugin.getInstance();
-        Logging.log("Using language&7: &6" + this.getBindFile().getFileName());
+        Logging.log("Using language&7: &a" + this.getBindFile().getFileName());
 
         this.mappedEntries = new HashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
