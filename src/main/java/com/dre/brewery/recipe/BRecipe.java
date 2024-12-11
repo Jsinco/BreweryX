@@ -237,11 +237,6 @@ public class BRecipe implements Cloneable {
 				matParts = ingredParts[0].split("\\.");
 			}
 
-			if (BreweryPlugin.getMCVersion().isOrEarlier(MinecraftVersion.V1_14) && matParts[0].equalsIgnoreCase("sweet_berries")) {
-				// Using this in default recipes, but will error on < 1.14
-				ingredients.add(new SimpleItem(Material.BEDROCK));
-				continue;
-			}
 
 			// Check if this is a Plugin Item
 			String[] pluginItem = matParts[0].split(":");

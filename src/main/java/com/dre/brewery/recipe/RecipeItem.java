@@ -103,7 +103,6 @@ public abstract class RecipeItem implements Cloneable {
 	/**
 	 * @return The Id this Item uses in the config in the custom-items section
 	 */
-	@Nullable
 	public String getConfigId() {
 		return cfgId;
 	}
