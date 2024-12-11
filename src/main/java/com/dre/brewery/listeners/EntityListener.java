@@ -26,6 +26,8 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.MinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -119,31 +121,18 @@ public class EntityListener implements Listener {
 	}
 
 	/**
-	 * Temporary utility method to determine if the given event was caused by a wind charge
+	 * Utility method to determine if the given event was caused by a wind charge
 	 * @param event An instance of EntityExplodeEvent that should be analyzed
 	 * @return A boolean representing if the given event was caused by a wind charge
 	 */
 	private boolean causedByWindCharge(EntityExplodeEvent event) {
 
+		// Wind charges don't exist in versions below 1.21
+		if (!BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_21)) return false;
+
 		EntityType type = event.getEntityType();
-
-		/*
-		 * As of BreweryX v3.4.4, BX uses the Spigot API of 1.20.2, which doesn't include the WindCharge as an EntityType.
-		 * For that reason, we turn our approach around and check for all other entities that could cause this event.
-		 */
-
-		if (type == EntityType.ENDER_CRYSTAL) return false;
-		if (type == EntityType.MINECART_TNT) return false;
-		if (type == EntityType.WITHER_SKULL) return false;
-		if (type == EntityType.ENDER_DRAGON) return false;
-		if (type == EntityType.PRIMED_TNT) return false;
-		if (type == EntityType.FIREBALL) return false;
-		if (type == EntityType.CREEPER) return false;
-		if (type == EntityType.PLAYER) return false;
-		if (type == EntityType.WITHER) return false;
-		if (type == EntityType.GHAST) return false;
-
-		return true; // Event most likely caused by a WindCharge
+		return type == EntityType.valueOf("BREEZE_WIND_CHARGE") || type == EntityType.valueOf("WIND_CHARGE");
+		// Enum can't currently be used directly, because BX still uses Spigots 1.20.2 API
 
 		/*
 		 * Note that, since WindCharges have the ability to modify BlockStates (e.g. flip trapdoors they hit), we sadly
