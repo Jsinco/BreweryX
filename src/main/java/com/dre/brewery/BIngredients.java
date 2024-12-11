@@ -38,6 +38,7 @@ import com.dre.brewery.utility.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -134,7 +135,7 @@ public class BIngredients {
 	/**
 	 * returns an Potion item with cooked ingredients
 	 */
-	public ItemStack cook(int state, String brewer) {
+	public ItemStack cook(int state, Player brewer) {
 
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
@@ -158,7 +159,7 @@ public class BIngredients {
 			lore.updateQualityStars(false);
 			lore.updateCustomLore();
 			lore.updateAlc(false);
-			lore.updateBrewer(brewer);
+			lore.updateBrewer(brewer.getDisplayName());
 			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
 			lore.write();
 
@@ -210,7 +211,7 @@ public class BIngredients {
 		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
 		brew.touch();
-		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, potionMeta, BrewModifyEvent.Type.FILL);
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, potionMeta, BrewModifyEvent.Type.FILL, brewer);
 		plugin.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) {
 			return null;

@@ -201,7 +201,7 @@ public class BCauldron {
 			lang.sendEntry(player, "Perms_NoCauldronFill");
 			return true;
 		}
-		ItemStack potion = ingredients.cook(state, player.getName());
+		ItemStack potion = ingredients.cook(state, player);
 		if (potion == null) return false;
 
 		if (VERSION.isOrLater(MinecraftVersion.V1_13)) {

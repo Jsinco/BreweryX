@@ -35,7 +35,7 @@ import java.util.Objects;
  * Abstract class to aid in the creation of OkaeriConfig sectors
  * @param <T> The type of the capsule
  */
-public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> {
+public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> extends OkaeriConfig {
 
     public Map<String, T> getCapsules() {
         Map<String, T> map = new LinkedHashMap<>();
@@ -44,6 +44,7 @@ public abstract class AbstractOkaeriConfigSector<T extends OkaeriConfig> {
         Class<?> typeOfT = getTypeOfT();
 
         for (Field field : this.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
             // Check if the field's type matches T
             if (Objects.equals(field.getType(), typeOfT)) {
                 try {

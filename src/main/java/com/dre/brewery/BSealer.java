@@ -119,7 +119,7 @@ public class BSealer implements InventoryHolder {
 				slotTime[i] = -1;
 				Brew brew = Brew.get(contents[i]);
 				if (brew != null && !brew.isStripped()) {
-					brew.seal(contents[i]);
+					brew.seal(contents[i], player);
 					if (playerValid && BreweryPlugin.getMCVersion().isOrLater(MinecraftVersion.V1_9)) {
 						player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, 1.5f + (float) (Math.random() * 0.2));
 					}

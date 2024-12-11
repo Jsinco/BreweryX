@@ -22,11 +22,15 @@ package com.dre.brewery.api.events.brew;
 
 import com.dre.brewery.Brew;
 import com.dre.brewery.lore.BrewLore;
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A Brew has been created or modified.
@@ -34,23 +38,24 @@ import org.jetbrains.annotations.NotNull;
  * <p>Modifications to the Brew or the PotionMeta can be done now
  * <p>Cancelling reverts the Brew to the state it was before the modification
  */
+@Getter
+@Setter
 public class BrewModifyEvent extends BrewEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Type type;
 	private boolean cancelled;
+
+	@Nullable
+	private Player player;
 
 
 	public BrewModifyEvent(@NotNull Brew brew, @NotNull ItemMeta meta, @NotNull Type type) {
 		super(brew, meta);
 		this.type = type;
 	}
-
-	/**
-	 * Get the Type of modification being applied to the Brew.
-	 */
-	@NotNull
-	public Type getType() {
-		return type;
+	public BrewModifyEvent(@NotNull Brew brew, @NotNull ItemMeta meta, @NotNull Type type, @Nullable Player player) {
+		this(brew, meta, type);
+		this.player = player;
 	}
 
 	/**
@@ -66,10 +71,6 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 		return cancelled;
 	}
 
-	/**
-	 * Setting the Event cancelled cancels all modificatons to the brew.
-	 * <p>Modifications to the Brew or ItemMeta will not be applied
-	 */
 	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;

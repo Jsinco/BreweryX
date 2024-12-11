@@ -50,7 +50,7 @@ public class CreateCommand implements SubCommand {
                 return;
             }
 
-            ItemStack item = brewForPlayer.a().createItem(null);
+            ItemStack item = brewForPlayer.a().createItem(null, brewForPlayer.b());
             if (item != null) {
                 brewForPlayer.b().getInventory().addItem(item);
                 lang.sendEntry(sender, "CMD_Created");

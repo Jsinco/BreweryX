@@ -28,6 +28,8 @@ import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Management of addon configuration files.
@@ -37,6 +39,7 @@ import java.nio.file.Path;
 public class AddonConfigManager {
 
     private final ConfigHead INSTANCE;
+
 
 
     public AddonConfigManager(BreweryAddon addon) {
@@ -77,6 +80,10 @@ public class AddonConfigManager {
         return INSTANCE.getFilePath(configClass);
     }
 
+
+    public Collection<AddonConfigFile> getLoadedConfigs() {
+        return INSTANCE.LOADED_CONFIGS.values().stream().map(AddonConfigFile.class::cast).toList();
+    }
 
 
 

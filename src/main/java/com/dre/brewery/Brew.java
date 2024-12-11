@@ -44,6 +44,7 @@ import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -510,7 +511,7 @@ public class Brew implements Cloneable {
 	 *
 	 * @param potion The Item this Brew is on
 	 */
-	public void seal(ItemStack potion) {
+	public void seal(ItemStack potion, @Nullable Player player) {
 		if (stripped) return;
 		ItemMeta origMeta = potion.getItemMeta();
 		if (!(origMeta instanceof PotionMeta)) return;
@@ -535,7 +536,7 @@ public class Brew implements Cloneable {
 		wood = BarrelWoodType.NONE;
 		touch();
 
-		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, meta, BrewModifyEvent.Type.SEAL);
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, meta, BrewModifyEvent.Type.SEAL, player);
 		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(modifyEvent);
 
 		if (modifyEvent.isCancelled()) {
@@ -776,6 +777,10 @@ public class Brew implements Cloneable {
 		}
 	}
 
+	public ItemStack createItem() {
+		return createItem(null, true, null);
+	}
+
 	/**
 	 * Create a new Item of this Brew. A BrewModifyEvent type CREATE will be called.
 	 *
@@ -783,7 +788,15 @@ public class Brew implements Cloneable {
 	 * @return The created Item, null if the Event is cancelled
 	 */
 	public ItemStack createItem(@Nullable BRecipe recipe) {
-		return createItem(recipe, true);
+		return createItem(recipe, true, null);
+	}
+
+	public ItemStack createItem(@Nullable BRecipe recipe, @Nullable Player player) {
+		return createItem(recipe, true, player);
+	}
+
+	public ItemStack createItem(@Nullable BRecipe recipe, boolean event) {
+		return createItem(recipe, true, null);
 	}
 
 	/**
@@ -794,7 +807,7 @@ public class Brew implements Cloneable {
 	 * @return The created Item, null if the Event is cancelled
 	 */
 	@Contract("_, false -> !null")
-	public ItemStack createItem(@Nullable BRecipe recipe, boolean event) {
+	public ItemStack createItem(@Nullable BRecipe recipe, boolean event, @Nullable Player player) {
 		if (recipe == null) {
 			recipe = getCurrentRecipe();
 		}
@@ -828,7 +841,7 @@ public class Brew implements Cloneable {
 		lore.write();
 		touch();
 		if (event) {
-			BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.CREATE);
+			BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.CREATE, player);
 			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(modifyEvent);
 			if (modifyEvent.isCancelled()) {
 				return null;

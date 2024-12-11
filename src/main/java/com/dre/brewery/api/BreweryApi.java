@@ -203,9 +203,14 @@ public class BreweryApi {
 	 */
 	@Nullable
 	public static ItemStack createBrewItem(String recipeName, int quality) {
+		return createBrewItem(recipeName, quality, null);
+	}
+
+	@Nullable
+	public static ItemStack createBrewItem(String recipeName, int quality, Player player) {
 		BRecipe matching = BRecipe.getMatching(recipeName);
 		if (matching != null) {
-			return matching.create(quality);
+			return matching.create(quality, player);
 		}
 		return null;
 	}

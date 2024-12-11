@@ -528,6 +528,10 @@ public class BRecipe implements Cloneable {
 	 * @param quality The Quality of the Brew
 	 * @return The Created Item
 	 */
+	public ItemStack create(int quality, Player player) {
+		return createBrew(quality).createItem(this, player);
+	}
+
 	public ItemStack create(int quality) {
 		return createBrew(quality).createItem(this);
 	}
