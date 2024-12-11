@@ -20,7 +20,6 @@
 
 package com.dre.brewery.storage.serialization;
 
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;

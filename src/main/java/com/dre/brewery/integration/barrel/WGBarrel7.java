@@ -21,7 +21,6 @@
 package com.dre.brewery.integration.barrel;
 
 
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.Logging;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
