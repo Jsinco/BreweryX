@@ -22,12 +22,12 @@ package com.dre.brewery.integration;
 
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
@@ -79,7 +79,7 @@ public class Hook {
         if (isEnabled()) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
             if (plugin == null) {
-                throw new IllegalStateException("Plugin " + name + " is marked enabled but not found!");
+                Logging.errorLog("Plugin " + name + " is marked enabled but not found!");
             }
             return plugin;
         } else {

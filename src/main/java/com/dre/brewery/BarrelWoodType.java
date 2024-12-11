@@ -20,7 +20,6 @@
 
 package com.dre.brewery;
 
-import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
