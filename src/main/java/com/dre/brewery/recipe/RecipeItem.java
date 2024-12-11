@@ -211,13 +211,11 @@ public abstract class RecipeItem implements Cloneable {
 		rItem.immutable = true;
 
 		List<Material> materials = BUtil.getListSafely(configCustomItem.getMaterial(), Material.class);
-		List<String> names = BUtil.getListSafely(configCustomItem.getName());
-		List<String> lore = BUtil.getListSafely(configCustomItem.getLore());
+		List<String> names = BUtil.colorArrayList(BUtil.getListSafely(configCustomItem.getName()));
+		List<String> lore = BUtil.colorArrayList(BUtil.getListSafely(configCustomItem.getLore()));
 		List<Integer> customModelDatas = BUtil.getListSafely(configCustomItem.getCustomModelData());
 
-		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
-			// Spammy, just quietly fail
-			//Logging.errorLog("No Config Entries found for Custom Item");
+		if ((materials == null || materials.isEmpty()) && (names == null || names.isEmpty()) && (lore == null || lore.isEmpty()) && (customModelDatas == null || customModelDatas.isEmpty())) {
 			return null;
 		}
 

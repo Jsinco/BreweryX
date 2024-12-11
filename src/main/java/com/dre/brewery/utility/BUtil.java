@@ -101,6 +101,11 @@ public final class BUtil {
 		return finalText.toString();
 	}
 
+	public static List<String> colorArrayList(List<String> list) {
+		if (list == null) return null;
+		return list.stream().map(BUtil::color).toList();
+	}
+
 	/**
 	 * Creates a weighted mix between the two given colours
 	 * <p>where the weight is calculated from the distance of the currentPos to the prev and next
@@ -227,7 +232,9 @@ public final class BUtil {
 
 
 	public static <E extends Enum<E>> List<E> getListSafely(Object object, Class<E> mapToEnum) {
-		return getListSafely(object).stream().map(it -> getEnumByName(mapToEnum, it.toString())).toList();
+		var list = getListSafely(object);
+		if (list == null) return null;
+		return list.stream().map(it -> getEnumByName(mapToEnum, it.toString())).toList();
 	}
 
 	/**
