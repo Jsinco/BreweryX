@@ -6,8 +6,8 @@ config:
     La traducción a utilizar
     Tipos disponibles: en (Inglés), de (Alemán), es (Español), fr (Francés), it (Italiano), ru (Ruso), zh (Chino)
   updateCheck: |
-    Activa la comprobación de actualizaciones, pregunta a la API de Spigot por actualizaciones de BreweryX [true]
-    Si se encuentra una nueva versión, se registra un mensaje en el inicio del servidor y se muestra a OPs al unirse
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Spigot, None [GitHub]
   autosave: "Intervalo de autoguardado en minutos [10]"
   pluginPrefix: "Prefijo usado en los mensajes"
   debug: "Mostrar mensajes de depuración en los registros [false]"

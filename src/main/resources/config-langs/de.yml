@@ -6,8 +6,8 @@ config:
     Sprachedatei die genutzt werden sollte [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    Aktiviert das Suchen nach Updates für Brewery mit der spigot api [true]
-    Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Spigot, None [GitHub]
   autosave: "Autosave Intervall in Minuten [10]"
   pluginPrefix: "Prefix used on messages"
   debug: "Debug Nachrichten im Log anzeigen [false]"

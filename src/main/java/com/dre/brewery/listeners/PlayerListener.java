@@ -26,6 +26,7 @@ import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.*;
 import com.dre.brewery.utility.MaterialUtil;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -299,11 +300,11 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		UpdateChecker.notify(event.getPlayer());
 		BPlayer bplayer = BPlayer.get(event.getPlayer());
 		if (bplayer != null) {
 			bplayer.join(event.getPlayer());
 		}
+		ReleaseChecker.getInstance().notify(event.getPlayer());
 	}
 
 	@EventHandler

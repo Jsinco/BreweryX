@@ -6,8 +6,8 @@ config:
     The translation to be used [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    Enable checking for Updates, Checks the Spigot api for updates to BreweryX [true]
-    If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Spigot, None [GitHub]
   autosave: "Autosave interval in minutes [10]"
   pluginPrefix: "Prefix used on messages"
   debug: "Show debug messages in logs [false]"

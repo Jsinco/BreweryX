@@ -20,7 +20,6 @@
 
 package com.dre.brewery.configuration.files;
 
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.annotation.DefaultCommentSpace;
 import com.dre.brewery.configuration.annotation.Footer;
@@ -34,6 +33,7 @@ import com.dre.brewery.configuration.sector.capsule.ConfigRecipe;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManagerType;
 import com.dre.brewery.utility.Logging;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import eu.okaeri.configs.annotation.Header;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,7 +64,7 @@ public class Config extends AbstractOkaeriConfigFile {
     private String language = "en";
 
 	@LocalizedComment("config.updateCheck")
-    private boolean updateCheck = true;
+    private ReleaseChecker.ReleaseCheckerType resolveUpdatesFrom = ReleaseChecker.ReleaseCheckerType.GITHUB;
 
     @LocalizedComment("config.autosave")
     private int autosave = 10;

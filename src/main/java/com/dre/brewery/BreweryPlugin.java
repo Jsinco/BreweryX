@@ -50,7 +50,7 @@ import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.MinecraftVersion;
-import com.dre.brewery.utility.UpdateChecker;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import com.github.Anon8281.universalScheduler.UniversalScheduler;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import io.papermc.lib.PaperLib;
@@ -75,8 +75,6 @@ import java.util.stream.Collectors;
 
 @Getter
 public class BreweryPlugin extends JavaPlugin {
-
-	private static final int RESOURCE_ID = 114777;
 
 	private @Getter static AddonManager addonManager;
 	private @Getter static TaskScheduler scheduler;
@@ -202,16 +200,17 @@ public class BreweryPlugin extends JavaPlugin {
 			placeholderAPIHook.getInstance().register();
 		}
 
-		if (config.isUpdateCheck()) {
-			UpdateChecker.run(RESOURCE_ID);
-		}
-
 		Logging.log("Using scheduler&7: &a" + scheduler.getClass().getSimpleName());
 		Logging.log("Environment&7: &a" + Logging.getEnvironmentAsString());
 		if (!PaperLib.isPaper()) {
 			Logging.log("&aBreweryX performs best on Paper-based servers. Please consider switching to Paper for the best experience. &7https://papermc.io");
 		}
 		Logging.log("BreweryX enabled!");
+
+		ReleaseChecker releaseChecker = ReleaseChecker.getInstance();
+		releaseChecker.checkForUpdate().thenAccept(updateAvailable -> {
+			releaseChecker.notify(Bukkit.getConsoleSender());
+		});
 	}
 
 	@Override
