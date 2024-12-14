@@ -20,6 +20,7 @@
 
 package com.dre.brewery.utility.releases.impl;
 
+import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.releases.ReleaseChecker;
 
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class SpigotReleaseChecker extends ReleaseChecker {
                 }
                 return CONST_UNRESOLVED;
             } catch (IOException e) {
+                Logging.warningLog("Failed to resolve latest BreweryX version from SpigotMC. (No connection?)");
                 return CONST_UNRESOLVED;
             }
         });
