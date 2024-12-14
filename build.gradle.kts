@@ -93,7 +93,9 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldedit/files
     compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldguard/files
-    compileOnly("com.griefcraft.lwc:LWCX:2.2.9-dev")// https://www.spigotmc.org/resources/lwc-extended.69551/history
+    compileOnly("com.griefcraft.lwc:LWCX:2.4.0") { // https://www.spigotmc.org/resources/lwc-extended.69551/history
+        exclude("com.google")
+    }
     compileOnly("com.github.TechFortress:GriefPrevention:16.18") // https://www.spigotmc.org/resources/griefprevention.1884/history
     compileOnly("de.diddiz:logblock:1.16.5.1") // https://www.spigotmc.org/resources/logblock.67333/history
     compileOnly("com.github.Slimefun:Slimefun4:RC-35") // https://github.com/Slimefun/Slimefun4/releases

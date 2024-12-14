@@ -24,14 +24,21 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandManager;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import com.google.common.reflect.ClassPath;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Entry and exit point for a BreweryX addon. Addon classes should be annotated with {@link AddonInfo}.
@@ -81,6 +88,7 @@ public abstract class BreweryAddon {
 	private AddonLogger logger;
 	private AddonFileManager addonFileManager;
 	private AddonConfigManager addonConfigManager;
+	private File addonFile;
 
 
 	public void onAddonPreEnable() {
@@ -132,6 +140,13 @@ public abstract class BreweryAddon {
 	public AddonLogger getAddonLogger() {
 		return logger;
 	}
+
+
+	@NotNull
+	public File getAddonFile() {
+		return addonFile;
+	}
+
 
 	/**
 	 * Register a listener with the server.
@@ -245,5 +260,27 @@ public abstract class BreweryAddon {
 	 */
 	public boolean isPaper() {
 		return PaperLib.isPaper();
+	}
+
+
+	// Exposed Reflection API for addons.
+
+	/**
+	 * For addons to reflectively discover their own classes, they must reference their own Jar.
+	 * @param packageName Package to search
+	 * @return Set of classes in the package
+	 */
+	public Set<Class<?>> findClasses(String packageName) throws IOException {
+		URLClassLoader classLoader = new URLClassLoader(
+				new URL[] { getAddonFile().toURI().toURL() },
+				this.getClass().getClassLoader()
+		);
+		return ClassPath.from(classLoader)
+				.getAllClasses()
+				.stream()
+				.filter(clazz -> clazz.getPackageName()
+						.equalsIgnoreCase(packageName)) // should just be equals instead of equalsIgnoreCase probs
+				.map(ClassPath.ClassInfo::load)
+				.collect(Collectors.toSet());
 	}
 }

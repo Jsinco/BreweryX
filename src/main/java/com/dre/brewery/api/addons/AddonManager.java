@@ -167,10 +167,12 @@ public class AddonManager {
 				Field loggerField = BreweryAddon.class.getDeclaredField("logger"); loggerField.setAccessible(true);
 				Field fileManagerField = BreweryAddon.class.getDeclaredField("addonFileManager"); fileManagerField.setAccessible(true);
 				Field addonConfigManagerField = BreweryAddon.class.getDeclaredField("addonConfigManager"); addonConfigManagerField.setAccessible(true);
+				Field addonFile = BreweryAddon.class.getDeclaredField("addonFile"); addonFile.setAccessible(true);
 
 				loggerField.set(addon, new AddonLogger(addon.getAddonInfo()));
 				fileManagerField.set(addon, new AddonFileManager(addon, file));
 				addonConfigManagerField.set(addon, new AddonConfigManager(addon));
+				addonFile.set(addon, file);
 
 
 				addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
