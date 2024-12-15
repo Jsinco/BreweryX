@@ -120,7 +120,7 @@ tasks {
 
     build {
         dependsOn(shadowJar)
-        finalizedBy("kotlinReducedJar")
+        //finalizedBy("kotlinReducedJar")
     }
 
     jar {

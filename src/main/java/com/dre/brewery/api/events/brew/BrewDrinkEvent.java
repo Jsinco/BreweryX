@@ -23,32 +23,42 @@ package com.dre.brewery.api.events.brew;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Brew;
 import com.dre.brewery.utility.PermissionUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A Player Drinks a Brew.
  * <p>The amount of alcohol and quality that will be added to the player can be get/set here
  * <p>If cancelled the drinking will fail silently
  */
+@Getter
+@Setter
 public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Player player;
 	private final BPlayer bPlayer;
-	private int alc;
+	private int addedAlcohol;
 	private int quality;
 	private boolean cancelled;
 
-	public BrewDrinkEvent(Brew brew, ItemMeta meta, Player player, BPlayer bPlayer) {
+	@Nullable // Null if drinking from command
+	private PlayerItemConsumeEvent predecessorEvent;
+
+	public BrewDrinkEvent(Brew brew, ItemMeta meta, Player player, BPlayer bPlayer, @Nullable PlayerItemConsumeEvent predecessor) {
 		super(brew, meta);
 		this.player = player;
 		this.bPlayer = bPlayer;
-		alc = calcAlcWSensitivity(brew.getOrCalcAlc());
+		addedAlcohol = calcAlcWSensitivity(brew.getOrCalcAlc());
 		quality = brew.getQuality();
+		predecessorEvent = predecessor;
 	}
 
 	/**
@@ -66,29 +76,9 @@ public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 		if (sensitive == 0) {
 			alc = 0;
 		} else if (sensitive > 0) {
-			alc *= ((float) sensitive) / 100f;
+			alc *= (int) (((float) sensitive) / 100f);
 		}
 		return alc;
-	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
-	public BPlayer getbPlayer() {
-		return bPlayer;
-	}
-
-	public int getAddedAlcohol() {
-		return alc;
-	}
-
-	public void setAddedAlcohol(int alc) {
-		this.alc = alc;
-	}
-
-	public int getQuality() {
-		return quality;
 	}
 
 	public void setQuality(int quality) {
