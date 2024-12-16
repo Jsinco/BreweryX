@@ -45,7 +45,9 @@ public abstract class ReleaseChecker {
 
     public abstract CompletableFuture<Boolean> checkForUpdate();
     public CompletableFuture<Boolean> checkForUpdate(boolean overwriteCache) {
-        this.resolvedLatestVersion = null;
+        if (overwriteCache) {
+            this.resolvedLatestVersion = null;
+        }
         return checkForUpdate();
     }
 
