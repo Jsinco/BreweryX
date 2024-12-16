@@ -22,6 +22,7 @@ package com.dre.brewery.recipe;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.MinecraftVersion;
+import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -29,9 +30,10 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
-
+@Getter
 public class PotionColor {
 
+	private static final String HEX_STRING = "#%02x%02x%02x";
 	private static final MinecraftVersion VERSION = BreweryPlugin.getMCVersion();
 
 	public static final PotionColor PINK = new PotionColor(1, PotionType.REGEN, Color.FUCHSIA);
@@ -79,14 +81,6 @@ public class PotionColor {
 		return (short) (colorId + 32);
 	}
 
-	public PotionType getType() {
-		return type;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
 	@SuppressWarnings("deprecation")
 	public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
 		if (VERSION.isOrLater(MinecraftVersion.V1_9)) {
@@ -106,39 +100,41 @@ public class PotionColor {
 	}
 
 	public static PotionColor fromString(String string) {
-		switch (string) {
-			case "PINK": return PINK;
-			case "CYAN": return CYAN;
-			case "ORANGE": return ORANGE;
-			case "GREEN": return GREEN;
-			case "BRIGHT_RED": return BRIGHT_RED;
-			case "BLUE": return BLUE;
-			case "BLACK": return BLACK;
-			case "RED": return RED;
-			case "GREY": return GREY;
-			case "WATER": return WATER;
-			case "DARK_RED": return DARK_RED;
-			case "BRIGHT_GREY": return BRIGHT_GREY;
-			case "WHITE": return WHITE;
-			case "LIME": return LIME;
-			case "OLIVE": return OLIVE;
-			case "PURPLE": return PURPLE;
-			case "TEAL": return TEAL;
-			case "YELLOW": return YELLOW;
-			default:
+		return switch (string.toUpperCase()) {
+			case "PINK" -> PINK;
+			case "CYAN" -> CYAN;
+			case "ORANGE" -> ORANGE;
+			case "GREEN" -> GREEN;
+			case "BRIGHT_RED" -> BRIGHT_RED;
+			case "BLUE" -> BLUE;
+			case "BLACK" -> BLACK;
+			case "RED" -> RED;
+			case "GREY" -> GREY;
+			case "WATER" -> WATER;
+			case "DARK_RED" -> DARK_RED;
+			case "BRIGHT_GREY" -> BRIGHT_GREY;
+			case "WHITE" -> WHITE;
+			case "LIME" -> LIME;
+			case "OLIVE" -> OLIVE;
+			case "PURPLE" -> PURPLE;
+			case "TEAL" -> TEAL;
+			case "YELLOW" -> YELLOW;
+			default -> {
 				try{
 					if (string.length() >= 7) {
 						string = string.substring(1);
 					}
-					return new PotionColor(Color.fromRGB(
-						Integer.parseInt(string.substring( 0, 2 ), 16 ),
-						Integer.parseInt(string.substring( 2, 4 ), 16 ),
-						Integer.parseInt(string.substring( 4, 6 ), 16 )
+					yield new PotionColor(Color.fromRGB(
+							Integer.parseInt(string.substring( 0, 2 ), 16 ),
+							Integer.parseInt(string.substring( 2, 4 ), 16 ),
+							Integer.parseInt(string.substring( 4, 6 ), 16 )
 					));
-				} catch (Exception e) {
-					return WATER;
+				} catch (NumberFormatException e) {
+					yield WATER;
 				}
-		}
+			}
+
+		};
 	}
 
 	public static PotionColor fromColor(Color color) {
@@ -147,6 +143,6 @@ public class PotionColor {
 
 	@Override
 	public String toString() {
-		return super.toString();
+		return String.format(HEX_STRING, color.getRed(), color.getGreen(), color.getBlue());
 	}
 }

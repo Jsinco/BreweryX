@@ -74,7 +74,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Getter
-public class BreweryPlugin extends JavaPlugin {
+public final class BreweryPlugin extends JavaPlugin {
 
 	private @Getter static AddonManager addonManager;
 	private @Getter static TaskScheduler scheduler;
