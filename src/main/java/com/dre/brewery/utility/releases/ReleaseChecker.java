@@ -38,12 +38,16 @@ public abstract class ReleaseChecker {
     protected static final String CONST_UNRESOLVED = "Unresolved";
     private static ReleaseChecker instance;
 
-    protected String resolvedLatestVersion = CONST_UNRESOLVED; // Latest version of BX resolved from the source
+    protected String resolvedLatestVersion = null; // Latest version of BX resolved from the source
 
 
     public abstract CompletableFuture<String> resolveLatest();
 
     public abstract CompletableFuture<Boolean> checkForUpdate();
+    public CompletableFuture<Boolean> checkForUpdate(boolean overwriteCache) {
+        this.resolvedLatestVersion = null;
+        return checkForUpdate();
+    }
 
 
     public void notify(CommandSender receiver) {

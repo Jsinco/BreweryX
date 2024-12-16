@@ -62,6 +62,7 @@ public class GitHubReleaseChecker extends ReleaseChecker {
                 return this.resolvedLatestVersion;
             } catch (IOException | InterruptedException e) {
                 Logging.warningLog("Failed to resolve latest BreweryX version from GitHub. (No connection?)");
+                this.resolvedLatestVersion = CONST_UNRESOLVED;
                 return CONST_UNRESOLVED;
             }
         });

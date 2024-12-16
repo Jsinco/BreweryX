@@ -49,16 +49,21 @@ public class SpigotReleaseChecker extends ReleaseChecker {
                     this.resolvedLatestVersion = scanner.next();
                     return this.resolvedLatestVersion;
                 }
-                return CONST_UNRESOLVED;
-            } catch (IOException e) {
-                Logging.warningLog("Failed to resolve latest BreweryX version from SpigotMC. (No connection?)");
-                return CONST_UNRESOLVED;
+            } catch (IOException ignored) {
+
             }
+            return this.failedToResolve();
         });
     }
 
     @Override
     public CompletableFuture<Boolean> checkForUpdate() {
         return resolveLatest().thenApply(ignored -> isUpdateAvailable());
+    }
+
+    public String failedToResolve() {
+        Logging.warningLog("Failed to resolve latest BreweryX version from SpigotMC. (No connection?)");
+        this.resolvedLatestVersion = CONST_UNRESOLVED;
+        return CONST_UNRESOLVED;
     }
 }

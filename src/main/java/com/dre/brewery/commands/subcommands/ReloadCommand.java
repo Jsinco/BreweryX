@@ -31,9 +31,11 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.Logging;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 import java.util.List;
 
@@ -94,7 +96,14 @@ public class ReloadCommand implements SubCommand {
 				lang.sendEntry(sender, "CMD_Reload");
 			}
 
-
+			ReleaseChecker releaseChecker = ReleaseChecker.getInstance();
+			releaseChecker.checkForUpdate(true).thenAccept(updateAvailable -> {
+				if (!(sender instanceof ConsoleCommandSender consoleSender)) {
+					releaseChecker.notify(sender);
+				} else {
+					releaseChecker.notify(consoleSender);
+				}
+			});
 		} catch (Throwable e) {
 			Logging.errorLog("Something went wrong trying to reload Brewery!", e);
 		}
