@@ -143,7 +143,8 @@ tasks {
     }
 
     shadowJar {
-		relocate("com.google", "com.dre.brewery.depend.google")
+		relocate("com.google.gson", "com.dre.brewery.depend.google.gson")
+        relocate("com.google.errorprone", "com.dre.brewery.depend.google.errorprone")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
         relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
         relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
