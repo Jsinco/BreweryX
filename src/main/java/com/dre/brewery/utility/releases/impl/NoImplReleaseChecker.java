@@ -29,6 +29,7 @@ public class NoImplReleaseChecker extends ReleaseChecker {
 
     @Override
     public CompletableFuture<String> resolveLatest() {
+        this.resolvedLatestVersion = CONST_UNRESOLVED;
         return CompletableFuture.completedFuture(CONST_UNRESOLVED);
     }
 

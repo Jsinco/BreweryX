@@ -35,21 +35,15 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 public abstract class ReleaseChecker {
 
-    protected static final String CONST_UNRESOLVED = "Unresolved";
+    protected static final String CONST_UNRESOLVED = "UNRESOLVED";
     private static ReleaseChecker instance;
 
-    protected String resolvedLatestVersion = null; // Latest version of BX resolved from the source
+    protected String resolvedLatestVersion = CONST_UNRESOLVED; // Latest version of BX resolved from the source
 
 
     public abstract CompletableFuture<String> resolveLatest();
 
     public abstract CompletableFuture<Boolean> checkForUpdate();
-    public CompletableFuture<Boolean> checkForUpdate(boolean overwriteCache) {
-        if (overwriteCache) {
-            this.resolvedLatestVersion = null;
-        }
-        return checkForUpdate();
-    }
 
 
     public void notify(CommandSender receiver) {
@@ -72,8 +66,8 @@ public abstract class ReleaseChecker {
 
     // Singleton
 
-    public static ReleaseChecker getInstance() {
-        if (instance != null) {
+    public static ReleaseChecker getInstance(boolean newInstance) {
+        if (instance != null && !newInstance) {
             return instance;
         }
         Config config = ConfigManager.getConfig(Config.class);
@@ -83,6 +77,10 @@ public abstract class ReleaseChecker {
             case NONE -> instance = new NoImplReleaseChecker();
         }
         return instance;
+    }
+
+    public static ReleaseChecker getInstance() {
+        return getInstance(false);
     }
 
 

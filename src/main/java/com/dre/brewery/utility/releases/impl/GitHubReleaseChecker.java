@@ -45,9 +45,6 @@ public class GitHubReleaseChecker extends ReleaseChecker {
 
     @Override
     public CompletableFuture<String> resolveLatest() {
-        if (resolvedLatestVersion != null) {
-            return CompletableFuture.completedFuture(resolvedLatestVersion);
-        }
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(link))

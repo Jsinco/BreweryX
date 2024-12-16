@@ -96,8 +96,8 @@ public class ReloadCommand implements SubCommand {
 				lang.sendEntry(sender, "CMD_Reload");
 			}
 
-			ReleaseChecker releaseChecker = ReleaseChecker.getInstance();
-			releaseChecker.checkForUpdate(true).thenAccept(updateAvailable -> {
+			ReleaseChecker releaseChecker = ReleaseChecker.getInstance(true);
+			releaseChecker.checkForUpdate().thenAccept(updateAvailable -> {
 				if (!(sender instanceof ConsoleCommandSender consoleSender)) {
 					releaseChecker.notify(sender);
 				} else {

@@ -40,9 +40,6 @@ public class SpigotReleaseChecker extends ReleaseChecker {
 
     @Override
     public CompletableFuture<String> resolveLatest() {
-        if (resolvedLatestVersion != null) {
-            return CompletableFuture.completedFuture(resolvedLatestVersion);
-        }
         return CompletableFuture.supplyAsync(() -> {
             try (Scanner scanner = new Scanner(new URL(link).openStream())) {
                 if (scanner.hasNext()) {
