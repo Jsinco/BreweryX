@@ -36,6 +36,6 @@ public class OraxenPluginItem extends PluginItem {
         if (itemId == null) {
             return false;
         }
-        return itemId.equals(this.getItemId());
+        return itemId.equalsIgnoreCase(this.getItemId());
     }
 }
