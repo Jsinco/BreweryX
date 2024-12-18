@@ -147,11 +147,29 @@ public final class BreweryPlugin extends JavaPlugin {
 			return;
         }
 
+		// Load objects
 		DataManager.loadMiscData(dataManager.getBreweryMiscData());
-		Barrel.getBarrels().addAll(dataManager.getAllBarrels().stream().filter(Objects::nonNull).toList());
-		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream().filter(Objects::nonNull).collect(Collectors.toMap(BCauldron::getBlock, Function.identity())));
-		BPlayer.getPlayers().putAll(dataManager.getAllPlayers().stream().filter(Objects::nonNull).collect(Collectors.toMap(BPlayer::getUuid, Function.identity())));
-		Wakeup.getWakeups().addAll(dataManager.getAllWakeups().stream().filter(Objects::nonNull).toList());
+		Barrel.getBarrels().addAll(dataManager.getAllBarrels()
+						.stream()
+						.filter(Objects::nonNull)
+						.toList());
+		BCauldron.getBcauldrons().putAll(dataManager.getAllCauldrons().stream()
+						.filter(Objects::nonNull)
+						.collect(Collectors.toMap(
+								BCauldron::getBlock, Function.identity(),
+								(existing, replacement) -> replacement // Issues#69
+						)));
+		BPlayer.getPlayers().putAll(dataManager.getAllPlayers()
+				.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(
+						BPlayer::getUuid,
+						Function.identity()
+				)));
+		Wakeup.getWakeups().addAll(dataManager.getAllWakeups()
+				.stream()
+				.filter(Objects::nonNull)
+				.toList());
 
 
 		// Setup Metrics

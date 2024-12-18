@@ -392,6 +392,7 @@ public class Barrel extends BarrelBody implements InventoryHolder {
 	 * @param breaker   The Player that broke it, or null if not known
 	 * @param dropItems If the items in the barrels inventory should drop to the ground
 	 */
+	@Override
 	public void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems) {
 		BarrelRemoveEvent event = new BarrelRemoveEvent(this, dropItems);
 		// Listened to by LWCBarrel (IntegrationListener)
