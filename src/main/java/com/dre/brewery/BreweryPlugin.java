@@ -159,7 +159,7 @@ public class BreweryPlugin extends JavaPlugin {
 						.filter(Objects::nonNull)
 						.collect(Collectors.toMap(
 								BCauldron::getBlock, Function.identity(),
-								(existing, replacement) -> replacement // Issues#69
+								(existing, replacement) -> replacement // Issues#68
 						)));
 		BPlayer.getPlayers().putAll(dataManager.getAllPlayers()
 				.stream()
