@@ -23,12 +23,15 @@ package com.dre.brewery;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.MaterialUtil;
+import com.dre.brewery.utility.MinecraftVersion;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The Blocks that make up a Barrel in the World
@@ -45,6 +48,15 @@ public abstract class BarrelBody {
 		this.spigot = spigot;
 		this.signoffset = signoffset;
 		this.bounds = new BoundingBox(0, 0, 0, 0, 0, 0);
+
+		if (MinecraftVersion.isFolia()) { // Issues#70
+			BreweryPlugin.getScheduler().runTask(spigot.getLocation(), () -> {
+				Block broken = getBrokenBlock(true);
+				if (broken != null) {
+					this.remove(broken, null, true);
+				}
+			});
+		}
 	}
 
 	/**
@@ -200,6 +212,8 @@ public abstract class BarrelBody {
 		}
 		return block;
 	}
+
+	public abstract void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems);
 
 	/**
 	 * Regenerate the Barrel Bounds.
