@@ -31,7 +31,7 @@ import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.SerializableBPlayer;
 import com.dre.brewery.storage.records.SerializableBarrel;
 import com.dre.brewery.storage.records.SerializableCauldron;
-import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.Logging;
@@ -100,8 +100,8 @@ public class MySQLStorage extends DataManager {
 
 
     @Override
-    public boolean createTable(String name) {
-        String sql = "CREATE TABLE IF NOT EXISTS " + tablePrefix + name + " (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);";
+    public boolean createTable(String name, int maxIdLength) {
+        String sql = "CREATE TABLE IF NOT EXISTS " + tablePrefix + name + " (id VARCHAR(" + maxIdLength + ") PRIMARY KEY, data LONGTEXT);";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.execute();
             return true;

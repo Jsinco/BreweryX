@@ -18,8 +18,10 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package com.dre.brewery.storage.records;
+package com.dre.brewery.storage.interfaces;
 
-public interface SerializableThing {
-    String getId();
+import com.dre.brewery.storage.DataManager;
+
+public interface ExternallyAutoSavable {
+    void onAutoSave(DataManager dataManager);
 }

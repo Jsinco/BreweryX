@@ -31,7 +31,7 @@ import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.SerializableBPlayer;
 import com.dre.brewery.storage.records.SerializableBarrel;
 import com.dre.brewery.storage.records.SerializableCauldron;
-import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.utility.Logging;
 import com.mongodb.client.MongoClient;
@@ -43,7 +43,6 @@ import com.mongodb.client.model.ReplaceOptions;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +93,7 @@ public class MongoDBStorage extends DataManager {
     }
 
     @Override
-    public boolean createTable(String name) {
+    public boolean createTable(String name, int maxIdLength) {
         mongoDatabase.createCollection(collectionPrefix + name);
         return true;
     }
@@ -128,14 +127,7 @@ public class MongoDBStorage extends DataManager {
 
     @Override
     public <T extends SerializableThing> void saveAllGeneric(List<T> things, String collection, boolean overwrite, Class<T> type) {
-        if (type == null) {
-            try {
-                throw new NullPointerException("type must not be null!");
-            } catch (NullPointerException e) {
-                Logging.errorLog("'type' was null.", e);
-                return;
-            }
-        }
+        assert type != null : "'type' cannot be null!";
         MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
 
         if (overwrite) {

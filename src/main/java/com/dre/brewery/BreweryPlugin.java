@@ -174,7 +174,7 @@ public final class BreweryPlugin extends JavaPlugin {
 				.filter(Objects::nonNull)
 				.toList());
 
-
+		addonManager.enableAddons();
 		// Setup Metrics
 		this.breweryStats.setupBStats();
 		new BreweryXStats().setupBStats();

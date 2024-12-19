@@ -118,6 +118,11 @@ public class AddonManager {
 			loadAddon(file); // Go read the documentation below to understand what this does.
 		}
 
+		int loaded = LOADED_ADDONS.size();
+		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
+	}
+
+	public void enableAddons() {
 		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onAddonEnable(); // All done, let the addon know it's been enabled.
@@ -126,8 +131,6 @@ public class AddonManager {
 				unloadAddon(addon);
 			}
 		}
-		int loaded = LOADED_ADDONS.size();
-		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
 	}
 
 

@@ -36,6 +36,7 @@ public class ReloadAddonsCommand implements SubCommand {
 			AddonManager addonManager = BreweryPlugin.getAddonManager();
 			addonManager.unloadAddons();
 			addonManager.loadAddons();
+			addonManager.enableAddons();
 			Logging.msg(sender, "Finished loading " + addonManager.getAddons().size() + " addon(s)");
 			Logging.msg(sender, "&eUsing this command should be avoided as it can cause unpredictable behavior within addons!");
 		} else {

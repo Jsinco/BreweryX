@@ -31,12 +31,13 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.integration.bstats.BreweryStats;
+import com.dre.brewery.storage.interfaces.ExternallyAutoSavable;
 import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
-import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
 import lombok.Getter;
@@ -57,6 +58,8 @@ public abstract class DataManager {
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
+    @Getter
+    protected static List<ExternallyAutoSavable> autoSavables = new ArrayList<>();
 
     private final DataManagerType type;
 
@@ -64,7 +67,8 @@ public abstract class DataManager {
         this.type = type;
     }
 
-    public abstract boolean createTable(String name);
+    public abstract boolean createTable(String name, int maxIdLength);
+    public boolean createTable(String name) { return createTable(name, 36);}
     public abstract boolean dropTable(String name);
 
     public abstract <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type);
@@ -168,6 +172,14 @@ public abstract class DataManager {
         saveAllCauldrons(cauldrons, true);
         saveAllPlayers(players, true);
         saveAllWakeups(wakeups, true);
+
+        for (ExternallyAutoSavable autoSaveAble : autoSavables) {
+            try {
+                autoSaveAble.onAutoSave(this);
+            } catch (Throwable e) {
+                Logging.errorLog("An external auto-savable class threw an exception. This is most likely an addon not saving properly.", e);
+            }
+        }
         Logging.debugLog("Saved all data!");
     }
 

@@ -22,6 +22,7 @@ package com.dre.brewery.storage.records;
 
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Location;
 

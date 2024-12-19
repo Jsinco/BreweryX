@@ -21,6 +21,7 @@
 package com.dre.brewery.storage.records;
 
 import com.dre.brewery.BPlayer;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 
 /**
  * Represents a player that can be serialized.

@@ -29,7 +29,7 @@ import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
-import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.BUtil;
@@ -88,7 +88,7 @@ public class FlatFileStorage extends DataManager {
     }
 
     @Override
-    public boolean createTable(String name) {
+    public boolean createTable(String name, int maxIdLength) {
         dataFile.createSection(name);
         save();
         return true;
@@ -130,8 +130,9 @@ public class FlatFileStorage extends DataManager {
             dataFile.set(table, null);
         }
 
-        if (section == null) {
+        if (section == null) {  // Sloppy, but whatever
             dataFile.createSection(table);
+            section = dataFile.getConfigurationSection(table);
         }
 
         for (T thing : serializableThings) {
