@@ -79,7 +79,7 @@ public class ConfigHead {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            Logging.errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ".yml)", e);
+            Logging.errorLog("Something went wrong trying to load a config file! &e(Class: " + configClass.getSimpleName() + ")", e);
             Logging.warningLog("Resolve the issue in the file and run &6/brewery reload");
             return createBlankConfigInstance(configClass);
         }
@@ -94,7 +94,14 @@ public class ConfigHead {
         if (!overwrite && LOADED_CONFIGS.containsKey(configClass)) {
             return;
         }
-        LOADED_CONFIGS.put(configClass, createConfig(configClass));
+
+        try {
+            createConfig(configClass);
+        } catch (Throwable e) {
+            Logging.errorLog("Something went wrong trying to load a config file! &e(Class: " + configClass.getSimpleName() + ")", e);
+            Logging.warningLog("Resolve the issue in the file and run &6/brewery reload");
+            createBlankConfigInstance(configClass);
+        }
     }
 
 

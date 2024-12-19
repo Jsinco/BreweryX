@@ -56,8 +56,7 @@ public class ReloadCommand implements SubCommand {
 			TranslationManager.newInstance(breweryPlugin.getDataFolder());
 
 			// Reload each config
-			for (var entry : ConfigManager.LOADED_CONFIGS.entrySet()) {
-				AbstractOkaeriConfigFile file = entry.getValue();
+			for (var file : ConfigManager.LOADED_CONFIGS.values()) {
 				try {
 					file.reload();
 				} catch (Throwable e) {
