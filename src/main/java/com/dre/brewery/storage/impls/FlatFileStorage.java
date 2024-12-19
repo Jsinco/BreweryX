@@ -29,7 +29,9 @@ import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.records.SerializableThing;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
+import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.Logging;
@@ -37,6 +39,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +54,7 @@ public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
     private final YamlConfiguration dataFile;
+    private SQLDataSerializer serializer;
 
     public FlatFileStorage(ConfiguredDataManager record) throws StorageInitException {
         super(record.getType());
@@ -73,8 +77,79 @@ public class FlatFileStorage extends DataManager {
         try {
             dataFile.save(rawFile);
         } catch (IOException e) {
-            Logging.errorLog("Failed to save to Flatfile!", e);
+            Logging.errorLog("Failed to save to FlatFile!", e);
         }
+    }
+    private SQLDataSerializer getLazySerializerInstance() {
+        if (serializer == null) {
+            serializer = new SQLDataSerializer();
+        }
+        return serializer;
+    }
+
+    @Override
+    public boolean createTable(String name) {
+        dataFile.createSection(name);
+        save();
+        return true;
+    }
+
+    @Override
+    public boolean dropTable(String name) {
+        dataFile.set(name, null);
+        save();
+        return true;
+    }
+
+    @Override
+    public <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type) {
+        String path = table + "." + id;
+        return getLazySerializerInstance().deserialize(dataFile.getString(path), type);
+    }
+
+    @Override
+    public <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
+        ConfigurationSection section = dataFile.getConfigurationSection(table);
+        if (section == null) {
+            return Collections.emptyList();
+        }
+        List<T> things = new ArrayList<>();
+        for (String key : section.getKeys(false)) {
+            T thing = section.get(key) != null ? getLazySerializerInstance().deserialize(section.getString(key), type) : null;
+            if (thing != null) {
+                things.add(thing);
+            }
+        }
+        return things;
+    }
+
+    @Override
+    public <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type) {
+        ConfigurationSection section = dataFile.getConfigurationSection(table);
+        if (overwrite && section != null) {
+            dataFile.set(table, null);
+        }
+
+        if (section == null) {
+            dataFile.createSection(table);
+        }
+
+        for (T thing : serializableThings) {
+            section.set(thing.getId(), getLazySerializerInstance().serialize(thing));
+        }
+        save();
+    }
+
+    @Override
+    public <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
+        dataFile.set(table + "." + serializableThing.getId(), getLazySerializerInstance().serialize(serializableThing));
+        save();
+    }
+
+    @Override
+    public void deleteGeneric(String id, String table) {
+        dataFile.set(table + "." + id, null);
+        save();
     }
 
     @Override

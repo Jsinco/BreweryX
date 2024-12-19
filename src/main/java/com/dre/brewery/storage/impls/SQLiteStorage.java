@@ -101,7 +101,32 @@ public class SQLiteStorage extends DataManager {
         }
     }
 
-    private <T> T getGeneric(UUID id, String table, Class<T> type) {
+    @Override
+    public boolean createTable(String name) {
+        String sql = "CREATE TABLE IF NOT EXISTS " + tablePrefix + name + " (id VARCHAR(36) PRIMARY KEY, data LONGTEXT);";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            Logging.errorLog("Failed to create table: " + name + " due to MySQL exception!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean dropTable(String name) {
+        String sql = "DROP TABLE IF EXISTS " + tablePrefix + name;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            Logging.errorLog("Failed to drop table: " + name + " due to MySQL exception!", e);
+        }
+        return false;
+    }
+
+    @Override
+    public <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type) {
         String sql = "SELECT data FROM " + tablePrefix + table + " WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id.toString());
@@ -116,7 +141,8 @@ public class SQLiteStorage extends DataManager {
         return null;
     }
 
-    private <T> List<T> getAllGeneric(String table, Class<T> type) {
+    @Override
+    public <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
         String sql = "SELECT id, data FROM " + tablePrefix + table;
         List<T> objects = new ArrayList<>();
 
@@ -133,7 +159,8 @@ public class SQLiteStorage extends DataManager {
         return objects;
     }
 
-    private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
+    @Override
+    public <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, Class<T> type) {
         String sql;
         if (overwrite) {
             sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
@@ -152,9 +179,13 @@ public class SQLiteStorage extends DataManager {
             Logging.errorLog("Failed to save objects to SQLite!", e);
         }
     }
+    private <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite) {
+        saveAllGeneric(serializableThings, table, overwrite, null);
+    }
 
 
-    private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
+    @Override
+    public <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
         String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, serializableThing.getId());
@@ -165,7 +196,8 @@ public class SQLiteStorage extends DataManager {
         }
     }
 
-    private void deleteGeneric(UUID id, String table) {
+    @Override
+    public void deleteGeneric(String id, String table) {
         String sql = "DELETE FROM " + tablePrefix + table + " WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id.toString());
@@ -177,7 +209,7 @@ public class SQLiteStorage extends DataManager {
 
     @Override
     public Barrel getBarrel(UUID id) {
-        SerializableBarrel serializableBarrel = getGeneric(id, "barrels", SerializableBarrel.class);
+        SerializableBarrel serializableBarrel = getGeneric(id.toString(), "barrels", SerializableBarrel.class);
         if (serializableBarrel != null) {
             return serializableBarrel.toBarrel();
         }
@@ -206,12 +238,12 @@ public class SQLiteStorage extends DataManager {
 
     @Override
     public void deleteBarrel(UUID id) {
-        deleteGeneric(id, "barrels");
+        deleteGeneric(id.toString(), "barrels");
     }
 
     @Override
     public BCauldron getCauldron(UUID id) {
-        SerializableCauldron serializableCauldron = getGeneric(id, "cauldrons", SerializableCauldron.class);
+        SerializableCauldron serializableCauldron = getGeneric(id.toString(), "cauldrons", SerializableCauldron.class);
         if (serializableCauldron != null) {
             return serializableCauldron.toCauldron();
         }
@@ -240,12 +272,12 @@ public class SQLiteStorage extends DataManager {
 
     @Override
     public void deleteCauldron(UUID id) {
-        deleteGeneric(id, "cauldrons");
+        deleteGeneric(id.toString(), "cauldrons");
     }
 
     @Override
     public BPlayer getPlayer(UUID playerUUID) {
-        SerializableBPlayer serializableBPlayer = getGeneric(playerUUID, "players", SerializableBPlayer.class);
+        SerializableBPlayer serializableBPlayer = getGeneric(playerUUID.toString(), "players", SerializableBPlayer.class);
         if (serializableBPlayer != null) {
             return serializableBPlayer.toBPlayer();
         }
@@ -274,12 +306,12 @@ public class SQLiteStorage extends DataManager {
 
     @Override
     public void deletePlayer(UUID playerUUID) {
-        deleteGeneric(playerUUID, "players");
+        deleteGeneric(playerUUID.toString(), "players");
     }
 
     @Override
     public Wakeup getWakeup(UUID id) {
-        SerializableWakeup serializableWakeup = getGeneric(id, "wakeups", SerializableWakeup.class);
+        SerializableWakeup serializableWakeup = getGeneric(id.toString(), "wakeups", SerializableWakeup.class);
         if (serializableWakeup != null) {
             return serializableWakeup.toWakeup();
         }
@@ -308,7 +340,7 @@ public class SQLiteStorage extends DataManager {
 
     @Override
     public void deleteWakeup(UUID id) {
-        deleteGeneric(id, "wakeups");
+        deleteGeneric(id.toString(), "wakeups");
     }
 
     @Override

@@ -43,6 +43,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,40 +93,64 @@ public class MongoDBStorage extends DataManager {
         mongoClient.close();
     }
 
+    @Override
+    public boolean createTable(String name) {
+        mongoDatabase.createCollection(collectionPrefix + name);
+        return true;
+    }
+
+    @Override
+    public boolean dropTable(String name) {
+        mongoDatabase.getCollection(collectionPrefix + name).drop();
+        return true;
+    }
+
+    @Override
+    public <T extends SerializableThing> T getGeneric(String id, String collection, Class<T> type) {
+        MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
+        return mongoCollection.find(Filters.eq(MONGO_ID, id)).first();
+    }
     private <T extends SerializableThing> T getGeneric(UUID id, String collection, Class<T> type) {
-        MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
-        return mongoCollection.find(Filters.eq(MONGO_ID, id)).first();
+        return getGeneric(id.toString(), collection, type);
     }
 
-    private <T extends SerializableThing> T getGeneric(String id, String collection, Class<T> type) {
-        MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
-        return mongoCollection.find(Filters.eq(MONGO_ID, id)).first();
-    }
-
-    private <T extends SerializableThing> List<T> getAllGeneric(String collection, Class<T> type) {
+    @Override
+    public <T extends SerializableThing> List<T> getAllGeneric(String collection, Class<T> type) {
         MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
         return mongoCollection.find().into(new ArrayList<>());
     }
 
-
-    private <T extends SerializableThing> void saveGeneric(T thing, String collection) {
+    @Override
+    public <T extends SerializableThing> void saveGeneric(T thing, String collection) {
         MongoCollection<T> mongoCollection = (MongoCollection<T>) mongoDatabase.getCollection(collectionPrefix + collection, thing.getClass());
         mongoCollection.replaceOne(Filters.eq(MONGO_ID, thing.getId()), thing, new ReplaceOptions().upsert(true));
     }
 
-    private <T extends SerializableThing> void saveAllGeneric(List<T> things, String collection, Class<T> type) {
+    @Override
+    public <T extends SerializableThing> void saveAllGeneric(List<T> things, String collection, boolean overwrite, Class<T> type) {
+        if (type == null) {
+            try {
+                throw new NullPointerException("type must not be null!");
+            } catch (NullPointerException e) {
+                Logging.errorLog("'type' was null.", e);
+                return;
+            }
+        }
         MongoCollection<T> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, type);
 
-        Set<String> thingsIds = things.stream().map(T::getId).collect(Collectors.toSet());
-        // Delete objects from the collection that are no longer in the list
-        mongoCollection.deleteMany(Filters.not(Filters.in(MONGO_ID, thingsIds)));
+        if (overwrite) {
+            Set<String> thingsIds = things.stream().map(T::getId).collect(Collectors.toSet());
+            // Delete objects from the collection that are no longer in the list
+            mongoCollection.deleteMany(Filters.not(Filters.in(MONGO_ID, thingsIds)));
+        }
 
         for (T thing : things) {
             mongoCollection.replaceOne(Filters.eq(MONGO_ID, thing.getId()), thing, new ReplaceOptions().upsert(true)); // Upsert to handle both insert and update
         }
     }
 
-    private void deleteGeneric(UUID id, String collection) {
+    @Override
+    public void deleteGeneric(String id, String collection) {
         MongoCollection<SerializableThing> mongoCollection = mongoDatabase.getCollection(collectionPrefix + collection, SerializableThing.class);
         mongoCollection.deleteOne(Filters.eq(MONGO_ID, id));
     }
@@ -152,7 +177,7 @@ public class MongoDBStorage extends DataManager {
         List<SerializableBarrel> serializableBarrels = barrels.stream()
                 .map(SerializableBarrel::new)
                 .toList();
-        saveAllGeneric(serializableBarrels, "barrels", SerializableBarrel.class);
+        saveAllGeneric(serializableBarrels, "barrels", overwrite, SerializableBarrel.class);
     }
 
     @Override
@@ -162,7 +187,7 @@ public class MongoDBStorage extends DataManager {
 
     @Override
     public void deleteBarrel(UUID id) {
-        deleteGeneric(id, "barrels");
+        deleteGeneric(id.toString(), "barrels");
     }
 
     @Override
@@ -186,7 +211,7 @@ public class MongoDBStorage extends DataManager {
         List<SerializableCauldron> serializableCauldrons = cauldrons.stream()
                 .map(SerializableCauldron::new)
                 .toList();
-        saveAllGeneric(serializableCauldrons, "cauldrons", SerializableCauldron.class);
+        saveAllGeneric(serializableCauldrons, "cauldrons", overwrite, SerializableCauldron.class);
     }
 
     @Override
@@ -196,7 +221,7 @@ public class MongoDBStorage extends DataManager {
 
     @Override
     public void deleteCauldron(UUID id) {
-        deleteGeneric(id, "cauldrons");
+        deleteGeneric(id.toString(), "cauldrons");
     }
 
     @Override
@@ -220,7 +245,7 @@ public class MongoDBStorage extends DataManager {
         List<SerializableBPlayer> serializableBPlayers = players.stream()
                 .map(SerializableBPlayer::new)
                 .toList();
-        saveAllGeneric(serializableBPlayers, "players", SerializableBPlayer.class);
+        saveAllGeneric(serializableBPlayers, "players", overwrite, SerializableBPlayer.class);
     }
 
     @Override
@@ -230,7 +255,7 @@ public class MongoDBStorage extends DataManager {
 
     @Override
     public void deletePlayer(UUID playerUUID) {
-        deleteGeneric(playerUUID, "players");
+        deleteGeneric(playerUUID.toString(), "players");
     }
 
     @Override
@@ -254,7 +279,7 @@ public class MongoDBStorage extends DataManager {
         List<SerializableWakeup> serializableWakeups = wakeups.stream()
                 .map(SerializableWakeup::new)
                 .toList();
-        saveAllGeneric(serializableWakeups, "wakeups", SerializableWakeup.class);
+        saveAllGeneric(serializableWakeups, "wakeups", overwrite, SerializableWakeup.class);
     }
 
     @Override
@@ -264,7 +289,7 @@ public class MongoDBStorage extends DataManager {
 
     @Override
     public void deleteWakeup(UUID id) {
-        deleteGeneric(id, "wakeups");
+        deleteGeneric(id.toString(), "wakeups");
     }
 
     @Override

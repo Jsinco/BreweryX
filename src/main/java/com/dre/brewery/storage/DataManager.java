@@ -36,18 +36,21 @@ import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.records.SerializableThing;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 public abstract class DataManager {
 
     // TODO: Instead of using UUIDs for Barrels, Cauldrons, and Wakeups. We should figure out some hashing algorithm to generate a unique ID for each of them.
@@ -55,12 +58,20 @@ public abstract class DataManager {
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
 
-    @Getter
     private final DataManagerType type;
 
     protected DataManager(DataManagerType type) throws StorageInitException {
         this.type = type;
     }
+
+    public abstract boolean createTable(String name);
+    public abstract boolean dropTable(String name);
+
+    public abstract <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type);
+    public abstract <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type);
+    public abstract <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type);
+    public abstract <T extends SerializableThing> void saveGeneric(T serializableThing, String table);
+    public abstract void deleteGeneric(String id, String table);
 
     public abstract Barrel getBarrel(UUID id);
     public abstract Collection<Barrel> getAllBarrels();

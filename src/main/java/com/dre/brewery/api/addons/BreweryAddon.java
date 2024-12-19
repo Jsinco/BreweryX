@@ -22,6 +22,7 @@ package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandManager;
+import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.utility.MinecraftVersion;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import com.google.common.reflect.ClassPath;
@@ -226,6 +227,16 @@ public abstract class BreweryAddon {
 	@NotNull
 	public TaskScheduler getScheduler() {
 		return BreweryPlugin.getScheduler();
+	}
+
+	/**
+	 * Retrieves the DataManager associated with the BreweryX plugin.
+	 *
+	 * @return The DataManager instance
+	 */
+	@NotNull
+	public DataManager getDataManager() {
+		return BreweryPlugin.getDataManager();
 	}
 
 	/**
