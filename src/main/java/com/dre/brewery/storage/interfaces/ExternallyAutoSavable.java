@@ -35,6 +35,21 @@ import com.dre.brewery.storage.DataManager;
 public interface ExternallyAutoSavable {
 
     /**
+     * @return The identifier of the table. Should be unique.
+     */
+    String table();
+
+    /**
+     * The max length of the identifier for the PRIMARY KEY of the table.
+     * This only matters if the user is using an SQL-relational database.
+     * This specifies what {@code VARCHAR(size)} should be.
+     * @return The max length of the table specified by the child class. Max length is 255.
+     */
+    default int tableMaxIdLength() {
+        return 36; // Standard UUID length is 36
+    }
+
+    /**
      * Fired when Brewery is handling its auto-save task.
      * @param dataManager Instance of the DataManager
      */

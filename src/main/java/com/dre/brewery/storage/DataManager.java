@@ -69,9 +69,6 @@ public abstract class DataManager {
     }
 
     public abstract boolean createTable(String name, int maxIdLength);
-    public boolean createTable(String name) {
-        return createTable(name, 36); // Standard UUID length is 36
-    }
     public abstract boolean dropTable(String name);
 
     public abstract <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type);
@@ -110,6 +107,10 @@ public abstract class DataManager {
 
     public abstract BreweryMiscData getBreweryMiscData();
     public abstract void saveBreweryMiscData(BreweryMiscData data);
+
+    protected void closeConnection() {
+        // Implemented in subclasses that use database connections
+    }
 
 
     public void tryAutoSave() {
@@ -186,9 +187,6 @@ public abstract class DataManager {
         Logging.debugLog("Saved all data!");
     }
 
-    protected void closeConnection() {
-        // Implemented in subclasses that use database connections
-    }
 
     public static DataManager createDataManager(ConfiguredDataManager record) throws StorageInitException {
         DataManager dataManager = switch (record.getType()) {
@@ -212,6 +210,12 @@ public abstract class DataManager {
 			Logging.warningLog("BreweryX can only load legacy data from worlds that exist. If you're trying to migrate old cauldrons, barrels, etc. And the worlds they're in don't exist, you'll need to migrate manually.");
         }
 
+        // DataManager has been reloaded and may have swapped to a new implementation.
+        // We have to ensure all our tables that were externally
+        // created are re-created on the new DataManager or already exist!
+        for (ExternallyAutoSavable autoSavable : autoSavabales) { // Should be empty on the first startup of the DataManager
+            dataManager.createTable(autoSavable.table(), autoSavable.tableMaxIdLength());
+        }
 
         Logging.log("DataManager created&7:&a " + record.getType().getFormattedName());
         return dataManager;
@@ -221,11 +225,12 @@ public abstract class DataManager {
 
     // Utility
 
-    public static void registerAutoSavable(ExternallyAutoSavable autoSavable) {
+    public void registerAutoSavable(ExternallyAutoSavable autoSavable) {
         autoSavabales.add(autoSavable);
+        this.createTable(autoSavable.table(), autoSavable.tableMaxIdLength());
     }
 
-    public static void unregisterAutoSavable(ExternallyAutoSavable autoSavable) {
+    public void unregisterAutoSavable(ExternallyAutoSavable autoSavable) {
         autoSavabales.remove(autoSavable);
     }
 

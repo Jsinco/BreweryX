@@ -92,14 +92,24 @@ public class MongoDBStorage extends DataManager {
         mongoClient.close();
     }
 
+    private boolean collectionExists(String name) {
+        return mongoDatabase.listCollectionNames().into(new ArrayList<>()).contains(collectionPrefix + name);
+    }
+
     @Override
     public boolean createTable(String name, int maxIdLength) {
+        if (collectionExists(name)) {
+            return false;
+        }
         mongoDatabase.createCollection(collectionPrefix + name);
         return true;
     }
 
     @Override
     public boolean dropTable(String name) {
+        if (collectionExists(name)) {
+            return false;
+        }
         mongoDatabase.getCollection(collectionPrefix + name).drop();
         return true;
     }
