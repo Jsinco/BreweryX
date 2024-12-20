@@ -63,8 +63,6 @@ public class MongoDBStorage extends DataManager {
 
     public MongoDBStorage(ConfiguredDataManager record) throws StorageInitException {
         super(record.getType());
-        Logging.warningLog("Mongo storage option is in an experimental stage. Use at your own discretion.");
-
         try {
             // suppress mongo client's logs
             Logger clientLogger = (Logger) LogManager.getLogger("org.mongodb.driver.client");

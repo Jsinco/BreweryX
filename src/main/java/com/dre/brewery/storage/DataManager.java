@@ -68,6 +68,8 @@ public abstract class DataManager {
         this.type = type;
     }
 
+    // Child methods
+
     public abstract boolean createTable(String name, int maxIdLength);
     public abstract boolean dropTable(String name);
 
