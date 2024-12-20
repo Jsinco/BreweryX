@@ -94,6 +94,9 @@ public class FlatFileStorage extends DataManager {
 
     @Override
     public boolean createTable(String name, int maxIdLength) {
+        if (dataFile.contains(name)) {
+            return false;
+        }
         dataFile.createSection(name);
         save();
         return true;

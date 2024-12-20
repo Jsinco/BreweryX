@@ -127,7 +127,7 @@ public class AddonManager {
 			try {
 				addon.onAddonEnable(); // All done, let the addon know it's been enabled.
 			} catch (Throwable t) {
-				Logging.errorLog("Failed to enable addon " + addon.getClass().getSimpleName(), t);
+				Logging.errorLog("Failed to enable addon " + addon.getAddonInfo().name(), t);
 				unloadAddon(addon);
 			}
 		}
