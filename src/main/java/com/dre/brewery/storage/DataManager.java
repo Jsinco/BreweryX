@@ -48,7 +48,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -58,8 +60,7 @@ public abstract class DataManager {
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
-    @Getter
-    protected static List<ExternallyAutoSavable> autoSavables = new ArrayList<>();
+    protected static Set<ExternallyAutoSavable> autoSavabales = new HashSet<>();
 
     private final DataManagerType type;
 
@@ -68,7 +69,9 @@ public abstract class DataManager {
     }
 
     public abstract boolean createTable(String name, int maxIdLength);
-    public boolean createTable(String name) { return createTable(name, 36);}
+    public boolean createTable(String name) {
+        return createTable(name, 36); // Standard UUID length is 36
+    }
     public abstract boolean dropTable(String name);
 
     public abstract <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type);
@@ -173,7 +176,7 @@ public abstract class DataManager {
         saveAllPlayers(players, true);
         saveAllWakeups(wakeups, true);
 
-        for (ExternallyAutoSavable autoSaveAble : autoSavables) {
+        for (ExternallyAutoSavable autoSaveAble : autoSavabales) {
             try {
                 autoSaveAble.onAutoSave(this);
             } catch (Throwable e) {
@@ -217,6 +220,15 @@ public abstract class DataManager {
 
 
     // Utility
+
+    public static void registerAutoSavable(ExternallyAutoSavable autoSavable) {
+        autoSavabales.add(autoSavable);
+    }
+
+    public static void unregisterAutoSavable(ExternallyAutoSavable autoSavable) {
+        autoSavabales.remove(autoSavable);
+    }
+
 
     public static void loadMiscData(BreweryMiscData miscData) {
         Brew.installTime = miscData.installTime();

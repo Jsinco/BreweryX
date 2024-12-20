@@ -239,6 +239,7 @@ public class AddonManager {
 							// It's important that we don't initialize any other classes before our main class.
 							clazz = Class.forName(className, false, classLoader);
 						} catch (ClassNotFoundException | NoClassDefFoundError e) {
+							Logging.errorLog("An exception occurred while trying to load a class from an addon", e);
 							continue;
 						}
 						if (BreweryAddon.class.isAssignableFrom(clazz)) {

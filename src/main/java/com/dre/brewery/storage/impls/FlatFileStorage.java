@@ -35,6 +35,9 @@ import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.Logging;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -43,13 +46,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-// TODO: Should we use Okaeri here?
+// TODO: Simplify methods
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
@@ -101,10 +106,23 @@ public class FlatFileStorage extends DataManager {
         return true;
     }
 
+
     @Override
     public <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type) {
         String path = table + "." + id;
-        return getLazySerializerInstance().deserialize(dataFile.getString(path), type);
+
+        ConfigurationSection section = dataFile.getConfigurationSection(path);
+        if (section == null) {
+            return null;
+        }
+
+        // Get all values at the path as a Map
+        Map<String, Object> map = section.getValues(false);
+        Gson gson = getLazySerializerInstance().getGson();
+
+        // Gson writes ints as doubles sometimes, but they seem to serialize back to ints just fine.
+        String json = gson.toJson(map);
+        return gson.fromJson(json, type);
     }
 
     @Override
@@ -115,10 +133,7 @@ public class FlatFileStorage extends DataManager {
         }
         List<T> things = new ArrayList<>();
         for (String key : section.getKeys(false)) {
-            T thing = section.get(key) != null ? getLazySerializerInstance().deserialize(section.getString(key), type) : null;
-            if (thing != null) {
-                things.add(thing);
-            }
+            things.add(getGeneric(key, table, type));
         }
         return things;
     }
@@ -127,23 +142,28 @@ public class FlatFileStorage extends DataManager {
     public <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type) {
         ConfigurationSection section = dataFile.getConfigurationSection(table);
         if (overwrite && section != null) {
-            dataFile.set(table, null);
-        }
-
-        if (section == null) {  // Sloppy, but whatever
+            section.getKeys(false).forEach(key -> dataFile.set(table + "." + key, null));
+        } else if (section == null) {
             dataFile.createSection(table);
-            section = dataFile.getConfigurationSection(table);
         }
 
         for (T thing : serializableThings) {
-            section.set(thing.getId(), getLazySerializerInstance().serialize(thing));
+            saveGeneric(thing, table);
         }
         save();
     }
 
     @Override
     public <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
-        dataFile.set(table + "." + serializableThing.getId(), getLazySerializerInstance().serialize(serializableThing));
+        String path = table + "." + serializableThing.getId();
+
+        Gson gson = getLazySerializerInstance().getGson();
+        JsonObject jsonObject = gson.toJsonTree(serializableThing).getAsJsonObject();
+        Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
+        Map<String, Object> map = gson.fromJson(jsonObject, mapType);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            dataFile.set(path + "." + entry.getKey(), entry.getValue());
+        }
         save();
     }
 

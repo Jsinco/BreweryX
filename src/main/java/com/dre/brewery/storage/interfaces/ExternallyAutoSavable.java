@@ -22,6 +22,21 @@ package com.dre.brewery.storage.interfaces;
 
 import com.dre.brewery.storage.DataManager;
 
+/**
+ * Allows an external class (a class outside or inside) of this Plugin to be auto-saved by Brewery.
+ * Auto saving will occur every X number of minutes and will also occur when this Plugin is disabled.
+ * <p>
+ * A class
+ * implementing this interface must be registered with BreweryX auto-savable system. {@link DataManager#registerAutoSavable(ExternallyAutoSavable)}
+ *
+ * @see DataManager#registerAutoSavable(ExternallyAutoSavable)
+ * @see DataManager#unregisterAutoSavable(ExternallyAutoSavable) 
+ */
 public interface ExternallyAutoSavable {
+
+    /**
+     * Fired when Brewery is handling its auto-save task.
+     * @param dataManager Instance of the DataManager
+     */
     void onAutoSave(DataManager dataManager);
 }
