@@ -121,14 +121,17 @@ public final class BreweryPlugin extends JavaPlugin {
 
 		BSealer.registerRecipe(); // Sealing table recipe
 		ConfigManager.registerDefaultPluginItems(); // Register plugin items
+
+		// Load Addons
+		addonManager = new AddonManager(this);
+		addonManager.loadAddons();
+
 		ConfigManager.loadCauldronIngredients();
 		ConfigManager.loadRecipes();
 		ConfigManager.loadDistortWords();
 		this.breweryStats = new BreweryStats(); // Load metrics
 
-        // Load Addons
-		addonManager = new AddonManager(this);
-		addonManager.loadAddons();
+
 
 
 
@@ -171,7 +174,7 @@ public final class BreweryPlugin extends JavaPlugin {
 				.filter(Objects::nonNull)
 				.toList());
 
-
+		addonManager.enableAddons();
 		// Setup Metrics
 		this.breweryStats.setupBStats();
 		new BreweryXStats().setupBStats();

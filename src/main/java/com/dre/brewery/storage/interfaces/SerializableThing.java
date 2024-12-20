@@ -18,8 +18,18 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package com.dre.brewery.storage.records;
+package com.dre.brewery.storage.interfaces;
 
+/**
+ * Represents an object that can be serialized and uniquely identified.
+ * Implementations of this interface should serialize their respective data into
+ * a format that enables persistent storage and retrieval.
+ */
 public interface SerializableThing {
+
+    /**
+     * The identifier of this serializable object. Usually a UUID or similar.
+     * @return The identifier as a String
+     */
     String getId();
 }

@@ -31,36 +31,54 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.integration.bstats.BreweryStats;
+import com.dre.brewery.storage.interfaces.ExternallyAutoSavable;
 import com.dre.brewery.storage.impls.FlatFileStorage;
 import com.dre.brewery.storage.impls.MongoDBStorage;
 import com.dre.brewery.storage.impls.MySQLStorage;
 import com.dre.brewery.storage.impls.SQLiteStorage;
 import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+@Getter
 public abstract class DataManager {
 
     // TODO: Instead of using UUIDs for Barrels, Cauldrons, and Wakeups. We should figure out some hashing algorithm to generate a unique ID for each of them.
 
     protected static BreweryPlugin plugin = BreweryPlugin.getInstance();
     protected static long lastAutoSave = System.currentTimeMillis();
+    protected static Set<ExternallyAutoSavable> autoSavabales = new HashSet<>();
 
-    @Getter
     private final DataManagerType type;
 
     protected DataManager(DataManagerType type) throws StorageInitException {
         this.type = type;
     }
+
+    public abstract boolean createTable(String name, int maxIdLength);
+    public boolean createTable(String name) {
+        return createTable(name, 36); // Standard UUID length is 36
+    }
+    public abstract boolean dropTable(String name);
+
+    public abstract <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type);
+    public abstract <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type);
+    public abstract <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type);
+    public abstract <T extends SerializableThing> void saveGeneric(T serializableThing, String table);
+    public abstract void deleteGeneric(String id, String table);
 
     public abstract Barrel getBarrel(UUID id);
     public abstract Collection<Barrel> getAllBarrels();
@@ -157,6 +175,14 @@ public abstract class DataManager {
         saveAllCauldrons(cauldrons, true);
         saveAllPlayers(players, true);
         saveAllWakeups(wakeups, true);
+
+        for (ExternallyAutoSavable autoSaveAble : autoSavabales) {
+            try {
+                autoSaveAble.onAutoSave(this);
+            } catch (Throwable e) {
+                Logging.errorLog("An external auto-savable class threw an exception. This is most likely an addon not saving properly.", e);
+            }
+        }
         Logging.debugLog("Saved all data!");
     }
 
@@ -194,6 +220,15 @@ public abstract class DataManager {
 
 
     // Utility
+
+    public static void registerAutoSavable(ExternallyAutoSavable autoSavable) {
+        autoSavabales.add(autoSavable);
+    }
+
+    public static void unregisterAutoSavable(ExternallyAutoSavable autoSavable) {
+        autoSavabales.remove(autoSavable);
+    }
+
 
     public static void loadMiscData(BreweryMiscData miscData) {
         Brew.installTime = miscData.installTime();

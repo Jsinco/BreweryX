@@ -20,6 +20,8 @@
 
 package com.dre.brewery.storage.records;
 
+import com.dre.brewery.storage.interfaces.SerializableThing;
+
 import java.util.List;
 
 /**

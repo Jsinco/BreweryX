@@ -118,6 +118,11 @@ public class AddonManager {
 			loadAddon(file); // Go read the documentation below to understand what this does.
 		}
 
+		int loaded = LOADED_ADDONS.size();
+		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
+	}
+
+	public void enableAddons() {
 		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onAddonEnable(); // All done, let the addon know it's been enabled.
@@ -126,8 +131,6 @@ public class AddonManager {
 				unloadAddon(addon);
 			}
 		}
-		int loaded = LOADED_ADDONS.size();
-		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
 	}
 
 
@@ -236,6 +239,7 @@ public class AddonManager {
 							// It's important that we don't initialize any other classes before our main class.
 							clazz = Class.forName(className, false, classLoader);
 						} catch (ClassNotFoundException | NoClassDefFoundError e) {
+							Logging.errorLog("An exception occurred while trying to load a class from an addon", e);
 							continue;
 						}
 						if (BreweryAddon.class.isAssignableFrom(clazz)) {

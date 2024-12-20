@@ -254,7 +254,7 @@ public class BRecipe implements Cloneable {
 					continue;
 				} else {
 					// TODO Maybe load later ie on first use of recipe?
-					Logging.errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
+					Logging.errorLog(recipeId + ": Could not Find Plugin: " + Arrays.toString(ingredParts));
 					return null;
 				}
 			}
