@@ -25,6 +25,7 @@ import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.releases.impl.GitHubReleaseChecker;
+import com.dre.brewery.utility.releases.impl.GithubSnapshotsReleaseChecker;
 import com.dre.brewery.utility.releases.impl.NoImplReleaseChecker;
 import com.dre.brewery.utility.releases.impl.SpigotReleaseChecker;
 import lombok.Getter;
@@ -73,6 +74,7 @@ public abstract class ReleaseChecker {
         Config config = ConfigManager.getConfig(Config.class);
         switch (config.getResolveUpdatesFrom()) {
             case GITHUB -> instance = new GitHubReleaseChecker("BreweryTeam", "BreweryX");
+            case SNAPSHOTS -> instance = new GithubSnapshotsReleaseChecker("BreweryTeam", "BreweryX");
             case SPIGOT -> instance = new SpigotReleaseChecker(114777);
             case NONE -> instance = new NoImplReleaseChecker();
         }
@@ -107,6 +109,7 @@ public abstract class ReleaseChecker {
 
     public enum ReleaseCheckerType {
         GITHUB,
+        SNAPSHOTS,
         SPIGOT,
         NONE
     }

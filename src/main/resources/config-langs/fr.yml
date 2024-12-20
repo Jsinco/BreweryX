@@ -11,7 +11,7 @@ config:
     Valeurs disponibles: en (Anglais), de (Allemande), es (Espagnol), fr (Français), it (Italien), ru (Russe), zh (Chinois)
   updateCheck: |
     Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
-    Options available: GitHub, Spigot, None [GitHub]
+    Options available: GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "Intervale de la sauvegarde automatique en minutes [10]"
   pluginPrefix: "Préfixe utilisé avec les messages BreweryX"
   debug: "Afficher les messages de débogue dans le journal du serveur (log) [false]"

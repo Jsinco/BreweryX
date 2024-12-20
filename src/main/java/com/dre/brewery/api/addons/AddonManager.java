@@ -50,7 +50,7 @@ import java.util.logging.Level;
  */
 public class AddonManager {
 
-	public final static ConcurrentLinkedQueue<BreweryAddon> LOADED_ADDONS = new ConcurrentLinkedQueue<>();
+	public static final ConcurrentLinkedQueue<BreweryAddon> LOADED_ADDONS = new ConcurrentLinkedQueue<>();
 
 	private final BreweryPlugin plugin;
 	private final File addonsFolder;
