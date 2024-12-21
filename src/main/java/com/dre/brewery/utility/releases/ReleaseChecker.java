@@ -43,14 +43,14 @@ public abstract class ReleaseChecker {
 
 
     public abstract CompletableFuture<String> resolveLatest();
-
     public abstract CompletableFuture<Boolean> checkForUpdate();
+    public abstract String getDownloadURL();
 
 
     public void notify(CommandSender receiver) {
         if (receiver.hasPermission("brewery.update") && isUpdateAvailable()) {
-            ConfigManager.getConfig(Lang.class)
-                    .sendEntry(receiver, "Etc_UpdateAvailable", "v" + localVersion(), "v" + resolvedLatestVersion);
+            Lang lang = ConfigManager.getConfig(Lang.class);
+            lang.sendEntry(receiver, "Etc_NewRelease", "v" + localVersion(), "v" + resolvedLatestVersion, getDownloadURL());
         }
     }
 

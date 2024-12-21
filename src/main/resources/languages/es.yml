@@ -58,7 +58,7 @@ Etc_Barrel: Tonel
 Etc_Page: Página
 Etc_Usage: 'Uso:'
 Etc_SealingTable: Mesa de sellado de bebidas
-Etc_UpdateAvailable: 'Actualización disponible: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
+Etc_NewRelease: '&rA new release of BreweryX is available! &2&v1 &r-> &2&v2&r Download&7: &2&v3'
 
 # Ayuda
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la bebida en tu mano'

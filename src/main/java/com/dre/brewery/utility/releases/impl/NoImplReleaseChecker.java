@@ -47,4 +47,9 @@ public class NoImplReleaseChecker extends ReleaseChecker {
     public void notify(CommandSender receiver) {
         // No implementation
     }
+
+    @Override
+    public String getDownloadURL() {
+        return "";
+    }
 }

@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // Our bind file for this class should vary based on what language the user has set in the config.
-@OkaeriConfigFileOptions(useLangFileName = true)
+@OkaeriConfigFileOptions(useLangFileName = true, removeOrphans = true)
 @Header({"!!! IMPORTANT: BreweryX configuration files do NOT support external comments! If you add any comments, they will be overwritten !!!",
         "Translations for BreweryX"})
 @DefaultCommentSpace(1)
@@ -241,8 +241,8 @@ public class Lang extends AbstractOkaeriConfigFile {
     private String etcUsage;
     @CustomKey("Etc_SealingTable")
     private String etcSealingTable;
-    @CustomKey("Etc_UpdateAvailable")
-    private String etcUpdateAvailable;
+    @CustomKey("Etc_NewRelease")
+    private String etcNewRelease;
 
 
     @Comment("Help")

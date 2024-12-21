@@ -56,7 +56,7 @@ Etc_Barrel: 酒桶
 Etc_Page: 页
 Etc_Usage: '用途:'
 Etc_SealingTable: 沖泡密封台
-Etc_UpdateAvailable: '新版本已发布: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
+Etc_NewRelease: '&rA new release of BreweryX is available! &2&v1 &r-> &2&v2&r Download&7: &2&v3'
 
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'

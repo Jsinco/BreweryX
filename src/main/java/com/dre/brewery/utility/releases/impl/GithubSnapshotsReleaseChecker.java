@@ -36,12 +36,17 @@ import java.util.concurrent.CompletableFuture;
 public class GithubSnapshotsReleaseChecker extends ReleaseChecker {
 
     private static final String CONST_URL = "https://api.github.com/repos/%s/%s/releases";
+    private static final String CONST_RELEASE_URL = "https://github.com/%s/%s/releases/tag/%s";
     private static final String CONST_JSON_FIELD = "tag_name";
 
     private final String link;
+    private final String owner;
+    private final String repo;
 
     public GithubSnapshotsReleaseChecker(String owner, String repo) {
         this.link = String.format(CONST_URL, owner, repo);
+        this.owner = owner;
+        this.repo = repo;
     }
 
     @Override
@@ -78,5 +83,10 @@ public class GithubSnapshotsReleaseChecker extends ReleaseChecker {
             }
             return isUpdateAvailable();
         });
+    }
+
+    @Override
+    public String getDownloadURL() {
+        return String.format(CONST_RELEASE_URL, owner, repo, resolvedLatestVersion);
     }
 }

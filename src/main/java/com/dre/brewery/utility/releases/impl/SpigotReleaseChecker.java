@@ -31,11 +31,14 @@ import java.util.concurrent.CompletableFuture;
 public class SpigotReleaseChecker extends ReleaseChecker {
 
     private static final String CONST_URL = "https://api.spigotmc.org/legacy/update.php?resource=%s/~";
+    private static final String CONST_RELEASE_URL = "https://www.spigotmc.org/resources/%s";
 
     private final String link;
+    private final int resourceId;
 
     public SpigotReleaseChecker(int resourceId) {
         this.link = String.format(CONST_URL, resourceId);
+        this.resourceId = resourceId;
     }
 
     @Override
@@ -62,5 +65,10 @@ public class SpigotReleaseChecker extends ReleaseChecker {
         Logging.warningLog("Failed to resolve latest BreweryX version from SpigotMC. (No connection?)");
         this.resolvedLatestVersion = CONST_UNRESOLVED;
         return CONST_UNRESOLVED;
+    }
+
+    @Override
+    public String getDownloadURL() {
+        return String.format(CONST_RELEASE_URL, resourceId);
     }
 }

@@ -58,7 +58,7 @@ Etc_Page: Seite
 Etc_Usage: 'Benutzung:'
 Etc_Barrel: Fass
 Etc_SealingTable: Trankversiegler
-Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
+Etc_NewRelease: '&rA new release of BreweryX is available! &2&v1 &r-> &2&v2&r Download&7: &2&v3'
 
 # Help
 Help_Copy: '&6/brew Copy [Anzahl]&9 Kopiert den Trank in deiner Hand'

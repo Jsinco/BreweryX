@@ -24,6 +24,7 @@ import com.dre.brewery.utility.Logging;
 import com.dre.brewery.utility.releases.ReleaseChecker;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,12 +36,17 @@ import java.util.concurrent.CompletableFuture;
 public class GitHubReleaseChecker extends ReleaseChecker {
 
     private static final String CONST_URL = "https://api.github.com/repos/%s/%s/releases/latest";
+    private static final String CONST_RELEASE_URL = "https://github.com/%s/%s/releases/tag/%s";
     private static final String CONST_JSON_FIELD = "tag_name";
 
     private final String link;
+    private final String owner;
+    private final String repo;
 
     public GitHubReleaseChecker(String owner, String repo) {
         this.link = String.format(CONST_URL, owner, repo);
+        this.owner = owner;
+        this.repo = repo;
     }
 
     @Override
@@ -73,5 +79,10 @@ public class GitHubReleaseChecker extends ReleaseChecker {
             }
             return isUpdateAvailable();
         });
+    }
+
+    @Override
+    public String getDownloadURL() {
+        return String.format(CONST_RELEASE_URL, owner, repo, resolvedLatestVersion);
     }
 }

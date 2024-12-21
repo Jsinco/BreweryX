@@ -63,7 +63,7 @@ Etc_Barrel: 'Baril'
 Etc_Page: 'Page'
 Etc_Usage: 'Utilise :'
 Etc_SealingTable: 'Table de scellage des boissons'
-Etc_UpdateAvailable: 'Mise à jour disponible : &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
+Etc_NewRelease: '&rA new release of BreweryX is available! &2&v1 &r-> &2&v2&r Download&7: &2&v3'
 
 # Aide
 Help_Copy: '&6/brew copy [Quantity]&9 Copie la potion qui est dans votre main'
