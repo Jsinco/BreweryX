@@ -132,9 +132,6 @@ public final class BreweryPlugin extends JavaPlugin {
 		this.breweryStats = new BreweryStats(); // Load metrics
 
 
-
-
-
 		Logging.log("Minecraft version&7:&a " + MCVersion.getVersion());
 		if (MCVersion == MinecraftVersion.UNKNOWN) {
 			Logging.warningLog("This version of Minecraft is not known to Brewery! Please be wary of bugs or other issues that may occur in this version.");

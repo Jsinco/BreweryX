@@ -18,6 +18,7 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
+import io.papermc.hangarpublishplugin.model.Platforms
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.nio.charset.Charset
@@ -26,13 +27,15 @@ plugins {
     id("java")
     id("maven-publish")
     id("com.gradleup.shadow") version "8.3.5"
+    id("io.papermc.hangar-publish-plugin") version "0.1.2"
+    id("com.modrinth.minotaur") version "2.8.7"
 }
 
 val langVersion = 17
 val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.4.5-SNAPSHOT"
+version = "3.4.5"
 
 repositories {
     mavenCentral()
@@ -59,7 +62,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
         exclude("com.google.code.gson", "gson") // Implemented manually
     }
-    // Paper Lib, performance improvements on Paper based servers and async teleporting on Folia
+    // Paper Lib, performance improvements on Paper-based servers and async teleporting on Folia
     implementation("io.papermc:paperlib:1.0.8")
 
     // Implemented manually mainly due to older server versions implementing versions of GSON
@@ -121,9 +124,7 @@ tasks {
 
     build {
         dependsOn(shadowJar)
-        //finalizedBy("kotlinReducedJar")
     }
-
     jar {
         enabled = false // Shadow produces our jar files
     }
@@ -153,37 +154,6 @@ tasks {
 
         archiveClassifier.set("")
     }
-
-    // Kotlin Reduced Jars
-	register<Copy>("prepareKotlinReducedJar") {
-		dependsOn(shadowJar)
-		from(zipTree(shadowJar.get().archiveFile))
-		into(layout.buildDirectory.dir("kt-reduced"))
-		doLast {
-			val pluginFile = layout.buildDirectory.file("kt-reduced/plugin.yml").get().asFile
-			var content = pluginFile.readText()
-			content = content.replace("libraries: ['org.jetbrains.kotlin:kotlin-stdlib:2.0.21']", "")
-			pluginFile.writeText(content)
-		}
-	}
-
-	register<Jar>("kotlinReducedJar") {
-		dependsOn("prepareKotlinReducedJar")
-		from(layout.buildDirectory.dir("kt-reduced"))
-		include("**/*")
-		duplicatesStrategy = DuplicatesStrategy.INHERIT
-		archiveClassifier.set("KtReduced")
-	}
-}
-
-fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
-    var branch = "none"
-    project.exec {
-        commandLine = listOf("git", "rev-parse", "--abbrev-ref", "HEAD")
-        standardOutput = stream
-    }
-    if (stream.size() > 0) branch = stream.toString(Charset.defaultCharset().name()).trim()
-    return branch
 }
 
 java {
@@ -199,7 +169,6 @@ publishing {
 
     repositories {
         if (user == null || pass == null) {
-            println("No repository credentials found, skipping publication")
             return@repositories
         }
         maven {
@@ -220,11 +189,62 @@ publishing {
         }
         create<MavenPublication>("maven") {
             groupId = project.group.toString()
-            artifactId = "BreweryX"
+            artifactId = project.name
             version = project.version.toString()
             artifact(tasks.shadowJar.get().archiveFile) {
                 builtBy(tasks.shadowJar)
             }
         }
 	}
+
+
+    hangarPublish {
+        publications.register("plugin") {
+            version.set(project.version.toString())
+            channel.set("Release")
+            id.set(project.name)
+            apiKey.set(System.getenv("HANGAR_TOKEN"))
+            platforms {
+                register(Platforms.PAPER) {
+                    jar.set(tasks.shadowJar.flatMap { it.archiveFile })
+                    platformVersions.set(listOf("1.13.x-1.21.x"))
+                }
+            }
+            changelog.set(readChangeLog())
+        }
+    }
+
+    modrinth {
+        token.set(System.getenv("MODRINTH_TOKEN"))
+        projectId.set(project.name) // This can be the project ID or the slug. Either will work!
+        versionNumber.set(project.version.toString())
+        versionType.set("release") // This is the default -- can also be `beta` or `alpha`
+        uploadFile.set(tasks.shadowJar)
+        loaders.addAll("bukkit", "spigot", "paper", "purpur", "folia")
+        gameVersions.addAll("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x")
+        changelog.set(readChangeLog())
+    }
+}
+
+fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
+    var branch = "none"
+    project.exec {
+        commandLine = listOf("git", "rev-parse", "--abbrev-ref", "HEAD")
+        standardOutput = stream
+    }
+    if (stream.size() > 0) branch = stream.toString(Charset.defaultCharset().name()).trim()
+    return branch
+}
+
+fun readChangeLog(): String {
+    val text: String = if (!project.hasProperty("changelog")) {
+        file("CHANGELOG.md").run {
+            if (exists()) readText() else "No Changelog found."
+        }
+    } else {
+        (project.property("changelog") as String)
+            .replaceFirstChar { "" }
+            .dropLast(1)
+    }
+    return text.replace("\${version}", project.version.toString())
 }
