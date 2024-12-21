@@ -237,14 +237,8 @@ fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
 }
 
 fun readChangeLog(): String {
-    val text: String = if (!project.hasProperty("changelog")) {
-        file("CHANGELOG.md").run {
-            if (exists()) readText() else "No Changelog found."
-        }
-    } else {
-        (project.property("changelog") as String)
-            .replaceFirstChar { "" }
-            .dropLast(1)
+    val text: String = System.getenv("CHANGELOG") ?: file("CHANGELOG.md").run {
+        if (exists()) readText() else "No Changelog found."
     }
     return text.replace("\${version}", project.version.toString())
 }
