@@ -145,12 +145,13 @@ tasks {
     }
 
     shadowJar {
-		relocate("com.google.gson", "com.dre.brewery.depend.google.gson")
-        relocate("com.google.errorprone", "com.dre.brewery.depend.google.errorprone")
-        relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
-        relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
-        relocate("com.mongodb", "com.dre.brewery.depend.mongodb")
-        relocate("io.papermc.lib", "com.dre.brewery.depend.paperlib")
+        val pack = "com.dre.brewery.depend"
+		relocate("com.google.gson", "$pack.google.gson")
+        relocate("com.google.errorprone", "$pack.google.errorprone")
+        relocate("com.github.Anon8281.universalScheduler", "$pack.universalScheduler")
+        relocate("eu.okaeri", "$pack.okaeri")
+        relocate("com.mongodb", "$pack.mongodb")
+        relocate("io.papermc.lib", "$pack.paperlib")
 
         archiveClassifier.set("")
     }
