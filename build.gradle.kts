@@ -221,7 +221,8 @@ modrinth {
     versionType.set("release") // This is the default -- can also be `beta` or `alpha`
     uploadFile.set(tasks.shadowJar)
     loaders.addAll("bukkit", "spigot", "paper", "purpur", "folia")
-    gameVersions.addAll("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x")
+    gameVersions.addAll("1.13.2", "1.14.4", "1.15.2", "1.16.5", "1.17.1", "1.18.2", "1.19.4",
+        "1.20.4", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4")
     changelog.set(readChangeLog())
 }
 
