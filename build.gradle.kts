@@ -183,7 +183,7 @@ publishing {
         }
     }
 
-	publications {
+    publications {
         if (user == null || pass == null) {
             return@publications
         }
@@ -195,36 +195,36 @@ publishing {
                 builtBy(tasks.shadowJar)
             }
         }
-	}
-
-
-    hangarPublish {
-        publications.register("plugin") {
-            version.set(project.version.toString())
-            channel.set("Release")
-            id.set(project.name)
-            apiKey.set(System.getenv("HANGAR_TOKEN"))
-            platforms {
-                register(Platforms.PAPER) {
-                    jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                    platformVersions.set(listOf("1.13.x-1.21.x"))
-                }
-            }
-            changelog.set(readChangeLog())
-        }
     }
+}
 
-    modrinth {
-        token.set(System.getenv("MODRINTH_TOKEN"))
-        projectId.set(project.name) // This can be the project ID or the slug. Either will work!
-        versionNumber.set(project.version.toString())
-        versionType.set("release") // This is the default -- can also be `beta` or `alpha`
-        uploadFile.set(tasks.shadowJar)
-        loaders.addAll("bukkit", "spigot", "paper", "purpur", "folia")
-        gameVersions.addAll("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x")
+hangarPublish {
+    publications.register("plugin") {
+        version.set(project.version.toString())
+        channel.set("Release")
+        id.set(project.name)
+        apiKey.set(System.getenv("HANGAR_TOKEN"))
+        platforms {
+            register(Platforms.PAPER) {
+                jar.set(tasks.shadowJar.flatMap { it.archiveFile })
+                platformVersions.set(listOf("1.13.x-1.21.x"))
+            }
+        }
         changelog.set(readChangeLog())
     }
 }
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set(project.name) // This can be the project ID or the slug. Either will work!
+    versionNumber.set(project.version.toString())
+    versionType.set("release") // This is the default -- can also be `beta` or `alpha`
+    uploadFile.set(tasks.shadowJar)
+    loaders.addAll("bukkit", "spigot", "paper", "purpur", "folia")
+    gameVersions.addAll("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x")
+    changelog.set(readChangeLog())
+}
+
 
 fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
     var branch = "none"
