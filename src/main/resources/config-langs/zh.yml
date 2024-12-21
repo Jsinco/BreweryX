@@ -6,8 +6,8 @@ config:
     语言文件 [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    是否检查更新 [true]
-    若有更新, 服务端后台与上线时的管理员会收到通知
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "自动保存时间间隔, 单位:分钟 [10]"
   pluginPrefix: "用于此插件的消息前缀[Brewery]"
   debug: "是否在日志中显示调试信息 [false]"

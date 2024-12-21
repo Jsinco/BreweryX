@@ -50,7 +50,7 @@ import java.util.logging.Level;
  */
 public class AddonManager {
 
-	public final static ConcurrentLinkedQueue<BreweryAddon> LOADED_ADDONS = new ConcurrentLinkedQueue<>();
+	public static final ConcurrentLinkedQueue<BreweryAddon> LOADED_ADDONS = new ConcurrentLinkedQueue<>();
 
 	private final BreweryPlugin plugin;
 	private final File addonsFolder;
@@ -118,16 +118,19 @@ public class AddonManager {
 			loadAddon(file); // Go read the documentation below to understand what this does.
 		}
 
+		int loaded = LOADED_ADDONS.size();
+		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
+	}
+
+	public void enableAddons() {
 		for (BreweryAddon addon : LOADED_ADDONS) {
 			try {
 				addon.onAddonEnable(); // All done, let the addon know it's been enabled.
 			} catch (Throwable t) {
-				Logging.errorLog("Failed to enable addon " + addon.getClass().getSimpleName(), t);
+				Logging.errorLog("Failed to enable addon " + addon.getAddonInfo().name(), t);
 				unloadAddon(addon);
 			}
 		}
-		int loaded = LOADED_ADDONS.size();
-		if (loaded > 0) Logging.log("Loaded " + loaded + " addon(s)");
 	}
 
 
@@ -167,10 +170,12 @@ public class AddonManager {
 				Field loggerField = BreweryAddon.class.getDeclaredField("logger"); loggerField.setAccessible(true);
 				Field fileManagerField = BreweryAddon.class.getDeclaredField("addonFileManager"); fileManagerField.setAccessible(true);
 				Field addonConfigManagerField = BreweryAddon.class.getDeclaredField("addonConfigManager"); addonConfigManagerField.setAccessible(true);
+				Field addonFile = BreweryAddon.class.getDeclaredField("addonFile"); addonFile.setAccessible(true);
 
 				loggerField.set(addon, new AddonLogger(addon.getAddonInfo()));
 				fileManagerField.set(addon, new AddonFileManager(addon, file));
 				addonConfigManagerField.set(addon, new AddonConfigManager(addon));
+				addonFile.set(addon, file);
 
 
 				addon.getAddonLogger().info("Loading &a" + addon.getAddonInfo().name() + " &f-&a v" + addon.getAddonInfo().version() + " &fby &a" + addon.getAddonInfo().author());
@@ -234,6 +239,7 @@ public class AddonManager {
 							// It's important that we don't initialize any other classes before our main class.
 							clazz = Class.forName(className, false, classLoader);
 						} catch (ClassNotFoundException | NoClassDefFoundError e) {
+							Logging.errorLog("An exception occurred while trying to load a class from an addon", e);
 							continue;
 						}
 						if (BreweryAddon.class.isAssignableFrom(clazz)) {

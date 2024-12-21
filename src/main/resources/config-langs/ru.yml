@@ -6,8 +6,8 @@ config:
     Какой файл локализации использовать [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    Включить ли проверку обновлений. Проверяет API Spigot на предмет обновлений для BreweryX [true]
-    Если обнаружено новое обновление, администраторы получат об этом сообщение при входе в игру
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "Период автосохранения данных (в минутах) [10]"
   pluginPrefix: |
     Префикс плагина, используемый в сообщениях.

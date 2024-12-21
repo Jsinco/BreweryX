@@ -24,6 +24,7 @@ import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.configuration.ConfigHead;
 import com.dre.brewery.configuration.annotation.OkaeriConfigFileOptions;
 import eu.okaeri.configs.configurer.Configurer;
+import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,8 +40,6 @@ import java.util.List;
 public class AddonConfigManager {
 
     private final ConfigHead INSTANCE;
-
-
 
     public AddonConfigManager(BreweryAddon addon) {
         this.INSTANCE = new ConfigHead(BreweryPlugin.getInstance().getDataFolder().toPath().resolve("addons").resolve(addon.getAddonInfo().name()));
@@ -106,15 +105,27 @@ public class AddonConfigManager {
      * @return The new config instance
      * @param <T> The type of the config
      */
-    private <T extends AddonConfigFile> T createConfig(Class<T> configClass) {
+    public <T extends AddonConfigFile> T createConfig(Class<T> configClass) {
         return INSTANCE.createConfig(configClass);
     }
 
     @Nullable
-    private <T extends AddonConfigFile> T createBlankConfigInstance(Class<T> configClass) {
+    public <T extends AddonConfigFile> T createBlankConfigInstance(Class<T> configClass) {
         return INSTANCE.createBlankConfigInstance(configClass);
     }
 
+
+    public void addSerdesPacks(OkaeriSerdesPack... serdesPacks) {
+        INSTANCE.addSerdesPacks(serdesPacks);
+    }
+
+    public void addBiDirectionalTransformers(BidirectionalTransformer<?, ?>... transformers) {
+        INSTANCE.addBidirectionalTransformers(transformers);
+    }
+
+    public void addConfigurer(Configurer configurer) {
+        INSTANCE.addConfigurer(configurer);
+    }
 
     // Util
 
@@ -123,7 +134,7 @@ public class AddonConfigManager {
     }
 
 
-    private OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AddonConfigFile> configClass) {
+    public OkaeriConfigFileOptions getOkaeriConfigFileOptions(Class<? extends AddonConfigFile> configClass) {
         return INSTANCE.getOkaeriConfigFileOptions(configClass);
     }
     public Path getDataFolder() {

@@ -18,8 +18,33 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package com.dre.brewery.storage.records;
+package com.dre.brewery.utility.releases.impl;
 
-public interface SerializableThing {
-    String getId();
+import com.dre.brewery.utility.releases.ReleaseChecker;
+import org.bukkit.command.CommandSender;
+
+import java.util.concurrent.CompletableFuture;
+
+public class NoImplReleaseChecker extends ReleaseChecker {
+
+    @Override
+    public CompletableFuture<String> resolveLatest() {
+        this.resolvedLatestVersion = CONST_UNRESOLVED;
+        return CompletableFuture.completedFuture(CONST_UNRESOLVED);
+    }
+
+    @Override
+    public boolean isUpdateAvailable() {
+        return false;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> checkForUpdate() {
+        return CompletableFuture.completedFuture(false);
+    }
+
+    @Override
+    public void notify(CommandSender receiver) {
+        // No implementation
+    }
 }

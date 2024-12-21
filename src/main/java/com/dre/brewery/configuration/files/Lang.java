@@ -31,9 +31,12 @@ import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.CustomKey;
 import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
+import lombok.SneakyThrows;
 import org.bukkit.command.CommandSender;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +53,19 @@ public class Lang extends AbstractOkaeriConfigFile {
     @Exclude
     private transient Map<String, String> mappedEntries;
 
+    @SneakyThrows
     @Override // Should override because we need to remap our strings after a reload of this file.
     public void reload() {
-        this.setBindFile(ConfigManager.getFilePath(Lang.class));
+        if (this.blankInstance) {
+            super.reload();
+            return;
+        }
+        Path bind = ConfigManager.getFilePath(Lang.class);
+        File file = bind.toFile();
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        this.setBindFile(bind);
         this.load(this.update);
         this.mapStrings();
     }

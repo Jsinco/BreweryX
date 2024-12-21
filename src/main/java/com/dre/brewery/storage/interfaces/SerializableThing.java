@@ -18,24 +18,18 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package com.dre.brewery.integration.item;
+package com.dre.brewery.storage.interfaces;
 
-import com.dre.brewery.integration.Hook;
-import com.dre.brewery.recipe.PluginItem;
-import io.th0rgal.oraxen.api.OraxenItems;
-import org.bukkit.inventory.ItemStack;
+/**
+ * Represents an object that can be serialized and uniquely identified.
+ * Implementations of this interface should serialize their respective data into
+ * a format that enables persistent storage and retrieval.
+ */
+public interface SerializableThing {
 
-public class OraxenPluginItem extends PluginItem {
-    @Override
-    public boolean matches(ItemStack itemStack) {
-        if (!Hook.ORAXEN.isEnabled()) {
-            return false;
-        }
-
-        String itemId = OraxenItems.getIdByItem(itemStack);
-        if (itemId == null) {
-            return false;
-        }
-        return itemId.equalsIgnoreCase(this.getItemId());
-    }
+    /**
+     * The identifier of this serializable object. Usually a UUID or similar.
+     * @return The identifier as a String
+     */
+    String getId();
 }

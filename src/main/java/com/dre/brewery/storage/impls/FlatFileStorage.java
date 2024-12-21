@@ -29,28 +29,37 @@ import com.dre.brewery.configuration.sector.capsule.ConfiguredDataManager;
 import com.dre.brewery.storage.DataManager;
 import com.dre.brewery.storage.StorageInitException;
 import com.dre.brewery.storage.records.BreweryMiscData;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
+import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.Logging;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-// TODO: Should we use Okaeri here?
+// TODO: Simplify methods
 public class FlatFileStorage extends DataManager {
 
     private final File rawFile;
     private final YamlConfiguration dataFile;
+    private SQLDataSerializer serializer;
 
     public FlatFileStorage(ConfiguredDataManager record) throws StorageInitException {
         super(record.getType());
@@ -73,8 +82,98 @@ public class FlatFileStorage extends DataManager {
         try {
             dataFile.save(rawFile);
         } catch (IOException e) {
-            Logging.errorLog("Failed to save to Flatfile!", e);
+            Logging.errorLog("Failed to save to FlatFile!", e);
         }
+    }
+    private SQLDataSerializer getLazySerializerInstance() {
+        if (serializer == null) {
+            serializer = new SQLDataSerializer();
+        }
+        return serializer;
+    }
+
+    @Override
+    public boolean createTable(String name, int maxIdLength) {
+        if (dataFile.contains(name)) {
+            return false;
+        }
+        dataFile.createSection(name);
+        save();
+        return true;
+    }
+
+    @Override
+    public boolean dropTable(String name) {
+        dataFile.set(name, null);
+        save();
+        return true;
+    }
+
+
+    @Override
+    public <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type) {
+        String path = table + "." + id;
+
+        ConfigurationSection section = dataFile.getConfigurationSection(path);
+        if (section == null) {
+            return null;
+        }
+
+        // Get all values at the path as a Map
+        Map<String, Object> map = section.getValues(false);
+        Gson gson = getLazySerializerInstance().getGson();
+
+        // Gson writes ints as doubles sometimes, but they seem to serialize back to ints just fine.
+        String json = gson.toJson(map);
+        return gson.fromJson(json, type);
+    }
+
+    @Override
+    public <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
+        ConfigurationSection section = dataFile.getConfigurationSection(table);
+        if (section == null) {
+            return Collections.emptyList();
+        }
+        List<T> things = new ArrayList<>();
+        for (String key : section.getKeys(false)) {
+            things.add(getGeneric(key, table, type));
+        }
+        return things;
+    }
+
+    @Override
+    public <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type) {
+        ConfigurationSection section = dataFile.getConfigurationSection(table);
+        if (overwrite && section != null) {
+            section.getKeys(false).forEach(key -> dataFile.set(table + "." + key, null));
+        } else if (section == null) {
+            dataFile.createSection(table);
+        }
+
+        for (T thing : serializableThings) {
+            saveGeneric(thing, table);
+        }
+        save();
+    }
+
+    @Override
+    public <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
+        String path = table + "." + serializableThing.getId();
+
+        Gson gson = getLazySerializerInstance().getGson();
+        JsonObject jsonObject = gson.toJsonTree(serializableThing).getAsJsonObject();
+        Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
+        Map<String, Object> map = gson.fromJson(jsonObject, mapType);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            dataFile.set(path + "." + entry.getKey(), entry.getValue());
+        }
+        save();
+    }
+
+    @Override
+    public void deleteGeneric(String id, String table) {
+        dataFile.set(table + "." + id, null);
+        save();
     }
 
     @Override

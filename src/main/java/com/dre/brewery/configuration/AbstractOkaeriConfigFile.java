@@ -20,7 +20,6 @@
 
 package com.dre.brewery.configuration;
 
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Exclude;
@@ -29,29 +28,45 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Getter @Setter
 public abstract class AbstractOkaeriConfigFile extends OkaeriConfig {
 
-    protected @Exclude transient boolean update = false;
-    protected @Exclude transient boolean firstCreation = false;
-    private @Exclude transient boolean blankInstance = false;
+    @Exclude
+    protected transient boolean update = false;
+    @Exclude
+    protected transient boolean firstCreation = false;
+    @Exclude
+    protected transient boolean blankInstance = false;
 
-    // Util methods
 
-    public void saveAsync() throws OkaeriException {
-        CompletableFuture.runAsync(this::save);
-    }
 
     @SneakyThrows
     public void reload() {
         if (this.blankInstance) {
             ConfigManager.newInstance(this.getClass(), true);
-            this.blankInstance = false;
-        } else {
-            this.load(update);
+            return;
         }
+
+        this.bindFileExists(true);
+        this.load(update);
+    }
+
+    public boolean bindFileExists(boolean createIfNotExist) throws IOException {
+        if (this.blankInstance) { // Don't create if this is a placeholder instance
+            return false;
+        }
+        boolean b = this.getBindFile().toFile().exists();
+        if (!b && createIfNotExist){
+            return this.getBindFile().toFile().createNewFile();
+        }
+        return b;
+    }
+
+    public void saveAsync() throws OkaeriException {
+        CompletableFuture.runAsync(this::save); // swap with normal scheduler?
     }
 
     public void onFirstCreation() {

@@ -22,6 +22,7 @@ package com.dre.brewery.storage.serialization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.Getter;
 
 import java.lang.reflect.Modifier;
 import java.util.Base64;
@@ -29,6 +30,7 @@ import java.util.Base64;
 /**
  * Serializes the given object to JSON and then to a Base64 encoded string.
  */
+@Getter
 public class SQLDataSerializer {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithModifiers(Modifier.STATIC).create();
 

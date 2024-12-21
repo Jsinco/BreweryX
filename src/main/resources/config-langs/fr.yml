@@ -10,8 +10,8 @@ config:
     Fichier de langage à utiliser [en]
     Valeurs disponibles: en (Anglais), de (Allemande), es (Espagnol), fr (Français), it (Italien), ru (Russe), zh (Chinois)
   updateCheck: |
-    Activer la cherche de mises à jour.  Cherche l’API CurseForge pour les mises à jour. [true]
-    Si une mise à jour est trouvé, un message sera enregistré lors du démarage du serveur.  Il sera également affiché aux joueurs OP quand ils se connectent.
+    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
+    Options available: GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "Intervale de la sauvegarde automatique en minutes [10]"
   pluginPrefix: "Préfixe utilisé avec les messages BreweryX"
   debug: "Afficher les messages de débogue dans le journal du serveur (log) [false]"

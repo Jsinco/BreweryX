@@ -26,6 +26,7 @@ import com.dre.brewery.configuration.configurer.BreweryXConfigurer;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.utility.Logging;
 import eu.okaeri.configs.configurer.Configurer;
+import eu.okaeri.configs.serdes.BidirectionalTransformer;
 import eu.okaeri.configs.serdes.OkaeriSerdesPack;
 import eu.okaeri.configs.serdes.standard.StandardSerdes;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
@@ -38,7 +39,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * A class which manages the creation and retrieval of config files. This class
@@ -46,10 +46,10 @@ import java.util.function.Supplier;
  */
 public class ConfigHead {
 
-    public static final Map<Class<? extends Configurer>, Supplier<Configurer>> CONFIGURERS = Map.of(
-            BreweryXConfigurer.class, BreweryXConfigurer::new,
-            YamlSnakeYamlConfigurer.class, YamlSnakeYamlConfigurer::new
-    );
+    public final Map<Class<? extends Configurer>, Configurer> CONFIGURERS = new HashMap<>(Map.of(
+            BreweryXConfigurer.class, new BreweryXConfigurer(),
+            YamlSnakeYamlConfigurer.class, new YamlSnakeYamlConfigurer()
+    ));
 
     public final Map<Class<? extends AbstractOkaeriConfigFile>, AbstractOkaeriConfigFile> LOADED_CONFIGS = new HashMap<>();
     public Path DATA_FOLDER = BreweryPlugin.getInstance().getDataFolder().toPath();
@@ -78,7 +78,7 @@ public class ConfigHead {
             }
             return createConfig(configClass);
         } catch (Throwable e) {
-            Logging.errorLog("Something went wrong trying to load a config file! &e(" + configClass.getSimpleName() + ".yml)", e);
+            Logging.errorLog("Something went wrong trying to load a config file! &e(Class: " + configClass.getSimpleName() + ")", e);
             Logging.warningLog("Resolve the issue in the file and run &6/brewery reload");
             return createBlankConfigInstance(configClass);
         }
@@ -93,7 +93,14 @@ public class ConfigHead {
         if (!overwrite && LOADED_CONFIGS.containsKey(configClass)) {
             return;
         }
-        LOADED_CONFIGS.put(configClass, createConfig(configClass));
+
+        try {
+            createConfig(configClass);
+        } catch (Throwable e) {
+            Logging.errorLog("Something went wrong trying to load a config file! &e(Class: " + configClass.getSimpleName() + ")", e);
+            Logging.warningLog("Resolve the issue in the file and run &6/brewery reload");
+            createBlankConfigInstance(configClass);
+        }
     }
 
 
@@ -151,7 +158,13 @@ public class ConfigHead {
     public <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
         OkaeriConfigFileOptions options = getOkaeriConfigFileOptions(configClass);
 
-        return createConfig(configClass, getFilePath(configClass), CONFIGURERS.get(options.configurer()).get(), new StandardSerdes(), options.update(), options.removeOrphans());
+        Configurer configurer = CONFIGURERS.get(options.configurer());
+        if (configurer == null) {
+            Logging.errorLog("Configurer cannot be null. Make sure you've registered the configurer before trying to use it!");
+            configurer = CONFIGURERS.get(BreweryXConfigurer.class);
+        }
+
+        return createConfig(configClass, getFilePath(configClass), configurer, new StandardSerdes(), options.update(), options.removeOrphans());
     }
 
     @Nullable
@@ -167,6 +180,44 @@ public class ConfigHead {
         }
     }
 
+
+    /**
+     * Adds the provided OkaeriSerdesPack instances to all registered configurers.
+     * Each serdes pack is registered to every configurer in the CONFIGURERS map.
+     *
+     * @param packs The array of OkaeriSerdesPack instances to be added to the configurers.
+     */
+    public void addSerdesPacks(OkaeriSerdesPack... packs) {
+        CONFIGURERS.values().forEach(configurer -> {
+            for (OkaeriSerdesPack pack : packs) {
+                configurer.register(pack);
+            }
+        });
+    }
+
+    /**
+     * Adds the provided BidirectionalTransformer instances to all registered configurers.
+     * Each transformer is registered to every configurer in the CONFIGURERS map.
+     *
+     * @param transformers The array of BidirectionalTransformer instances to be added to the configurers.
+     */
+    public void addBidirectionalTransformers(BidirectionalTransformer<?, ?>... transformers) {
+        CONFIGURERS.values().forEach(configurer ->  {
+            for (BidirectionalTransformer<?, ?> transformer : transformers) {
+                configurer.register(registry -> registry.register(transformer));
+            }
+        });
+    }
+
+    /**
+     * Adds the provided configurer instance to the CONFIGURERS map.
+     * The configurer is stored with its class as the key.
+     *
+     * @param configurer The Configurer instance to be added.
+     */
+    public void addConfigurer(Configurer configurer) {
+        CONFIGURERS.put(configurer.getClass(), configurer);
+    }
 
     // Util
 

@@ -31,10 +31,11 @@ import com.dre.brewery.storage.records.BreweryMiscData;
 import com.dre.brewery.storage.records.SerializableBPlayer;
 import com.dre.brewery.storage.records.SerializableBarrel;
 import com.dre.brewery.storage.records.SerializableCauldron;
-import com.dre.brewery.storage.records.SerializableThing;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.records.SerializableWakeup;
 import com.dre.brewery.storage.serialization.SQLDataSerializer;
 import com.dre.brewery.utility.Logging;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -97,7 +98,33 @@ public class MySQLStorage extends DataManager {
         }
     }
 
-    private <T> T getGeneric(UUID id, String table, Class<T> type) {
+
+    @Override
+    public boolean createTable(String name, int maxIdLength) {
+        String sql = "CREATE TABLE IF NOT EXISTS " + tablePrefix + name + " (id VARCHAR(" + maxIdLength + ") PRIMARY KEY, data LONGTEXT);";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            Logging.errorLog("Failed to create table: " + name + " due to MySQL exception!", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean dropTable(String name) {
+        String sql = "DROP TABLE IF EXISTS " + tablePrefix + name;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            Logging.errorLog("Failed to drop table: " + name + " due to MySQL exception!", e);
+            return false;
+        }
+    }
+
+    @Override
+    public <T extends SerializableThing> T getGeneric(String id, String table, Class<T> type) {
         String sql = "SELECT data FROM " + tablePrefix + table + " WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id.toString());
@@ -112,7 +139,8 @@ public class MySQLStorage extends DataManager {
         return null;
     }
 
-    private <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
+    @Override
+    public <T extends SerializableThing> List<T> getAllGeneric(String table, Class<T> type) {
         String sql = "SELECT id, data FROM " + tablePrefix + table;
         List<T> objects = new ArrayList<>();
 
@@ -130,7 +158,8 @@ public class MySQLStorage extends DataManager {
     }
 
 
-	private void saveAllGeneric(List<? extends SerializableThing> serializableThings, String table, boolean overwrite) {
+    @Override
+	public <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite, @Nullable Class<T> type) {
 		if (!overwrite) {
 			String insertSql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
 			try (PreparedStatement insertStatement = connection.prepareStatement(insertSql)) {
@@ -184,8 +213,12 @@ public class MySQLStorage extends DataManager {
 			Logging.errorLog("Failed to manage transaction for saving objects to: " + table + " due to MySQL exception!", e);
 		}
 	}
+    private <T extends SerializableThing> void saveAllGeneric(List<T> serializableThings, String table, boolean overwrite) {
+        saveAllGeneric(serializableThings, table, overwrite, null);
+    }
 
-    private <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
+    @Override
+    public <T extends SerializableThing> void saveGeneric(T serializableThing, String table) {
         String sql = "INSERT INTO " + tablePrefix + table + " (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = VALUES(data)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, serializableThing.getId());
@@ -196,10 +229,11 @@ public class MySQLStorage extends DataManager {
         }
     }
 
-    private void deleteGeneric(UUID id, String table) {
+    @Override
+    public void deleteGeneric(String id, String table) {
         String sql = "DELETE FROM " + tablePrefix + table + " WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, id.toString());
+            statement.setString(1, id);
             statement.execute();
         } catch (SQLException e) {
             Logging.errorLog("Failed to delete object from: " + table + ", from: MySQL!", e);
@@ -208,7 +242,7 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public Barrel getBarrel(UUID id) {
-        SerializableBarrel serializableBarrel = getGeneric(id, "barrels", SerializableBarrel.class);
+        SerializableBarrel serializableBarrel = getGeneric(id.toString(), "barrels", SerializableBarrel.class);
         if (serializableBarrel != null) {
             return serializableBarrel.toBarrel();
         }
@@ -237,12 +271,12 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public void deleteBarrel(UUID id) {
-        deleteGeneric(id, "barrels");
+        deleteGeneric(id.toString(), "barrels");
     }
 
     @Override
     public BCauldron getCauldron(UUID id) {
-        SerializableCauldron serializableCauldron = getGeneric(id, "cauldrons", SerializableCauldron.class);
+        SerializableCauldron serializableCauldron = getGeneric(id.toString(), "cauldrons", SerializableCauldron.class);
         if (serializableCauldron != null) {
             return serializableCauldron.toCauldron();
         }
@@ -271,12 +305,12 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public void deleteCauldron(UUID id) {
-        deleteGeneric(id, "cauldrons");
+        deleteGeneric(id.toString(), "cauldrons");
     }
 
     @Override
     public BPlayer getPlayer(UUID playerUUID) {
-        SerializableBPlayer serializableBPlayer = getGeneric(playerUUID, "players", SerializableBPlayer.class);
+        SerializableBPlayer serializableBPlayer = getGeneric(playerUUID.toString(), "players", SerializableBPlayer.class);
         if (serializableBPlayer != null) {
             return serializableBPlayer.toBPlayer();
         }
@@ -305,12 +339,12 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public void deletePlayer(UUID playerUUID) {
-        deleteGeneric(playerUUID, "players");
+        deleteGeneric(playerUUID.toString(), "players");
     }
 
     @Override
     public Wakeup getWakeup(UUID id) {
-        SerializableWakeup serializableWakeup = getGeneric(id, "wakeups", SerializableWakeup.class);
+        SerializableWakeup serializableWakeup = getGeneric(id.toString(), "wakeups", SerializableWakeup.class);
         if (serializableWakeup != null) {
             return serializableWakeup.toWakeup();
         }
@@ -339,7 +373,7 @@ public class MySQLStorage extends DataManager {
 
     @Override
     public void deleteWakeup(UUID id) {
-        deleteGeneric(id, "wakeups");
+        deleteGeneric(id.toString(), "wakeups");
     }
 
     @Override

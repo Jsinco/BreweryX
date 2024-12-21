@@ -46,7 +46,7 @@ public class DrinkCommand implements SubCommand {
             Player player = brewForPlayer.b();
             Brew brew = brewForPlayer.a();
             String brewName = brew.getCurrentRecipe().getName(brew.getQuality());
-            BPlayer.drink(brew, null, player);
+            BPlayer.drink(brew, player, null, null);
 
             lang.sendEntry(sender, "CMD_Drink", brewName);
             if (!sender.equals(player)) {

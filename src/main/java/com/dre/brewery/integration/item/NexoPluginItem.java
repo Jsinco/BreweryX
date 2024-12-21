@@ -44,7 +44,7 @@ public class NexoPluginItem extends PluginItem {
         if (itemId == null) {
             return false;
         }
-        return itemId.equals(this.getItemId());
+        return itemId.equalsIgnoreCase(this.getItemId());
     }
 
     // Nexo's internal API code for getting an item's ID:

@@ -26,14 +26,15 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
-import com.dre.brewery.configuration.AbstractOkaeriConfigFile;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.configurer.TranslationManager;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.Logging;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 import java.util.List;
 
@@ -54,8 +55,7 @@ public class ReloadCommand implements SubCommand {
 			TranslationManager.newInstance(breweryPlugin.getDataFolder());
 
 			// Reload each config
-			for (var entry : ConfigManager.LOADED_CONFIGS.entrySet()) {
-				AbstractOkaeriConfigFile file = entry.getValue();
+			for (var file : ConfigManager.LOADED_CONFIGS.values()) {
 				try {
 					file.reload();
 				} catch (Throwable e) {
@@ -94,7 +94,14 @@ public class ReloadCommand implements SubCommand {
 				lang.sendEntry(sender, "CMD_Reload");
 			}
 
-
+			ReleaseChecker releaseChecker = ReleaseChecker.getInstance(true);
+			releaseChecker.checkForUpdate().thenAccept(updateAvailable -> {
+				if (!(sender instanceof ConsoleCommandSender consoleSender)) {
+					releaseChecker.notify(sender);
+				} else {
+					releaseChecker.notify(consoleSender);
+				}
+			});
 		} catch (Throwable e) {
 			Logging.errorLog("Something went wrong trying to reload Brewery!", e);
 		}

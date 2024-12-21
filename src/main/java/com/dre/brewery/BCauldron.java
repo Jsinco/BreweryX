@@ -516,7 +516,7 @@ public class BCauldron {
 					} else if (isBottle) {
 						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
 					} else {
-						BUtil.setItemInHand(event, Material.AIR, handSwap);
+						item.setAmount(0);
 					}
 				}
 			}

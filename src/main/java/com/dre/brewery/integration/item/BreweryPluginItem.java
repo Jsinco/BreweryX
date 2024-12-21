@@ -23,7 +23,6 @@ package com.dre.brewery.integration.item;
 import com.dre.brewery.Brew;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -38,12 +37,13 @@ public class BreweryPluginItem extends PluginItem {
 	@Override
 	public boolean matches(ItemStack item) {
 		Brew brew = Brew.get(item);
-		if (brew != null) {
-			BRecipe recipe = brew.getCurrentRecipe();
-			if (recipe != null) {
-				return recipe.getRecipeName().equalsIgnoreCase(getItemId()) || recipe.getName(10).equalsIgnoreCase(getItemId());
-			}
-			return ChatColor.stripColor(item.getItemMeta().getDisplayName()).equalsIgnoreCase(getItemId());
+		if (brew == null) {
+			return false;
+		}
+
+		BRecipe recipe = brew.getCurrentRecipe();
+		if (recipe != null) {
+			return this.getItemId().equalsIgnoreCase(recipe.getId());
 		}
 		return false;
 	}

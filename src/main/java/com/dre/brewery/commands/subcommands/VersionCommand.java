@@ -26,7 +26,7 @@ import com.dre.brewery.api.addons.BreweryAddon;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.Logging;
-import com.dre.brewery.utility.UpdateChecker;
+import com.dre.brewery.utility.releases.ReleaseChecker;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -45,7 +45,9 @@ public class VersionCommand implements SubCommand {
             }
         }
 
-        Logging.msg(sender, "&2BreweryX version&7: &av" + breweryPlugin.getDescription().getVersion() + " &7(Latest: v" + UpdateChecker.getLatestVersion() + ")");
+        ReleaseChecker rc = ReleaseChecker.getInstance();
+
+        Logging.msg(sender, "&2BreweryX version&7: &av" + rc.localVersion() + " &7(Latest: v" + rc.getResolvedLatestVersion() + ")");
         Logging.msg(sender, "&2Original authors&7: &aGrafe, TTTheKing, Sn0wStorm");
         Logging.msg(sender, "&dBreweryX authors&7: &aJsinco, Mitality, Nadwey, Szarkans, Vutka1");
         Logging.msg(sender, "&2Loaded addons&7: &a" + addonString);

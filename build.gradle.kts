@@ -32,10 +32,11 @@ val langVersion = 17
 val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.4.4"
+version = "3.4.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://repo.jsinco.dev/releases") // UniversalScheduler
     maven("https://jitpack.io") // GriefPrevention, SlimeFun, PlaceholderAPI
     maven("https://repo.md-5.net/content/groups/public/") // Bungee
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
@@ -65,7 +66,7 @@ dependencies {
     // Which don't support records.
     implementation("com.google.code.gson:gson:2.11.0")
     // For proper scheduling between Bukkit-Folia like servers, https://github.com/Anon8281/UniversalScheduler
-    implementation("com.github.Anon8281:UniversalScheduler:0.1.3")
+    implementation("com.github.Anon8281:UniversalScheduler:0.1.3-dev")
     // Nice annotations, I prefer these to Lombok's, https://www.jetbrains.com/help/idea/annotating-source-code.html
     implementation("org.jetbrains:annotations:16.0.2")
     // MongoDB & log4j to suppress MongoDB's logger
@@ -93,7 +94,9 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.7")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldedit/files
     compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0-SNAPSHOT") // https://dev.bukkit.org/projects/worldguard/files
-    compileOnly("com.griefcraft.lwc:LWCX:2.2.9-dev")// https://www.spigotmc.org/resources/lwc-extended.69551/history
+    compileOnly("com.griefcraft:lwc:2.3.2") { // https://www.spigotmc.org/resources/lwc-extended.69551/history
+        exclude("com.google")
+    }
     compileOnly("com.github.TechFortress:GriefPrevention:16.18") // https://www.spigotmc.org/resources/griefprevention.1884/history
     compileOnly("de.diddiz:logblock:1.16.5.1") // https://www.spigotmc.org/resources/logblock.67333/history
     compileOnly("com.github.Slimefun:Slimefun4:RC-35") // https://github.com/Slimefun/Slimefun4/releases
@@ -118,7 +121,7 @@ tasks {
 
     build {
         dependsOn(shadowJar)
-        finalizedBy("kotlinReducedJar")
+        //finalizedBy("kotlinReducedJar")
     }
 
     jar {
@@ -141,7 +144,8 @@ tasks {
     }
 
     shadowJar {
-		relocate("com.google", "com.dre.brewery.depend.google")
+		relocate("com.google.gson", "com.dre.brewery.depend.google.gson")
+        relocate("com.google.errorprone", "com.dre.brewery.depend.google.errorprone")
         relocate("com.github.Anon8281.universalScheduler", "com.dre.brewery.depend.universalScheduler")
         relocate("eu.okaeri", "com.dre.brewery.depend.okaeri")
         relocate("com.mongodb", "com.dre.brewery.depend.mongodb")

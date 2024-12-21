@@ -21,7 +21,6 @@
 package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.Barrel;
-import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.Logging;
 import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.lwc.LWC;

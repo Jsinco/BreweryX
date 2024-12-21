@@ -1,0 +1,30 @@
+name: 'Upload to Hangar'
+
+on:
+  release:
+    branches: [master]
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.release.prerelease }} == false
+    steps:
+      - uses: benwoo1110/hangar-upload-action@v1
+        with:
+          api_token: ${{ secrets.HANGAR_TOKEN }}
+          slug: 'BreweryX'
+          version: ${{ github.event.release.tag_name }}
+          channel: release
+          description: ${{ github.event.release.body }}
+          files: |
+            [
+              {
+                "path": "build/libs/BreweryX-*.jar",
+                "platforms": ["PAPER", "FOLIA"]
+              }
+            ]
+#          platform_dependencies: |
+#            {
+#              "PAPER": ["1.12","1.16-1.18.2","1.20.x"]
+#            }

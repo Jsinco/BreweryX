@@ -22,6 +22,7 @@ package com.dre.brewery.storage.records;
 
 import com.dre.brewery.Barrel;
 import com.dre.brewery.storage.DataManager;
+import com.dre.brewery.storage.interfaces.SerializableThing;
 import com.dre.brewery.storage.serialization.BukkitSerialization;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
