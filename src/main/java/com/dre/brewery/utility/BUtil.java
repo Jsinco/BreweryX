@@ -49,12 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class BUtil {
 
@@ -507,7 +502,16 @@ public final class BUtil {
 			return 0;
 		}
 		try {
-			return Integer.parseInt(string);
+
+			if (!string.contains("-")) return Integer.parseInt(string); // Default behaviour
+
+			// random number in range
+			Random rand = new Random();
+			String[] split = string.split("-");
+			int lowerbound = Integer.parseInt(split[0]);
+			int upperbound = Integer.parseInt(split[1]);
+			return rand.nextInt(upperbound - lowerbound + 1) + lowerbound;
+
 		} catch (NumberFormatException ignored) {
 			return 0;
 		}
