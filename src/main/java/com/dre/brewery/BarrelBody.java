@@ -67,13 +67,13 @@ public abstract class BarrelBody {
 		this.signoffset = signoffset;
 
 		if (boundsSeemBad(bounds)) {
-			if (!Bukkit.isPrimaryThread()) {
-				this.bounds = null;
-				return;
-			}
 			// If loading from old data, or block locations are missing, or other error, regenerate BoundingBox
 			// This will only be done in those extreme cases.
-			regenerateBounds();
+			if (!Bukkit.isPrimaryThread()) {
+				BreweryPlugin.getScheduler().runTask(spigot.getLocation(), this::regenerateBounds);
+			} else {
+				this.regenerateBounds();
+			}
 		} else {
 			this.bounds = bounds;
 		}
