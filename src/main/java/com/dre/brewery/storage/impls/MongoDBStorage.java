@@ -175,6 +175,7 @@ public class MongoDBStorage extends DataManager {
     @Override
     public void saveAllBarrels(Collection<Barrel> barrels, boolean overwrite) {
         List<SerializableBarrel> serializableBarrels = barrels.stream()
+                .filter(it -> it.getBounds() != null)
                 .map(SerializableBarrel::new)
                 .toList();
         saveAllGeneric(serializableBarrels, "barrels", overwrite, SerializableBarrel.class);

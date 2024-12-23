@@ -223,6 +223,9 @@ public class FlatFileStorage extends DataManager {
 
     @Override
     public void saveBarrel(Barrel barrel) {
+        if (barrel.getBounds() == null) {
+            return;
+        }
         String path = "barrels." + barrel.getId();
 
         dataFile.set(path + ".spigot", serializeLocation(barrel.getSpigot().getLocation()));
