@@ -107,7 +107,7 @@ this.
 
 ### Opening a Pull Request
 
-GitHub should for the most part, prompts you to open a Pull Request as soon as you push changes
+GitHub should for the most part, prompt you to open a Pull Request as soon as you push changes
 to your forked repository. Just navigate to the home page for your repository and follow GitHub's
 prompts from there.
 
