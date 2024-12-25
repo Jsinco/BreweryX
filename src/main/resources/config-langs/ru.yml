@@ -6,8 +6,8 @@ config:
     Какой файл локализации использовать [en]
     Available types: en (English), de (German), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Chinese)
   updateCheck: |
-    Should BreweryX check for updates? Specify which service you'd like to use for update checking or disable it.
-    Options available: GitHub, Snapshots, Spigot, None [GitHub]
+    Проверять ли обновления. Укажите, какой сервис хотите для этого использовать, или отключите.
+    Доступные варианты: GitHub, Snapshots, Spigot, None [GitHub]
   autosave: "Период автосохранения данных (в минутах) [10]"
   pluginPrefix: |
     Префикс плагина, используемый в сообщениях.
@@ -68,7 +68,7 @@ config:
   ageInMCBarrels: "Включено ли настаивание в ванильных майнкрафтовских бочках [true], и сколько бутылок можно в них положить [6]"
   agingYearDuration: "Сколько длится 1 год (в минутах) во время настаивания напитков. 1 игровой день = 20 минут [20]"
   commandAliases: |
-    Alias-ы для основной команды '/breweryx'. Для принятия изменений требуется полный рестарт сервера (Список) [brewery, brew]
+    Синонимы для основной команды '/breweryx'. Для принятия изменений требуется полный рестарт сервера (Список) [brewery, brew]
   enableEncode: |
     Использованные ингредиенты и прочие данные сохраняются прямо в напиток посредством custom_data в предмете.
     Чтобы защитить эти данные от читеров, их можно зашифровать.
@@ -134,7 +134,7 @@ recipesFile:
 
     Удобный и локализованный гайд на этот раздел можно найти по ссылке - https://brewery.lumamc.net/ru/guide/recipies/
     
-    enabled: true if the recipe should be enabled, false if it should be disabled
+    enabled: true/false - позволяет выключить напиток, не удаляя его из файла (этот параметр необязателен)
 
     name: Имя, ИЛИ три различных имени для плохого/среднего/хорошего качества напитка (Поддерживает цвет: &6 или hex - &#123123)
       пример: name: 'Плохое пиво/Среднее пиво/&6&lПИЗДАТОЕ ПИВО'
