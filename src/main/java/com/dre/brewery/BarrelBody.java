@@ -29,7 +29,6 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -380,12 +379,5 @@ public abstract class BarrelBody {
 			spigot.getZ() + endZ
 		);
 		return null;
-	}
-
-	public void save(ConfigurationSection config, String prefix) {
-		if (signoffset != 0) {
-			config.set(prefix + ".sign", signoffset);
-		}
-		config.set(prefix + ".bounds", bounds.serialize());
 	}
 }
