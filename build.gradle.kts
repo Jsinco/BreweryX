@@ -35,7 +35,7 @@ val langVersion = 17
 val encoding = "UTF-8"
 
 group = "com.dre.brewery"
-version = "3.4.5"
+version = "3.4.6-SNAPSHOT"
 
 repositories {
     mavenCentral()
