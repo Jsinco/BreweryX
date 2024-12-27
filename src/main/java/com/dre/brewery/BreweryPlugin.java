@@ -111,13 +111,15 @@ public final class BreweryPlugin extends JavaPlugin {
 		SimpleItem.registerItemLoader(this);
 		PluginItem.registerItemLoader(this);
 
-		// Load config and lang
+		// Load config
 		Config config = ConfigManager.getConfig(Config.class);
-		ConfigManager.newInstance(Lang.class, false);
-
 		if (config.isFirstCreation()) {
 			config.onFirstCreation();
 		}
+
+		// Load lang
+		TranslationManager.getInstance().updateTranslationFiles();
+		ConfigManager.newInstance(Lang.class, false);
 
 		BSealer.registerRecipe(); // Sealing table recipe
 		ConfigManager.registerDefaultPluginItems(); // Register plugin items

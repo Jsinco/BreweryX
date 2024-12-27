@@ -53,6 +53,7 @@ public class ReloadCommand implements SubCommand {
 		try {
 			// Reload translation manager
 			TranslationManager.newInstance(breweryPlugin.getDataFolder());
+			TranslationManager.getInstance().updateTranslationFiles();
 
 			// Reload each config
 			for (var file : ConfigManager.LOADED_CONFIGS.values()) {

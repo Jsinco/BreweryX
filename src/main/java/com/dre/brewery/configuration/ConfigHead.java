@@ -152,10 +152,11 @@ public class ConfigHead {
     /**
      * Create a new config instance using a config class' annotation
      * @param configClass The class of the config to create
+	 * @param file The file to use
      * @return The new config instance
      * @param <T> The type of the config
      */
-    public <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
+    public <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass, Path file) {
         OkaeriConfigFileOptions options = getOkaeriConfigFileOptions(configClass);
 
         Configurer configurer = CONFIGURERS.get(options.configurer());
@@ -164,8 +165,18 @@ public class ConfigHead {
             configurer = CONFIGURERS.get(BreweryXConfigurer.class);
         }
 
-        return createConfig(configClass, getFilePath(configClass), configurer, new StandardSerdes(), options.update(), options.removeOrphans());
+        return createConfig(configClass, file, configurer, new StandardSerdes(), options.update(), options.removeOrphans());
     }
+
+	/**
+	 * Create a new config instance using a config class' annotation
+	 * @param configClass The class of the config to create
+	 * @return The new config instance
+	 * @param <T> The type of the config
+	 */
+	public <T extends AbstractOkaeriConfigFile> T createConfig(Class<T> configClass) {
+		return createConfig(configClass, getFilePath(configClass));
+	}
 
     @Nullable
     public <T extends AbstractOkaeriConfigFile> T createBlankConfigInstance(Class<T> configClass) {

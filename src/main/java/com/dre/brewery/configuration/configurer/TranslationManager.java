@@ -21,8 +21,10 @@
 package com.dre.brewery.configuration.configurer;
 
 import com.dre.brewery.BreweryPlugin;
+import com.dre.brewery.configuration.ConfigHead;
 import com.dre.brewery.configuration.ConfigManager;
 import com.dre.brewery.configuration.files.Config;
+import com.dre.brewery.configuration.files.Lang;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Logging;
 import lombok.Getter;
@@ -33,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 @Getter
@@ -106,6 +109,50 @@ public class TranslationManager {
 
 	public void createLanguageFile(Translation translation) {
 		ConfigManager.createFileFromResources("languages/" + translation.getFilename(), dataFolder.toPath().resolve("languages").resolve(translation.getFilename()));
+	}
+
+	// Okaeri would do this normally, but since default values in Lang changes based on language,
+	// we have to manually go through each file.
+	/**
+	 * Updates all translation files by adding all missing keys.
+	 * If a key hasn't been translated yet, english is used as a fallback.
+	 */
+	public void updateTranslationFiles() {
+		ConfigHead tempHead = new ConfigHead(); // Prevent polluting ConfigManager global state
+
+		Lang fallback = loadFromResources(tempHead, Translation.EN);
+		for (Translation trans : Translation.values()) {
+			if (trans == Translation.EN) {
+				continue;
+			}
+
+			String langFilePathStr = "languages/" + trans.getFilename();
+			Path langFilePath = dataFolder.toPath().resolve(langFilePathStr);
+
+			Lang langFromFile = tempHead.createConfig(Lang.class, langFilePath);
+			Lang langFromResources = loadFromResources(tempHead, trans);
+
+			langFromFile.updateMissingValuesFrom(langFromResources);
+			langFromFile.updateMissingValuesFrom(fallback);
+			langFromFile.save();
+		}
+	}
+
+	// Loads a lang from resources... by loading from file then overwriting with resources InputStream
+	// A bit of a hack, but avoids having to modify Okaeri
+	@Nullable
+	private Lang loadFromResources(ConfigHead tempHead, Translation translation) {
+		String langFilePathStr = "languages/" + translation.getFilename();
+		Path langFilePath = dataFolder.toPath().resolve(langFilePathStr);
+
+		Lang langFromResources = tempHead.createConfig(Lang.class, langFilePath);
+		try (InputStream inputStream = BreweryPlugin.class.getClassLoader().getResourceAsStream(langFilePathStr)) {
+			langFromResources.load(inputStream);
+			return langFromResources;
+		} catch (IOException e) {
+			Logging.errorLog("Failed to load " + langFilePathStr + " from resources", e);
+			return null;
+		}
 	}
 
 
