@@ -27,7 +27,7 @@ import java.util.List;
 
 public class BoundingBox {
 
-	private final int x1, y1, z1, x2, y2, z2;
+	private int x1, y1, z1, x2, y2, z2;
 
 	public BoundingBox(int x1, int y1, int z1, int x2, int y2, int z2) {
 		this.x1 = Math.min(x1, x2);
@@ -52,6 +52,21 @@ public class BoundingBox {
 
 	public long area() {
 		return ((long) (x2 - x1 + 1)) * ((long) (y2 - y1 + 1)) * ((long) (z2 - z1 + 1));
+	}
+
+	// Quick check if the bounds are valid or seem corrupt
+	public boolean isBad() {
+		long area = this.area();
+		return area > 64 || area < 4;
+	}
+
+	public void resize(int x1, int y1, int z1, int x2, int y2, int z2) {
+		this.x1 = Math.min(x1, x2);
+		this.y1 = Math.min(y1, y2);
+		this.z1 = Math.min(z1, z2);
+		this.x2 = Math.max(x2, x1);
+		this.y2 = Math.max(y2, y1);
+		this.z2 = Math.max(z2, z1);
 	}
 
 	public String serialize() {

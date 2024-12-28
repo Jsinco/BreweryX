@@ -29,7 +29,6 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BarrelBody {
 
 	protected final Block spigot;
-	protected BoundingBox bounds;
+	protected final BoundingBox bounds;
 	protected byte signoffset;
 
 	public BarrelBody(Block spigot, byte signoffset) {
@@ -65,17 +64,17 @@ public abstract class BarrelBody {
 	public BarrelBody(Block spigot, byte signoffset, BoundingBox bounds) {
 		this.spigot = spigot;
 		this.signoffset = signoffset;
-
-		if (boundsSeemBad(bounds)) {
+		this.bounds = bounds;
+		if (this.bounds == null || this.bounds.isBad()) {
 			// If loading from old data, or block locations are missing, or other error, regenerate BoundingBox
 			// This will only be done in those extreme cases.
-			if (!Bukkit.isPrimaryThread()) {
-				BreweryPlugin.getScheduler().runTask(spigot.getLocation(), this::regenerateBounds);
-			} else {
+
+			// Barrels can be loaded async!
+			if (Bukkit.isPrimaryThread()) {
 				this.regenerateBounds();
+			} else {
+				BreweryPlugin.getScheduler().runTask(spigot.getLocation(), this::regenerateBounds);
 			}
-		} else {
-			this.bounds = bounds;
 		}
 	}
 
@@ -89,7 +88,7 @@ public abstract class BarrelBody {
 	}
 
 	/**
-	 * Quick check if the bounds are valid or seem corrupt
+	 *
 	 */
 	public static boolean boundsSeemBad(BoundingBox bounds) {
 		if (bounds == null) return true;
@@ -295,13 +294,14 @@ public abstract class BarrelBody {
 			x = startX;
 			y++;
 		}
-		bounds = new BoundingBox(
+		bounds.resize(
 			spigot.getX() + startX,
 			spigot.getY(),
 			spigot.getZ() + startZ,
 			spigot.getX() + endX,
 			spigot.getY() + 1,
-			spigot.getZ() + endZ);
+			spigot.getZ() + endZ
+		);
 		return null;
 	}
 
@@ -369,21 +369,15 @@ public abstract class BarrelBody {
 			x = startX;
 			y++;
 		}
-		bounds = new BoundingBox(
+
+		bounds.resize(
 			spigot.getX() + startX,
 			spigot.getY(),
 			spigot.getZ() + startZ,
 			spigot.getX() + endX,
 			spigot.getY() + 2,
-			spigot.getZ() + endZ);
-
+			spigot.getZ() + endZ
+		);
 		return null;
-	}
-
-	public void save(ConfigurationSection config, String prefix) {
-		if (signoffset != 0) {
-			config.set(prefix + ".sign", signoffset);
-		}
-		config.set(prefix + ".bounds", bounds.serialize());
 	}
 }
