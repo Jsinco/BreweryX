@@ -33,6 +33,7 @@ import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
 import lombok.SneakyThrows;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -69,6 +70,28 @@ public class Lang extends AbstractOkaeriConfigFile {
         this.load(this.update);
         this.mapStrings();
     }
+
+	public void updateMissingValuesFrom(@Nullable Lang other) {
+		if (other == null) {
+			return;
+		}
+
+		for (Field field : this.getClass().getDeclaredFields()) {
+			if (field.getType() != String.class) {
+				continue;
+			}
+
+			try {
+				String thisValue = (String) field.get(this);
+				String otherValue = (String) field.get(other);
+				if (thisValue == null && otherValue != null) {
+					field.set(this, otherValue);
+				}
+			} catch (IllegalAccessException e) {
+				Logging.errorLog("Lang failed to get a field value! &6(" + field.getName() + ")", e);
+			}
+		}
+	}
 
     public void mapStrings() {
         BreweryPlugin plugin = BreweryPlugin.getInstance();
