@@ -18,9 +18,13 @@
  * along with BreweryX. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import io.papermc.hangarpublishplugin.model.Platforms
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.tools.ant.filters.ReplaceTokens
+import java.net.HttpURLConnection
+import java.net.URI
 import java.nio.charset.Charset
 
 plugins {
@@ -31,11 +35,10 @@ plugins {
     id("com.modrinth.minotaur") version "2.8.7"
 }
 
-val langVersion = 17
-val encoding = "UTF-8"
-
 group = "com.dre.brewery"
 version = "3.4.6-SNAPSHOT"
+val langVersion: Int = 17
+val encoding: String = "UTF-8"
 
 repositories {
     mavenCentral()
@@ -66,7 +69,7 @@ dependencies {
     implementation("io.papermc:paperlib:1.0.8")
 
     // Implemented manually mainly due to older server versions implementing versions of GSON
-    // Which don't support records.
+    // which don't support records.
     implementation("com.google.code.gson:gson:2.11.0")
     // For proper scheduling between Bukkit-Folia like servers, https://github.com/Anon8281/UniversalScheduler
     implementation("com.github.Anon8281:UniversalScheduler:0.1.3-dev")
@@ -155,6 +158,25 @@ tasks {
 
         archiveClassifier.set("")
     }
+
+    register("publishRelease") {
+        println("Publishing a new release to: modrinth, hangar, and maven")
+        dependsOn(modrinth)
+        finalizedBy(hangarPublish)
+        finalizedBy(publish)
+
+        doLast {
+            // Much rather use a task in Gradle than a GitHub action for this,
+            // but, may want to look into finding a small plugin for this since BreweryX has
+            // a variety of addons that would also need this code copied into them.
+            val webhook = DiscordWebhook(System.getenv("DISCORD_WEBHOOK") ?: return@doLast)
+            webhook.message = "A new version of BreweryX has been released!"
+            webhook.embedTitle = "BreweryX - v${project.version}"
+            webhook.embedDescription = readChangeLog()
+            webhook.send()
+        }
+    }
+
 }
 
 java {
@@ -163,9 +185,9 @@ java {
 
 
 publishing {
-    val repoUrl = System.getenv("repo_url") ?: "https://repo.jsinco.dev/releases"
-    val user = System.getenv("repo_username")
-    val pass = System.getenv("repo_secret")
+    val repoUrl = System.getenv("REPO_URL") ?: "https://repo.jsinco.dev/releases"
+    val user = System.getenv("REPO_USERNAME")
+    val pass = System.getenv("REPO_SECRET")
 
 
     repositories {
@@ -199,21 +221,6 @@ publishing {
     }
 }
 
-hangarPublish {
-    publications.register("plugin") {
-        version.set(project.version.toString())
-        channel.set("Release")
-        id.set(project.name)
-        apiKey.set(System.getenv("HANGAR_TOKEN"))
-        platforms {
-            register(Platforms.PAPER) {
-                jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                platformVersions.set(listOf("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x"))
-            }
-        }
-        changelog.set(readChangeLog())
-    }
-}
 
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
@@ -226,6 +233,26 @@ modrinth {
         "1.20.4", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4")
     changelog.set(readChangeLog())
 }
+
+
+hangarPublish {
+    publications.register("plugin") {
+        version.set(project.version.toString())
+        channel.set("Release")
+        id.set(project.name)
+        apiKey.set(System.getenv("HANGAR_TOKEN"))
+        platforms {
+            register(Platforms.PAPER) {
+                // TODO: Swap jar with modrinth release link
+                //url.set("https://modrinth.com/plugin/breweryx/versions")
+                jar.set(tasks.shadowJar.flatMap { it.archiveFile })
+                platformVersions.set(listOf("1.13.x", "1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x", "1.19.x", "1.20.x", "1.21.x"))
+            }
+        }
+        changelog.set(readChangeLog())
+    }
+}
+
 
 
 fun getGitBranch(): String = ByteArrayOutputStream().use { stream ->
@@ -243,4 +270,116 @@ fun readChangeLog(): String {
         if (exists()) readText() else "No Changelog found."
     }
     return text.replace("\${version}", project.version.toString())
+}
+
+
+class DiscordWebhook(
+    val webhookUrl: String,
+    var defaultThumbnail: Boolean = true
+) {
+
+    var message: String = "content"
+    var username: String = "Brewery Updates"
+    var avatarUrl: String = "https://github.com/breweryteam.png"
+    var embedTitle: String = "Embed Title"
+    var embedDescription: String = "Embed Description"
+    var embedColor: String = "F5E083"
+    var embedThumbnailUrl: String? = if (defaultThumbnail) avatarUrl else null
+    var embedImageUrl: String? = null
+
+    private fun hexStringToInt(hex: String): Int {
+        val hexWithoutPrefix = hex.removePrefix("#")
+        return hexWithoutPrefix.toInt(16)
+    }
+
+    private fun buildToJson(): String {
+        val json = JsonObject()
+        json.addProperty("username", username)
+        json.addProperty("avatar_url", avatarUrl)
+        json.addProperty("content", message)
+
+        val embed = JsonObject()
+        embed.addProperty("title", embedTitle)
+        embed.addProperty("description", embedDescription)
+        embed.addProperty("color", hexStringToInt(embedColor))
+
+        embedThumbnailUrl?.let {
+            val thumbnail = JsonObject()
+            thumbnail.addProperty("url", it)
+            embed.add("thumbnail", thumbnail)
+        }
+
+        embedImageUrl?.let {
+            val image = JsonObject()
+            image.addProperty("url", it)
+            embed.add("image", image)
+        }
+
+        val embeds = JsonArray()
+        createEmbeds().forEach(embeds::add)
+
+        json.add("embeds", embeds)
+        return json.toString()
+    }
+
+    private fun createEmbeds(): List<JsonObject> {
+        if (embedDescription.length <= 2000) {
+            return listOf(JsonObject().apply {
+                addProperty("title", embedTitle)
+                addProperty("description", embedDescription)
+                addProperty("color", embedColor.toInt(16))
+                embedThumbnailUrl?.let {
+                    val thumbnail = JsonObject()
+                    thumbnail.addProperty("url", it)
+                    add("thumbnail", thumbnail)
+                }
+                embedImageUrl?.let {
+                    val image = JsonObject()
+                    image.addProperty("url", it)
+                    add("image", image)
+                }
+            })
+        }
+        val embeds = mutableListOf<JsonObject>()
+        var description = embedDescription
+        while (description.isNotEmpty()) {
+            val chunk = description.substring(0, 2000)
+            description = description.substring(2000)
+            embeds.add(JsonObject().apply {
+                addProperty("title", embedTitle)
+                addProperty("description", chunk)
+                addProperty("color", embedColor.toInt(16))
+                embedThumbnailUrl?.let {
+                    val thumbnail = JsonObject()
+                    thumbnail.addProperty("url", it)
+                    add("thumbnail", thumbnail)
+                }
+                embedImageUrl?.let {
+                    val image = JsonObject()
+                    image.addProperty("url", it)
+                    add("image", image)
+                }
+            })
+        }
+        return embeds
+    }
+
+    fun send() {
+        val url = URI(webhookUrl).toURL()
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "POST"
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.doOutput = true
+        connection.outputStream.use { outputStream ->
+            outputStream.write(buildToJson().toByteArray())
+
+            val responseCode = connection.responseCode
+            println("POST Response Code :: $responseCode")
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                println("Message sent successfully.")
+            } else {
+                println("Failed to send message.")
+            }
+        }
+    }
 }

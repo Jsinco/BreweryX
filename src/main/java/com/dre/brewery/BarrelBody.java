@@ -87,14 +87,6 @@ public abstract class BarrelBody {
 		signoffset = 0;
 	}
 
-	/**
-	 *
-	 */
-	public static boolean boundsSeemBad(BoundingBox bounds) {
-		if (bounds == null) return true;
-		long area = bounds.area();
-		return area > 64 || area < 4;
-	}
 
 	/**
 	 * direction of the barrel from the spigot

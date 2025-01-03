@@ -21,18 +21,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Publish to Hangar with Gradle
+      - name: Publish BreweryX release
         uses: gradle/gradle-build-action@v3
         env:
-          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           CHANGELOG: ${{ github.event.release.body }}
-        with:
-          arguments: build publishPluginPublicationToHangar --stacktrace
-
-      - name: Publish to Modrinth with Gradle
-        uses: gradle/gradle-build-action@v3
-        env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-          CHANGELOG: ${{ github.event.release.body }}
+          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          REPO_SECRET: ${{ secrets.REPO_SECRET }}
         with:
-          arguments: modrinth --stacktrace
+          arguments: publishRelease --stacktrace
